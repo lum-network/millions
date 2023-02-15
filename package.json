@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@firebase/analytics": "^0.9.3",
     "@popperjs/core": "^2.11.6",
     "@rematch/core": "^2.2.0",
     "@rematch/loading": "^2.1.2",
@@ -17,6 +18,7 @@
     "bootstrap": "^5.2.3",
     "class-transformer": "^0.5.1",
     "dayjs": "^1.11.7",
+    "firebase": "^9.17.1",
     "i18n-js": "^4.2.2",
     "numeral": "^2.0.6",
     "react": "^18.2.0",
@@ -24,6 +26,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
     "redux": "^4.2.1",
     "reflect-metadata": "^0.1.13",
     "sass": "^1.58.1",

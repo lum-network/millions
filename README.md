@@ -1,11 +1,11 @@
-# Lum Network - C-Millions
+# Lum Network - Millions
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/lum-network/c-millions/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/lum-network/millions/pulls)
 
-This is a front-end repository for **C-Millions**.
+This is a front-end repository for **Millions**.
 
-This service used **Lum Network - C-Millions backend** API (code hosted [here](https://github.com/lum-network/c-millions-backend))
+This service used **Lum Network - Chain** (code hosted [here](https://github.com/lum-network/chain))
 
 ## Description
 
@@ -23,13 +23,13 @@ All stylesheets are written in SASS with [Bootstrap 5](https://getbootstrap.com/
 
 Clone the project with:
 
-> $ git clone git@github.com:lum-network/c-millions.git
+> $ git clone git@github.com:lum-network/millions.git
 
 ### Install dependencies
 
 Install dependencies with:
 
-> $ yarn && cd src/frontend-elements && yarn && cd ../..
+> $ yarn
 
 ### Running your app
 

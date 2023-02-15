@@ -5,7 +5,7 @@ class Api extends HttpClient {
     private static instance?: Api;
 
     private constructor() {
-        super(ApiConstants.BASE_URL);
+        super(ApiConstants.API_URL);
     }
 
     public static getInstance(): Api {
