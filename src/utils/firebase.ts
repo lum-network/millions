@@ -1,5 +1,5 @@
 import { initializeApp, FirebaseApp } from 'firebase/app';
-import { Analytics, getAnalytics } from '@firebase/analytics';
+import { Analytics, AnalyticsCallOptions, getAnalytics, logEvent } from '@firebase/analytics';
 import { FirebaseConstants } from 'constant';
 class Firebase {
     private static instance?: Firebase;
@@ -17,6 +17,13 @@ class Firebase {
         }
 
         return this.instance;
+    }
+
+    // Analytics
+    logEvent(eventName: string, eventParams?: { [key: string]: unknown }, options?: AnalyticsCallOptions): void {
+        if (this.analytics) {
+            logEvent(this.analytics, eventName, eventParams, options);
+        }
     }
 }
 

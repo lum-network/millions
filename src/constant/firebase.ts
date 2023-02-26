@@ -8,3 +8,8 @@ export const FIREBASE_CONFIG = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID ?? '',
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID ?? '',
 };
+
+// Analytics
+export const ANALYTICS_EVENTS = {
+    SCREEN_VIEW: 'screen_view',
+};
