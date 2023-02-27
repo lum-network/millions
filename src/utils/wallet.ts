@@ -1,35 +1,22 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
-import { DenomsConstants } from 'constant';
-
-const hasAllPrices = (prices: { [denom: string]: number }) => {
-    let hasAllPrices = true;
-
-    DenomsConstants.ALLOWED_DENOMS.forEach((denom) => {
-        const price = Object.entries(prices).find((price) => price[0] === denom);
-
-        if (!price) {
-            hasAllPrices = false;
-            return;
-        }
-    });
-
-    return hasAllPrices;
-};
+import { getNormalDenom } from './denoms';
+import { convertUnitNumber } from './numbers';
 
 export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: string]: number }) => {
     let totalBalance = 0;
-
-    if (!hasAllPrices(prices)) {
-        return null;
-    }
+    let missingPrice = false;
 
     balances.forEach((balance) => {
-        const price = Object.entries(prices).find((price) => price[0] === balance.denom);
+        const price = Object.entries(prices).find((price) => price[0] === getNormalDenom(balance.denom));
+        const convertedAmount = convertUnitNumber(balance.amount);
 
         if (price) {
-            totalBalance += parseFloat(balance.amount) * price[1];
+            totalBalance += convertedAmount * price[1];
+        } else {
+            missingPrice = true;
         }
     });
+    console.log('missingPrice', missingPrice);
 
-    return totalBalance;
+    return missingPrice ? null : totalBalance;
 };

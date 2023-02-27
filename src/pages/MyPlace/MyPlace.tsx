@@ -7,7 +7,7 @@ import coin from 'assets/images/coin.svg';
 import coinsStacked from 'assets/images/coins_stacked.svg';
 import discordIcon from 'assets/images/discord.svg';
 
-import { Button, Card, SmallerDecimal } from 'components';
+import { Button, Card, Modal, SmallerDecimal } from 'components';
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { RootState } from 'redux/store';
 
@@ -38,7 +38,7 @@ const MyPlace = () => {
                         </div>
                     </div>
                     <div className='d-flex flex-row align-items-center'>
-                        <Button outline className='me-2'>
+                        <Button outline className='me-2' data-bs-toggle='modal' data-bs-target='#withdrawModal'>
                             {I18n.t('myPlace.withdraw')}
                         </Button>
                         <Button>{I18n.t('myPlace.deposit')}</Button>
@@ -58,7 +58,11 @@ const MyPlace = () => {
                         <h2>{I18n.t('myPlace.totalBalance')}</h2>
                         <Card className='balance-card'>
                             <div className='my-auto d-flex flex-column justify-content-center'>
-                                {totalBalancePrice ? <SmallerDecimal big nb={numeral().format('$0,0.[00]')} className='balance-number mt-3' /> : <div className='balance-number'>-</div>}
+                                {totalBalancePrice ? (
+                                    <SmallerDecimal big nb={numeral(totalBalancePrice).format('$0,0.[00]')} className='balance-number mt-3' />
+                                ) : (
+                                    <div className='balance-number'>-</div>
+                                )}
                             </div>
                             <img src={coin} className='coin-1' alt='coin' />
                             <img src={coin} className='coin-2' alt='coin' />
@@ -113,6 +117,9 @@ const MyPlace = () => {
                     </Card>
                 </div>
             </div>
+            <Modal id='withdrawModal'>
+                <div>Withdraw Modal</div>
+            </Modal>
         </div>
     );
 };
