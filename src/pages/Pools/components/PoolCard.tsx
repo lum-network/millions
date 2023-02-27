@@ -1,7 +1,7 @@
 import React from 'react';
 import numeral from 'numeral';
 
-import { Card } from 'components';
+import { Card, CountDown } from 'components';
 import { I18n, PoolsUtils } from 'utils';
 
 import '../Pools.scss';
@@ -10,9 +10,10 @@ interface IProps {
     id: string;
     totalDeposit: number;
     maxEarning: number;
+    drawEndAt: string;
 }
 
-const PoolCard = ({ id, totalDeposit, maxEarning }: IProps) => {
+const PoolCard = ({ id, totalDeposit, maxEarning, drawEndAt }: IProps) => {
     return (
         <Card className='pool-card-container'>
             <img width={88} height={88} src={PoolsUtils.getLogoFromId(id)} alt={id} />
@@ -24,7 +25,7 @@ const PoolCard = ({ id, totalDeposit, maxEarning }: IProps) => {
                 <span className='total-deposit-label'>{I18n.t('pools.totalDeposit')}</span>
             </div>
             <Card flat withoutPadding className='p-2'>
-                <span className='max-earning'></span>
+                <CountDown to={drawEndAt} />
             </Card>
         </Card>
     );
