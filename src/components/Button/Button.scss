@@ -13,6 +13,9 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: $color-primary;
 
     &.disabled {
         opacity: 0.3;

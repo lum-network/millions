@@ -35,6 +35,26 @@ class LumClient {
             throw e as Error;
         }
     };
+
+    getWalletBalances = async (address: string) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const balances = await this.client.getAllBalances(address);
+
+        return { balances };
+    };
+
+    getWalletActivites = async (address: string) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const activities = await Promise.resolve([]);
+
+        return { activities };
+    };
 }
 
 export default LumClient.Instance;

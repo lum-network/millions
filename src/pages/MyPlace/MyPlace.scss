@@ -4,13 +4,78 @@
     height: 100%;
     background-color: $color-primary;
     color: white;
+    position: relative;
+    overflow: hidden;
+
+    .balance-number {
+        font-family: 'Gotham Rounded', sans-serif;
+        font-size: 78px;
+        font-weight: 400;
+        line-height: 94px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: white;
+    }
+
+    .coin-1 {
+        position: absolute;
+        height: 38px;
+        width: 38px;
+        top: -5%;
+        left: 35%;
+        object-fit: contain;
+    }
+    .coin-2 {
+        position: absolute;
+        height: 39px;
+        width: 39px;
+        right: -2%;
+        top: 10%;
+    }
+    .coin-3 {
+        position: absolute;
+        height: 65px;
+        width: 65px;
+        right: 35%;
+        bottom: -21.7px;
+        object-fit: contain;
+    }
 }
 
 .asset-card {
     background-color: $color-primary-light;
     margin-bottom: 1.5rem;
 
+    .denom-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 1rem;
+        object-fit: contain;
+    }
+
+    .denom-unknown-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 1rem;
+        background-color: $color-primary;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Gotham Rounded', sans-serif;
+        color: white;
+    }
+
     &:last-child {
         margin-bottom: 0;
     }
+}
+
+.asset-amount {
+    font-family: 'Gotham Rounded', sans-serif;
+    color: $color-primary;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0em;
+    text-align: left;
 }

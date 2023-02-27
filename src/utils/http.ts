@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { MetadataModel } from 'models';
 
 declare module 'axios' {
@@ -28,7 +28,7 @@ abstract class HttpClient {
     protected request = async <T>(config: AxiosRequestConfig, Model: any): Promise<[T, MetadataModel]> => {
         const response = await this.instance.request(config);
 
-        return [plainToClass(Model, response.result) as unknown as T, plainToInstance(MetadataModel, response.metadata)];
+        return [plainToInstance(Model, response.result) as unknown as T, plainToInstance(MetadataModel, response.metadata)];
     };
 }
 

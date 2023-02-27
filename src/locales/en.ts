@@ -35,5 +35,9 @@ export default {
         deposit: 'Deposit',
         withdraw: 'Withdraw',
         activities: 'Activities',
+        noAssets: {
+            title: 'No assets yet',
+            description: 'It’s time to deposit assets in your wallet\nto participate to the next prize',
+        },
     },
 };

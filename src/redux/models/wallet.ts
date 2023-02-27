@@ -1,15 +1,29 @@
 import { createModel } from '@rematch/core';
-import { LumConstants, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
+import { OfflineSigner } from '@cosmjs/proto-signing';
+import { SigningStargateClient } from '@cosmjs/stargate';
+import Long from 'long';
+import dayjs from 'dayjs';
 
-import { ToastUtils, I18n, LumClient } from 'utils';
-import { LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { ToastUtils, I18n, LumClient, DenomsUtils, OsmosisClient } from 'utils';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { RootModel } from '.';
+
+interface IbcTransferPayload {
+    fromAddress: string;
+    toAddress: string;
+    amount: LumTypes.Coin;
+    type: 'withdraw' | 'deposit';
+    normalDenom: string;
+}
 
 interface WalletState {
     lumWallet: {
         innerWallet: LumWallet;
         address: string;
+        balances: LumTypes.Coin[];
+        activities: any[];
     } | null;
     osmosisWallet: {
         address: string;
@@ -29,7 +43,31 @@ export const wallet = createModel<RootModel>()({
                 lumWallet: {
                     innerWallet: payload,
                     address: payload.getAddress(),
+                    balances: [],
+                    activities: [],
                 },
+            };
+        },
+        signInOsmosis(state, payload: { address: string; offlineSigner: OfflineSigner }) {
+            return {
+                ...state,
+                osmosisWallet: {
+                    address: payload.address,
+                    offlineSigner: payload.offlineSigner,
+                    balances: [],
+                },
+            };
+        },
+        setWalletData(state, payload: { balances?: LumTypes.Coin[]; activities?: any[] }) {
+            return {
+                ...state,
+                ...(state.lumWallet && {
+                    lumWallet: {
+                        ...state.lumWallet,
+                        balances: payload.balances || state.lumWallet.balances,
+                        activities: payload.activities || state.lumWallet.activities,
+                    },
+                }),
             };
         },
     },
@@ -124,30 +162,116 @@ export const wallet = createModel<RootModel>()({
                     const lumOfflineSigner = await keplrWindow.getOfflineSignerAuto(chainId);
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
                     if (lumWallet) {
-                        console.log('connectWallet');
-
                         dispatch.wallet.signInLum(lumWallet);
-                        /* dispatch.wallet.getLumWalletBalance(null);
-                            dispatch.wallet.getHistory(lumWallet.getAddress());
+                        dispatch.wallet.getBalances(lumWallet.getAddress());
+
+                        /*  dispatch.wallet.getHistory(lumWallet.getAddress());
                             dispatch.wallet.getTransactions(lumWallet.getAddress()); */
                         if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
                     }
 
-                    /* const osmosisOfflineSigner = await keplrWindow.getOfflineSignerAuto('osmosis-1');
-                        const accounts = await osmosisOfflineSigner.getAccounts();
-                        if (accounts.length > 0) {
-                            dispatch.wallet.signInOsmosis({
-                                address: accounts[0].address,
-                                offlineSigner: osmosisOfflineSigner,
-                            });
-                            //await OsmosisClient.connect(osmosisOfflineSigner);
-                            dispatch.wallet.getOsmosisWalletBalance(null);
-                        } */
+                    const osmosisOfflineSigner = await keplrWindow.getOfflineSignerAuto('osmosis-1');
+                    const accounts = await osmosisOfflineSigner.getAccounts();
+                    if (accounts.length > 0) {
+                        dispatch.wallet.signInOsmosis({
+                            address: accounts[0].address,
+                            offlineSigner: osmosisOfflineSigner,
+                        });
+                        //await OsmosisClient.connect(osmosisOfflineSigner);
+                        //dispatch.wallet.getOsmosisWalletBalance(null);
+                    }
                     return;
                 } catch (e) {
                     if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
                     throw e;
                 }
+            }
+        },
+        async getBalances(address: string) {
+            try {
+                const result = await LumClient.getWalletBalances(address);
+
+                if (result) {
+                    const filteredBalances = result.balances.filter((balance) => DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)));
+                    dispatch.wallet.setWalletData({ balances: filteredBalances });
+                }
+            } catch (e) {}
+        },
+        async getActivities(address: string) {
+            try {
+                const result = await LumClient.getWalletActivites(address);
+
+                if (result) {
+                    dispatch.wallet.setWalletData({ activities: result.activities });
+                }
+            } catch (e) {}
+        },
+        async ibcTransfer(payload: IbcTransferPayload) {
+            const { toAddress, fromAddress, amount, normalDenom } = payload;
+
+            const convertedAmount = LumUtils.convertUnit(
+                {
+                    amount: amount.amount,
+                    denom: LumConstants.LumDenom,
+                },
+                LumConstants.MicroLumDenom,
+            );
+
+            const coin = {
+                amount: convertedAmount,
+                denom: amount.denom,
+            };
+
+            const toastId = ToastUtils.showLoadingToast({ content: payload.type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
+
+            const chainId = LumClient.getChainId();
+
+            if (chainId) {
+                try {
+                    if (payload.type === 'withdraw') {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        const lumOfflineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
+
+                        const client = await SigningStargateClient.connectWithSigner(LumClient.getRpc(), lumOfflineSigner);
+
+                        const result = await client.sendIbcTokens(
+                            fromAddress,
+                            toAddress,
+                            coin,
+                            'transfer',
+                            'channel-3',
+                            {
+                                revisionHeight: Long.fromNumber(0),
+                                revisionNumber: Long.fromNumber(0),
+                            },
+                            dayjs().utc().add(5, 'minutes').unix().valueOf(),
+                            {
+                                amount: [],
+                                gas: '200000',
+                            },
+                        );
+
+                        if (result && result.code === 0) {
+                            ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully withdrawn ${amount.amount} ${normalDenom.toUpperCase()}` });
+                            //dispatch.wallet.reloadWalletInfos(null);
+                        } else {
+                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result.rawLog || 'Failed to withdraw' });
+                        }
+                    } else {
+                        const result = await OsmosisClient.ibcTransfer(fromAddress, toAddress, coin);
+
+                        if (result && result.error) {
+                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result.error || 'Failed to deposit' });
+                        } else {
+                            ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully deposited ${amount.amount} ${normalDenom.toUpperCase()}` });
+                            //dispatch.wallet.reloadWalletInfos(null);
+                        }
+                    }
+                } catch (e) {
+                    ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${payload.type}` });
+                }
+            } else {
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: `Unable to get lum network chainId to ${payload.type}.` });
             }
         },
     }),

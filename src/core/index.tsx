@@ -19,6 +19,11 @@ const Core = () => {
             autoConnect().finally(() => null);
         }
     }, [wallet]);
+
+    useEffect(() => {
+        dispatch.stats.fetchStats().finally(() => null);
+    }, []);
+
     return <RootNavigator />;
 };
 

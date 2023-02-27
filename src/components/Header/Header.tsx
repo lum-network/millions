@@ -17,7 +17,7 @@ const Header = () => {
         <header className='navbar fixed-top p-0'>
             <nav className='container-fluid p-4 d-flex align-items-center'>
                 <Link to='/'>
-                    <img src={logo} alt='Cosmos millions' />
+                    <img src={logo} alt='Cosmos Millions logo' />
                 </Link>
                 <div className='navbar-items-container'>
                     <ul className='nav d-flex align-items-center'>
