@@ -1,4 +1,3 @@
-import * as PoolsUtils from './pools';
 import * as KeplrUtils from './keplr';
 import * as ToastUtils from './toast';
 import * as StringsUtils from './strings';
@@ -12,4 +11,4 @@ export { default as Firebase } from './firebase';
 export { default as LumClient } from './lumClient';
 export { default as OsmosisClient } from './osmosisClient';
 
-export { PoolsUtils, KeplrUtils, ToastUtils, StringsUtils, NumbersUtils, DenomsUtils, TimesUtils };
+export { KeplrUtils, ToastUtils, StringsUtils, NumbersUtils, DenomsUtils, TimesUtils };
