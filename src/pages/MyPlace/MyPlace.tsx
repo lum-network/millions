@@ -10,21 +10,17 @@ import { RootState } from 'redux/store';
 
 import './MyPlace.scss';
 
-const TO_CLAIM = {
-    denom: 'uatom',
-    amount: '3600000000',
-};
-
 const MyPlace = () => {
-    const { balances, activities } = useSelector((state: RootState) => ({
+    const { balances, activities, prizeToClaim } = useSelector((state: RootState) => ({
         balances: state.wallet.lumWallet?.balances,
         activities: state.wallet.lumWallet?.activities,
+        prizeToClaim: state.wallet.prizeToClaim,
     }));
 
     return (
         <div className='container'>
             <div className='row'>
-                <div className='col-9'>
+                <div className={prizeToClaim ? 'col-9' : 'col-12'}>
                     <div>
                         <h2>{I18n.t('myPlace.totalBalance')}</h2>
                         <Card className='balance-card'>
@@ -37,18 +33,20 @@ const MyPlace = () => {
                         </Card>
                     </div>
                 </div>
-                <div className='col-3'>
-                    <h2>{I18n.t('myPlace.claimPrize')}</h2>
-                    <Card>
-                        <div className='d-flex flex-column'>
-                            <span className='asset-amount'>
-                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(TO_CLAIM.amount)).format('0,0.[00]')} className='me-2' />
-                                {DenomsUtils.getNormalDenom(TO_CLAIM.denom).toUpperCase()}
-                            </span>
-                            <Button>{I18n.t('myPlace.claim')}</Button>
-                        </div>
-                    </Card>
-                </div>
+                {prizeToClaim ? (
+                    <div className='col-3'>
+                        <h2>{I18n.t('myPlace.claimPrize')}</h2>
+                        <Card>
+                            <div className='d-flex flex-column'>
+                                <span className='asset-amount'>
+                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prizeToClaim.amount)).format('0,0.[00]')} className='me-2' />
+                                    {DenomsUtils.getNormalDenom(prizeToClaim.denom).toUpperCase()}
+                                </span>
+                                <Button>{I18n.t('myPlace.claim')}</Button>
+                            </div>
+                        </Card>
+                    </div>
+                ) : null}
             </div>
             <div className='row mt-5'>
                 <div className='col-9'>

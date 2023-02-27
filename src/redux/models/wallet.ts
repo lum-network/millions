@@ -28,6 +28,7 @@ interface WalletState {
     osmosisWallet: {
         address: string;
     } | null;
+    prizeToClaim: LumTypes.Coin | null;
 }
 
 export const wallet = createModel<RootModel>()({
@@ -68,6 +69,12 @@ export const wallet = createModel<RootModel>()({
                         activities: payload.activities || state.lumWallet.activities,
                     },
                 }),
+            };
+        },
+        setPrizeToClaim(state, payload: LumTypes.Coin | null) {
+            return {
+                ...state,
+                prizeToClaim: payload,
             };
         },
     },
@@ -205,6 +212,9 @@ export const wallet = createModel<RootModel>()({
                     dispatch.wallet.setWalletData({ activities: result.activities });
                 }
             } catch (e) {}
+        },
+        async getPrizeToClaim(address: string) {
+            dispatch.wallet.setPrizeToClaim(null);
         },
         async ibcTransfer(payload: IbcTransferPayload) {
             const { toAddress, fromAddress, amount, normalDenom } = payload;
