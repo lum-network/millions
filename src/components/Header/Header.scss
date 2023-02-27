@@ -1,3 +1,5 @@
+@import 'src/styles/main';
+
 header {
     nav {
         display: flex;
@@ -5,6 +7,21 @@ header {
         justify-content: space-between;
         align-items: center;
         position: relative;
+
+        .navlink {
+            color: $color-primary;
+            text-decoration: none;
+
+            opacity: 0.6;
+
+            &.active {
+                opacity: 1;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+        }
     }
 }
 

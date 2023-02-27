@@ -1,6 +1,13 @@
 @import 'src/styles/main';
 
 .main-layout {
-    background-color: $color-background;
     padding-top: 108px;
+    min-height: 100vh;
+    background-color: $color-background;
+    background-image: url('../../assets/images/bg-dots.svg');
+    background-repeat: space;
+    
+    main {    
+        //opacity: 0.75;
+  }
 }

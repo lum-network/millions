@@ -1,0 +1,16 @@
+@import 'src/styles/main';
+
+.balance-card {
+    height: 100%;
+    background-color: $color-primary;
+    color: white;
+}
+
+.asset-card {
+    background-color: $color-primary-light;
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}

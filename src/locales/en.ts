@@ -19,4 +19,13 @@ export default {
             fees: 'Not enough LUM to pay fees',
         },
     },
+    myPlace: {
+        assets: 'Assets',
+        totalBalance: 'Total balance',
+        claim: 'Claim',
+        claimPrize: 'Claim prize',
+        deposit: 'Deposit',
+        withdraw: 'Withdraw',
+        activities: 'Activities',
+    },
 };

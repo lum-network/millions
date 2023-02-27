@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import logo from 'assets/images/logo.svg';
-import { RootState } from 'redux/store';
 import { Button } from 'components';
+import { StringsUtils } from 'utils';
+import { RootState } from 'redux/store';
 
 import './Header.scss';
 
@@ -13,7 +14,6 @@ const Header = () => {
 
     return (
         <header className='navbar fixed-top p-0'>
-            <div className='background' />
             <nav className='container-fluid p-4'>
                 <Link to='/'>
                     <img src={logo} />
@@ -21,16 +21,22 @@ const Header = () => {
                 <div className='navbar-items-container'>
                     <ul className='nav'>
                         <li>
-                            <Button>Home</Button>
+                            <NavLink to='/home' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                Home
+                            </NavLink>
                         </li>
                         <li className='mx-4'>
-                            <Button>Pools</Button>
+                            <NavLink to='/pools' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                Pools
+                            </NavLink>
                         </li>
                         <li>
-                            <Button>My Place</Button>
+                            <NavLink to='/my-place' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                My Place
+                            </NavLink>
                         </li>
                         <li className='ms-4'>
-                            <Button>{address || 'Connect Wallet'} </Button>
+                            <Button outline>{address ? StringsUtils.trunc(address) : 'Connect Wallet'} </Button>
                         </li>
                     </ul>
                 </div>
