@@ -16,7 +16,6 @@ export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: str
             missingPrice = true;
         }
     });
-    console.log('missingPrice', missingPrice);
 
     return missingPrice ? null : totalBalance;
 };
