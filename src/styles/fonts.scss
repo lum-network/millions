@@ -8,3 +8,36 @@ h1 {
     font-size: 42px;
     line-height: 50px;
 }
+
+h2 {
+    font-family: 'Gotham Rounded', sans-serif;
+    color: $color-primary;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 34px;
+}
+
+@font-face {
+    font-family: 'Gotham Rounded';
+    src: url('../assets/fonts/gotham-rounded/GothamRounded-Light.ttf') format('truetype'), url('../assets/fonts/gotham-rounded/GothamRounded-Light.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Gotham Rounded';
+    src: url('../assets/fonts/gotham-rounded/GothamRounded-Medium.ttf') format('truetype'), url('../assets/fonts/gotham-rounded/GothamRounded-Medium.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Gotham Rounded';
+    src: url('../assets/fonts/gotham-rounded/GothamRounded-Bold.ttf') format('truetype'), url('../assets/fonts/gotham-rounded/GothamRounded-Bold.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}

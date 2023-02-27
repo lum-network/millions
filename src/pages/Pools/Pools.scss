@@ -1,7 +1,28 @@
+@import 'src/styles/main';
+
 .pools-container {
 
 
     .pool-card-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
+        .name-container {
+            border: 2px solid $color-primary;
+            border-radius: 30px;
+            padding: 4px 12px;
+
+            .name {
+                text-transform: uppercase;
+                color: $color-primary;
+                font-family: 'Gotham Rounded', sans-serif;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 18.5px;
+                line-height: 22px;
+            }
+        }
     }
 }
+
