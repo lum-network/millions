@@ -4,8 +4,21 @@
     background-color: $color-white;
     border-radius: 30px;
     position: relative;
+    opacity: 0;
+    animation: cardShow ease-out 400ms forwards;
 
     .flat {
         background-color: $color-primary-light;
+    }
+}
+
+@keyframes cardShow {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
     }
 }
