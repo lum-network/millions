@@ -1,33 +1,64 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
+import { LumTypes } from '@lum-network/sdk-javascript';
 
 import coin from 'assets/images/coin.svg';
 import coinsStacked from 'assets/images/coins_stacked.svg';
 import discordIcon from 'assets/images/discord.svg';
 
 import { Button, Card, SmallerDecimal } from 'components';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { RootState } from 'redux/store';
 
 import './MyPlace.scss';
 
 const MyPlace = () => {
-    const { balances, activities, prizeToClaim } = useSelector((state: RootState) => ({
+    const { balances, activities, prizeToClaim, prices } = useSelector((state: RootState) => ({
         balances: state.wallet.lumWallet?.balances,
         activities: state.wallet.lumWallet?.activities,
         prizeToClaim: state.wallet.prizeToClaim,
+        prices: state.stats.prices,
     }));
+
+    const renderAsset = (asset: LumTypes.Coin) => {
+        const icon = DenomsUtils.getIconFromDenom(asset.denom);
+        const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
+        const amount = NumbersUtils.convertUnitNumber(asset.amount);
+        const price = prices?.[normalDenom];
+
+        return (
+            <Card key={asset.denom} className='asset-card'>
+                <div className='d-flex justify-content-between align-items-center'>
+                    <div className='d-flex flex-row align-items-center'>
+                        {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                        <div className='d-flex flex-column asset-amount'>
+                            {numeral(amount).format('0,0')} {normalDenom.toUpperCase()}
+                            <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '-'}</small>
+                        </div>
+                    </div>
+                    <div className='d-flex flex-row align-items-center'>
+                        <Button outline className='me-2'>
+                            {I18n.t('myPlace.withdraw')}
+                        </Button>
+                        <Button>{I18n.t('myPlace.deposit')}</Button>
+                    </div>
+                </div>
+            </Card>
+        );
+    };
+
+    const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
 
     return (
         <div className='container'>
             <div className='row'>
-                <div className='col-12 col-lg-9'>
+                <div className='col-12 col-lg-8 col-xxl-9'>
                     <div>
                         <h2>{I18n.t('myPlace.totalBalance')}</h2>
                         <Card className='balance-card'>
                             <div className='my-auto d-flex flex-column justify-content-center'>
-                                <SmallerDecimal big nb={numeral(19820.929).format('$0,0.[00]')} className='balance-number mt-3' />
+                                {totalBalancePrice ? <SmallerDecimal big nb={numeral().format('$0,0.[00]')} className='balance-number mt-3' /> : <div className='balance-number'>-</div>}
                             </div>
                             <img src={coin} className='coin-1' alt='coin' />
                             <img src={coin} className='coin-2' alt='coin' />
@@ -36,30 +67,7 @@ const MyPlace = () => {
                         <h2 className='mt-4'>{I18n.t('myPlace.assets')}</h2>
                         <Card>
                             {balances && balances.length > 0 ? (
-                                balances.map((asset) => {
-                                    const icon = DenomsUtils.getIconFromDenom(asset.denom);
-                                    const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
-
-                                    return (
-                                        <Card key={asset.denom} className='asset-card'>
-                                            <div className='d-flex justify-content-between align-items-center'>
-                                                <div className='d-flex flex-row align-items-center'>
-                                                    {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
-                                                    <span className='asset-amount'>
-                                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(asset.amount))} className='me-2' />
-                                                        {normalDenom.toUpperCase()}
-                                                    </span>
-                                                </div>
-                                                <div className='d-flex flex-row align-items-center'>
-                                                    <Button outline className='me-2'>
-                                                        {I18n.t('myPlace.withdraw')}
-                                                    </Button>
-                                                    <Button>{I18n.t('myPlace.deposit')}</Button>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    );
-                                })
+                                balances.map(renderAsset)
                             ) : (
                                 <div className='d-flex flex-column align-items-center justify-content-center'>
                                     <img src={coinsStacked} alt='Stacked coins' />
@@ -79,7 +87,7 @@ const MyPlace = () => {
                         ) : null}
                     </div>
                 </div>
-                <div className='col-12 col-lg-3'>
+                <div className='col-12 col-lg-4 col-xxl-3'>
                     {prizeToClaim ? (
                         <div className='mt-4 mt-lg-0'>
                             <h2>{I18n.t('myPlace.claimPrize')}</h2>
