@@ -1,3 +1,7 @@
-.card {
-    
+@import 'src/styles/main';
+
+.app-card {
+    background-color: $color-white;
+    border-radius: 30px;
+    position: relative;
 }
