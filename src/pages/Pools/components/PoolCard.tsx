@@ -15,8 +15,8 @@ const PoolCard = ({ id, totalDeposit, maxEarning }: IProps) => {
     return (
         <Card className='pool-card-container'>
             <img width={88} height={88} src={PoolsUtils.getLogoFromId(id)} alt={id} />
-            <div className="name-container">
-                <span className="name">{id}</span>
+            <div className='name-container'>
+                <span className='name'>{id}</span>
             </div>
         </Card>
     );

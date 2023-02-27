@@ -2,7 +2,7 @@ import { createModel } from '@rematch/core';
 import { LumConstants, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
 
-import { showErrorToast, showSuccessToast, I18n, LumClient } from 'utils';
+import { ToastUtils, I18n, LumClient } from 'utils';
 import { LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { RootModel } from '.';
 
@@ -45,15 +45,15 @@ export const wallet = createModel<RootModel>()({
             const keplrWindow = window as KeplrWindow;
 
             if (!keplrWindow.getOfflineSigner || !keplrWindow.keplr) {
-                if (!silent) showErrorToast({ content: I18n.t('errors.keplr.notInstalled') });
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notInstalled') });
             } else if (!keplrWindow.keplr.experimentalSuggestChain) {
-                if (!silent) showErrorToast({ content: I18n.t('errors.keplr.notLatest') });
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notLatest') });
             } else {
                 const chainId = LumClient.getChainId();
                 const rpc = LumClient.getRpc();
 
                 if (!chainId || !rpc) {
-                    if (!silent) showErrorToast({ content: I18n.t('errors.keplr.network') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.network') });
                     return;
                 }
 
@@ -112,7 +112,7 @@ export const wallet = createModel<RootModel>()({
                         beta: chainId.includes('testnet'),
                     });
                 } catch {
-                    if (!silent) showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
                     return;
                 }
 
@@ -130,7 +130,7 @@ export const wallet = createModel<RootModel>()({
                         /* dispatch.wallet.getLumWalletBalance(null);
                             dispatch.wallet.getHistory(lumWallet.getAddress());
                             dispatch.wallet.getTransactions(lumWallet.getAddress()); */
-                        if (!silent) showSuccessToast({ content: 'Successfully connected' });
+                        if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
                     }
 
                     /* const osmosisOfflineSigner = await keplrWindow.getOfflineSignerAuto('osmosis-1');
@@ -145,7 +145,7 @@ export const wallet = createModel<RootModel>()({
                         } */
                     return;
                 } catch (e) {
-                    if (!silent) showErrorToast({ content: I18n.t('errors.keplr.wallet') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
                     throw e;
                 }
             }
