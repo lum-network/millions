@@ -79,3 +79,9 @@
     letter-spacing: 0em;
     text-align: left;
 }
+
+@include media-breakpoint-down(lg) {
+    .my-place-cta {
+        width: max-content;
+    }
+}

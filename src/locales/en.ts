@@ -53,5 +53,11 @@ export default {
             title: 'No assets yet',
             description: 'It’s time to deposit assets in your wallet\nto participate to the next prize',
         },
+        governance: 'Governance',
+        governanceCard: {
+            title: 'Governance card title',
+            description: 'Governance card wording description',
+            cta: 'Join our Discord',
+        },
     },
 };

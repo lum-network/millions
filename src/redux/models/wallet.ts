@@ -171,7 +171,7 @@ export const wallet = createModel<RootModel>()({
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
                         dispatch.wallet.getBalances(lumWallet.getAddress());
-
+                        dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
                         /*  dispatch.wallet.getHistory(lumWallet.getAddress());
                             dispatch.wallet.getTransactions(lumWallet.getAddress()); */
                         if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
