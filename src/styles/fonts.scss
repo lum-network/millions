@@ -1,0 +1,10 @@
+@import 'colors.scss';
+
+h1 {
+    font-family: 'Gotham Rounded', sans-serif;
+    color: $color-primary;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 50px;
+}
