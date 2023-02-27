@@ -1,6 +1,20 @@
 export default {
     welcome: 'Welcome to Millions',
     connectWallet: 'Connect wallet',
+    countDown: {
+        days_zero: 'Day',
+        days_one: 'Day',
+        days_other: 'Days',
+        hour_zero: 'Hour',
+        hours_one: 'Hour',
+        hours_other: 'Hours',
+        minutes_zero: 'Minute',
+        minutes_one: 'Minute',
+        minutes_other: 'Minutes',
+        seconds_zero: 'Second',
+        seconds_one: 'Second',
+        seconds_other: 'Seconds',
+    },
     errors: {
         keplr: {
             notInstalled: 'Please install keplr extension',
