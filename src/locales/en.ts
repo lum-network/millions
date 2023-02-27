@@ -1,6 +1,6 @@
 export default {
     welcome: 'Welcome to Millions',
-    pools: 'Pools',
+    connectWallet: 'Connect wallet',
     errors: {
         keplr: {
             notInstalled: 'Please install keplr extension',
@@ -19,7 +19,15 @@ export default {
             fees: 'Not enough LUM to pay fees',
         },
     },
+    home: {
+        title: 'Home',
+    },
+    pools: {
+        title: 'Pools',
+        totalDeposit: 'Total Deposit',
+    },
     myPlace: {
+        title: 'My place',
         assets: 'Assets',
         totalBalance: 'Total balance',
         claim: 'Claim',

@@ -3,11 +3,17 @@ import React from 'react';
 
 import './MainLayout.scss';
 
-const MainLayout = ({ children }: { children: React.ReactNode }) => {
+interface IProps {
+    children: React.ReactNode;
+}
+
+const MainLayout = ({ children }: IProps) => {
     return (
         <div className='main-layout'>
-            <Header />
-            <main className='dot-bg'>{children}</main>
+            <div className='container'>
+                <Header />
+                <main>{children}</main>
+            </div>
         </div>
     );
 };

@@ -4,4 +4,8 @@
     background-color: $color-white;
     border-radius: 30px;
     position: relative;
+
+    .flat {
+        background-color: $color-primary-light;
+    }
 }

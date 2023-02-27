@@ -23,6 +23,43 @@
                 line-height: 22px;
             }
         }
+
+        .total-deposit-container {
+            display: flex;
+            flex-direction: column;
+
+            .total-deposit {
+                font-family: 'Gotham Rounded', sans-serif;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 34px;
+                line-height: 41px;
+                text-align: center;
+                color: $color-black;
+            }
+
+            .total-deposit-label {
+                font-family: 'Gotham Rounded', sans-serif;
+                font-style: normal;
+                text-transform: uppercase;
+                font-weight: 350;
+                font-size: 11.2px;
+                line-height: 13px;
+                text-align: center;
+                letter-spacing: 0.075em;
+                color: $color-primary;
+            }
+        }
+
+        .max-earning {
+            color: $color-primary;
+            font-family: 'Gotham Rounded', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 10px;
+            line-height: 12px;
+            text-align: center;
+        }
     }
 }
 

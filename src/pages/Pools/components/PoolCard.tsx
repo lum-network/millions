@@ -1,7 +1,8 @@
 import React from 'react';
+import numeral from 'numeral';
 
 import { Card } from 'components';
-import { PoolsUtils } from 'utils';
+import { I18n, PoolsUtils } from 'utils';
 
 import '../Pools.scss';
 
@@ -18,6 +19,13 @@ const PoolCard = ({ id, totalDeposit, maxEarning }: IProps) => {
             <div className='name-container'>
                 <span className='name'>{id}</span>
             </div>
+            <div className='total-deposit-container'>
+                <span className='total-deposit'>{numeral(totalDeposit).format('0,0')}</span>
+                <span className='total-deposit-label'>{I18n.t('pools.totalDeposit')}</span>
+            </div>
+            <Card flat withoutPadding className='p-2'>
+                <span className='max-earning'></span>
+            </Card>
         </Card>
     );
 };

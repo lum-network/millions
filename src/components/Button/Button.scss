@@ -1,3 +1,38 @@
-.app-button {
+@import 'src/styles/main';
 
+.app-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 26px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all linear 150ms;
+    font-family: 'Gotham Rounded', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+
+    &.disabled {
+        opacity: 0.3;
+        transform: scale(1) !important;
+    }
+}
+
+.app-btn:hover {
+    transform: scale(1.05);
+}
+
+.app-btn-outline {
+    background-color: transparent !important;
+    border-width: 3px;
+    border-style: solid;
+    border-color: $color-primary;
+    color: $color-primary;
+}
+
+.app-btn-plain {
+    background-color: $color-primary;
+    color: $color-white;
 }

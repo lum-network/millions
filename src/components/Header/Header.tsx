@@ -4,8 +4,9 @@ import { useSelector } from 'react-redux';
 
 import logo from 'assets/images/logo.svg';
 import { Button } from 'components';
-import { StringsUtils } from 'utils';
+import { I18n, StringsUtils } from 'utils';
 import { RootState } from 'redux/store';
+import { NavigationConstants } from 'constant';
 
 import './Header.scss';
 
@@ -14,29 +15,29 @@ const Header = () => {
 
     return (
         <header className='navbar fixed-top p-0'>
-            <nav className='container-fluid p-4'>
+            <nav className='container-fluid p-4 d-flex align-items-center'>
                 <Link to='/'>
-                    <img src={logo} />
+                    <img src={logo} alt='Cosmos millions' />
                 </Link>
                 <div className='navbar-items-container'>
-                    <ul className='nav'>
+                    <ul className='nav d-flex align-items-center'>
                         <li>
-                            <NavLink to='/home' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                Home
+                            <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                {I18n.t('home.title')}
                             </NavLink>
                         </li>
                         <li className='mx-4'>
-                            <NavLink to='/pools' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                Pools
+                            <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                {I18n.t('pools.title')}
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to='/my-place' className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                My Place
+                            <NavLink to={NavigationConstants.MY_PLACE} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                                {I18n.t('myPlace.title')}
                             </NavLink>
                         </li>
                         <li className='ms-4'>
-                            <Button outline>{address ? StringsUtils.trunc(address) : 'Connect Wallet'} </Button>
+                            <Button outline>{address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}</Button>
                         </li>
                     </ul>
                 </div>

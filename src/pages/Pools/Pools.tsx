@@ -8,7 +8,7 @@ import './Pools.scss';
 const Pools = () => {
     return (
         <div className='pools-container'>
-            <h1>{I18n.t('pools')}</h1>
+            <h1>{I18n.t('pools.title')}</h1>
             <div className='row g-xxl-5 g-4'>
                 <div className='col-12 col-sm-6 col-lg-4 col-xxl-3'>
                     <PoolCard id={'atom'} totalDeposit={230456} maxEarning={5000} />

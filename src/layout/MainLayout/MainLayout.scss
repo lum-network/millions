@@ -4,10 +4,8 @@
     padding-top: 108px;
     min-height: 100vh;
     background-color: $color-background;
-    background-image: url('../../assets/images/bg-dots.svg');
-    background-repeat: space;
-    
-    main {    
-        //opacity: 0.75;
-  }
+    background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg');
+    background-position: percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100);
+    background-repeat: no-repeat no-repeat;
+    overflow: hidden;
 }
