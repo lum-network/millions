@@ -8,12 +8,12 @@ export default {
         hour_zero: 'Hour',
         hours_one: 'Hour',
         hours_other: 'Hours',
-        minutes_zero: 'Minute',
-        minutes_one: 'Minute',
-        minutes_other: 'Minutes',
-        seconds_zero: 'Second',
-        seconds_one: 'Second',
-        seconds_other: 'Seconds',
+        minutes_zero: 'Min',
+        minutes_one: 'Min',
+        minutes_other: 'Min',
+        seconds_zero: 'Sec',
+        seconds_one: 'Sec',
+        seconds_other: 'Sec',
     },
     errors: {
         keplr: {
@@ -35,6 +35,9 @@ export default {
     },
     home: {
         title: 'Home',
+        nextBestPrize: 'Next best prize',
+        lastBigWinners: 'Last big winners',
+        totalValueLocked: 'Total value locked',
     },
     pools: {
         title: 'Pools',

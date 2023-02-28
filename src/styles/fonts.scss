@@ -1,7 +1,6 @@
 @import 'colors.scss';
 
 h1 {
-    font-family: 'Gotham Rounded', sans-serif;
     color: $color-primary;
     font-style: normal;
     font-weight: 400;
@@ -10,12 +9,27 @@ h1 {
 }
 
 h2 {
-    font-family: 'Gotham Rounded', sans-serif;
     color: $color-primary;
     font-style: normal;
     font-weight: 400;
     font-size: 28px;
     line-height: 34px;
+}
+
+h3 {
+    color: $color-primary;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 26px;
+}
+
+p {
+    color: $color-primary;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 17px;
 }
 
 @font-face {

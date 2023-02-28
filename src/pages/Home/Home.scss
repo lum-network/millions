@@ -1,0 +1,47 @@
+@import 'src/styles/main';
+
+.home-container {
+    .best-prize-card {
+        .content {
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(47.88% 47.88% at 50% 50%, #90D3F0 0%, #5634DD 70.63%);
+            border-bottom-left-radius: 13px;
+            border-bottom-right-radius: 13px;
+
+            .best-prize-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 1000%;
+                color: $color-white;
+                border: solid 4px $color-border;
+                border-radius: 19px;
+                padding: 30px 50px;
+
+                .currency {
+                    margin: 24px 12px 0 0;
+                    font-size: 60px;
+                    line-height: 72px;
+                }
+            }
+
+            .network {
+                border: solid 2px $color-white;
+                border-radius: 50px;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                font-size: 13px;
+                color: $color-white;
+                text-transform: uppercase;
+                padding: 8px 20px;
+            }
+        }
+    }
+}
