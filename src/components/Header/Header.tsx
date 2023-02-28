@@ -26,7 +26,7 @@ const Header = () => {
                                 {I18n.t('home.title')}
                             </NavLink>
                         </li>
-                        <li className='mx-4'>
+                        <li className='mx-lg-5 mx-4'>
                             <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                                 {I18n.t('pools.title')}
                             </NavLink>
@@ -36,7 +36,7 @@ const Header = () => {
                                 {I18n.t('myPlace.title')}
                             </NavLink>
                         </li>
-                        <li className='ms-4'>
+                        <li className='ms-lg-5 ms-4'>
                             <Button outline>{address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}</Button>
                         </li>
                     </ul>

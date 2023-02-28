@@ -8,7 +8,10 @@
     animation: cardShow ease-out 400ms forwards;
 
     .flat {
+        border-radius: 8px;
         background-color: $color-primary-light;
+        animation: none;
+        opacity: 1;
     }
 }
 

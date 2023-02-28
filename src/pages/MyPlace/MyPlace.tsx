@@ -28,7 +28,7 @@ const MyPlace = () => {
         const price = prices?.[normalDenom];
 
         return (
-            <Card key={asset.denom} className='asset-card'>
+            <Card flat key={asset.denom} className='asset-card'>
                 <div className='d-flex justify-content-between align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
                         {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}

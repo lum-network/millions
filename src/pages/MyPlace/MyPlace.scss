@@ -12,7 +12,7 @@
         font-size: 78px;
         font-weight: 400;
         line-height: 94px;
-        letter-spacing: 0em;
+        letter-spacing: 0;
         text-align: left;
         color: white;
     }
@@ -43,19 +43,18 @@
 }
 
 .asset-card {
-    background-color: $color-primary-light;
     margin-bottom: 1.5rem;
 
     .denom-icon {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         margin-right: 1rem;
         object-fit: contain;
     }
 
     .denom-unknown-icon {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         margin-right: 1rem;
         background-color: $color-primary;
         border-radius: 50%;
@@ -76,14 +75,13 @@
     color: $color-primary;
     font-size: 24px;
     font-weight: 400;
-    letter-spacing: 0em;
+    letter-spacing: 0;
     text-align: left;
 
     small {
-        font-family: 'Gotham Rounded', sans-serif;
-        font-size: 12px;
-        font-weight: 350;
-        letter-spacing: 0em;
+        font-size: 16px;
+        font-weight: 300;
+        letter-spacing: 0;
         text-align: left;
         color: $color-primary;
     }
