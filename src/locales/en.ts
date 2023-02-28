@@ -39,6 +39,9 @@ export default {
     pools: {
         title: 'Pools',
         totalDeposit: 'Total Deposit',
+        tvl: 'TVL:',
+        cta: 'Deposit',
+        drawEndAt: 'Time left to join:',
     },
     myPlace: {
         title: 'My place',

@@ -1,3 +1,7 @@
 @import '../../node_modules/bootstrap/scss/bootstrap';
 @import 'fonts';
 @import 'colors';
+
+html body {
+    font-family: 'Gotham Rounded', sans-serif;
+}

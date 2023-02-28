@@ -41,22 +41,20 @@ const RoundTimer = ({ to }: IProps) => {
     }, [remainingTime]);
 
     return (
-        <div className='row g-3 g-xxl-4'>
+        <div>
             {!!days && (
-                <div className='col-lg-3 col-sm-6'>
-                    <span className='countdown-number me-2'>{days}</span> <span className='countdown-unit'>{I18n.t('countDown.days', { count: days })}</span>
+                <div>
+                    <span>{days}</span> <span>{I18n.t('countDown.days', { count: days })}</span>
                 </div>
             )}
-            <div className='col-lg-3 col-sm-6'>
-                <span className='countdown-number me-2'>{hours}</span> <span className='countdown-unit'>{I18n.t('countDown.hours', { count: hours })}</span>
-            </div>
-            <div className='col-lg-3 col-sm-6'>
-                <span className='countdown-number me-2'>{minutes}</span> <span className='countdown-unit'>{I18n.t('countDown.minutes', { count: minutes })}</span>
-            </div>
             {!days && (
-                <div className='col-lg-3 col-sm-6'>
-                    <span className='countdown-number me-2'>{seconds}</span> <span className='countdown-unit'>{I18n.t('countDown.seconds', { count: seconds })}</span>
-                </div>
+                <>
+                    <div>
+                        <span>
+                            {hours}:{minutes}:{seconds}
+                        </span>
+                    </div>
+                </>
             )}
         </div>
     );

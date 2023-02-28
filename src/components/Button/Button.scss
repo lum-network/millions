@@ -16,6 +16,7 @@
     border-width: 3px;
     border-style: solid;
     border-color: $color-primary;
+    text-decoration: none;
 
     &.disabled {
         opacity: 0.3;
@@ -33,9 +34,19 @@
     border-style: solid;
     border-color: $color-primary;
     color: $color-primary;
+
+    &:hover {
+        background-color: $color-primary;
+        color: $color-primary;
+    }
 }
 
 .app-btn-plain {
     background-color: $color-primary;
     color: $color-white;
+
+    &:hover {
+        background-color: $color-primary;
+        color: $color-white;
+    }
 }

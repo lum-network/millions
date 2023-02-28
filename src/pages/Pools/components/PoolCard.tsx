@@ -1,32 +1,58 @@
 import React from 'react';
 import numeral from 'numeral';
 
-import { Card, CountDown } from 'components';
+import { Button, Card, CountDown } from 'components';
 import { DenomsUtils, I18n } from 'utils';
 
 import '../Pools.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from 'redux/store';
+import { NavigationConstants } from 'constant';
 
 interface IProps {
     denom: string;
-    totalDeposit: number;
-    maxEarning: number;
+    tvl: number;
+    prize: number;
     drawEndAt: string;
 }
 
-const PoolCard = ({ denom, totalDeposit, maxEarning, drawEndAt }: IProps) => {
+const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
+    const prices = useSelector((state: RootState) => state.stats?.prices);
+
+    const price = prices?.[denom];
+
     return (
         <Card className='pool-card-container'>
             <img width={88} height={88} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
             <div className='name-container'>
                 <span className='name'>{denom}</span>
             </div>
-            <div className='total-deposit-container'>
-                <span className='total-deposit'>{numeral(totalDeposit).format('0,0')}</span>
-                <span className='total-deposit-label'>{I18n.t('pools.totalDeposit')}</span>
+            <div className='prize-container'>
+                <span className='prize-value'>${price ? numeral(prize * price).format('0,0') : ' --'}</span>
+                <span className='prize'>
+                    {numeral(prize).format('0,0')} {denom}
+                </span>
             </div>
-            <Card flat withoutPadding className='p-2'>
-                <CountDown to={drawEndAt} />
-            </Card>
+            <div className='information-container'>
+                <div className='tvl-container'>
+                    <div className='tvl-label'>{I18n.t('pools.tvl')}</div>
+                    <div className='tvl'>
+                        {numeral(tvl).format('0,0')} {denom}
+                    </div>
+                </div>
+                <div className='separator' />
+                <div className='countdown-container'>
+                    <div className='countdown-label'>{I18n.t('pools.drawEndAt')}</div>
+                    <div className='countdown'>
+                        <CountDown to={drawEndAt} />
+                    </div>
+                </div>
+            </div>
+            <div className='w-100'>
+                <Button to={`${NavigationConstants.POOLS}/${denom}`} className='w-100'>
+                    {I18n.t('pools.cta')}
+                </Button>
+            </div>
         </Card>
     );
 };
