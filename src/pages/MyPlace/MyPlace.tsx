@@ -15,6 +15,7 @@ import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 
 import './MyPlace.scss';
+import { NavigationConstants } from 'constant';
 
 const MyPlace = () => {
     const { lumWallet, osmosisWallet, balances, activities, prizeToClaim, prices } = useSelector((state: RootState) => ({
@@ -83,7 +84,7 @@ const MyPlace = () => {
                         <Button outline className='me-3' data-bs-toggle='modal' data-bs-target='#withdrawModal'>
                             {I18n.t('myPlace.withdraw')}
                         </Button>
-                        <Button>{I18n.t('myPlace.deposit')}</Button>
+                        <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
                     </div>
                 </div>
             </Card>

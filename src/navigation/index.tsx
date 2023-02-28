@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { HomePage, MyPlacePage, PoolsPage } from 'pages';
+import { HomePage, MyPlacePage, PoolsPage, DepositPage } from 'pages';
 import { MainLayout } from 'layout';
 
 const RouteListener = (): JSX.Element | null => {
@@ -23,6 +23,7 @@ const RootNavigator = (): JSX.Element => {
                 <Routes>
                     <Route path={NavigationConstants.HOME} element={<HomePage />} />
                     <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
+                    <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
                     <Route path={NavigationConstants.MY_PLACE} element={<MyPlacePage />} />
                 </Routes>
             </MainLayout>
