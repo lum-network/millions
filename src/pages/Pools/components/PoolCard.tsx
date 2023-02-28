@@ -28,7 +28,7 @@ const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
                 <span className='name'>{denom}</span>
             </div>
             <div className='prize-container'>
-                <span className='prize-value'>${price ? numeral(prize * price).format('0,0') : ' --'}</span>
+                <span className='prize-value mb-1'>${price ? numeral(prize * price).format('0,0') : ' --'}</span>
                 <span className='prize'>
                     {numeral(prize).format('0,0')} {denom}
                 </span>
