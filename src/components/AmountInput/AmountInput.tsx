@@ -30,7 +30,7 @@ const AmountInput = (props: Props) => {
             <div className='input-container'>
                 <input className={`default-input ${inputClassName}`} {...inputProps} />
                 {onMax ? (
-                    <Button outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
+                    <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
                         MAX
                     </Button>
                 ) : null}

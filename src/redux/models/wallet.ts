@@ -18,6 +18,11 @@ interface IbcTransferPayload {
     normalDenom: string;
 }
 
+interface SetWalletDataPayload {
+    balances?: LumTypes.Coin[];
+    activities?: any[];
+}
+
 interface WalletState {
     lumWallet: {
         innerWallet: LumWallet;
@@ -27,6 +32,7 @@ interface WalletState {
     } | null;
     osmosisWallet: {
         address: string;
+        balances: LumTypes.Coin[];
     } | null;
     prizeToClaim: LumTypes.Coin | null;
 }
@@ -59,7 +65,7 @@ export const wallet = createModel<RootModel>()({
                 },
             };
         },
-        setWalletData(state, payload: { balances?: LumTypes.Coin[]; activities?: any[] }) {
+        setLumWalletData(state, payload: SetWalletDataPayload) {
             return {
                 ...state,
                 ...(state.lumWallet && {
@@ -69,6 +75,18 @@ export const wallet = createModel<RootModel>()({
                         activities: payload.activities || state.lumWallet.activities,
                     },
                 }),
+            };
+        },
+        setOsmosisWalletData(state, payload: SetWalletDataPayload) {
+            return {
+                ...state,
+                ...(payload.balances &&
+                    state.osmosisWallet && {
+                        osmosisWallet: {
+                            ...state.osmosisWallet,
+                            balances: payload.balances,
+                        },
+                    }),
             };
         },
         setPrizeToClaim(state, payload: LumTypes.Coin | null) {
@@ -170,7 +188,7 @@ export const wallet = createModel<RootModel>()({
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
-                        dispatch.wallet.getBalances(lumWallet.getAddress());
+                        dispatch.wallet.getLumWalletBalances(lumWallet.getAddress());
                         dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
                         /*  dispatch.wallet.getHistory(lumWallet.getAddress());
                             dispatch.wallet.getTransactions(lumWallet.getAddress()); */
@@ -184,8 +202,8 @@ export const wallet = createModel<RootModel>()({
                             address: accounts[0].address,
                             offlineSigner: osmosisOfflineSigner,
                         });
-                        //await OsmosisClient.connect(osmosisOfflineSigner);
-                        //dispatch.wallet.getOsmosisWalletBalance(null);
+                        await OsmosisClient.connect(osmosisOfflineSigner);
+                        dispatch.wallet.getOsmosisWalletBalances(null);
                     }
                     return;
                 } catch (e) {
@@ -194,13 +212,24 @@ export const wallet = createModel<RootModel>()({
                 }
             }
         },
-        async getBalances(address: string) {
+        async getOsmosisWalletBalances(_, state) {
+            if (state.wallet.osmosisWallet) {
+                const result = await OsmosisClient.getWalletBalance(state.wallet.osmosisWallet.address);
+
+                if (result) {
+                    const { balances: osmosisBalances } = result;
+
+                    dispatch.wallet.setOsmosisWalletData({ balances: DenomsUtils.translateIbcBalances([...osmosisBalances]) });
+                }
+            }
+        },
+        async getLumWalletBalances(address: string) {
             try {
                 const result = await LumClient.getWalletBalances(address);
 
                 if (result) {
                     const filteredBalances = result.balances.filter((balance) => DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)));
-                    dispatch.wallet.setWalletData({ balances: filteredBalances });
+                    dispatch.wallet.setLumWalletData({ balances: filteredBalances });
                 }
             } catch (e) {}
         },
@@ -209,7 +238,7 @@ export const wallet = createModel<RootModel>()({
                 const result = await LumClient.getWalletActivites(address);
 
                 if (result) {
-                    dispatch.wallet.setWalletData({ activities: result.activities });
+                    dispatch.wallet.setLumWalletData({ activities: result.activities });
                 }
             } catch (e) {}
         },

@@ -19,3 +19,18 @@ export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: str
 
     return missingPrice ? null : totalBalance;
 };
+
+export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[]) => {
+    if (!denom || !balances) {
+        return 0;
+    }
+
+    const balance = balances?.find((b) => b.denom === denom);
+
+    if (balance) {
+        const amount = convertUnitNumber(balance.amount);
+        return amount;
+    }
+
+    return 0;
+};

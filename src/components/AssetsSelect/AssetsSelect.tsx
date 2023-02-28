@@ -91,7 +91,7 @@ const AssetsSelect = ({ options, onChange, value, readonly, label, className }: 
                             textTransform: 'uppercase',
                             color: '#5634DE',
                             textAlign: 'left',
-                            backgroundColor: state.isFocused ? '#F1EDFF' : state.isSelected ? '#000' : '#fff',
+                            backgroundColor: state.isFocused ? 'rgba(86, 52, 222, 0.2)' : state.isSelected ? '#F1EDFF' : '#fff',
                             fontSize: 22,
                         }),
                         dropdownIndicator: (provided) => ({

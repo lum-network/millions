@@ -1,6 +1,7 @@
 @import 'src/styles/main';
 
 .main-layout {
+    display: flex;
     padding-top: 130px;
     padding-bottom: 60px;
     min-height: 100vh;
@@ -10,4 +11,8 @@
     background-repeat: no-repeat no-repeat;
     overflow: hidden;
     white-space: pre-line;
+}
+
+.fill { 
+    flex: 1 1 auto;
 }
