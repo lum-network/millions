@@ -6,11 +6,11 @@ import { ToastContentProps, ToastContent } from 'components';
 
 import successIcon from 'assets/images/success.svg';
 import warningIcon from 'assets/images/warning.svg';
-import icon from 'assets/images/logo.svg';
+import infoIcon from 'assets/images/info.svg';
 
 export const showErrorToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.error(<ToastContent {...content} />, {
-        icon: () => <img alt='warning' src={warningIcon} width='100' height='100' />,
+        icon: () => <img alt='warning' src={warningIcon} width='56' height='56' />,
         closeButton: false,
         ...options,
     });
@@ -18,7 +18,7 @@ export const showErrorToast = (content: ToastContentProps, options?: ToastOption
 
 export const showSuccessToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.success(<ToastContent {...content} />, {
-        icon: () => <img alt='success' src={successIcon} width='100' height='100' />,
+        icon: () => <img alt='success' src={successIcon} width='56' height='56' />,
         closeButton: false,
         ...options,
     });
@@ -26,7 +26,7 @@ export const showSuccessToast = (content: ToastContentProps, options?: ToastOpti
 
 export const showInfoToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.info(<ToastContent {...content} />, {
-        icon: () => <img alt='dfract' src={icon} width='100' height='100' />,
+        icon: () => <img alt='Cosmos Millions logo' src={infoIcon} width='56' height='56' />,
         closeButton: false,
         ...options,
     });

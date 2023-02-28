@@ -7,21 +7,34 @@
 }
 
 .toast-title {
-    font-family: 'Thunder', sans-serif;
+    font-family: 'Gotham Rounded', sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 32px;
     line-height: 29px;
-    text-transform: uppercase;
-    color: black;
+    color: $color-primary;
 }
 
 .toast-content {
-    font-family: 'Satoshi', sans-serif;
+    font-family: 'Gotham Rounded', sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 18px;
     line-height: 24px;
     color: black;
     white-space: pre-line;
+}
+
+.Toastify__toast-container {
+    width: 485px;
+}
+
+.Toastify__toast {
+    border-radius: 12px;
+    align-items: center;
+    padding: 32px;
+}
+
+.Toastify__toast-icon {
+    width: 56px;
 }

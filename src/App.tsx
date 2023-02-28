@@ -9,7 +9,7 @@ import Core from 'core';
 const App = () => {
     return (
         <Provider store={store}>
-            <ToastContainer closeButton={false} />
+            <ToastContainer hideProgressBar closeButton={false} position='bottom-right' />
             <Core />
         </Provider>
     );

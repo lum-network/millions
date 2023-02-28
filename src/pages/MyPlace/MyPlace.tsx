@@ -190,6 +190,7 @@ const MyPlace = () => {
                             type: 'number',
                             min: 0,
                             max: getMax(withdrawForm.values.denom),
+                            step: 'any',
                             ...withdrawForm.getFieldProps('amount'),
                         }}
                         error={withdrawForm.errors.amount}
