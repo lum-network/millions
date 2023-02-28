@@ -32,6 +32,7 @@ export const stats = createModel<RootModel>()({
                 ImperatorApi.getTokenPrice('atom'),
                 ImperatorApi.getTokenPrice('osmo'),
                 ImperatorApi.getTokenPrice('cre'),
+                ImperatorApi.getTokenPrice('cro'),
             ]).then((results) => {
                 results.forEach((result) => {
                     if (result.status === 'fulfilled') {

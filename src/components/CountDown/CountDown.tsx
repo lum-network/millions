@@ -1,12 +1,16 @@
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { I18n, TimesUtils } from 'utils';
+import numeral from 'numeral';
 
 interface IProps {
     to: string;
+    onCountdownEnd?: () => void;
+
+    homePage?: boolean;
 }
 
-const RoundTimer = ({ to }: IProps) => {
+const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
     const [remainingTime, setRemainingTime] = useState(0);
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
@@ -29,7 +33,9 @@ const RoundTimer = ({ to }: IProps) => {
         if (remainingTime < 0) {
             setRemainingTime(0);
 
-            // TODO: Countdown is over, do something
+            if (onCountdownEnd) {
+                onCountdownEnd();
+            }
         }
 
         const [days, hours, minutes, seconds] = TimesUtils.getDaysHoursMinutesSeconds(remainingTime);
@@ -39,6 +45,34 @@ const RoundTimer = ({ to }: IProps) => {
         setMinutes(minutes);
         setSeconds(seconds);
     }, [remainingTime]);
+
+    if (homePage) {
+        return (
+            <div className='countdown'>
+                {!!days && (
+                    <div className='number-unit-container'>
+                        <div className='number'>{numeral(days).format('00')}</div>
+                        <span className='unit'>{I18n.t('countDown.days', { count: days })}</span>
+                    </div>
+                )}
+
+                <div className='number-unit-container'>
+                    <div className='number'>{numeral(hours).format('00')}</div>
+                    <span className='unit'>{I18n.t('countDown.hours', { count: hours })}</span>
+                </div>
+                <div className='number-unit-container'>
+                    <div className='number'>{numeral(minutes).format('00')}</div>
+                    <span className='unit'>{I18n.t('countDown.minutes', { count: minutes })}</span>
+                </div>
+                {!days && (
+                    <div className='number-unit-container'>
+                        <div className='number'>{numeral(seconds).format('00')}</div>
+                        <span className='unit'>{I18n.t('countDown.seconds', { count: seconds })}</span>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -51,7 +85,7 @@ const RoundTimer = ({ to }: IProps) => {
                 <>
                     <div>
                         <span>
-                            {hours}:{minutes}:{seconds}
+                            {numeral(hours).format('00')}:{numeral(minutes).format('00')}:{numeral(seconds).format('00')}
                         </span>
                     </div>
                 </>

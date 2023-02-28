@@ -26,7 +26,7 @@ const Pools = () => {
                     <PoolCard drawEndAt={'2023-02-25'} denom={'evmos'} tvl={230456} prize={5000} />
                 </div>
                 <div className='col-12 col-sm-6 col-lg-4 col-xxl-3'>
-                    <PoolCard drawEndAt={'2023-02-25'} denom={'atom'} tvl={230456} prize={5000} />
+                    <PoolCard drawEndAt={'2023-02-25'} denom={'cro'} tvl={230456} prize={5000} />
                 </div>
                 <div className='col-12 col-sm-6 col-lg-4 col-xxl-3'>
                     <PoolCard drawEndAt={'2023-02-25'} denom={'atom'} tvl={230456} prize={5000} />
