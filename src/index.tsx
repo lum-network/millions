@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import 'normalize.css';
 import '@popperjs/core';
 import 'bootstrap';
 import './styles/_main.scss';

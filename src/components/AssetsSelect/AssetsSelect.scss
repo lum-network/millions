@@ -1,0 +1,40 @@
+@import 'src/styles/main';
+
+/* The container must be positioned relative: */
+.custom-select {
+    position: relative;
+
+    label {
+        font-size: 16px;
+    }
+    &.readonly {
+        > p {
+            font-size: 16px;
+            font-weight: 400;
+            margin-left: 0.75rem;
+            small {
+                //color: $color-grey;
+            }
+        }
+    }
+}
+
+.custom-select select {
+    display: none; /*hide original SELECT element: */
+}
+
+.custom-select-option {
+    .asset-icon {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+    }
+
+    .asset-amount {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 12px;
+        letter-spacing: 0em;
+        text-align: right;
+    }
+}

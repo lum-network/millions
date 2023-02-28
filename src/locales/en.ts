@@ -16,6 +16,9 @@ export default {
         seconds_other: 'Sec',
     },
     errors: {
+        generic: {
+            required: '{{ field }} is required',
+        },
         keplr: {
             notInstalled: 'Please install keplr extension',
             notLatest: 'Please use an up to date version of the Keplr extension',
@@ -64,6 +67,13 @@ export default {
             title: 'Governance card title',
             description: 'Governance card wording description',
             cta: 'Join our Discord',
+        },
+    },
+    withdraw: {
+        title: 'Withdraw IBC Asset',
+        amountInput: {
+            label: 'Select Amount:',
+            sublabel: 'Available: {{ amount }} {{ denom }}',
         },
     },
 };

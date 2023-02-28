@@ -1,0 +1,45 @@
+@import 'src/styles/main';
+
+.amount-input {
+    display: flex;
+    flex-direction: column;
+    color: $color-primary;
+
+    .labels-container {
+        display: flex;
+        justify-content: space-between;
+
+        .sublabel {
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 12px;
+            vertical-align: sub;
+            text-align: right;
+            color: black;
+            opacity: 0.7;
+        }
+    }
+
+    .input-container {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 15px;
+        padding: 1rem;
+        border: 2px solid rgba(86, 52, 222, 0.2);
+
+        .default-input {
+            border: 0;
+            width: 100%;
+            font-size: 22px;
+            font-weight: 400;
+            line-height: 26px;
+            letter-spacing: 0em;
+            text-align: left;
+        }
+        .max-btn {
+            border-width: 1px !important;
+        }
+    }
+}

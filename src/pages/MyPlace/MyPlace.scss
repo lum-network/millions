@@ -8,7 +8,6 @@
     overflow: hidden;
 
     .balance-number {
-        font-family: 'Gotham Rounded', sans-serif;
         font-size: 78px;
         font-weight: 400;
         line-height: 94px;
@@ -61,7 +60,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Gotham Rounded', sans-serif;
         color: white;
     }
 
@@ -71,7 +69,6 @@
 }
 
 .asset-amount {
-    font-family: 'Gotham Rounded', sans-serif;
     color: $color-primary;
     font-size: 24px;
     font-weight: 400;
@@ -87,8 +84,56 @@
     }
 }
 
+.prize-to-claim {
+    .denom-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 1rem;
+        object-fit: contain;
+    }
+}
+
 .my-place-cta {
     width: 100%;
+}
+
+#withdrawModal {
+    .withdraw-title {
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 29px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: black;
+    }
+    .arrow-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background-color: $color-primary;
+
+        img {            
+            width: 10px;
+            height: 10px;
+        }
+    }
+
+    .address-container {
+        background-color: $color-primary-light;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 20px;
+    }
+
+    .amount-input {
+        margin-top: 5rem;
+        margin-bottom: 3rem;
+    }
 }
 
 @include media-breakpoint-down(lg) {
