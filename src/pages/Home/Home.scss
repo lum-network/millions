@@ -8,6 +8,15 @@
         height: 200px;
     }
 
+    .cosmonaut-with-balloons {
+        position: absolute;
+        width: 225px;
+        height: 225px;
+        right: -100px;
+        top: 70px;
+        overflow: hidden;
+    }
+
     .best-prize-card {
         .content {
             position: relative;
@@ -122,5 +131,45 @@
         line-height: 50px;
         color: $color-black;
         text-transform: uppercase;
+    }
+
+    .big-winners-container {
+        display: flex;
+        flex-direction: column;
+
+        .big-winner-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 19px;
+            width: 300px;
+
+            .prize {
+                font-style: normal;
+                font-weight: 400;
+                font-size: 13px;
+                line-height: 14px;
+                color: $color-primary;
+                text-transform: uppercase;
+                width: 90px;
+                text-align: left;
+            }
+
+            .address {
+                font-style: normal;
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 14px;
+                color: $color-black;
+            }
+        }
+    }
+
+    .save-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        margin-top: 55px;
+        width: 220px;
     }
 }

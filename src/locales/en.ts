@@ -41,6 +41,7 @@ export default {
         nextBestPrize: 'Next best prize',
         lastBigWinners: 'Last big winners',
         totalValueLocked: 'Total value locked',
+        cta: 'SAVE & WIN',
     },
     pools: {
         title: 'Pools',
