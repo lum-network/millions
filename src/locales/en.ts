@@ -76,4 +76,29 @@ export default {
             sublabel: 'Available: {{ amount }} {{ denom }}',
         },
     },
+    deposit: {
+        title: 'Few steps away\nfrom your deposit',
+        depositBtn: '⭐️ Deposit ⭐️',
+        saveAndWinBtn: '⭐️ Save and win ⭐️',
+        chancesHint: {
+            winning: {
+                title: 'Winning chances',
+                hint: 'Winning chances hint',
+            },
+            averagePrize: {
+                title: 'Average prize',
+                hint: 'Average prize hint',
+            },
+        },
+        steps: [
+            {
+                title: 'Transfer {{ denom }} to Lum Network',
+                subtitle: 'Transfer your {{ denom }} from Osmosis to Lum Network',
+            },
+            {
+                title: 'Deposit in the {{ denom }} pool',
+                subtitle: 'Deposit your {{ denom }} in the pool to participate to the next prize',
+            },
+        ],
+    },
 };

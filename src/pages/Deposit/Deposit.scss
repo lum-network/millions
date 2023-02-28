@@ -1,0 +1,58 @@
+@import 'src/styles/main';
+
+.steps-title {
+    color: $color-black;
+    margin-bottom: 4rem;
+}
+
+.winning-chance,
+.average-prize {
+    div {
+        color: $color-primary;
+    }
+
+    p {
+        line-height: 28px;
+    }
+}
+
+.card-step-title {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 29px;
+}
+
+.card-step-subtitle {
+    font-size: 12px;
+    margin-top: 2rem;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    color: $color-grey;
+}
+
+.deposit-cta {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+}
+
+.last-step-card {
+    .asset-info {
+        img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        color: $color-primary;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+    }
+    .deposit-amount {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 26px;
+    }
+}

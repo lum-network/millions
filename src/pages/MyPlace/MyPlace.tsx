@@ -54,16 +54,6 @@ const MyPlace = () => {
         },
     });
 
-    const getMax = (denom: string) => {
-        const balance = balances?.find((b) => b.denom === denom);
-        if (balance) {
-            const amount = NumbersUtils.convertUnitNumber(balance.amount);
-            return amount;
-        }
-
-        return 0;
-    };
-
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
         const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
@@ -94,7 +84,7 @@ const MyPlace = () => {
     const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
 
     return (
-        <div className='container'>
+        <>
             <div className='row'>
                 <div className='col-12 col-lg-8 col-xxl-9'>
                     <div>
@@ -176,20 +166,23 @@ const MyPlace = () => {
                         label={I18n.t('withdraw.amountInput.label')}
                         sublabel={
                             withdrawForm.values.denom
-                                ? I18n.t('withdraw.amountInput.sublabel', { amount: NumbersUtils.formatTo6digit(getMax(withdrawForm.values.denom)), denom: withdrawForm.values.denom })
+                                ? I18n.t('withdraw.amountInput.sublabel', {
+                                      amount: NumbersUtils.formatTo6digit(WalletUtils.getMaxAmount(withdrawForm.values.denom, balances)),
+                                      denom: withdrawForm.values.denom,
+                                  })
                                 : undefined
                         }
                         onMax={
                             withdrawForm.values.denom
                                 ? () => {
-                                      withdrawForm.setFieldValue('amount', getMax(withdrawForm.values.denom));
+                                      withdrawForm.setFieldValue('amount', WalletUtils.getMaxAmount(withdrawForm.values.denom, balances));
                                   }
                                 : undefined
                         }
                         inputProps={{
                             type: 'number',
                             min: 0,
-                            max: getMax(withdrawForm.values.denom),
+                            max: WalletUtils.getMaxAmount(withdrawForm.values.denom, balances),
                             step: 'any',
                             ...withdrawForm.getFieldProps('amount'),
                         }}
@@ -208,7 +201,7 @@ const MyPlace = () => {
                     </Button>
                 </form>
             </Modal>
-        </div>
+        </>
     );
 };
 

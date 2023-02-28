@@ -10,9 +10,9 @@ interface IProps {
 const MainLayout = ({ children }: IProps) => {
     return (
         <div className='main-layout'>
-            <div className='container'>
+            <div className='container fill'>
                 <Header />
-                <main>{children}</main>
+                <main className='h-100'>{children}</main>
             </div>
         </div>
     );

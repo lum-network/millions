@@ -1,0 +1,75 @@
+@import 'src/styles/main';
+
+.step {
+    position: relative;
+
+    /* &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 1rem;
+        width: 3px;
+        height: 100%;
+        z-index: 400;
+        background-color: black;
+    } */
+
+    .step-index-container {
+        height: 28px;
+        width: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid $color-light-grey;
+        color: $color-grey;
+        font-family: 'Gotham Rounded';
+        font-size: 12px;
+        font-weight: 700;
+        margin-right: 0.5rem;
+    }
+
+    .title {
+        vertical-align: bottom;
+        line-height: 28px;
+        color: $color-grey;
+    }
+
+    .subtitle {
+        color: $color-light-grey;
+        margin-left: calc(28px + 0.5rem);
+    }
+
+    &.active {
+        .step-index-container {
+            border: 1px solid $color-primary;
+            color: $color-primary;
+        }
+
+        .title {
+            color: $color-black;
+        }
+
+        .subtitle {
+            color: $color-grey;
+        }
+    }
+
+    &.completed {
+        .step-index-container {
+            border: 1px solid $color-primary;
+            color: $color-white;
+            background-color: $color-primary;
+        }
+
+        .title {
+            color: $color-black;
+        }
+
+        .subtitle {
+            color: $color-grey;
+        }
+    }
+}
