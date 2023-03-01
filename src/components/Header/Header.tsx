@@ -64,8 +64,8 @@ const Header = ({ bgTriggerElem }: IProps) => {
 
     useEffect(() => {
         const scrollTrigger = {
-            start: 'top-=200px 10%',
-            end: 'bottom 20%',
+            start: 'top top',
+            end: '3% top',
             scrub: true,
             markers: true,
         };
@@ -74,6 +74,20 @@ const Header = ({ bgTriggerElem }: IProps) => {
             const tl = gsap.timeline();
 
             timeline.current = tl;
+
+            tl.fromTo(
+                `header`,
+                {
+                    opacity: 0,
+                    y: -150,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.35,
+                    delay: 1,
+                },
+            );
 
             tl.to('header.navbar .background', {
                 opacity: 1,
