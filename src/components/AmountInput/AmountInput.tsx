@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { NumbersUtils } from 'utils';
 
 import Button from '../Button/Button';
 
@@ -17,7 +18,17 @@ interface Props {
 }
 
 const AmountInput = (props: Props) => {
-    const { onMax, label, sublabel, className, error, inputClassName, inputProps } = props;
+    const { onMax, label, sublabel, className, error, inputClassName, inputProps, price } = props;
+    const [usdValue, setUsdValue] = useState<number | null>(null);
+
+    useEffect(() => {
+        const valueToNumber = Number(inputProps?.value);
+        if (price && inputProps?.value && !Number.isNaN(valueToNumber)) {
+            setUsdValue(valueToNumber * price);
+        } else {
+            setUsdValue(null);
+        }
+    }, [inputProps?.value, price]);
 
     return (
         <div className={`amount-input ${className}`}>
@@ -27,8 +38,11 @@ const AmountInput = (props: Props) => {
                     {sublabel ? <label className='sublabel'>{sublabel}</label> : null}
                 </div>
             ) : null}
-            <div className='input-container'>
-                <input className={`default-input ${inputClassName}`} {...inputProps} />
+            <div className={`input-container px-3 ${usdValue ? 'py-2' : 'py-3'}`}>
+                <div className='w-100 d-flex flex-column'>
+                    <input className={`default-input p-0 ${inputClassName}`} {...inputProps} />
+                    {usdValue ? <p className='price-label mb-0 text-start'>${NumbersUtils.formatTo6digit(usdValue)}</p> : null}
+                </div>
                 {onMax ? (
                     <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
                         MAX

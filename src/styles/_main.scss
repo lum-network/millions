@@ -23,3 +23,19 @@ html body {
 .tooltip-light.font-bold {
     font-weight: bold;
 }
+
+.Toastify__toast-container {
+    width: 485px;
+}
+
+.Toastify__toast {
+    border-radius: 12px !important;
+    align-items: center;
+    padding: 32px !important;
+}
+
+.Toastify__toast-icon {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}

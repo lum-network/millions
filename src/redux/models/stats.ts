@@ -1,5 +1,6 @@
 import { createModel } from '@rematch/core';
 import { ImperatorApi } from 'api';
+import { DenomsConstants } from 'constant';
 import { RootModel } from '.';
 
 interface StatsState {
@@ -14,35 +15,29 @@ export const stats = createModel<RootModel>()({
         prices: {},
     } as StatsState,
     reducers: {
-        setAssetPrice: (state: StatsState, payload: { price: number; denom: string }) => {
+        setPrices: (state: StatsState, payload: { [denom: string]: number }): StatsState => {
             return {
                 ...state,
                 prices: {
                     ...state.prices,
-                    [payload.denom]: payload.price,
+                    ...payload,
                 },
             };
         },
     },
     effects: (dispatch) => ({
         async fetchStats() {
-            Promise.allSettled([
-                ImperatorApi.getTokenPrice('lum'),
-                ImperatorApi.getTokenPrice('evmos'),
-                ImperatorApi.getTokenPrice('atom'),
-                ImperatorApi.getTokenPrice('osmo'),
-                ImperatorApi.getTokenPrice('cre'),
-                ImperatorApi.getTokenPrice('cro'),
-            ]).then((results) => {
-                results.forEach((result) => {
-                    if (result.status === 'fulfilled') {
-                        const token = result.value[0];
-                        if (token && token.length > 0) {
-                            dispatch.stats.setAssetPrice(token[0]);
-                        }
-                    }
-                });
-            });
+            try {
+                const [res] = await ImperatorApi.getPrices();
+
+                const prices: {
+                    [key: string]: number;
+                } = res
+                    .filter((price) => DenomsConstants.ALLOWED_DENOMS.findIndex((denom) => denom === price.denom) > -1)
+                    .reduce((obj: { [key: string]: number }, item) => ((obj[item.denom] = item.price), obj), {});
+
+                dispatch.stats.setPrices(prices);
+            } catch {}
         },
     }),
 });

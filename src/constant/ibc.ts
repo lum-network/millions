@@ -1,4 +1,4 @@
-export const IBC_INFOS = [
+export const OSMOSIS_IBC_INFOS = [
     {
         sourceChannel: 'channel-0',
         destChannel: 'channel-141',

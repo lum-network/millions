@@ -5,6 +5,7 @@ import * as NumbersUtils from './numbers';
 import * as DenomsUtils from './denoms';
 import * as TimesUtils from './times';
 import * as WalletUtils from './wallet';
+import './time';
 
 export { default as I18n } from './i18n';
 export { default as HttpClient } from './http';

@@ -42,7 +42,7 @@ export const showLoadingToast = (content: ToastContentProps, options?: ToastOpti
 export const updateLoadingToast = (toastId: Id, type: TypeOptions, content: ToastContentProps, options?: ToastOptions): void => {
     toast.update(toastId, {
         render: <ToastContent {...content} />,
-        icon: () => <img alt={type === 'success' ? 'success' : 'warning'} src={type === 'success' ? successIcon : warningIcon} width='100' height='100' />,
+        icon: () => <img alt={type === 'success' ? 'success' : 'warning'} src={type === 'success' ? successIcon : warningIcon} width='56' height='56' />,
         type,
         isLoading: false,
         autoClose: 5000,

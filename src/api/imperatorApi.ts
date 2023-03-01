@@ -17,10 +17,10 @@ class ImperatorApi extends HttpClient {
         return this.instance;
     }
 
-    getTokenPrice = async (denom: string) =>
+    getPrices = async () =>
         this.request<TokenModel[]>(
             {
-                url: '/tokens/v2/' + denom,
+                url: '/tokens/v2/all',
                 method: 'GET',
             },
             TokenModel,

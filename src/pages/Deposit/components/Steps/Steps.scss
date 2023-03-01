@@ -34,11 +34,13 @@
     .title {
         vertical-align: bottom;
         line-height: 28px;
-        color: $color-grey;
+        color: $color-black;
+        opacity: 0.6;
     }
 
     .subtitle {
-        color: $color-light-grey;
+        color: $color-muted;
+        opacity: 0.6;
         margin-left: calc(28px + 0.5rem);
     }
 
@@ -49,11 +51,11 @@
         }
 
         .title {
-            color: $color-black;
+            opacity: 1;
         }
 
         .subtitle {
-            color: $color-grey;
+            opacity: 1;
         }
     }
 
@@ -65,11 +67,11 @@
         }
 
         .title {
-            color: $color-black;
+            opacity: 1;
         }
 
         .subtitle {
-            color: $color-grey;
+            opacity: 1;
         }
     }
 }

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import Select, { GroupBase, OptionProps, components } from 'react-select';
-import { RootState } from 'redux/store';
+import Select, { GroupBase, OptionProps, components, SingleValueProps } from 'react-select';
 import { DenomsUtils, NumbersUtils } from 'utils';
 
 import './AssetsSelect.scss';
@@ -10,6 +8,7 @@ interface Props {
     onChange: (value: string) => void;
     value: string;
     options: { value: string; label: string }[];
+    balances: { denom: string; amount: string }[];
     label?: string;
     readonly?: boolean;
     className?: string;
@@ -26,30 +25,58 @@ const AssetOption = (
             value: string;
             label: string;
         }>
-    >,
+    > & {
+        balances: { denom: string; amount: string }[];
+    },
 ) => {
+    const { balances, ...rest } = props;
     const assetIcon = DenomsUtils.getIconFromDenom(props.data.value);
-    const balances = useSelector((state: RootState) => state.wallet.lumWallet?.balances);
     const balance = balances?.find((b) => b.denom === props.data.value);
 
     return (
-        <components.Option {...props}>
+        <components.Option {...rest}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {assetIcon && <img src={assetIcon} className='asset-icon me-2' />} {props.data.label}
+                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2' />} {props.data.label}
                 </div>
-                {balance && <div className='d-flex flex-row align-items-center asset-amount'>{NumbersUtils.formatUnit(balance)}</div>}
+                {balance && <div className='d-flex flex-row align-items-center asset-amount'>{NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount))}</div>}
             </div>
         </components.Option>
     );
 };
 
-const AssetsSelect = ({ options, onChange, value, readonly, label, className }: Props): JSX.Element => {
+const AssetValue = (
+    props: SingleValueProps<
+        {
+            value: string;
+            label: string;
+        },
+        false,
+        GroupBase<{
+            value: string;
+            label: string;
+        }>
+    >,
+) => {
+    const icon = DenomsUtils.getIconFromDenom(props.data.value);
+
+    return (
+        <components.SingleValue {...props}>
+            <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
+                <div className='d-flex flex-row align-items-center'>
+                    {icon && <img src={icon} className='value-asset-icon me-2' />} {props.data.label}
+                </div>
+            </div>
+        </components.SingleValue>
+    );
+};
+
+const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
         setSelectedOptionLabel(options.find((opt) => opt.value === value)?.label || '');
-    }, [value]);
+    }, [value, options]);
 
     return (
         <div className={`custom-select ${readonly && 'readonly'} ${className}`}>
@@ -70,8 +97,11 @@ const AssetsSelect = ({ options, onChange, value, readonly, label, className }: 
                     defaultValue={{ value, label: selectedOptionLabel }}
                     value={{ value, label: selectedOptionLabel }}
                     components={{
-                        Option: AssetOption,
+                        Option: (props) => <AssetOption {...props} balances={balances} />,
+                        SingleValue: AssetValue,
                     }}
+                    isSearchable={false}
+                    isClearable={false}
                     styles={{
                         control: (provided) => ({
                             ...provided,
@@ -79,8 +109,8 @@ const AssetsSelect = ({ options, onChange, value, readonly, label, className }: 
                             borderColor: 'rgba(86, 52, 222, 0.2)',
                             borderWidth: 2,
                             paddingLeft: '0.5rem',
-                            paddingTop: '0.25rem',
-                            paddingBottom: '0.25rem',
+                            paddingTop: '0.5rem',
+                            paddingBottom: '0.5rem',
                             textTransform: 'uppercase',
                             textAlign: 'left',
                             color: '#5634DE',
@@ -101,6 +131,10 @@ const AssetsSelect = ({ options, onChange, value, readonly, label, className }: 
                         indicatorSeparator: (provided) => ({
                             ...provided,
                             display: 'none',
+                        }),
+                        singleValue: (provided) => ({
+                            ...provided,
+                            color: '#5634DE',
                         }),
                     }}
                     options={options}

@@ -10,10 +10,6 @@
     div {
         color: $color-primary;
     }
-
-    p {
-        line-height: 28px;
-    }
 }
 
 .card-step-title {
@@ -23,10 +19,11 @@
 }
 
 .card-step-subtitle {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 2rem;
     margin-left: 4rem;
     margin-right: 4rem;
+    font-weight: 300;
     color: $color-grey;
 }
 
@@ -34,10 +31,12 @@
     font-style: normal;
     font-weight: 400;
     font-size: 24px;
-    line-height: 29px;
+    line-height: 48px;
+    padding: 6px 26px;
 }
 
 .last-step-card {
+    margin-top: 5rem;
     .asset-info {
         img {
             width: 40px;
@@ -55,4 +54,14 @@
         font-size: 22px;
         line-height: 26px;
     }
+}
+
+.fees-warning {
+    border: 2px solid $color-primary;
+    border-radius: 12px;
+    font-size: 11px;
+    line-height: 22px;
+    padding: 0.75rem;
+    text-align: center;
+    color: $color-primary;
 }

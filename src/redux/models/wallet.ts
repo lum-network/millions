@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, OsmosisClient } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { LumWalletModel, OsmosisWalletModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -23,17 +24,14 @@ interface SetWalletDataPayload {
     activities?: any[];
 }
 
+interface DepositToPoolPayload {
+    amount: string;
+    pool: string;
+}
+
 interface WalletState {
-    lumWallet: {
-        innerWallet: LumWallet;
-        address: string;
-        balances: LumTypes.Coin[];
-        activities: any[];
-    } | null;
-    osmosisWallet: {
-        address: string;
-        balances: LumTypes.Coin[];
-    } | null;
+    lumWallet: LumWalletModel | null;
+    osmosisWallet: OsmosisWalletModel | null;
     prizeToClaim: LumTypes.Coin | null;
 }
 
@@ -219,7 +217,7 @@ export const wallet = createModel<RootModel>()({
                 if (result) {
                     const { balances: osmosisBalances } = result;
 
-                    dispatch.wallet.setOsmosisWalletData({ balances: DenomsUtils.translateIbcBalances([...osmosisBalances]) });
+                    dispatch.wallet.setOsmosisWalletData({ balances: DenomsUtils.translateOsmosisIbcBalances([...osmosisBalances]) });
                 }
             }
         },
@@ -228,7 +226,8 @@ export const wallet = createModel<RootModel>()({
                 const result = await LumClient.getWalletBalances(address);
 
                 if (result) {
-                    const filteredBalances = result.balances.filter((balance) => DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)));
+                    const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
+                    const filteredBalances = balances.filter((balance) => DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)));
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
                 }
             } catch (e) {}
@@ -246,7 +245,7 @@ export const wallet = createModel<RootModel>()({
             dispatch.wallet.setPrizeToClaim(null);
         },
         async ibcTransfer(payload: IbcTransferPayload) {
-            const { toAddress, fromAddress, amount, normalDenom } = payload;
+            const { toAddress, fromAddress, amount, normalDenom, type } = payload;
 
             const convertedAmount = LumUtils.convertUnit(
                 {
@@ -261,13 +260,13 @@ export const wallet = createModel<RootModel>()({
                 denom: amount.denom,
             };
 
-            const toastId = ToastUtils.showLoadingToast({ content: payload.type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
+            const toastId = ToastUtils.showLoadingToast({ content: type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
 
             const chainId = LumClient.getChainId();
 
             if (chainId) {
                 try {
-                    if (payload.type === 'withdraw') {
+                    if (type === 'withdraw') {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         const lumOfflineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
 
@@ -292,26 +291,38 @@ export const wallet = createModel<RootModel>()({
 
                         if (result && result.code === 0) {
                             ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully withdrawn ${amount.amount} ${normalDenom.toUpperCase()}` });
-                            //dispatch.wallet.reloadWalletInfos(null);
+                            return result.transactionHash;
                         } else {
                             ToastUtils.updateLoadingToast(toastId, 'error', { content: result.rawLog || 'Failed to withdraw' });
+                            return null;
                         }
                     } else {
                         const result = await OsmosisClient.ibcTransfer(fromAddress, toAddress, coin);
 
-                        if (result && result.error) {
-                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result.error || 'Failed to deposit' });
-                        } else {
-                            ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully deposited ${amount.amount} ${normalDenom.toUpperCase()}` });
-                            //dispatch.wallet.reloadWalletInfos(null);
+                        if (result) {
+                            if (result.error) {
+                                ToastUtils.updateLoadingToast(toastId, 'error', { content: result.error || 'Failed to deposit' });
+                                return null;
+                            } else {
+                                ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully deposited ${amount.amount} ${normalDenom.toUpperCase()}` });
+                                return result.hash;
+                            }
                         }
                     }
                 } catch (e) {
-                    ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${payload.type}` });
+                    ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
+                    return null;
                 }
             } else {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: `Unable to get lum network chainId to ${payload.type}.` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: `Unable to get lum network chainId to ${type}.` });
+                return null;
             }
+            return null;
+        },
+        async depositToPool(payload: DepositToPoolPayload) {
+            const result = await LumClient.depositToPool(payload.pool, payload.amount);
+
+            return result;
         },
     }),
 });

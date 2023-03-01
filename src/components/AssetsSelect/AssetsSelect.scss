@@ -12,9 +12,6 @@
             font-size: 16px;
             font-weight: 400;
             margin-left: 0.75rem;
-            small {
-                //color: $color-grey;
-            }
         }
     }
 }
@@ -24,9 +21,15 @@
 }
 
 .custom-select-option {
-    .asset-icon {
+    .menu-asset-icon {
         width: 22px;
         height: 22px;
+        object-fit: contain;
+    }
+    
+    .value-asset-icon {        
+        width: 30px;
+        height: 30px;
         object-fit: contain;
     }
 
@@ -36,5 +39,6 @@
         line-height: 12px;
         letter-spacing: 0em;
         text-align: right;
+        color: $color-primary;
     }
 }

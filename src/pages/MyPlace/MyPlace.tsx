@@ -66,7 +66,7 @@ const MyPlace = () => {
                     <div className='d-flex flex-row align-items-center'>
                         {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
                         <div className='d-flex flex-column asset-amount'>
-                            {numeral(amount).format('0,0')} {normalDenom.toUpperCase()}
+                            {numeral(amount).format(amount >= 1 ? '0,0' : '0,0.000')} {normalDenom.toUpperCase()}
                             <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
                         </div>
                     </div>
@@ -189,6 +189,7 @@ const MyPlace = () => {
                         error={withdrawForm.errors.amount}
                     />
                     <AssetsSelect
+                        balances={balances || []}
                         value={balances && balances.length > 0 ? balances[0].denom : ''}
                         onChange={(value) => withdrawForm.setFieldValue('denom', value)}
                         options={(balances || []).map((balance) => ({

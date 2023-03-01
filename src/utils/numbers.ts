@@ -21,7 +21,17 @@ export const convertUnitNumber = (nb: number | string): number => {
 };
 
 export const formatUnit = (coin: LumTypes.Coin, moreDecimal?: boolean): string => {
-    return numeral(LumUtils.convertUnit(coin, LumConstants.LumDenom)).format(moreDecimal ? '0,0.000000' : '0,0.000');
+    return numeral(LumUtils.convertUnit(coin, LumConstants.LumDenom)).format(moreDecimal ? '0,0.[000000]' : '0,0.[000]');
 };
 
-export const formatTo6digit = (number: number): string => (number > 0 ? numeral(number).format('0,0.000000') : '0');
+export const formatTo6digit = (number: number | string): string => {
+    if (typeof number === 'string') {
+        number = Number(number);
+
+        if (Number.isNaN(number)) {
+            return 'NaN';
+        }
+    }
+
+    return number > 0 ? numeral(number).format('0,0.[000000]') : '0';
+};

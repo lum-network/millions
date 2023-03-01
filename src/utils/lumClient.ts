@@ -1,4 +1,4 @@
-import { LumClient as Client } from '@lum-network/sdk-javascript';
+import { LumClient as Client, LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -54,6 +54,25 @@ class LumClient {
         const activities = await Promise.resolve([]);
 
         return { activities };
+    };
+
+    getDenomTrace = async (ibcDenom: string) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const denomTrace = await this.client.queryClient.ibc.transfer.denomTrace(ibcDenom);
+
+        return denomTrace;
+    };
+
+    depositToPool = async (pool: string, amount: string) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Update with tx hash
+        return 'IZAONZOINAOINAAIDNOINAOINAOBAOSUAOI';
     };
 }
 
