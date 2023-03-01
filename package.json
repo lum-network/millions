@@ -25,6 +25,7 @@
     "dayjs": "^1.11.7",
     "firebase": "^9.17.1",
     "formik": "^2.2.9",
+    "gsap": "^3.11.4",
     "i18next": "^22.4.10",
     "normalize.css": "^8.0.1",
     "numeral": "^2.0.6",
