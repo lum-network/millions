@@ -1,6 +1,10 @@
 @import 'src/styles/main';
 
 .home-container {
+    @include media-breakpoint-down(xl) {
+        padding-top: 30px;
+    }
+
     .cosmonaut-on-the-moon {
         position: absolute;
         top: -200px;

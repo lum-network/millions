@@ -8,11 +8,17 @@ header {
     opacity: 0;
     border-radius: 13px;
 
-    @include media-breakpoint-down(lg) {
-        height: 90px;
+    .logo {
+        @include media-breakpoint-down(lg) {
+            height: 30px;
+        }
     }
 
     @include media-breakpoint-down(md) {
+        height: 90px;
+    }
+
+    @include media-breakpoint-down(sm) {
         background: transparent;
         position: absolute !important;
     }
@@ -33,6 +39,10 @@ header {
             letter-spacing: 0;
             text-align: left;
             opacity: 0.6;
+
+            @include media-breakpoint-down(lg) {
+                font-size: 16px;
+            }
 
             &.active {
                 opacity: 1;

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 
@@ -9,15 +9,25 @@ import { I18n, StringsUtils } from 'utils';
 import { RootState } from 'redux/store';
 import { NavigationConstants } from 'constant';
 
+import twitterButton from 'assets/images/twitter_button.svg';
+import discordButton from 'assets/images/discord_button.svg';
+
 import './Header.scss';
 
 const Header = () => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
+    const [isHome, setIsHome] = useState(false);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        setIsHome(window.location.pathname === '/');
+    }, [location.pathname]);
 
     useEffect(() => {
         // Enables Header GSAP animation only on the landing page
-        if (window.location.pathname === '/') {
+        if (location.pathname === '/') {
             gsap.fromTo(
                 `header`,
                 {
@@ -60,35 +70,74 @@ const Header = () => {
         }
     }, []);
 
+    const renderContent = () => {
+        if (isHome) {
+            return (
+                <ul className='nav d-flex align-items-center'>
+                    <li className='d-none d-lg-block'>
+                        <a href='#howItWorks' className='navlink opacity-100'>
+                            {I18n.t('landing.howItWorks')}
+                        </a>
+                    </li>
+                    <li className='mx-3 mx-lg-4 d-none d-md-block'>
+                        <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                            {I18n.t('landing.documentation')}
+                        </a>
+                    </li>
+                    <li className='d-none d-md-block'>
+                        <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                            {I18n.t('landing.faq')}
+                        </a>
+                    </li>
+                    <li className='mx-3 mx-lg-4 d-none d-sm-block'>
+                        <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                            <img src={twitterButton} alt='Twitter' />
+                        </a>
+                    </li>
+                    <li className='d-none d-sm-block'>
+                        <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                            <img src={discordButton} alt='Discord' />
+                        </a>
+                    </li>
+                    <li className='ms-3 ms-lg-4'>
+                        <Button to={NavigationConstants.HOME}>{I18n.t('landing.openTheApp')}</Button>
+                    </li>
+                </ul>
+            );
+        }
+
+        return (
+            <ul className='nav d-flex align-items-center'>
+                <li>
+                    <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                        {I18n.t('home.title')}
+                    </NavLink>
+                </li>
+                <li className='mx-lg-5 mx-4'>
+                    <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                        {I18n.t('pools.title')}
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to={NavigationConstants.MY_PLACE} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                        {I18n.t('myPlace.title')}
+                    </NavLink>
+                </li>
+                <li className='ms-lg-5 ms-4'>
+                    <Button outline>{address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}</Button>
+                </li>
+            </ul>
+        );
+    };
+
     return (
         <header className='navbar fixed-top mt-4 mx-auto container p-4'>
             <div className='background' />
-            <nav className='container d-flex flex-row justify-content-center justify-content-md-between align-items-center'>
+            <nav className='container d-flex flex-row justify-content-center justify-content-sm-between align-items-center'>
                 <Link to='/'>
-                    <img src={logo} alt='Cosmos Millions logo' />
+                    <img className='logo' src={logo} alt='Cosmos Millions logo' />
                 </Link>
-                <div className='navbar-items-container d-none d-md-flex flex-row align-items-center'>
-                    <ul className='nav d-flex align-items-center'>
-                        <li>
-                            <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                {I18n.t('home.title')}
-                            </NavLink>
-                        </li>
-                        <li className='mx-lg-5 mx-4'>
-                            <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                {I18n.t('pools.title')}
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={NavigationConstants.MY_PLACE} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                                {I18n.t('myPlace.title')}
-                            </NavLink>
-                        </li>
-                        <li className='ms-lg-5 ms-4'>
-                            <Button outline>{address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}</Button>
-                        </li>
-                    </ul>
-                </div>
+                <div className='navbar-items-container d-flex flex-row align-items-center'>{renderContent()}</div>
             </nav>
         </header>
     );

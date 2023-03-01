@@ -36,6 +36,12 @@ export default {
             fees: 'Not enough LUM to pay fees',
         },
     },
+    landing: {
+        howItWorks: 'How it works',
+        documentation: 'Documentation',
+        faq: 'FAQ',
+        openTheApp: 'Open the app',
+    },
     home: {
         title: 'Home',
         nextBestPrize: 'Next best prize',
