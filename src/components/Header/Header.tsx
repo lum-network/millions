@@ -11,11 +11,7 @@ import { NavigationConstants } from 'constant';
 
 import './Header.scss';
 
-interface IProps {
-    bgTriggerElem?: string;
-}
-
-const Header = ({ bgTriggerElem }: IProps) => {
+const Header = () => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
 
@@ -42,52 +38,17 @@ const Header = ({ bgTriggerElem }: IProps) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     if (bgTriggerElem) {
-    //         gsap.to(`header .background`, {
-    //             opacity: 1,
-    //             ease: 'none',
-    //             scrollTrigger: {
-    //                 trigger: `#welcome`,
-    //                 start: '10% top',
-    //                 end: '30% top',
-    //                 scrub: true,
-    //             },
-    //         });
-    //     } else {
-    //         gsap.to(`header .background`, {
-    //             opacity: 1,
-    //             duration: 0,
-    //         });
-    //     }
-    // }, [bgTriggerElem]);
-
     useEffect(() => {
         const scrollTrigger = {
             start: 'top top',
             end: '3% top',
             scrub: true,
-            markers: true,
         };
 
         if (!timeline.current) {
             const tl = gsap.timeline();
 
             timeline.current = tl;
-
-            tl.fromTo(
-                `header`,
-                {
-                    opacity: 0,
-                    y: -150,
-                },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.35,
-                    delay: 1,
-                },
-            );
 
             tl.to('header.navbar .background', {
                 opacity: 1,
