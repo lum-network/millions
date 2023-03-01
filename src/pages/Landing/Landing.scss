@@ -1,0 +1,156 @@
+@import 'src/styles/main';
+
+.landing-container {
+    padding-top: 80px;
+
+    h1 {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 65px;
+        line-height: 80px;
+        color: $color-primary;
+        margin-bottom: 24px;
+
+        @include media-breakpoint-down(xxl) {
+            font-size: 55px;
+            line-height: 70px;
+        }
+    }
+
+    p {
+        font-style: normal;
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 24px;
+        color: $color-black;
+        margin-bottom: 24px;
+    }
+
+    .saving-left {
+        .cta {
+            margin-top: 8px;
+            width: 180px;
+        }
+    }
+
+    .cosmos-game-left {
+        height: 480px;
+
+        .cosmos-with-balloons {
+            position: absolute;
+            width: 437px;
+            height: 551px;
+            right: 0;
+            top: -120px;
+
+            @include media-breakpoint-down(xl) {
+                width: 392px;
+                height: 494px;
+                top: 0;
+                right: unset;
+                left: calc(50% - 196px);
+            }
+        }
+    }
+
+    .cosmos-game-right {
+        height: 480px;
+    }
+
+    .winners {
+        padding-top: 70px;
+
+        .square {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            background-color: $color-primary;
+            display: flex;
+            justify-content: center;
+
+            .cosmonaut-coin {
+                position: absolute;
+                top: -25px;
+                left: 20px;
+                width: 106px;
+                height: 156px;
+            }
+
+            .cosmonaut-balloons {
+                position: absolute;
+                top: -60px;
+                left: -25px;
+                width: 207px;
+                height: 217px;
+            }
+
+            .cosmonaut-duck {
+                position: absolute;
+                top: -48px;
+                left: -30px;
+                width: 207px;
+                height: 207px;
+            }
+
+            .cosmonaut-zen {
+                position: absolute;
+                top: -12px;
+                left: 0;
+                width: 161px;
+                height: 161px;
+            }
+        }
+
+        .image-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 350px;
+
+            .legend {
+                position: unset;
+                margin-left: 24px;
+                width: 50%;
+                text-align: left;
+            }
+        }
+
+        .number {
+            position: absolute;
+            bottom: 57px;
+            width: 42px;
+            height: 42px;
+            border-radius: 21px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 25px;
+            line-height: 30px;
+            background-color: $color-primary;
+            color: $color-white;
+            margin: 24px 0;
+        }
+
+        .legend {
+            bottom: 25px;
+            position: absolute;
+            font-style: normal;
+            font-weight: 350;
+            font-size: 16px;
+            line-height: 19px;
+            text-align: center;
+            color: $color-black;
+        }
+
+        .arrow {
+            //margin-top: 70px;
+        }
+
+        .arrow-double {
+            //margin-top: -35px;
+        }
+    }
+}

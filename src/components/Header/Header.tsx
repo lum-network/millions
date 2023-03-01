@@ -22,12 +22,12 @@ const Header = () => {
     const location = useLocation();
 
     useEffect(() => {
-        setIsHome(window.location.pathname === '/');
+        setIsHome(window.location.pathname === NavigationConstants.LANDING);
     }, [location.pathname]);
 
     useEffect(() => {
         // Enables Header GSAP animation only on the landing page
-        if (location.pathname === '/') {
+        if (location.pathname === NavigationConstants.LANDING) {
             gsap.fromTo(
                 `header`,
                 {
@@ -51,7 +51,7 @@ const Header = () => {
     useEffect(() => {
         const scrollTrigger = {
             start: 'top top',
-            end: '3% top',
+            end: '5% top',
             scrub: true,
         };
 

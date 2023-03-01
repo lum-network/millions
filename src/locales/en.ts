@@ -41,6 +41,27 @@ export default {
         documentation: 'Documentation',
         faq: 'FAQ',
         openTheApp: 'Open the app',
+        saving: {
+            title: 'Win Big by\nSaving Smart',
+            p1: 'Introducing Cosmos Millions, a decentralized finance protocol and open-source platform for prize savings.',
+            p2: 'The prize-linked savings account with the highest returns ever made.',
+            cta: 'Earn by saving',
+            biggestPrizeToWin: 'Biggest prize to win',
+        },
+        cosmosGame: {
+            title: 'Time to Spice Up\nthe Cosmos Game!',
+            p1: "That's one small step for Cosmonauts, one giant leap for Cosmos.",
+            // eslint-disable-next-line max-len
+            p2: 'Speed up your path to financial tranquility with our thrilling prize-linked savings accounts! Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.',
+            p3: 'With no risk and exciting rewards, bring your savings to the moon!',
+        },
+        winners: {
+            title: 'One Winner, No Losers!',
+            p1: 'Deposit\nyour assets',
+            p2: 'You’re eligible to all the next\nprizes automatically ',
+            p3: 'You win! Auto-compound your prize to boost your chances of earning more next time!',
+            p4: 'No win this time, but no loss either! Get ready for another chance next week!',
+        },
     },
     home: {
         title: 'Home',
