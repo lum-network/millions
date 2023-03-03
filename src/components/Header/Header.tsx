@@ -17,12 +17,12 @@ import './Header.scss';
 const Header = () => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
-    const [isHome, setIsHome] = useState(false);
+    const [isLanding, setIsLanding] = useState(false);
 
     const location = useLocation();
 
     useEffect(() => {
-        setIsHome(window.location.pathname === NavigationConstants.LANDING);
+        setIsLanding(window.location.pathname === NavigationConstants.LANDING);
     }, [location.pathname]);
 
     useEffect(() => {
@@ -71,7 +71,7 @@ const Header = () => {
     }, []);
 
     const renderContent = () => {
-        if (isHome) {
+        if (isLanding) {
             return (
                 <ul className='nav d-flex align-items-center'>
                     <li className='d-none d-lg-block'>
@@ -131,7 +131,7 @@ const Header = () => {
     };
 
     return (
-        <header className='navbar fixed-top mt-4 mx-auto container p-4'>
+        <header className={`navbar fixed-top mt-4 mx-auto container p-4 ${!isLanding ? 'app' : ''}`}>
             <div className='background' />
             <nav className='container d-flex flex-row justify-content-center justify-content-sm-between align-items-center'>
                 <Link to='/'>

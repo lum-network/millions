@@ -8,6 +8,15 @@ header {
     opacity: 0;
     border-radius: 13px;
 
+    &.app {
+        @include media-breakpoint-down(md) {
+            width: 95vw;
+            min-width: 95vw;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+
     .logo {
         @include media-breakpoint-down(lg) {
             height: 30px;
