@@ -9,7 +9,6 @@
         font-size: 65px;
         line-height: 80px;
         color: $color-primary;
-        margin-bottom: 24px;
 
         @include media-breakpoint-down(xxl) {
             font-size: 55px;
@@ -210,6 +209,38 @@
 
     .pools {
         padding-top: 70px;
+
+        .tvl-legend {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 23px;
+            color: $color-primary;
+        }
+
+        .tvl-value {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 23px;
+            color: $color-black;
+        }
+
+        .cta {
+            width: 150px;
+
+            @include media-breakpoint-down(xl) {
+                width: 250px;
+            }
+
+            @include media-breakpoint-down(lg) {
+                width: 80%;
+            }
+
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
 
         .pools-cards-container {
             .pool-card {

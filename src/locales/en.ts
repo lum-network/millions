@@ -67,6 +67,9 @@ export default {
             title: 'Pools Available',
             deposited: 'Deposited',
             prizeToWin: 'Prize to win',
+            newPool: 'Suggest a new pool',
+            tvl: 'Total Value Locked',
+            cta: 'See all pools',
         },
     },
     home: {

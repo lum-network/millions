@@ -44,6 +44,7 @@ html body {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: visible;
     margin: 0 calc((100vw - 1080px) / 2 * -1);
     padding: 0 calc((100vw - 1080px) / 2);
 
