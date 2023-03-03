@@ -62,86 +62,88 @@ const Landing = () => {
                     <p>{I18n.t('landing.cosmosGame.p2')}</p>
                     <p>{I18n.t('landing.cosmosGame.p3')}</p>
                 </div>
-            </div>
-            <div id='howItWorks' className='winners col-12 d-flex flex-column align-items-center'>
-                <h1 className='text-center mb-4'>{I18n.t('landing.winners.title')}</h1>
-                <Card withoutPadding className='w-100 d-flex flex-xl-row flex-column align-items-center p-3 py-5 p-xl-5'>
-                    <div className='d-flex flex-column align-items-center'>
-                        <div className='square'>
-                            <img src={cosmonautWithCoin} alt='Cosmonaut with coin' className='cosmonaut-coin' />
-                        </div>
-                        <div className='number'>1</div>
-                        <span className='legend'>{I18n.t('landing.winners.p1')}</span>
-                    </div>
-                    <div className='mx-5'>
-                        <img src={landingArrow} alt='arrow' className='arrow' />
-                    </div>
-                    <div className='d-flex flex-column align-items-center'>
-                        <div className='square'>
-                            <img src={cosmonautWithBalloons} alt='Cosmonaut with balloons' className='cosmonaut-balloons' />
-                        </div>
-                        <div className='number'>2</div>
-                        <span className='legend'>{I18n.t('landing.winners.p2')}</span>
-                    </div>
-                    <div className='d-flex d-xl-none'>
-                        <img src={landingArrow} alt='arrow' className='arrow' />
-                    </div>
-                    <div className='mx-4'>
-                        <img src={landingDoubleArrows} alt='Double arrows' className='arrow-double' />
-                    </div>
-                    <div className='image-group'>
-                        <div className='d-flex flex-column flex-xl-row align-items-center'>
+                <div id='howItWorks' className='winners col-12 d-flex flex-column align-items-center'>
+                    <h1 className='text-center mb-4'>{I18n.t('landing.winners.title')}</h1>
+                    <Card withoutPadding className='w-100 d-flex flex-xl-row flex-column align-items-center p-3 py-5 p-xl-5'>
+                        <div className='d-flex flex-column align-items-center'>
                             <div className='square'>
-                                <img src={cosmonautWithDuck} alt='Cosmonaut with duck' className='cosmonaut-duck' />
+                                <img src={cosmonautWithCoin} alt='Cosmonaut with coin' className='cosmonaut-coin' />
                             </div>
-                            <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p3')}</div>
+                            <div className='number'>1</div>
+                            <span className='legend'>{I18n.t('landing.winners.p1')}</span>
                         </div>
-                        <div className='or'>{I18n.t('landing.winners.or')}</div>
-                        <div className='d-flex flex-column flex-xl-row align-items-center'>
+                        <div className='mx-5'>
+                            <img src={landingArrow} alt='arrow' className='arrow' />
+                        </div>
+                        <div className='d-flex flex-column align-items-center'>
                             <div className='square'>
-                                <img src={cosmonautZen} alt='Cosmonaut zen' className='cosmonaut-zen' />
+                                <img src={cosmonautWithBalloons} alt='Cosmonaut with balloons' className='cosmonaut-balloons' />
                             </div>
-                            <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p4')}</div>
+                            <div className='number'>2</div>
+                            <span className='legend'>{I18n.t('landing.winners.p2')}</span>
+                        </div>
+                        <div className='d-flex d-xl-none'>
+                            <img src={landingArrow} alt='arrow' className='arrow' />
+                        </div>
+                        <div className='mx-4'>
+                            <img src={landingDoubleArrows} alt='Double arrows' className='arrow-double' />
+                        </div>
+                        <div className='image-group'>
+                            <div className='d-flex flex-column flex-xl-row align-items-center'>
+                                <div className='square'>
+                                    <img src={cosmonautWithDuck} alt='Cosmonaut with duck' className='cosmonaut-duck' />
+                                </div>
+                                <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p3')}</div>
+                            </div>
+                            <div className='or'>{I18n.t('landing.winners.or')}</div>
+                            <div className='d-flex flex-column flex-xl-row align-items-center'>
+                                <div className='square'>
+                                    <img src={cosmonautZen} alt='Cosmonaut zen' className='cosmonaut-zen' />
+                                </div>
+                                <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p4')}</div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+                <div className='col-12 pools'>
+                    <div className='d-flex justify-content-between align-items-center mb-4'>
+                        <div className='d-flex align-items-lg-center flex-column flex-lg-row'>
+                            <h1>{I18n.t('landing.pools.title')}</h1>
+                            <div className='ms-lg-5 d-flex align-items-center'>
+                                <img width={42} height={42} src={coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
+                                <div className='d-flex flex-column'>
+                                    <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
+                                    <span className='tvl-value'>{numeral(300004567).format('0,0').replaceAll(',', '\u00a0')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='d-none d-xl-flex'>
+                            <Button outline onClick={onClickNewPool}>
+                                {I18n.t('landing.pools.newPool')}
+                            </Button>
                         </div>
                     </div>
-                </Card>
-            </div>
-            <div className='col-12 pools'>
-                <div className='d-flex justify-content-between align-items-center mb-4'>
-                    <div className='d-flex align-items-lg-center flex-column flex-lg-row'>
-                        <h1>{I18n.t('landing.pools.title')}</h1>
-                        <div className='ms-lg-5 d-flex align-items-center'>
-                            <img width={42} height={42} src={coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
-                            <div className='d-flex flex-column'>
-                                <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
-                                <span className='tvl-value'>{numeral(300004567).format('0,0').replaceAll(',', '\u00a0')}</span>
-                            </div>
-                        </div>
+                    <div className='pools-cards-container cards-list'>
+                        <PoolCard denom={'atom'} tvl={30000} prize={58} />
+                        <PoolCard denom={'osmo'} tvl={30000} prize={58} />
+                        <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
                     </div>
-                    <div className='d-none d-xl-flex'>
-                        <Button outline onClick={onClickNewPool}>
+                    <div className='d-flex flex-column align-items-center mt-4'>
+                        <Button className='d-block d-xl-none mb-3 cta' outline onClick={onClickNewPool}>
                             {I18n.t('landing.pools.newPool')}
+                        </Button>
+                        <Button className='cta' to={NavigationConstants.POOLS}>
+                            {I18n.t('landing.pools.cta')}
                         </Button>
                     </div>
                 </div>
-                <div className='pools-cards-container cards-list'>
-                    <PoolCard denom={'atom'} tvl={30000} prize={58} />
-                    <PoolCard denom={'osmo'} tvl={30000} prize={58} />
-                    <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
+                <div className='col-12 testimonials'>
+                    <div className='testimonials-container cards-list'>
+                        {LandingConstants.TESTIMONIALS.map((testimonial, index) => (
+                            <TestimonialCard key={index} testimonial={testimonial} />
+                        ))}
+                    </div>
                 </div>
-                <div className='d-flex flex-column align-items-center mt-4'>
-                    <Button className='d-block d-xl-none mb-3 cta' outline onClick={onClickNewPool}>
-                        {I18n.t('landing.pools.newPool')}
-                    </Button>
-                    <Button className='cta' to={NavigationConstants.POOLS}>
-                        {I18n.t('landing.pools.cta')}
-                    </Button>
-                </div>
-            </div>
-            <div className='testimonials-container cards-list'>
-                {LandingConstants.TESTIMONIALS.map((testimonial, index) => (
-                    <TestimonialCard key={index} testimonial={testimonial} />
-                ))}
             </div>
         </div>
     );
