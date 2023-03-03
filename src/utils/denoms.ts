@@ -1,5 +1,5 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
-import { DenomsConstants, IbcConstants } from 'constant';
+import { DenomsConstants } from 'constant';
 import CryptoJS from 'crypto-js';
 import { LumClient } from 'utils';
 
@@ -48,24 +48,17 @@ export const translateLumIbcBalances = async (balances: LumTypes.Coin[]) => {
     return translatedBalances;
 };
 
-export const translateOsmosisIbcBalances = (balances: LumTypes.Coin[]) => {
+export const translateIbcBalances = (balances: LumTypes.Coin[], sourceChannel: string, minimalDenom: string) => {
     return balances.map((balance) => {
         if (!balance.denom.startsWith('ibc/')) {
             return balance;
         }
 
-        const infos = IbcConstants.OSMOSIS_IBC_INFOS.find((infos) => {
-            const ibcDenom = getIbcDenom(infos.sourceChannel, infos.minimalDenom);
-
-            if (ibcDenom === balance.denom) {
-                return true;
-            }
-        });
-
-        if (infos) {
+        const ibcDenom = getIbcDenom(sourceChannel, minimalDenom);
+        if (ibcDenom === balance.denom) {
             return {
                 amount: balance.amount,
-                denom: infos.minimalDenom,
+                denom: minimalDenom,
             };
         }
 

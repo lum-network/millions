@@ -1,14 +1,13 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
-import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import Long from 'long';
 import dayjs from 'dayjs';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, OsmosisClient } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OsmosisWalletModel } from 'models';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
+import { PoolsConstants, DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { LumWalletModel, OtherWalletModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -16,12 +15,19 @@ interface IbcTransferPayload {
     toAddress: string;
     amount: LumTypes.Coin;
     type: 'withdraw' | 'deposit';
+    ibcChannel: string;
     normalDenom: string;
 }
 
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: any[];
+}
+
+interface SetOtherWalletPayload {
+    denom: string;
+    balances?: LumTypes.Coin[];
+    address: string;
 }
 
 interface DepositToPoolPayload {
@@ -31,7 +37,9 @@ interface DepositToPoolPayload {
 
 interface WalletState {
     lumWallet: LumWalletModel | null;
-    osmosisWallet: OsmosisWalletModel | null;
+    otherWallets: {
+        [denom: string]: OtherWalletModel;
+    };
     prizeToClaim: LumTypes.Coin | null;
 }
 
@@ -39,10 +47,10 @@ export const wallet = createModel<RootModel>()({
     name: 'wallet',
     state: {
         lumWallet: null,
-        osmosisWallet: null,
+        otherWallets: {},
     } as WalletState,
     reducers: {
-        signInLum(state, payload: LumWallet) {
+        signInLum(state, payload: LumWallet): WalletState {
             return {
                 ...state,
                 lumWallet: {
@@ -53,17 +61,7 @@ export const wallet = createModel<RootModel>()({
                 },
             };
         },
-        signInOsmosis(state, payload: { address: string; offlineSigner: OfflineSigner }) {
-            return {
-                ...state,
-                osmosisWallet: {
-                    address: payload.address,
-                    offlineSigner: payload.offlineSigner,
-                    balances: [],
-                },
-            };
-        },
-        setLumWalletData(state, payload: SetWalletDataPayload) {
+        setLumWalletData(state, payload: SetWalletDataPayload): WalletState {
             return {
                 ...state,
                 ...(state.lumWallet && {
@@ -75,19 +73,20 @@ export const wallet = createModel<RootModel>()({
                 }),
             };
         },
-        setOsmosisWalletData(state, payload: SetWalletDataPayload) {
+        setOtherWalletData(state, payload: SetOtherWalletPayload): WalletState {
+            const { denom, ...data } = payload;
             return {
                 ...state,
-                ...(payload.balances &&
-                    state.osmosisWallet && {
-                        osmosisWallet: {
-                            ...state.osmosisWallet,
-                            balances: payload.balances,
-                        },
-                    }),
+                otherWallets: {
+                    ...state.otherWallets,
+                    [denom]: {
+                        address: data.address,
+                        balances: data.balances || [],
+                    },
+                },
             };
         },
-        setPrizeToClaim(state, payload: LumTypes.Coin | null) {
+        setPrizeToClaim(state, payload: LumTypes.Coin | null): WalletState {
             return {
                 ...state,
                 prizeToClaim: payload,
@@ -95,7 +94,7 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async connectWallet(payload: { silent: boolean }, state) {
+        async enableKeplrAndConnectLumWallet(payload: { chainIds: string[]; silent: boolean }, state) {
             if (state.wallet.lumWallet) {
                 return;
             }
@@ -178,7 +177,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await keplrWindow.keplr.enable(chainId);
+                    await keplrWindow.keplr.enable([...payload.chainIds, chainId]);
                     if (!keplrWindow.getOfflineSignerAuto) {
                         throw 'Cannot fetch offline signer';
                     }
@@ -188,36 +187,39 @@ export const wallet = createModel<RootModel>()({
                         dispatch.wallet.signInLum(lumWallet);
                         dispatch.wallet.getLumWalletBalances(lumWallet.getAddress());
                         dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
-                        /*  dispatch.wallet.getHistory(lumWallet.getAddress());
-                            dispatch.wallet.getTransactions(lumWallet.getAddress()); */
                         if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
                     }
-
-                    const osmosisOfflineSigner = await keplrWindow.getOfflineSignerAuto('osmosis-1');
-                    const accounts = await osmosisOfflineSigner.getAccounts();
-                    if (accounts.length > 0) {
-                        dispatch.wallet.signInOsmosis({
-                            address: accounts[0].address,
-                            offlineSigner: osmosisOfflineSigner,
-                        });
-                        await OsmosisClient.connect(osmosisOfflineSigner);
-                        dispatch.wallet.getOsmosisWalletBalances(null);
-                    }
-                    return;
                 } catch (e) {
                     if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
                     throw e;
                 }
             }
         },
-        async getOsmosisWalletBalances(_, state) {
-            if (state.wallet.osmosisWallet) {
-                const result = await OsmosisClient.getWalletBalance(state.wallet.osmosisWallet.address);
+        async connectOtherWallets() {
+            const keplrWindow = window as KeplrWindow;
+            if (keplrWindow.getOfflineSignerAuto) {
+                for (const pool of Object.values(PoolsConstants.POOLS)) {
+                    try {
+                        const offlineSigner = await keplrWindow.getOfflineSignerAuto(pool.chainId);
+                        const accounts = await offlineSigner.getAccounts();
+                        await WalletClient.connect(pool.rpc, offlineSigner);
 
-                if (result) {
-                    const { balances: osmosisBalances } = result;
+                        if (accounts.length > 0) {
+                            const res = await WalletClient.getWalletBalance(accounts[0].address);
 
-                    dispatch.wallet.setOsmosisWalletData({ balances: DenomsUtils.translateOsmosisIbcBalances([...osmosisBalances]) });
+                            dispatch.wallet.setOtherWalletData({
+                                address: accounts[0].address,
+                                balances: res
+                                    ? DenomsUtils.translateIbcBalances([...res.balances], pool.ibcDestChannel, pool.minimalDenom).filter((balance) =>
+                                          DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
+                                      )
+                                    : [],
+                                denom: pool.denom,
+                            });
+                        }
+
+                        WalletClient.disconnect();
+                    } catch {}
                 }
             }
         },
@@ -245,7 +247,7 @@ export const wallet = createModel<RootModel>()({
             dispatch.wallet.setPrizeToClaim(null);
         },
         async ibcTransfer(payload: IbcTransferPayload) {
-            const { toAddress, fromAddress, amount, normalDenom, type } = payload;
+            const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel } = payload;
 
             const convertedAmount = LumUtils.convertUnit(
                 {
@@ -277,7 +279,7 @@ export const wallet = createModel<RootModel>()({
                             toAddress,
                             coin,
                             'transfer',
-                            'channel-3',
+                            ibcChannel,
                             {
                                 revisionHeight: Long.fromNumber(0),
                                 revisionNumber: Long.fromNumber(0),
@@ -297,7 +299,7 @@ export const wallet = createModel<RootModel>()({
                             return null;
                         }
                     } else {
-                        const result = await OsmosisClient.ibcTransfer(fromAddress, toAddress, coin);
+                        const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
 
                         if (result) {
                             if (result.error) {

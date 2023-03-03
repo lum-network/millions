@@ -122,7 +122,7 @@ export default {
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
-                subtitle: 'Transfer your {{ denom }} from Osmosis to Lum Network',
+                subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
             },
             {
                 title: 'Deposit in the {{ denom }} pool',

@@ -7,7 +7,7 @@ export interface LumWalletModel {
     activities: any[];
 }
 
-export interface OsmosisWalletModel {
+export interface OtherWalletModel {
     address: string;
     balances: LumTypes.Coin[];
 }

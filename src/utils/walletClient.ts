@@ -1,32 +1,31 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { Coin } from '@lum-network/sdk-javascript/build/types';
-import { OSMOSIS_RPC } from 'constant';
 import dayjs from 'dayjs';
 import { I18n } from 'utils';
 import Long from 'long';
 import { showErrorToast } from './toast';
 
-class OsmosisClient {
+class WalletClient {
     chainId: string | null = null;
 
-    private osmosisClient: SigningStargateClient | null = null;
-    private static instance: OsmosisClient;
+    private walletClient: SigningStargateClient | null = null;
+    private static instance: WalletClient;
 
     static get Instance() {
-        if (!OsmosisClient.instance) {
-            OsmosisClient.instance = new OsmosisClient();
+        if (!WalletClient.instance) {
+            WalletClient.instance = new WalletClient();
         }
 
-        return OsmosisClient.instance;
+        return WalletClient.instance;
     }
 
     // Utils
 
-    connect = async (offlineSigner: OfflineSigner) => {
+    connect = async (rpc: string, offlineSigner: OfflineSigner) => {
         try {
-            const client = await SigningStargateClient.connectWithSigner(OSMOSIS_RPC, offlineSigner);
-            this.osmosisClient = client;
+            const client = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
+            this.walletClient = client;
             this.chainId = await client.getChainId();
         } catch {
             showErrorToast({ content: I18n.t('errors.client.osmosis') });
@@ -34,9 +33,9 @@ class OsmosisClient {
     };
 
     disconnect = () => {
-        if (this.osmosisClient) {
-            this.osmosisClient.disconnect();
-            this.osmosisClient = null;
+        if (this.walletClient) {
+            this.walletClient.disconnect();
+            this.walletClient = null;
             this.chainId = null;
         }
     };
@@ -44,11 +43,11 @@ class OsmosisClient {
     // Getters
 
     getWalletBalance = async (address: string) => {
-        if (this.osmosisClient === null) {
+        if (this.walletClient === null) {
             return null;
         }
 
-        const balances = await this.osmosisClient.getAllBalances(address);
+        const balances = await this.walletClient.getAllBalances(address);
 
         return {
             balances,
@@ -57,14 +56,14 @@ class OsmosisClient {
 
     // Operations
 
-    ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin) => {
-        if (this.osmosisClient) {
-            const res = await this.osmosisClient.sendIbcTokens(
+    ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string) => {
+        if (this.walletClient) {
+            const res = await this.walletClient.sendIbcTokens(
                 fromWallet,
                 toAddress,
                 amount,
                 'transfer',
-                'channel-115',
+                channel,
                 {
                     revisionHeight: Long.fromNumber(0),
                     revisionNumber: Long.fromNumber(0),
@@ -86,4 +85,4 @@ class OsmosisClient {
     };
 }
 
-export default OsmosisClient.Instance;
+export default WalletClient.Instance;
