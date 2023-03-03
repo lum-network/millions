@@ -61,6 +61,7 @@ export default {
             p2: 'You’re eligible to all the next\nprizes automatically ',
             p3: 'You win! Auto-compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for another chance next week!',
+            or: 'OR',
         },
         pools: {
             title: 'Pools Available',

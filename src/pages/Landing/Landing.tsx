@@ -58,7 +58,7 @@ const Landing = () => {
             </div>
             <div id='howItWorks' className='winners col-12 d-flex flex-column align-items-center'>
                 <h1 className='text-center'>{I18n.t('landing.winners.title')}</h1>
-                <Card className='w-100 d-flex align-items-center'>
+                <Card withoutPadding className='w-100 d-flex flex-xl-row flex-column align-items-center p-3 py-5 p-xl-5'>
                     <div className='d-flex flex-column align-items-center'>
                         <div className='square'>
                             <img src={cosmonautWithCoin} alt='Cosmonaut with coin' className='cosmonaut-coin' />
@@ -76,21 +76,25 @@ const Landing = () => {
                         <div className='number'>2</div>
                         <span className='legend'>{I18n.t('landing.winners.p2')}</span>
                     </div>
+                    <div className='d-flex d-xl-none'>
+                        <img src={landingArrow} alt='arrow' className='arrow' />
+                    </div>
                     <div className='mx-4'>
                         <img src={landingDoubleArrows} alt='Double arrows' className='arrow-double' />
                     </div>
                     <div className='image-group'>
-                        <div className='d-flex align-items-center'>
+                        <div className='d-flex flex-column flex-xl-row align-items-center'>
                             <div className='square'>
                                 <img src={cosmonautWithDuck} alt='Cosmonaut with duck' className='cosmonaut-duck' />
                             </div>
-                            <div className='legend'>{I18n.t('landing.winners.p3')}</div>
+                            <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p3')}</div>
                         </div>
-                        <div className='d-flex align-items-center'>
+                        <div className='or'>{I18n.t('landing.winners.or')}</div>
+                        <div className='d-flex flex-column flex-xl-row align-items-center'>
                             <div className='square'>
                                 <img src={cosmonautZen} alt='Cosmonaut zen' className='cosmonaut-zen' />
                             </div>
-                            <div className='legend'>{I18n.t('landing.winners.p4')}</div>
+                            <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p4')}</div>
                         </div>
                     </div>
                 </Card>
