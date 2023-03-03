@@ -9,11 +9,15 @@
         font-size: 65px;
         line-height: 80px;
         color: $color-primary;
-        margin-bottom: 24px;
 
         @include media-breakpoint-down(xxl) {
             font-size: 55px;
             line-height: 70px;
+        }
+
+        @include media-breakpoint-down(md) {
+            font-size: 38px;
+            line-height: 46px;
         }
     }
 
@@ -54,7 +58,7 @@
     }
 
     .cosmos-game-right {
-        height: 480px;
+        margin-top: 70px;
     }
 
     .winners {
@@ -108,11 +112,46 @@
             justify-content: space-between;
             height: 350px;
 
+            @include media-breakpoint-down(xl) {
+                height: unset;
+            }
+
             .legend {
                 position: unset;
                 margin-left: 24px;
-                width: 50%;
+                width: 60%;
                 text-align: left;
+
+                @include media-breakpoint-down(xxl) {
+                    width: 49%;
+                }
+
+                @include media-breakpoint-down(xl) {
+                    width: 40%;
+                    text-align: center;
+                }
+
+                @include media-breakpoint-down(md) {
+                    width: 60%;
+                }
+
+                @include media-breakpoint-down(sm) {
+                    width: 90%;
+                }
+            }
+
+            .or {
+                display: none;
+                @include media-breakpoint-down(xl) {
+                    display: unset;
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 32px;
+                    line-height: 38px;
+                    text-align: center;
+                    color: $color-primary;
+                    margin: 40px 0;
+                }
             }
         }
 
@@ -132,6 +171,11 @@
             background-color: $color-primary;
             color: $color-white;
             margin: 24px 0;
+
+            @include media-breakpoint-down(xl) {
+                position: unset;
+                margin: 12px 0;
+            }
         }
 
         .legend {
@@ -143,14 +187,139 @@
             line-height: 19px;
             text-align: center;
             color: $color-black;
+
+            @include media-breakpoint-down(xl) {
+                position: unset;
+            }
         }
 
         .arrow {
-            //margin-top: 70px;
+            @include media-breakpoint-down(xl) {
+                transform: rotate(90deg);
+                margin: 50px 0 80px 0;
+            }
         }
 
         .arrow-double {
-            //margin-top: -35px;
+            @include media-breakpoint-down(xl) {
+                display: none;
+            }
+        }
+    }
+
+    .pools {
+        padding-top: 70px;
+
+        .tvl-legend {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 23px;
+            color: $color-primary;
+        }
+
+        .tvl-value {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 23px;
+            color: $color-black;
+        }
+
+        .cta {
+            width: 150px;
+
+            @include media-breakpoint-down(xl) {
+                width: 250px;
+            }
+
+            @include media-breakpoint-down(lg) {
+                width: 80%;
+            }
+
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
+
+        .pools-cards-container {
+            .pool-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                margin-right: 24px;
+                flex: 0 0 auto;
+                width: 416px;
+                height: 390px;
+
+                @include media-breakpoint-down(xxl) {
+                    width: 356px;
+                }
+
+                @include media-breakpoint-down(lg) {
+                    width: 350px;
+                }
+
+                @include media-breakpoint-down(md) {
+                    width: 320px;
+                }
+
+                .name {
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 16px;
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    color: $color-black;
+                    border: $color-black 1px solid;
+                    border-radius: 20px;
+                    padding: 4px 10px;
+                    text-transform: uppercase;
+                }
+
+                .tvl-container {
+                    .tvl-value {
+                        font-style: normal;
+                        font-weight: 300;
+                        font-size: 16px;
+                        line-height: 19px;
+                    }
+
+                    .tvl {
+                        font-style: normal;
+                        font-weight: 400;
+                        font-size: 34px;
+                        line-height: 41px;
+                        color: $color-black;
+                        text-transform: uppercase;
+                    }
+
+                    .tvl-legend {
+                        text-transform: uppercase;
+                        font-style: normal;
+                        font-weight: 300;
+                        font-size: 16px;
+                        line-height: 19px;
+                        color: $color-black;
+                    }
+                }
+
+                .prize-card {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    width: 100%;
+                    padding: 24px;
+                    color: $color-primary;
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 16px;
+                    line-height: 19px;
+                }
+            }
         }
     }
 }
