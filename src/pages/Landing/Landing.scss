@@ -54,7 +54,7 @@
     }
 
     .cosmos-game-right {
-        height: 480px;
+        margin-top: 70px;
     }
 
     .winners {
@@ -111,8 +111,12 @@
             .legend {
                 position: unset;
                 margin-left: 24px;
-                width: 50%;
+                width: 60%;
                 text-align: left;
+
+                @include media-breakpoint-down(xxl) {
+                    width: 49%;
+                }
             }
         }
 
@@ -151,6 +155,86 @@
 
         .arrow-double {
             //margin-top: -35px;
+        }
+    }
+
+    .pools {
+        padding-top: 70px;
+
+        .pools-cards-container {
+            .pool-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                margin-right: 24px;
+                flex: 0 0 auto;
+                width: 416px;
+                height: 390px;
+
+                @include media-breakpoint-down(lg) {
+                    width: 350px;
+                }
+
+                @include media-breakpoint-down(md) {
+                    width: 320px;
+                }
+
+                .name {
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 16px;
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    color: $color-black;
+                    border: $color-black 1px solid;
+                    border-radius: 20px;
+                    padding: 4px 10px;
+                    text-transform: uppercase;
+                }
+
+                .tvl-container {
+                    .tvl-value {
+                        font-style: normal;
+                        font-weight: 300;
+                        font-size: 16px;
+                        line-height: 19px;
+                    }
+
+                    .tvl {
+                        font-style: normal;
+                        font-weight: 400;
+                        font-size: 34px;
+                        line-height: 41px;
+                        color: $color-black;
+                        text-transform: uppercase;
+                    }
+
+                    .tvl-legend {
+                        text-transform: uppercase;
+                        font-style: normal;
+                        font-weight: 300;
+                        font-size: 16px;
+                        line-height: 19px;
+                        color: $color-black;
+                    }
+                }
+
+                .prize-card {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    width: 100%;
+                    padding: 24px;
+                    color: $color-primary;
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 16px;
+                    line-height: 19px;
+                }
+            }
         }
     }
 }

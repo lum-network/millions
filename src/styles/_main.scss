@@ -39,3 +39,35 @@ html body {
     height: 56px;
     object-fit: contain;
 }
+
+.cards-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 calc((100vw - 1080px) / 2 * -1);
+    padding: 0 calc((100vw - 1080px) / 2);
+
+    @include media-breakpoint-down(xl) {
+        margin: 0 calc((100vw - 930px) / 2 * -1);
+        padding: 0 calc((100vw - 930px) / 2);
+    }
+
+    @include media-breakpoint-down(lg) {
+        margin: 0 calc((100vw - 690px) / 2 * -1);
+        padding: 0 calc((100vw - 690px) / 2);
+    }
+
+    @include media-breakpoint-down(md) {
+        margin: 0 calc((100vw - 510px) / 2 * -1);
+        padding: 0 calc((100vw - 510px) / 2);
+    }
+
+    @include media-breakpoint-down(sm) {
+        margin: 0 calc((100vw - 100%) / 2 * -1);
+        padding: 0 calc((100vw - 100%) / 2);
+    }
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

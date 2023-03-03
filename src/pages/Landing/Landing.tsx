@@ -16,6 +16,7 @@ import landingDoubleArrows from 'assets/images/landing_double_arrows.svg';
 import numeral from 'numeral';
 
 import './Landing.scss';
+import PoolCard from './components/PoolCard';
 
 const Landing = () => {
     return (
@@ -93,6 +94,14 @@ const Landing = () => {
                         </div>
                     </div>
                 </Card>
+            </div>
+            <div className='col-12 pools'>
+                <h1>{I18n.t('landing.pools.title')}</h1>
+                <div className='pools-cards-container cards-list'>
+                    <PoolCard denom={'atom'} tvl={30000} prize={58} />
+                    <PoolCard denom={'osmo'} tvl={30000} prize={58} />
+                    <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
+                </div>
             </div>
         </div>
     );

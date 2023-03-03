@@ -62,6 +62,11 @@ export default {
             p3: 'You win! Auto-compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for another chance next week!',
         },
+        pools: {
+            title: 'Pools Available',
+            deposited: 'Deposited',
+            prizeToWin: 'Prize to win',
+        },
     },
     home: {
         title: 'Home',
