@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import Select, { GroupBase, OptionProps, components, SingleValueProps } from 'react-select';
 import { DenomsUtils, NumbersUtils } from 'utils';
 
@@ -9,6 +10,7 @@ interface Props {
     value: string;
     options: { value: string; label: string }[];
     balances: { denom: string; amount: string }[];
+    isLoading?: boolean;
     label?: string;
     readonly?: boolean;
     className?: string;
@@ -71,7 +73,7 @@ const AssetValue = (
     );
 };
 
-const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className }: Props): JSX.Element => {
+const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className, isLoading }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
@@ -82,7 +84,7 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
         <div className={`custom-select ${readonly && 'readonly'} ${className}`}>
             {label && (
                 <label htmlFor='custom-select-input' className='form-label ms-2 fw-semibold'>
-                    {label}
+                    {isLoading ? <Skeleton width={120} /> : label}
                 </label>
             )}
             {readonly ? (
@@ -91,10 +93,11 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                     <br />
                     {selectedOptionLabel && <small>({value})</small>}
                 </p>
+            ) : isLoading ? (
+                <Skeleton height={60} />
             ) : (
                 <Select
                     id='custom-select-input'
-                    defaultValue={{ value, label: selectedOptionLabel }}
                     value={{ value, label: selectedOptionLabel }}
                     components={{
                         Option: (props) => <AssetOption {...props} balances={balances} />,

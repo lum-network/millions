@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import { NumbersUtils } from 'utils';
 
 import Button from '../Button/Button';
@@ -14,11 +15,12 @@ interface Props {
     className?: string;
     inputClassName?: string;
     error?: string;
+    isLoading?: boolean;
     inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 const AmountInput = (props: Props) => {
-    const { onMax, label, sublabel, className, error, inputClassName, inputProps, price } = props;
+    const { onMax, label, sublabel, className, error, inputClassName, inputProps, price, isLoading } = props;
     const [usdValue, setUsdValue] = useState<number | null>(null);
 
     useEffect(() => {
@@ -34,21 +36,25 @@ const AmountInput = (props: Props) => {
         <div className={`amount-input ${className}`}>
             {label || sublabel ? (
                 <div className='labels-container mb-2'>
-                    {label ? <label className='label'>{label}</label> : null}
-                    {sublabel ? <label className='sublabel'>{sublabel}</label> : null}
+                    {label ? <label className='label'>{isLoading ? <Skeleton width={190} /> : label}</label> : null}
+                    {sublabel ? <label className='sublabel'>{isLoading ? <Skeleton width={120} /> : sublabel}</label> : null}
                 </div>
             ) : null}
-            <div className={`input-container px-3 ${usdValue ? 'py-2' : 'py-3'}`}>
-                <div className='w-100 d-flex flex-column'>
-                    <input className={`default-input p-0 ${inputClassName}`} {...inputProps} />
-                    {usdValue ? <p className='price-label mb-0 text-start'>${NumbersUtils.formatTo6digit(usdValue)}</p> : null}
+            {isLoading ? (
+                <Skeleton height={60} />
+            ) : (
+                <div className={`input-container px-3 ${usdValue ? 'py-2' : 'py-3'}`}>
+                    <div className='w-100 d-flex flex-column'>
+                        <input className={`default-input p-0 ${inputClassName}`} {...inputProps} />
+                        {usdValue ? <p className='price-label mb-0 text-start'>${NumbersUtils.formatTo6digit(usdValue)}</p> : null}
+                    </div>
+                    {onMax ? (
+                        <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
+                            MAX
+                        </Button>
+                    ) : null}
                 </div>
-                {onMax ? (
-                    <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
-                        MAX
-                    </Button>
-                ) : null}
-            </div>
+            )}
             {error ? <p className='text-danger text-start mt-2'>{error}</p> : null}
         </div>
     );

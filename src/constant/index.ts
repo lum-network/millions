@@ -4,9 +4,9 @@ import * as NavigationConstants from './navigation';
 import * as DenomsConstants from './denoms';
 import * as IbcConstants from './ibc';
 import * as LandingConstants from './landing';
+import * as PoolsConstants from './pools';
 
 export const LUM_COINGECKO_ID = 'lum-network';
 export const LUM_WALLET_LINK = 'https://wallet.lum.network';
-export const OSMOSIS_RPC = 'https://rpc.osmosis.zone';
 
-export { ApiConstants, FirebaseConstants, DenomsConstants, NavigationConstants, IbcConstants, LandingConstants };
+export { ApiConstants, FirebaseConstants, DenomsConstants, NavigationConstants, IbcConstants, LandingConstants, PoolsConstants };

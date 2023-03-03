@@ -3,6 +3,7 @@ import RootNavigator from 'navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
 import { KeplrUtils } from 'utils';
+import { PoolsConstants } from 'constant';
 
 const Core = () => {
     const dispatch = useDispatch<Dispatch>();
@@ -11,7 +12,8 @@ const Core = () => {
     useEffect(() => {
         const autoConnect = async () => {
             if (KeplrUtils.isKeplrInstalled()) {
-                await dispatch.wallet.connectWallet({ silent: true }).finally(() => null);
+                await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true, chainIds: Object.values(PoolsConstants.POOLS).map((pool) => pool.chainId) }).finally(() => null);
+                await dispatch.wallet.connectOtherWallets();
             }
         };
 

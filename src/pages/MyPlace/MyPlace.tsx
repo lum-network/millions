@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import numeral from 'numeral';
-import { LumTypes } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -13,14 +13,14 @@ import downArrow from 'assets/images/down_arrow.svg';
 import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect } from 'components';
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
+import { NavigationConstants, PoolsConstants } from 'constant';
 
 import './MyPlace.scss';
-import { NavigationConstants } from 'constant';
 
 const MyPlace = () => {
-    const { lumWallet, osmosisWallet, balances, activities, prizeToClaim, prices } = useSelector((state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizeToClaim, prices } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
-        osmosisWallet: state.wallet.osmosisWallet,
+        otherWallets: state.wallet.otherWallets,
         balances: state.wallet.lumWallet?.balances,
         activities: state.wallet.lumWallet?.activities,
         prizeToClaim: state.wallet.prizeToClaim,
@@ -31,28 +31,45 @@ const MyPlace = () => {
 
     const withdrawForm = useFormik({
         initialValues: {
-            denom: balances && balances.length > 0 ? balances[0].denom : '',
+            withdrawAddress: '',
+            denom: '',
             amount: '',
         },
         validationSchema: yup.object().shape({
+            withdrawAddress: yup.string().required(I18n.t('errors.generic.required', { field: 'Withdraw address' })),
             denom: yup.string().required(I18n.t('errors.generic.required', { field: 'Asset' })),
-            amount: yup.number().required(I18n.t('errors.generic.required', { field: 'Amount' })),
+            amount: yup.string().required(I18n.t('errors.generic.required', { field: 'Amount' })),
         }),
-        onSubmit: (values) => {
-            if (lumWallet && osmosisWallet) {
-                dispatch.wallet.ibcTransfer({
-                    toAddress: osmosisWallet.address,
+        onSubmit: async (values) => {
+            const normalDenom = DenomsUtils.getNormalDenom(values.denom);
+            const destWallet = otherWallets[normalDenom];
+            const amount = values.amount.toString();
+
+            if (lumWallet && destWallet) {
+                await dispatch.wallet.ibcTransfer({
+                    toAddress: destWallet.address,
                     fromAddress: lumWallet.address,
                     type: 'withdraw',
                     amount: {
-                        amount: values.amount,
-                        denom: values.denom,
+                        amount,
+                        denom: PoolsConstants.POOLS[normalDenom].ibcDenom,
                     },
-                    normalDenom: DenomsUtils.getNormalDenom(values.denom),
+                    normalDenom: normalDenom,
+                    ibcChannel: PoolsConstants.POOLS[normalDenom].ibcSourceChannel,
                 });
             }
         },
     });
+
+    const onDenomChange = async (denom: string) => {
+        const normalDenom = DenomsUtils.getNormalDenom(denom);
+
+        await withdrawForm.setValues({
+            withdrawAddress: otherWallets[normalDenom]?.address || '',
+            denom,
+            amount: '0',
+        });
+    };
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -70,12 +87,22 @@ const MyPlace = () => {
                             <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
                         </div>
                     </div>
-                    <div className='d-flex flex-row align-items-center'>
-                        <Button outline className='me-3' data-bs-toggle='modal' data-bs-target='#withdrawModal'>
-                            {I18n.t('myPlace.withdraw')}
-                        </Button>
-                        <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
-                    </div>
+                    {normalDenom !== LumConstants.LumDenom ? (
+                        <div className='d-flex flex-row align-items-center'>
+                            <Button
+                                outline
+                                className='me-3'
+                                data-bs-toggle='modal'
+                                data-bs-target='#withdrawModal'
+                                onClick={async () => {
+                                    onDenomChange(asset.denom);
+                                }}
+                            >
+                                {I18n.t('myPlace.withdraw')}
+                            </Button>
+                            <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
+                        </div>
+                    ) : null}
                 </div>
             </Card>
         );
@@ -156,7 +183,7 @@ const MyPlace = () => {
                     <div className='withdraw-title'>{I18n.t('withdraw.title')}</div>
                     <div className='d-flex flex-column position-relative mt-4'>
                         <div className='address-container mb-3'>{lumWallet?.address}</div>
-                        <div className='address-container'>{osmosisWallet?.address}</div>
+                        <div className='address-container'>{withdrawForm.values.withdrawAddress}</div>
                         <div className='arrow-container position-absolute top-50 start-50 translate-middle'>
                             <img src={downArrow} alt='down arrow' />
                         </div>
@@ -168,7 +195,7 @@ const MyPlace = () => {
                             withdrawForm.values.denom
                                 ? I18n.t('withdraw.amountInput.sublabel', {
                                       amount: NumbersUtils.formatTo6digit(WalletUtils.getMaxAmount(withdrawForm.values.denom, balances)),
-                                      denom: withdrawForm.values.denom,
+                                      denom: DenomsUtils.getNormalDenom(withdrawForm.values.denom).toUpperCase(),
                                   })
                                 : undefined
                         }
@@ -190,14 +217,16 @@ const MyPlace = () => {
                     />
                     <AssetsSelect
                         balances={balances || []}
-                        value={balances && balances.length > 0 ? balances[0].denom : ''}
-                        onChange={(value) => withdrawForm.setFieldValue('denom', value)}
-                        options={(balances || []).map((balance) => ({
-                            label: DenomsUtils.getNormalDenom(balance.denom),
-                            value: balance.denom,
-                        }))}
+                        value={withdrawForm.values.denom}
+                        onChange={async (denom) => await onDenomChange(denom)}
+                        options={(balances || [])
+                            .filter((balance) => balance.denom !== LumConstants.MicroLumDenom)
+                            .map((balance) => ({
+                                label: DenomsUtils.getNormalDenom(balance.denom),
+                                value: balance.denom,
+                            }))}
                     />
-                    <Button type='submit' className='w-100 mt-4'>
+                    <Button type='submit' data-bs-dismiss='modal' className='w-100 mt-4'>
                         {I18n.t('myPlace.withdraw')}
                     </Button>
                 </form>
