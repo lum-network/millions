@@ -2,7 +2,7 @@ import React from 'react';
 
 import { I18n } from 'utils';
 import { Button, Card } from 'components';
-import { NavigationConstants } from 'constant';
+import { LandingConstants, NavigationConstants } from 'constant';
 import cosmonautWithBalloons2 from 'assets/images/cosmonaut_with_balloons_2.png';
 import cosmonautWithBalloons from 'assets/images/cosmonaut_with_balloons.png';
 import cosmonautOnTheMoon from 'assets/images/cosmonaut_on_the_moon.png';
@@ -19,6 +19,7 @@ import numeral from 'numeral';
 
 import './Landing.scss';
 import PoolCard from './components/PoolCard';
+import TestimonialCard from './components/TestimonialCard';
 
 const Landing = () => {
     const onClickNewPool = () => {
@@ -136,6 +137,11 @@ const Landing = () => {
                         {I18n.t('landing.pools.cta')}
                     </Button>
                 </div>
+            </div>
+            <div className='testimonials-container cards-list'>
+                {LandingConstants.TESTIMONIALS.map((testimonial, index) => (
+                    <TestimonialCard key={index} testimonial={testimonial} />
+                ))}
             </div>
         </div>
     );
