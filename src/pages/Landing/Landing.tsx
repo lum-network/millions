@@ -144,6 +144,16 @@ const Landing = () => {
                         ))}
                     </div>
                 </div>
+                <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
+                <div className='future-left col-12 col-xl-7 order-2 order-xl-0'>
+                    <h1 className='mb-4'>{I18n.t('landing.future.title')}</h1>
+                    <p>{I18n.t('landing.future.p1')}</p>
+                    <p>{I18n.t('landing.future.p2')}</p>
+                    <Button className='cta'>{I18n.t('landing.future.cta')}</Button>
+                </div>
+                <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-2 d-flex justify-content-center align-self-center'>
+                    <img className='cosmonaut-in-pool' src={cosmonautInPool} alt='Cosmonaut in pool' />
+                </div>
             </div>
         </div>
     );

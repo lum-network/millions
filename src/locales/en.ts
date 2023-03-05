@@ -71,6 +71,13 @@ export default {
             tvl: 'Total Value Locked',
             cta: 'See all pools',
         },
+        future: {
+            title: 'The Future of Savings\nwith Cosmos Millions',
+            // eslint-disable-next-line max-len
+            p1: 'The utilization of Cosmos technology (Cosmos-SDK, Tendermint BFT, IBC, ICA) for Prize Linked Savings overthrows the savings methods in history. The use of sovereign and interoperable network of blockchains allows easy access with minimal fees, making it a standout in the blockchain industry and another confirmation of the limitless potential of the Interchain of Blockchains.',
+            p2: 'With an open-source and audited protocol ensuring that prizes are distributed fairly, saving money has never been so rewarding!',
+            cta: 'Want to retire in style?',
+        },
     },
     home: {
         title: 'Home',

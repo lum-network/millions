@@ -400,4 +400,36 @@
             }
         }
     }
+
+    .future-right {
+        height: 400px;
+
+        @include media-breakpoint-down(md) {
+            height: 270px;
+        }
+
+        img.cosmonaut-in-pool {
+            position: absolute;
+            width: 556px;
+            height: 556px;
+            top: -100px;
+
+            @include media-breakpoint-down(xl) {
+                top: -50px;
+            }
+
+            @include media-breakpoint-down(md) {
+                width: 426px;
+                height: 426px;
+            }
+        }
+    }
+
+    .future-left {
+        .cta {
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
+    }
 }
