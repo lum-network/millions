@@ -25,11 +25,15 @@ Clone the project with:
 
 > $ git clone git@github.com:lum-network/millions.git
 
-### Install dependencies
+### Install dependencies and cp env file
 
 Install dependencies with:
 
 > $ yarn
+
+Copy the `.env.dev` file to `.env`
+
+> $ cp .env.dev .env
 
 ### Running your app
 
