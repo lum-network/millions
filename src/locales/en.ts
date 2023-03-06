@@ -78,6 +78,9 @@ export default {
             p2: 'With an open-source and audited protocol ensuring that prizes are distributed fairly, saving money has never been so rewarding!',
             cta: 'Want to retire in style?',
         },
+        community: {
+            title: 'Join the Cosmos\nMillions Community',
+        },
     },
     home: {
         title: 'Home',

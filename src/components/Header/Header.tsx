@@ -91,12 +91,12 @@ const Header = () => {
                     </li>
                     <li className='mx-3 mx-lg-4 d-none d-sm-block'>
                         <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img src={twitterButton} alt='Twitter' />
+                            <img className='scale-hover' src={twitterButton} alt='Twitter' />
                         </a>
                     </li>
                     <li className='d-none d-sm-block'>
                         <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img src={discordButton} alt='Discord' />
+                            <img className='scale-hover' src={discordButton} alt='Discord' />
                         </a>
                     </li>
                     <li className='ms-3 ms-lg-4'>

@@ -32,6 +32,14 @@ html body {
     object-fit: contain;
 }
 
+.scale-hover {
+    transition: all linear 150ms;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
 .cards-list {
     display: flex;
     flex-wrap: nowrap;

@@ -21,6 +21,14 @@
         }
     }
 
+    h3 {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 42px;
+        line-height: 50px;
+        color: $color-primary;
+    }
+
     p {
         font-style: normal;
         font-weight: 300;
@@ -429,6 +437,28 @@
         .cta {
             @include media-breakpoint-down(md) {
                 width: 100%;
+            }
+        }
+    }
+
+    .community {
+        padding-top: 150px;
+
+        .community-card {
+            img.cosmonaut-rocket {
+                position: absolute;
+                width: 252px;
+                height: 240px;
+                top: -130px;
+                left: -130px;
+            }
+
+            @include media-breakpoint-down(md) {
+                padding-top: 100px !important;
+
+                img.cosmonaut-rocket {
+                    left: calc(50% - 126px);
+                }
             }
         }
     }

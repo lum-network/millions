@@ -15,6 +15,8 @@ import cosmonautDab from 'assets/images/cosmonaut_dab.png';
 import coinsStaked2 from 'assets/images/coins_staked_2.svg';
 import landingArrow from 'assets/images/landing_arrow.svg';
 import landingDoubleArrows from 'assets/images/landing_double_arrows.svg';
+import twitterPlain from 'assets/images/twitter_plain.svg';
+import discordPlain from 'assets/images/discord_plain.svg';
 import numeral from 'numeral';
 
 import './Landing.scss';
@@ -145,14 +147,32 @@ const Landing = () => {
                     </div>
                 </div>
                 <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
-                <div className='future-left col-12 col-xl-7 order-2 order-xl-0'>
+                <div className='future-left col-12 col-xl-7 order-1 order-xl-0'>
                     <h1 className='mb-4'>{I18n.t('landing.future.title')}</h1>
                     <p>{I18n.t('landing.future.p1')}</p>
                     <p>{I18n.t('landing.future.p2')}</p>
                     <Button className='cta'>{I18n.t('landing.future.cta')}</Button>
                 </div>
-                <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-2 d-flex justify-content-center align-self-center'>
+                <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
                     <img className='cosmonaut-in-pool' src={cosmonautInPool} alt='Cosmonaut in pool' />
+                </div>
+                <div className='community col-12 d-flex align-items-center flex-column order-2'>
+                    <div className='col-xxl-7 col-xl-8 col-lg-9 col-md-10 col-12'>
+                        <Card className='d-flex justify-content-between align-items-center flex-column flex-lg-row community-card'>
+                            <img src={cosmonautWithRocket} alt='Cosmonaut with rocket' className='cosmonaut-rocket' />
+                            <div>
+                                <h3 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h3>
+                            </div>
+                            <div className='d-flex mt-4 mt-lg-0'>
+                                <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
+                                    <img src={twitterPlain} alt='Twitter' />
+                                </a>
+                                <a className='scale-hover' href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer'>
+                                    <img src={discordPlain} alt='discord' />
+                                </a>
+                            </div>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
