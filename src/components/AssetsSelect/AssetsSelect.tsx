@@ -1,3 +1,4 @@
+import { SmallerDecimal } from 'components';
 import React, { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import Select, { GroupBase, OptionProps, components, SingleValueProps } from 'react-select';
@@ -41,7 +42,7 @@ const AssetOption = (
                 <div className='d-flex flex-row align-items-center'>
                     {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2' />} {props.data.label}
                 </div>
-                {balance && <div className='d-flex flex-row align-items-center asset-amount'>{NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount))}</div>}
+                {balance && <SmallerDecimal className='asset-amount' nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount))} />}
             </div>
         </components.Option>
     );
