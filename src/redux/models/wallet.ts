@@ -1,9 +1,6 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
-import { SigningStargateClient } from '@cosmjs/stargate';
-import Long from 'long';
-import dayjs from 'dayjs';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
 import { PoolsConstants, DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
@@ -17,6 +14,7 @@ interface IbcTransferPayload {
     type: 'withdraw' | 'deposit';
     ibcChannel: string;
     normalDenom: string;
+    chainId: string;
 }
 
 interface SetWalletDataPayload {
@@ -247,7 +245,7 @@ export const wallet = createModel<RootModel>()({
             dispatch.wallet.setPrizeToClaim(null);
         },
         async ibcTransfer(payload: IbcTransferPayload) {
-            const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel } = payload;
+            const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
             const convertedAmount = LumUtils.convertUnit(
                 {
@@ -264,62 +262,41 @@ export const wallet = createModel<RootModel>()({
 
             const toastId = ToastUtils.showLoadingToast({ content: type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
 
-            const chainId = LumClient.getChainId();
-
             if (chainId) {
                 try {
-                    if (type === 'withdraw') {
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        const lumOfflineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
 
-                        const client = await SigningStargateClient.connectWithSigner(LumClient.getRpc(), lumOfflineSigner);
+                    const rpc = type === 'withdraw' ? LumClient.getRpc() : PoolsConstants.POOLS[normalDenom].rpc;
 
-                        const result = await client.sendIbcTokens(
-                            fromAddress,
-                            toAddress,
-                            coin,
-                            'transfer',
-                            ibcChannel,
-                            {
-                                revisionHeight: Long.fromNumber(0),
-                                revisionNumber: Long.fromNumber(0),
-                            },
-                            dayjs().utc().add(5, 'minutes').unix().valueOf(),
-                            {
-                                amount: [],
-                                gas: '200000',
-                            },
-                        );
+                    if (rpc) {
+                        await WalletClient.connect(rpc, offlineSigner);
 
-                        if (result && result.code === 0) {
-                            ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully withdrawn ${amount.amount} ${normalDenom.toUpperCase()}` });
-                            return result.transactionHash;
+                        const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+
+                        WalletClient.disconnect();
+
+                        if (result && !result.error) {
+                            ToastUtils.updateLoadingToast(toastId, 'success', {
+                                content: `Successfully ${type === 'withdraw' ? 'withdrawn' : 'deposited'} ${amount.amount} ${normalDenom.toUpperCase()}`,
+                            });
+                            return result.hash;
                         } else {
-                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result.rawLog || 'Failed to withdraw' });
+                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result?.error || `Failed to ${type}` });
                             return null;
                         }
                     } else {
-                        const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
-
-                        if (result) {
-                            if (result.error) {
-                                ToastUtils.updateLoadingToast(toastId, 'error', { content: result.error || 'Failed to deposit' });
-                                return null;
-                            } else {
-                                ToastUtils.updateLoadingToast(toastId, 'success', { content: `Successfully deposited ${amount.amount} ${normalDenom.toUpperCase()}` });
-                                return result.hash;
-                            }
-                        }
+                        ToastUtils.updateLoadingToast(toastId, 'error', { content: `${normalDenom.toUpperCase()} rpc is unavailble.` });
+                        return null;
                     }
                 } catch (e) {
                     ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
                     return null;
                 }
             } else {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: `Unable to get lum network chainId to ${type}.` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: `${normalDenom.toUpperCase()} chain-id not found` });
                 return null;
             }
-            return null;
         },
         async depositToPool(payload: DepositToPoolPayload) {
             const result = await LumClient.depositToPool(payload.pool, payload.amount);

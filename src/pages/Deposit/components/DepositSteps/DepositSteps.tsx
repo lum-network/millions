@@ -10,8 +10,8 @@ import Skeleton from 'react-loading-skeleton';
 
 import star from 'assets/images/yellow_star.svg';
 import infoIcon from 'assets/images/info.svg';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
-import { AmountInput, AssetsSelect, Button, Card } from 'components';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
 import { LumWalletModel, OtherWalletModel } from 'models';
 import { NavigationConstants, PoolsConstants } from 'constant';
 
@@ -75,6 +75,7 @@ const DepositStep1 = (
                 },
                 normalDenom: PoolsConstants.POOLS[denom].denom,
                 ibcChannel: PoolsConstants.POOLS[denom].ibcDestChannel,
+                chainId: PoolsConstants.POOLS[denom].chainId,
             });
 
             if (hash) {
@@ -93,17 +94,17 @@ const DepositStep1 = (
 
     return (
         <form onSubmit={transferForm.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
-            <div className='w-100'>
+            <div className='w-100 mt-5'>
                 <AmountInput
                     isLoading={isLoading}
                     className='amount-input'
                     label={I18n.t('withdraw.amountInput.label')}
                     sublabel={I18n.t('withdraw.amountInput.sublabel', {
                         amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(otherWallet.balances[0].amount)),
-                        denom,
+                        denom: denom.toUpperCase(),
                     })}
                     onMax={() => {
-                        transferForm.setFieldValue('amount', otherWallet.balances[0].amount);
+                        transferForm.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
                     }}
                     inputProps={{
                         type: 'number',
@@ -183,7 +184,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                     <img src={DenomsUtils.getIconFromDenom(denom)} className='me-3' />
                     {denom.toUpperCase()}
                 </span>
-                <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : NumbersUtils.formatTo6digit(depositAmount)}</div>
+                <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
             </Card>
             <div className='fees-warning mt-4'>
                 <img src={infoIcon} className='me-2' height='14' width='14' />
@@ -215,7 +216,12 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
 
     return (
         <div className='d-flex flex-column px-5 px-lg-0 px-xl-5 mt-5'>
-            <Button className='deposit-cta'>
+            <Button
+                className='deposit-cta'
+                onClick={() => {
+                    window.open(`${NavigationConstants.TWEET_URL}?text=${encodeURI(I18n.t('deposit.shareTwitterContent'))}`, '_blank');
+                }}
+            >
                 <img src={star} alt='Star' className='me-3' />
                 {I18n.t('deposit.shareTwitter')}
                 <img src={star} alt='Star' className='ms-3' />
@@ -233,7 +239,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                 outline
                 className='mt-4'
                 onClick={() => {
-                    window.open('https://mintscan.io/osmosis/gamm/pools/1', '_blank');
+                    window.open(`${NavigationConstants.MINTSCAN}/txs/${txHash}`, '_blank');
                 }}
             >
                 {I18n.t('deposit.seeOnMintscan')}
@@ -242,7 +248,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                 outline
                 className='mt-4'
                 onClick={() => {
-                    window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txHash}`);
+                    window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txHash}`, '_blank');
                 }}
             >
                 {I18n.t('deposit.seeOnExplorer')}

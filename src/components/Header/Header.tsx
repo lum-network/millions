@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 
 import logo from 'assets/images/logo.svg';
 import { Button } from 'components';
-import { I18n, StringsUtils } from 'utils';
-import { RootState } from 'redux/store';
-import { NavigationConstants } from 'constant';
+import { I18n, KeplrUtils, StringsUtils } from 'utils';
+import { Dispatch, RootState } from 'redux/store';
+import { NavigationConstants, PoolsConstants } from 'constant';
 
 import twitterButton from 'assets/images/twitter_button.svg';
 import discordButton from 'assets/images/discord_button.svg';
@@ -17,6 +17,7 @@ import './Header.scss';
 const Header = () => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
+    const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
 
     const location = useLocation();
@@ -69,6 +70,13 @@ const Header = () => {
             });
         }
     }, []);
+
+    const connectWallet = async () => {
+        if (KeplrUtils.isKeplrInstalled()) {
+            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true, chainIds: Object.values(PoolsConstants.POOLS).map((pool) => pool.chainId) }).finally(() => null);
+            await dispatch.wallet.connectOtherWallets();
+        }
+    };
 
     const renderContent = () => {
         if (isLanding) {
@@ -124,7 +132,9 @@ const Header = () => {
                     </NavLink>
                 </li>
                 <li className='ms-lg-5 ms-4'>
-                    <Button outline>{address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}</Button>
+                    <Button outline onClick={!address ? connectWallet : undefined}>
+                        {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
+                    </Button>
                 </li>
             </ul>
         );

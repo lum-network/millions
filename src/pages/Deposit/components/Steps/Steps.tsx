@@ -13,7 +13,7 @@ const Steps = ({ steps, currentStep }: Props) => {
     return (
         <div className='steps'>
             {steps.map((step, index) => (
-                <div key={index} className={`step ${index < steps.length ? ' mb-5' : ''} ${currentStep === index ? 'active' : currentStep > index ? 'completed' : ''}`}>
+                <div key={index} className={`step ${index + 1 < steps.length ? 'with-line pb-5' : ''} ${currentStep === index ? 'active' : currentStep > index ? 'completed' : ''}`}>
                     <div className='d-flex flex-row'>
                         <div className='step-index-container'>{currentStep > index ? <img src={checkmark} /> : index + 1}</div>
                         <p className='title mb-0'>{step.title}</p>

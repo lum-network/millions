@@ -9,9 +9,10 @@ import coin from 'assets/images/coin.svg';
 import coinsStacked from 'assets/images/coins_stacked.svg';
 import discordIcon from 'assets/images/discord.svg';
 import downArrow from 'assets/images/down_arrow.svg';
+import cosmonautWithCoin from 'assets/images/cosmonaut_with_coin.png';
 
 import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect } from 'components';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants, PoolsConstants } from 'constant';
 
@@ -56,6 +57,7 @@ const MyPlace = () => {
                     },
                     normalDenom: normalDenom,
                     ibcChannel: PoolsConstants.POOLS[normalDenom].ibcSourceChannel,
+                    chainId: LumClient.getChainId() || '',
                 });
             }
         },
@@ -83,7 +85,9 @@ const MyPlace = () => {
                     <div className='d-flex flex-row align-items-center'>
                         {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
                         <div className='d-flex flex-column asset-amount'>
-                            {numeral(amount).format(amount >= 1 ? '0,0' : '0,0.000')} {normalDenom.toUpperCase()}
+                            <span>
+                                <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                            </span>
                             <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
                         </div>
                     </div>
@@ -124,9 +128,12 @@ const MyPlace = () => {
                                     <div className='balance-number'>$ --</div>
                                 )}
                             </div>
-                            <img src={coin} className='coin-1' alt='coin' />
-                            <img src={coin} className='coin-2' alt='coin' />
-                            <img src={coin} className='coin-3' alt='coin' />
+                            <div className='coins-container position-absolute top-0 start-0 w-100 h-100'>
+                                <img src={coin} className='coin-1' alt='coin' />
+                                <img src={coin} className='coin-2' alt='coin' />
+                                <img src={coin} className='coin-3' alt='coin' />
+                            </div>
+                            <img src={cosmonautWithCoin} className='d-none d-md-block cosmonaut' alt='Cosmonaut on a coin' />
                         </Card>
                         <h2 className='mt-4'>{I18n.t('myPlace.assets')}</h2>
                         <Card>
@@ -170,8 +177,8 @@ const MyPlace = () => {
                     <h2 className={prizeToClaim ? 'mt-4' : 'mt-4 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
                     <Card>
                         <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
-                        <p>{I18n.t('myPlace.governanceCard.description')}</p>
-                        <Button className='my-place-cta'>
+                        <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
+                        <Button className='my-place-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>
                             <img src={discordIcon} alt='Discord' className='me-2' />
                             {I18n.t('myPlace.governanceCard.cta')}
                         </Button>
@@ -213,6 +220,7 @@ const MyPlace = () => {
                             step: 'any',
                             ...withdrawForm.getFieldProps('amount'),
                         }}
+                        price={prices?.[DenomsUtils.getNormalDenom(withdrawForm.values.denom)]}
                         error={withdrawForm.errors.amount}
                     />
                     <AssetsSelect

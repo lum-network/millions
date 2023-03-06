@@ -1,15 +1,16 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { useBeforeUnload, useParams } from 'react-router-dom';
-import { Card, Modal } from 'components';
-import { DenomsUtils, I18n } from 'utils';
+import { Navigate, useBeforeUnload, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+import { Card, Modal } from 'components';
+import { NavigationConstants, PoolsConstants } from 'constant';
+import { DenomsUtils, I18n } from 'utils';
 import { RootState } from 'redux/store';
 
 import Steps from './components/Steps/Steps';
 import DepositSteps from './components/DepositSteps/DepositSteps';
 
 import './Deposit.scss';
-import { PoolsConstants } from 'constant';
 
 const Deposit = () => {
     const { denom } = useParams<{ denom: string }>();
@@ -42,7 +43,7 @@ const Deposit = () => {
     );
 
     if (!otherWallet || !lumWallet) {
-        return null;
+        return <Navigate to={NavigationConstants.HOME} />;
     }
 
     return (

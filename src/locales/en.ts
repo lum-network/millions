@@ -111,8 +111,10 @@ export default {
         },
         governance: 'Governance',
         governanceCard: {
-            title: 'Governance card title',
-            description: 'Governance card wording description',
+            title: 'Get LUM to participate to Cosmos Millions Protocol',
+            description:
+                // eslint-disable-next-line max-len
+                "As a LUM holder in the Lum Network, you play a role in shaping the protocol's future. Your ability to propose and vote on changes to the protocol empowers you to influence the community and guide the network towards a positive future.",
             cta: 'Join our Discord',
         },
     },
@@ -155,6 +157,7 @@ export default {
             },
         ],
         shareTwitter: 'Share on Twitter',
+        shareTwitterContent: "I just deposited on Lum Network's Cosmos Millions project\nDo the same if you want to start saving and earning !",
         goToMyPlace: 'Go to my place',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
