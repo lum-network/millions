@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import RootNavigator from 'navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch, RootState } from 'redux/store';
-import { KeplrUtils } from 'utils';
+import { RouterProvider } from 'react-router-dom';
+
 import { PoolsConstants } from 'constant';
+import { router } from 'navigation';
+import { KeplrUtils } from 'utils';
+import { Dispatch, RootState } from 'redux/store';
 
 const Core = () => {
     const dispatch = useDispatch<Dispatch>();
@@ -26,7 +28,7 @@ const Core = () => {
         dispatch.stats.fetchStats().finally(() => null);
     }, []);
 
-    return <RootNavigator />;
+    return <RouterProvider router={router} />;
 };
 
 export default Core;

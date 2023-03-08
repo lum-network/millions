@@ -13,13 +13,13 @@ interface IProps {
     onCloseButtonPress?: () => void;
 }
 
-interface Handlers {
+export interface ModalHandlers {
     toggle: () => void;
     show: () => void;
     hide: () => void;
 }
 
-const Modal: React.ForwardRefRenderFunction<Handlers, IProps> = (props, ref) => {
+const Modal: React.ForwardRefRenderFunction<ModalHandlers, IProps> = (props, ref) => {
     const { id, children, bodyClassName, contentClassName, onCloseButtonPress, withCloseButton = true, dataBsBackdrop = 'true' } = props;
 
     const modalRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ const Modal: React.ForwardRefRenderFunction<Handlers, IProps> = (props, ref) => 
     return (
         <div tabIndex={-1} id={id} className='modal fade' aria-labelledby={`${id}Label`} aria-hidden='true' data-bs-backdrop={dataBsBackdrop} ref={modalRef}>
             <div className='modal-dialog modal-dialog-centered'>
-                <div className={`border-0 text-center modal-content p-4 ${contentClassName}`}>
+                <div className={`border-0 text-center modal-content p-5 ${contentClassName}`}>
                     {withCloseButton && (
                         <button
                             type='button'

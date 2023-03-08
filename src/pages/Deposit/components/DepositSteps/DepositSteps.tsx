@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { FormikProps } from 'formik';
 import { Tooltip } from 'react-tooltip';
 import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
 import { useNavigate } from 'react-router-dom';
@@ -15,8 +14,11 @@ import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'compone
 import { LumWalletModel, OtherWalletModel } from 'models';
 import { NavigationConstants, PoolsConstants } from 'constant';
 
-interface Props {
+interface StepProps {
     denom: string;
+}
+
+interface Props extends StepProps {
     currentStep: number;
     steps: {
         title: string;
@@ -27,62 +29,23 @@ interface Props {
     otherWallets: {
         [denom: string]: OtherWalletModel;
     };
-    lumWallet: LumWalletModel;
     onNextStep: () => void;
+    lumWallet: LumWalletModel;
+    transferForm: FormikProps<{ amount: string }>;
     initialAmount?: string;
     price?: number;
 }
 
-interface StepProps {
-    denom: string;
-    onNextStep: () => void;
-}
-
 const DepositStep1 = (
     props: StepProps & {
-        otherWallets: {
-            [denom: string]: OtherWalletModel;
-        };
-        lumAddress: string;
+        otherWallet: OtherWalletModel;
+        nonEmptyWallets: OtherWalletModel[];
+        form: FormikProps<{ amount: string }>;
         onDeposit: (amount: string) => void;
         price?: number;
     },
 ) => {
-    const { denom, otherWallets, lumAddress, onNextStep, onDeposit, price } = props;
-    const dispatch = useDispatch<Dispatch>();
-
-    const otherWallet = otherWallets[denom];
-    const walletsNonEmpty = Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0);
-
-    const transferForm = useFormik({
-        initialValues: {
-            amount: '',
-        },
-        validationSchema: yup.object().shape({
-            amount: yup.string().required(I18n.t('errors.generic.required', { field: 'Amount' })),
-        }),
-        onSubmit: async (values) => {
-            onDeposit(values.amount);
-
-            const amount = values.amount.toString();
-            const hash = await dispatch.wallet.ibcTransfer({
-                type: 'deposit',
-                fromAddress: otherWallet.address,
-                toAddress: lumAddress,
-                amount: {
-                    amount,
-                    denom: 'u' + denom,
-                },
-                normalDenom: PoolsConstants.POOLS[denom].denom,
-                ibcChannel: PoolsConstants.POOLS[denom].ibcDestChannel,
-                chainId: PoolsConstants.POOLS[denom].chainId,
-            });
-
-            if (hash) {
-                onNextStep();
-            }
-        },
-    });
+    const { denom, otherWallet, price, form, nonEmptyWallets, onDeposit } = props;
 
     const navigate = useNavigate();
 
@@ -93,7 +56,7 @@ const DepositStep1 = (
     }
 
     return (
-        <form onSubmit={transferForm.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
+        <form onSubmit={form.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
             <div className='w-100 mt-5'>
                 <AmountInput
                     isLoading={isLoading}
@@ -104,23 +67,23 @@ const DepositStep1 = (
                         denom: denom.toUpperCase(),
                     })}
                     onMax={() => {
-                        transferForm.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
+                        form.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
                     }}
                     inputProps={{
                         type: 'number',
                         min: 0,
                         max: otherWallet.balances[0].amount,
                         step: 'any',
-                        ...transferForm.getFieldProps('amount'),
+                        ...form.getFieldProps('amount'),
                     }}
                     price={price}
-                    error={transferForm.errors.amount}
+                    error={form.errors.amount}
                 />
             </div>
             <div className='mt-5'>
                 <AssetsSelect
                     isLoading={isLoading}
-                    balances={walletsNonEmpty.map(({ balances }) => ({
+                    balances={nonEmptyWallets.map(({ balances }) => ({
                         denom: balances[0].denom,
                         amount: balances[0].amount,
                     }))}
@@ -128,7 +91,7 @@ const DepositStep1 = (
                     onChange={(value) => {
                         navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
                     }}
-                    options={walletsNonEmpty.map((wallet) => ({
+                    options={nonEmptyWallets.map((wallet) => ({
                         label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
                         value: wallet.balances[0].denom,
                     }))}
@@ -159,7 +122,7 @@ const DepositStep1 = (
                         </div>
                     </Card>
                 )}
-                <Button type='submit' className='deposit-cta w-100 mt-4' loading={isLoading}>
+                <Button type='submit' onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' loading={isLoading}>
                     <img src={star} alt='Star' className='me-3' />
                     {I18n.t('deposit.depositBtn')}
                     <img src={star} alt='Star' className='ms-3' />
@@ -169,7 +132,7 @@ const DepositStep1 = (
     );
 };
 
-const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string }) => {
+const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void }) => {
     const { denom, amount, initialAmount, onNextStep, onFinishDeposit } = props;
     const dispatch = useDispatch<Dispatch>();
 
@@ -258,21 +221,28 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, lumWallet, otherWallets, initialAmount, price, ...rest } = props;
+    const { currentStep, steps, otherWallets, initialAmount, price, denom, onNextStep, transferForm } = props;
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
 
+    const otherWallet = otherWallets[denom];
+    const nonEmptyWallets = Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0);
+
     return (
-        <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-            <div className='mb-5 mb-lg-0'>
-                <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
-                <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
+        <>
+            <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
+                <div className='mb-5 mb-lg-0'>
+                    <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
+                    <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
+                </div>
+                {currentStep === 0 && (
+                    <DepositStep1 form={transferForm} onDeposit={(amount) => setAmount(amount)} price={price} otherWallet={otherWallet} nonEmptyWallets={nonEmptyWallets} denom={denom} />
+                )}
+                {currentStep === 1 && <DepositStep2 initialAmount={initialAmount} amount={amount} onFinishDeposit={(hash) => setTxHash(hash)} denom={denom} onNextStep={onNextStep} />}
+                {currentStep === 2 && <DepositStep3 txHash={txHash} />}
             </div>
-            {currentStep === 0 && <DepositStep1 price={price} onDeposit={(amount: string) => setAmount(amount)} otherWallets={otherWallets} lumAddress={lumWallet.address} {...rest} />}
-            {currentStep === 1 && <DepositStep2 initialAmount={initialAmount} amount={amount} onFinishDeposit={(hash) => setTxHash(hash)} {...rest} />}
-            {currentStep === 2 && <DepositStep3 txHash={txHash} {...rest} />}
-        </div>
+        </>
     );
 };
 

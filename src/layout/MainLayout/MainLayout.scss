@@ -6,8 +6,13 @@
     padding-bottom: 60px;
     min-height: 100vh;
     background-color: $color-background;
-    background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg');
-    background-position: percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100);
+    background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg');
+    background-position: percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100),
+        percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100),
+        percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100),
+        percentage(random(100) / 100) percentage(random(100) / 100), percentage(random(100) / 100) percentage(random(100) / 100);
     background-repeat: no-repeat no-repeat;
     overflow: hidden;
     white-space: pre-line;
@@ -15,4 +20,29 @@
 
 .fill {
     flex: 1 1 auto;
+}
+
+#get-keplr-modal {
+    .keplr-icon {
+        width: 76px;
+        height: 76px;
+    }
+
+    h3 {
+        color: $color-black;
+        font-weight: 400;
+        font-size: 24px;
+    }
+
+    p {
+        color: $color-black;
+        font-weight: 300;
+        font-size: 16px;
+    }
+
+    a {
+        color: $color-primary;
+        font-weight: 300;
+        font-size: 14px;
+    }
 }

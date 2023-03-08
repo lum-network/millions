@@ -35,6 +35,10 @@ export default {
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
         },
+        '404': {
+            title: 'Error 404',
+            description: 'This page does not exist.',
+        },
     },
     landing: {
         howItWorks: 'How it works',
@@ -81,6 +85,13 @@ export default {
         community: {
             title: 'Join the Cosmos\nMillions Community',
         },
+    },
+    keplrDownloadModal: {
+        title: 'Connect your wallet ✌️',
+        description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        link: 'Learn more about Interchain wallets',
+        later: "I'll come back later",
+        download: 'Download Keplr for Chrome',
     },
     home: {
         title: 'Home',
@@ -161,5 +172,10 @@ export default {
         goToMyPlace: 'Go to my place',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
+        quitModal: {
+            title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
+            continue: 'Continue',
+            cancel: 'Cancel',
+        },
     },
 };

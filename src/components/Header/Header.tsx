@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 
 import logo from 'assets/images/logo.svg';
 import { Button } from 'components';
+import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n, KeplrUtils, StringsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants, PoolsConstants } from 'constant';
@@ -14,7 +15,7 @@ import discordButton from 'assets/images/discord_button.svg';
 
 import './Header.scss';
 
-const Header = () => {
+const Header = ({ keplrModalRef }: { keplrModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
     const dispatch = useDispatch<Dispatch>();
@@ -75,6 +76,10 @@ const Header = () => {
         if (KeplrUtils.isKeplrInstalled()) {
             await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true, chainIds: Object.values(PoolsConstants.POOLS).map((pool) => pool.chainId) }).finally(() => null);
             await dispatch.wallet.connectOtherWallets();
+        } else {
+            if (keplrModalRef.current) {
+                keplrModalRef.current.toggle();
+            }
         }
     };
 
