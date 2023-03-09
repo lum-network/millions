@@ -2,10 +2,10 @@ import React from 'react';
 import { DenomsUtils, I18n, StringsUtils } from 'utils';
 import numeral from 'numeral';
 
-import { Button, Card, CountDown } from 'components';
+import { Button, Card, CountDown, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
-import cosmonautOnTheMoon from 'assets/images/cosmonaut_on_the_moon.png';
-import cosmonautWithBalloons from 'assets/images/cosmonaut_with_balloons.png';
+import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
+import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import coins_staked from 'assets/images/coins_staked_2.svg';
 import star from 'assets/images/yellow_star.svg';
 import arrow from 'assets/images/arrow.svg';
@@ -39,7 +39,14 @@ const Home = () => {
                     <Card className='best-prize-card' withoutPadding>
                         <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('home.nextBestPrize')}</h3>
                         <div className='content'>
-                            <img src={cosmonautOnTheMoon} alt='Cosmonaut on the moon' className='cosmonaut-on-the-moon' />
+                            <Lottie
+                                className='cosmonaut-on-the-moon'
+                                animationData={cosmonautOnTheMoon}
+                                segments={[
+                                    [0, 41],
+                                    [41, 257],
+                                ]}
+                            />
                             <div className='best-prize-container'>
                                 <div className='d-flex'>
                                     <span className='currency'>$</span>
@@ -71,7 +78,14 @@ const Home = () => {
                         </div>
                         <div className='col-xxl-12 col-lg-6 col-xl-6 col-md-12 col-sm-12'>
                             <Card>
-                                <img src={cosmonautWithBalloons} alt='Cosmonaut with balloons' className='cosmonaut-with-balloons' />
+                                <Lottie
+                                    className='cosmonaut-with-balloons'
+                                    animationData={cosmonautWithBalloons}
+                                    segments={[
+                                        [0, 30],
+                                        [30, 128],
+                                    ]}
+                                />
                                 <h3>{I18n.t('home.lastBigWinners')}</h3>
                                 <div className='big-winners-container pt-4'>
                                     {renderBigWinnerCard('evmos', 14564, 'lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f')}

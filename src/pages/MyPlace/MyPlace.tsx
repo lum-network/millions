@@ -9,9 +9,9 @@ import coin from 'assets/images/coin.svg';
 import coinsStacked from 'assets/images/coins_stacked.svg';
 import discordIcon from 'assets/images/discord.svg';
 import downArrow from 'assets/images/down_arrow.svg';
-import cosmonautWithCoin from 'assets/images/cosmonaut_with_coin.png';
+import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
-import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect } from 'components';
+import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect, Lottie } from 'components';
 import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants, PoolsConstants } from 'constant';
@@ -133,7 +133,14 @@ const MyPlace = () => {
                                 <img src={coin} className='coin-2' alt='coin' />
                                 <img src={coin} className='coin-3' alt='coin' />
                             </div>
-                            <img src={cosmonautWithCoin} className='d-none d-md-block cosmonaut' alt='Cosmonaut on a coin' />
+                            <Lottie
+                                className='d-none d-md-block cosmonaut'
+                                animationData={cosmonautWithCoin}
+                                segments={[
+                                    [0, 30],
+                                    [30, 100],
+                                ]}
+                            />
                         </Card>
                         <h2 className='mt-4'>{I18n.t('myPlace.assets')}</h2>
                         <Card>
@@ -165,7 +172,7 @@ const MyPlace = () => {
                             <Card>
                                 <div className='d-flex flex-column prize-to-claim'>
                                     <span className='asset-amount'>
-                                        <img src={DenomsUtils.getIconFromDenom(prizeToClaim.denom)} className='denom-icon' />
+                                        <img src={DenomsUtils.getIconFromDenom(prizeToClaim.denom)} className='denom-icon' alt='Denom' />
                                         <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prizeToClaim.amount)).format('0,0.[00]')} className='me-2' />
                                         {DenomsUtils.getNormalDenom(prizeToClaim.denom).toUpperCase()}
                                     </span>
