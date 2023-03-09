@@ -91,8 +91,8 @@ const MyPlace = () => {
                             <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
                         </div>
                     </div>
-                    {normalDenom !== LumConstants.LumDenom ? (
-                        <div className='d-flex flex-row align-items-center'>
+                    <div className='d-flex flex-row align-items-center'>
+                        {normalDenom !== LumConstants.LumDenom ? (
                             <Button
                                 outline
                                 className='me-3'
@@ -104,9 +104,9 @@ const MyPlace = () => {
                             >
                                 {I18n.t('myPlace.withdraw')}
                             </Button>
-                            <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
-                        </div>
-                    ) : null}
+                        ) : null}
+                        <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
+                    </div>
                 </div>
             </Card>
         );

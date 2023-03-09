@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, Location } from 'react-router-dom';
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { HomePage, MyPlacePage, PoolsPage, DepositPage, LandingPage } from 'pages';
+import { HomePage, MyPlacePage, PoolsPage, DepositPage, LandingPage, Error404 } from 'pages';
 import { MainLayout } from 'layout';
 
-const RouteListener = (): JSX.Element | null => {
-    const location = useLocation();
-
+export const RouteListener = ({ location }: { location: Location }): JSX.Element | null => {
     useEffect(() => {
         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SCREEN_VIEW, { screen_name: location.pathname });
     }, [location]);
@@ -15,21 +13,15 @@ const RouteListener = (): JSX.Element | null => {
     return null;
 };
 
-const RootNavigator = (): JSX.Element => {
-    return (
-        <Router>
-            <RouteListener />
-            <MainLayout>
-                <Routes>
-                    <Route path={NavigationConstants.HOME} element={<HomePage />} />
-                    <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
-                    <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
-                    <Route path={NavigationConstants.MY_PLACE} element={<MyPlacePage />} />
-                    <Route path={NavigationConstants.LANDING} element={<LandingPage />} />
-                </Routes>
-            </MainLayout>
-        </Router>
-    );
-};
-
-export default RootNavigator;
+export const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path='/' element={<MainLayout />}>
+            <Route path={NavigationConstants.HOME} element={<HomePage />} />
+            <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
+            <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
+            <Route path={NavigationConstants.MY_PLACE} element={<MyPlacePage />} />
+            <Route path={NavigationConstants.LANDING} element={<LandingPage />} />
+            <Route path='*' element={<Error404 />} />
+        </Route>,
+    ),
+);

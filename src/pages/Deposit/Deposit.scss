@@ -57,11 +57,19 @@
 }
 
 .fees-warning {
-    border: 2px solid $color-primary;
-    border-radius: 12px;
     font-size: 11px;
     line-height: 22px;
     padding: 0.75rem;
     text-align: center;
     color: $color-primary;
+}
+
+.glow-bg {
+    box-shadow: 0px 0px 69px rgba(96, 150, 255, 0.1);
+}
+
+#quitModal {
+    h3 {
+        color: $color-black;
+    }
 }

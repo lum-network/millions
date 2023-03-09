@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { FormikProps } from 'formik';
 import { Tooltip } from 'react-tooltip';
 import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
 import { useNavigate } from 'react-router-dom';
@@ -10,13 +9,23 @@ import Skeleton from 'react-loading-skeleton';
 
 import star from 'assets/images/yellow_star.svg';
 import infoIcon from 'assets/images/info.svg';
+import lumPurpleLogo from 'assets/images/lum_logo_purple.svg';
+import myPlaceLogo from 'assets/images/my_place.svg';
+import mintscanPurpleLogo from 'assets/images/mintscan_purple.svg';
+import twitterLogo from 'assets/images/twitter_white.svg';
+
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
 import { LumWalletModel, OtherWalletModel } from 'models';
 import { NavigationConstants, PoolsConstants } from 'constant';
 
-interface Props {
+import './DepositSteps.scss';
+
+interface StepProps {
     denom: string;
+}
+
+interface Props extends StepProps {
     currentStep: number;
     steps: {
         title: string;
@@ -27,62 +36,23 @@ interface Props {
     otherWallets: {
         [denom: string]: OtherWalletModel;
     };
-    lumWallet: LumWalletModel;
     onNextStep: () => void;
+    lumWallet: LumWalletModel;
+    transferForm: FormikProps<{ amount: string }>;
     initialAmount?: string;
     price?: number;
 }
 
-interface StepProps {
-    denom: string;
-    onNextStep: () => void;
-}
-
 const DepositStep1 = (
     props: StepProps & {
-        otherWallets: {
-            [denom: string]: OtherWalletModel;
-        };
-        lumAddress: string;
+        otherWallet: OtherWalletModel;
+        nonEmptyWallets: OtherWalletModel[];
+        form: FormikProps<{ amount: string }>;
         onDeposit: (amount: string) => void;
         price?: number;
     },
 ) => {
-    const { denom, otherWallets, lumAddress, onNextStep, onDeposit, price } = props;
-    const dispatch = useDispatch<Dispatch>();
-
-    const otherWallet = otherWallets[denom];
-    const walletsNonEmpty = Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0);
-
-    const transferForm = useFormik({
-        initialValues: {
-            amount: '',
-        },
-        validationSchema: yup.object().shape({
-            amount: yup.string().required(I18n.t('errors.generic.required', { field: 'Amount' })),
-        }),
-        onSubmit: async (values) => {
-            onDeposit(values.amount);
-
-            const amount = values.amount.toString();
-            const hash = await dispatch.wallet.ibcTransfer({
-                type: 'deposit',
-                fromAddress: otherWallet.address,
-                toAddress: lumAddress,
-                amount: {
-                    amount,
-                    denom: 'u' + denom,
-                },
-                normalDenom: PoolsConstants.POOLS[denom].denom,
-                ibcChannel: PoolsConstants.POOLS[denom].ibcDestChannel,
-                chainId: PoolsConstants.POOLS[denom].chainId,
-            });
-
-            if (hash) {
-                onNextStep();
-            }
-        },
-    });
+    const { denom, otherWallet, price, form, nonEmptyWallets, onDeposit } = props;
 
     const navigate = useNavigate();
 
@@ -93,7 +63,7 @@ const DepositStep1 = (
     }
 
     return (
-        <form onSubmit={transferForm.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
+        <form onSubmit={form.handleSubmit} className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
             <div className='w-100 mt-5'>
                 <AmountInput
                     isLoading={isLoading}
@@ -104,23 +74,23 @@ const DepositStep1 = (
                         denom: denom.toUpperCase(),
                     })}
                     onMax={() => {
-                        transferForm.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
+                        form.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
                     }}
                     inputProps={{
                         type: 'number',
                         min: 0,
                         max: otherWallet.balances[0].amount,
                         step: 'any',
-                        ...transferForm.getFieldProps('amount'),
+                        ...form.getFieldProps('amount'),
                     }}
                     price={price}
-                    error={transferForm.errors.amount}
+                    error={form.errors.amount}
                 />
             </div>
             <div className='mt-5'>
                 <AssetsSelect
                     isLoading={isLoading}
-                    balances={walletsNonEmpty.map(({ balances }) => ({
+                    balances={nonEmptyWallets.map(({ balances }) => ({
                         denom: balances[0].denom,
                         amount: balances[0].amount,
                     }))}
@@ -128,7 +98,7 @@ const DepositStep1 = (
                     onChange={(value) => {
                         navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
                     }}
-                    options={walletsNonEmpty.map((wallet) => ({
+                    options={nonEmptyWallets.map((wallet) => ({
                         label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
                         value: wallet.balances[0].denom,
                     }))}
@@ -159,7 +129,7 @@ const DepositStep1 = (
                         </div>
                     </Card>
                 )}
-                <Button type='submit' className='deposit-cta w-100 mt-4' loading={isLoading}>
+                <Button type='submit' onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' loading={isLoading}>
                     <img src={star} alt='Star' className='me-3' />
                     {I18n.t('deposit.depositBtn')}
                     <img src={star} alt='Star' className='ms-3' />
@@ -169,7 +139,7 @@ const DepositStep1 = (
     );
 };
 
-const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string }) => {
+const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void }) => {
     const { denom, amount, initialAmount, onNextStep, onFinishDeposit } = props;
     const dispatch = useDispatch<Dispatch>();
 
@@ -178,7 +148,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
     return (
-        <div>
+        <div className='step-2'>
             <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between p-4 last-step-card'>
                 <span className='asset-info'>
                     <img src={DenomsUtils.getIconFromDenom(denom)} className='me-3' />
@@ -186,10 +156,13 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                 </span>
                 <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
             </Card>
-            <div className='fees-warning mt-4'>
-                <img src={infoIcon} className='me-2' height='14' width='14' />
+            <Card flat withoutPadding className='fees-warning mt-4'>
+                <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
+                    <img src={infoIcon} />
+                    <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                </span>
                 {I18n.t('deposit.feesWarning')}
-            </div>
+            </Card>
             <Button
                 type='button'
                 onClick={async () => {
@@ -215,64 +188,84 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
     const navigate = useNavigate();
 
     return (
-        <div className='d-flex flex-column px-5 px-lg-0 px-xl-5 mt-5'>
+        <div className='step-3 d-flex flex-column px-5 px-lg-0 px-xl-4 mt-5'>
+            <div className='row row-cols-3'>
+                <div className='col step-3-cta-container'>
+                    <button
+                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                        onClick={() => {
+                            window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txHash}`, '_blank');
+                        }}
+                    >
+                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
+                            <img src={lumPurpleLogo} alt='Lum Network logo purple' />
+                        </div>
+                        {I18n.t('deposit.seeOnExplorer')}
+                    </button>
+                </div>
+                <div className='col step-3-cta-container'>
+                    <button
+                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                        onClick={() => {
+                            navigate('/my-place');
+                        }}
+                    >
+                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
+                            <img src={myPlaceLogo} alt='My Place' />
+                        </div>
+                        {I18n.t('deposit.goToMyPlace')}
+                    </button>
+                </div>
+                <div className='col step-3-cta-container'>
+                    <button
+                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                        onClick={() => {
+                            window.open(`${NavigationConstants.MINTSCAN}/txs/${txHash}`, '_blank');
+                        }}
+                    >
+                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
+                            <img src={mintscanPurpleLogo} alt='Mintscan' />
+                        </div>
+                        {I18n.t('deposit.seeOnMintscan')}
+                    </button>
+                </div>
+            </div>
             <Button
-                className='deposit-cta'
+                className='deposit-cta mt-5'
                 onClick={() => {
                     window.open(`${NavigationConstants.TWEET_URL}?text=${encodeURI(I18n.t('deposit.shareTwitterContent'))}`, '_blank');
                 }}
             >
-                <img src={star} alt='Star' className='me-3' />
+                <img src={twitterLogo} alt='Twitter' className='me-3' width={25} />
                 {I18n.t('deposit.shareTwitter')}
-                <img src={star} alt='Star' className='ms-3' />
-            </Button>
-            <Button
-                outline
-                className='mt-4'
-                onClick={() => {
-                    navigate('/my-place');
-                }}
-            >
-                {I18n.t('deposit.goToMyPlace')}
-            </Button>
-            <Button
-                outline
-                className='mt-4'
-                onClick={() => {
-                    window.open(`${NavigationConstants.MINTSCAN}/txs/${txHash}`, '_blank');
-                }}
-            >
-                {I18n.t('deposit.seeOnMintscan')}
-            </Button>
-            <Button
-                outline
-                className='mt-4'
-                onClick={() => {
-                    window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txHash}`, '_blank');
-                }}
-            >
-                {I18n.t('deposit.seeOnExplorer')}
             </Button>
         </div>
     );
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, lumWallet, otherWallets, initialAmount, price, ...rest } = props;
+    const { currentStep, steps, otherWallets, initialAmount, price, denom, onNextStep, transferForm } = props;
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
 
+    const otherWallet = otherWallets[denom];
+    const nonEmptyWallets = Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0);
+
     return (
-        <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-            <div className='mb-5 mb-lg-0'>
-                <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
-                <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
+        <>
+            <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
+                <div className='mb-5 mb-lg-0'>
+                    <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
+                    <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
+                </div>
+                {currentStep === 0 && (
+                    <DepositStep1 form={transferForm} onDeposit={(amount) => setAmount(amount)} price={price} otherWallet={otherWallet} nonEmptyWallets={nonEmptyWallets} denom={denom} />
+                )}
+                {currentStep === 1 && <DepositStep2 initialAmount={initialAmount} amount={amount} onFinishDeposit={(hash) => setTxHash(hash)} denom={denom} onNextStep={onNextStep} />}
+                {currentStep === 2 && <DepositStep3 txHash={txHash} />}
             </div>
-            {currentStep === 0 && <DepositStep1 price={price} onDeposit={(amount: string) => setAmount(amount)} otherWallets={otherWallets} lumAddress={lumWallet.address} {...rest} />}
-            {currentStep === 1 && <DepositStep2 initialAmount={initialAmount} amount={amount} onFinishDeposit={(hash) => setTxHash(hash)} {...rest} />}
-            {currentStep === 2 && <DepositStep3 txHash={txHash} {...rest} />}
-        </div>
+        </>
     );
 };
 

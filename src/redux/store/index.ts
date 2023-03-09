@@ -6,6 +6,16 @@ type FullModel = ExtraModelsFromLoading<RootModel>;
 
 const store = init<RootModel, FullModel>({
     models,
+    redux: {
+        rootReducers: {
+            LOGOUT: () => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+
+                backdrops.forEach((backdrop) => backdrop.remove());
+                return undefined;
+            },
+        },
+    },
     plugins: [loadingPlugin()],
 });
 

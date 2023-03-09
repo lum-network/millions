@@ -15,6 +15,10 @@ export default {
         seconds_one: 'Sec',
         seconds_other: 'Sec',
     },
+    common: {
+        continue: 'Continue',
+        cancel: 'Cancel',
+    },
     errors: {
         generic: {
             required: '{{ field }} is required',
@@ -34,6 +38,10 @@ export default {
             lessThanZero: 'Amount must be greater than 0',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
+        },
+        '404': {
+            title: 'Error 404',
+            description: 'This page does not exist.',
         },
     },
     landing: {
@@ -82,6 +90,17 @@ export default {
             title: 'Join the Cosmos\nMillions Community',
         },
     },
+    keplrDownloadModal: {
+        title: 'Connect your wallet ✌️',
+        description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        link: 'Learn more about Interchain wallets',
+        later: "I'll come back later",
+        download: 'Download Keplr for Chrome',
+    },
+    logoutModal: {
+        title: 'Are you sure you want\nto log out ?',
+        logoutBtn: 'Log out',
+    },
     home: {
         title: 'Home',
         nextBestPrize: 'Next best prize',
@@ -129,6 +148,7 @@ export default {
         title: 'Few steps away\nfrom your deposit',
         depositBtn: 'Deposit',
         saveAndWinBtn: 'Save & Win',
+        fees: 'Fees warning',
         chancesHint: {
             winning: {
                 title: 'Winning chances',
@@ -143,17 +163,17 @@ export default {
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
-                subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
+                subtitle: 'Put your tokens into on our chain to participate',
             },
             {
                 title: 'Deposit in the {{ denom }} pool',
-                subtitle: 'Deposit your {{ denom }} in the pool to participate to the next prize',
+                subtitle: 'Start your saving',
             },
             {
                 title: 'Saving review & share!',
-                subtitle: 'By sharing Cosmos Millions with your friends you can contribute to the community and increase the collective prize pool.',
-                cardTitle: 'Your saving review',
-                cardSubtitle: 'Congrats 🎉 All upcoming draws will consider your deposit eligible! Any unclaimed prizes will expire after a period of 60 days.',
+                subtitle: 'By sharing Cosmos Millions to your community you will contribute to and increase the collective prize pool.',
+                cardTitle: 'Your savings say thanks! ✌️',
+                cardSubtitle: 'You are always eligible for all the next draws coming! Share your winning on Twitter to see how high the total amount saved can go!',
             },
         ],
         shareTwitter: 'Share on Twitter',
@@ -161,5 +181,8 @@ export default {
         goToMyPlace: 'Go to my place',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
+        quitModal: {
+            title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
+        },
     },
 };
