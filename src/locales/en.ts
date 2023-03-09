@@ -15,6 +15,10 @@ export default {
         seconds_one: 'Sec',
         seconds_other: 'Sec',
     },
+    common: {
+        continue: 'Continue',
+        cancel: 'Cancel',
+    },
     errors: {
         generic: {
             required: '{{ field }} is required',
@@ -92,6 +96,10 @@ export default {
         link: 'Learn more about Interchain wallets',
         later: "I'll come back later",
         download: 'Download Keplr for Chrome',
+    },
+    logoutModal: {
+        title: 'Are you sure you want\nto log out ?',
+        logoutBtn: 'Log out',
     },
     home: {
         title: 'Home',
@@ -174,8 +182,6 @@ export default {
         seeOnExplorer: 'See transaction on Lum Explorer',
         quitModal: {
             title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
-            continue: 'Continue',
-            cancel: 'Cancel',
         },
     },
 };

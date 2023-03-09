@@ -141,7 +141,7 @@ const Deposit = () => {
                             blocker.proceed?.();
                         }}
                     >
-                        {I18n.t('deposit.quitModal.continue')}
+                        {I18n.t('common.continue')}
                     </Button>
                     <Button
                         className='w-100 ms-4'
@@ -152,7 +152,7 @@ const Deposit = () => {
                             blocker.reset?.();
                         }}
                     >
-                        {I18n.t('deposit.quitModal.cancel')}
+                        {I18n.t('common.cancel')}
                     </Button>
                 </div>
             </Modal>
