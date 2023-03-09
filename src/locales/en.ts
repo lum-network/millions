@@ -148,6 +148,7 @@ export default {
         title: 'Few steps away\nfrom your deposit',
         depositBtn: 'Deposit',
         saveAndWinBtn: 'Save & Win',
+        fees: 'Fees warning',
         chancesHint: {
             winning: {
                 title: 'Winning chances',
@@ -162,17 +163,17 @@ export default {
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
-                subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
+                subtitle: 'Put your tokens into on our chain to participate',
             },
             {
                 title: 'Deposit in the {{ denom }} pool',
-                subtitle: 'Deposit your {{ denom }} in the pool to participate to the next prize',
+                subtitle: 'Start your saving',
             },
             {
                 title: 'Saving review & share!',
-                subtitle: 'By sharing Cosmos Millions with your friends you can contribute to the community and increase the collective prize pool.',
-                cardTitle: 'Your saving review',
-                cardSubtitle: 'Congrats 🎉 All upcoming draws will consider your deposit eligible! Any unclaimed prizes will expire after a period of 60 days.',
+                subtitle: 'By sharing Cosmos Millions to your community you will contribute to and increase the collective prize pool.',
+                cardTitle: 'Your savings say thanks! ✌️',
+                cardSubtitle: 'You are always eligible for all the next draws coming! Share your winning on Twitter to see how high the total amount saved can go!',
             },
         ],
         shareTwitter: 'Share on Twitter',

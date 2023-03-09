@@ -1,0 +1,25 @@
+@import 'src/styles/main';
+
+.step-3 {
+    .step-3-cta-container {
+        button {
+            background-color: transparent;
+            border: none;
+            color: $color-primary;
+        }
+
+        .icon-container {
+            color: $color-primary;
+            background-color: $color-primary-light;
+            border-radius: 8px;
+            min-width: 111px;
+            min-height: 111px;
+            
+            img {
+                width: 38px;
+                height: 38px;
+                object-fit: contain;
+            }
+        }
+    }
+}

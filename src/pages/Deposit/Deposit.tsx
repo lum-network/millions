@@ -96,7 +96,10 @@ const Deposit = () => {
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(denom || '')].chainName,
     });
+
     const isFirstStep = currentStep === 0;
+    const isLastStep = currentStep === steps.length - 1;
+
     const otherWallet = otherWallets[denom || ''];
 
     if (!otherWallet || !lumWallet) {
@@ -105,13 +108,13 @@ const Deposit = () => {
 
     return (
         <>
-            <div className='row row-cols-1 row-cols-lg-2 py-5 h-100'>
+            <div className='row row-cols-1 row-cols-lg-2 py-5 h-100 gy-5'>
                 <div className='col'>
                     <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className={`col ${isFirstStep ? 'd-flex' : ''}`}>
-                    <Card className={`d-flex flex-column justify-content-between ${isFirstStep ? 'flex-grow-1' : ''}`}>
+                    <Card withoutPadding={isLastStep} className={`d-flex flex-column justify-content-between ${isFirstStep ? 'flex-grow-1' : ''} ${isLastStep ? 'glow-bg p-4' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}
