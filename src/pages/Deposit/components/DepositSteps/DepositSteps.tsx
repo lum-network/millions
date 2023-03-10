@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
 import { Tooltip } from 'react-tooltip';
 import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
@@ -45,7 +45,7 @@ interface Props extends StepProps {
 
 const DepositStep1 = (
     props: StepProps & {
-        otherWallet: OtherWalletModel;
+        otherWallet: OtherWalletModel | undefined;
         nonEmptyWallets: OtherWalletModel[];
         form: FormikProps<{ amount: string }>;
         onDeposit: (amount: string) => void;
@@ -70,7 +70,7 @@ const DepositStep1 = (
                     className='amount-input'
                     label={I18n.t('withdraw.amountInput.label')}
                     sublabel={I18n.t('withdraw.amountInput.sublabel', {
-                        amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(otherWallet.balances[0].amount)),
+                        amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(otherWallet.balances.length > 0 ? otherWallet.balances[0].amount : '0')),
                         denom: denom.toUpperCase(),
                     })}
                     onMax={() => {
@@ -80,7 +80,7 @@ const DepositStep1 = (
                     inputProps={{
                         type: 'number',
                         min: 0,
-                        max: otherWallet.balances[0].amount,
+                        max: otherWallet.balances.length > 0 ? otherWallet.balances[0].amount : '0',
                         step: 'any',
                         lang: 'en',
                         ...form.getFieldProps('amount'),
@@ -92,10 +92,15 @@ const DepositStep1 = (
             <div className='mt-5'>
                 <AssetsSelect
                     isLoading={isLoading}
-                    balances={nonEmptyWallets.map(({ balances }) => ({
-                        denom: balances[0].denom,
-                        amount: balances[0].amount,
-                    }))}
+                    balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
+                        if (balances.length > 0) {
+                            result.push({
+                                amount: balances[0].amount,
+                                denom: balances[0].denom,
+                            });
+                        }
+                        return result;
+                    }, [])}
                     value={'u' + (denom || '')}
                     onChange={(value) => {
                         navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
@@ -250,9 +255,13 @@ const DepositSteps = (props: Props) => {
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
+    const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[denom]);
+    const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
 
-    const otherWallet = otherWallets[denom];
-    const nonEmptyWallets = Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0);
+    useEffect(() => {
+        setOtherWallet(otherWallets[denom]);
+        setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+    }, [otherWallets]);
 
     return (
         <>
