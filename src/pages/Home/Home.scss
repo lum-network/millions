@@ -3,9 +3,10 @@
 .best-prize-card {
     .cosmonaut-on-the-moon {
         position: absolute;
-        top: -200px;
+        top: -172px;
         right: -20px;
         height: 200px;
+        width: 200px;
         z-index: 10500;
     }
 
@@ -26,7 +27,7 @@
             align-items: center;
             font-style: normal;
             font-weight: 400;
-            font-size: 10vw;
+            font-size: 9vw;
             color: $color-white;
             border: solid 4px $color-border;
             border-radius: 19px;

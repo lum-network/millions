@@ -1,17 +1,17 @@
 import React from 'react';
 
 import { I18n } from 'utils';
-import { Button, Card } from 'components';
+import { Button, Card, Lottie } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
+import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/images/cosmonaut_with_balloons_2.png';
-import cosmonautWithBalloons from 'assets/images/cosmonaut_with_balloons.png';
-import cosmonautOnTheMoon from 'assets/images/cosmonaut_on_the_moon.png';
-import cosmonautWithCoin from 'assets/images/cosmonaut_with_coin.png';
-import cosmonautWithDuck from 'assets/images/cosmonaut_with_duck.png';
-import cosmonautZen from 'assets/images/cosmonaut_zen.png';
-import cosmonautInPool from 'assets/images/cosmonaut_in_pool.png';
-import cosmonautWithRocket from 'assets/images/cosmonaut_with_rocket.png';
-import cosmonautDab from 'assets/images/cosmonaut_dab.png';
+import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
+import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
+import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
+import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
+import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
+import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
+import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import coinsStaked2 from 'assets/images/coins_staked_2.svg';
 import landingArrow from 'assets/images/landing_arrow.svg';
 import landingDoubleArrows from 'assets/images/landing_double_arrows.svg';
@@ -44,7 +44,14 @@ const Landing = () => {
                     <Card className='best-prize-card' withoutPadding>
                         <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('landing.saving.biggestPrizeToWin')}</h3>
                         <div className='content'>
-                            <img src={cosmonautOnTheMoon} alt='Cosmonaut on the moon' className='cosmonaut-on-the-moon' />
+                            <Lottie
+                                className='cosmonaut-on-the-moon'
+                                animationData={cosmonautOnTheMoon}
+                                segments={[
+                                    [0, 41],
+                                    [41, 257],
+                                ]}
+                            />
                             <div className='best-prize-container'>
                                 <div className='d-flex'>
                                     <span className='currency'>$</span>
@@ -69,7 +76,27 @@ const Landing = () => {
                     <Card withoutPadding className='w-100 d-flex flex-xl-row flex-column align-items-center p-3 py-5 p-xl-5'>
                         <div className='d-flex flex-column align-items-center'>
                             <div className='square'>
-                                <img src={cosmonautWithCoin} alt='Cosmonaut with coin' className='cosmonaut-coin' />
+                                <Lottie
+                                    className='cosmonaut-coin'
+                                    animationData={cosmonautWithCoin}
+                                    actions={[
+                                        {
+                                            visibility: [0, 0.2],
+                                            type: 'stop',
+                                            frames: [0],
+                                        },
+                                        {
+                                            visibility: [0.2, 0.4],
+                                            type: 'seek',
+                                            frames: [0, 30],
+                                        },
+                                        {
+                                            visibility: [0.4, 1.0],
+                                            type: 'loop',
+                                            frames: [30, 100],
+                                        },
+                                    ]}
+                                />
                             </div>
                             <div className='number'>1</div>
                             <span className='legend'>{I18n.t('landing.winners.p1')}</span>
@@ -79,7 +106,27 @@ const Landing = () => {
                         </div>
                         <div className='d-flex flex-column align-items-center'>
                             <div className='square'>
-                                <img src={cosmonautWithBalloons} alt='Cosmonaut with balloons' className='cosmonaut-balloons' />
+                                <Lottie
+                                    className='cosmonaut-balloons'
+                                    animationData={cosmonautWithBalloons}
+                                    actions={[
+                                        {
+                                            visibility: [0, 0.2],
+                                            type: 'stop',
+                                            frames: [0],
+                                        },
+                                        {
+                                            visibility: [0.2, 0.4],
+                                            type: 'seek',
+                                            frames: [0, 30],
+                                        },
+                                        {
+                                            visibility: [0.4, 1.0],
+                                            type: 'loop',
+                                            frames: [30, 128],
+                                        },
+                                    ]}
+                                />
                             </div>
                             <div className='number'>2</div>
                             <span className='legend'>{I18n.t('landing.winners.p2')}</span>
@@ -93,14 +140,54 @@ const Landing = () => {
                         <div className='image-group'>
                             <div className='d-flex flex-column flex-xl-row align-items-center'>
                                 <div className='square'>
-                                    <img src={cosmonautWithDuck} alt='Cosmonaut with duck' className='cosmonaut-duck' />
+                                    <Lottie
+                                        className='cosmonaut-duck'
+                                        animationData={cosmonautWithDuck}
+                                        actions={[
+                                            {
+                                                visibility: [0, 0.2],
+                                                type: 'stop',
+                                                frames: [0],
+                                            },
+                                            {
+                                                visibility: [0.2, 0.4],
+                                                type: 'seek',
+                                                frames: [0, 30],
+                                            },
+                                            {
+                                                visibility: [0.4, 1.0],
+                                                type: 'loop',
+                                                frames: [30, 128],
+                                            },
+                                        ]}
+                                    />
                                 </div>
                                 <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p3')}</div>
                             </div>
                             <div className='or'>{I18n.t('landing.winners.or')}</div>
                             <div className='d-flex flex-column flex-xl-row align-items-center'>
                                 <div className='square'>
-                                    <img src={cosmonautZen} alt='Cosmonaut zen' className='cosmonaut-zen' />
+                                    <Lottie
+                                        className='cosmonaut-zen'
+                                        animationData={cosmonautZen}
+                                        actions={[
+                                            {
+                                                visibility: [0, 0.2],
+                                                type: 'stop',
+                                                frames: [0],
+                                            },
+                                            {
+                                                visibility: [0.2, 0.4],
+                                                type: 'seek',
+                                                frames: [0, 30],
+                                            },
+                                            {
+                                                visibility: [0.4, 1.0],
+                                                type: 'loop',
+                                                frames: [30, 128],
+                                            },
+                                        ]}
+                                    />
                                 </div>
                                 <div className='legend mt-3 mt-xl-0'>{I18n.t('landing.winners.p4')}</div>
                             </div>
@@ -115,7 +202,7 @@ const Landing = () => {
                                 <img width={42} height={42} src={coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
-                                    <span className='tvl-value'>{numeral(300004567).format('0,0').replaceAll(',', '\u00a0')}</span>
+                                    <span className='tvl-value'>{numeral(300004567).format('$0,0').replaceAll(',', '\u00a0')}</span>
                                 </div>
                             </div>
                         </div>
@@ -154,14 +241,54 @@ const Landing = () => {
                     <Button className='cta'>{I18n.t('landing.future.cta')}</Button>
                 </div>
                 <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
-                    <img className='cosmonaut-in-pool' src={cosmonautInPool} alt='Cosmonaut in pool' />
+                    <Lottie
+                        className='cosmonaut-in-pool'
+                        animationData={cosmonautInPool}
+                        actions={[
+                            {
+                                visibility: [0, 0.2],
+                                type: 'stop',
+                                frames: [0],
+                            },
+                            {
+                                visibility: [0.2, 0.4],
+                                type: 'seek',
+                                frames: [0, 30],
+                            },
+                            {
+                                visibility: [0.4, 1.0],
+                                type: 'loop',
+                                frames: [30, 128],
+                            },
+                        ]}
+                    />
                 </div>
                 <div className='community col-12 d-flex align-items-center flex-column order-2'>
                     <div className='col-xxl-7 col-xl-8 col-lg-9 col-md-10 col-12'>
                         <Card className='d-flex justify-content-between align-items-center flex-column flex-lg-row community-card'>
-                            <img src={cosmonautWithRocket} alt='Cosmonaut with rocket' className='cosmonaut-rocket' />
+                            <Lottie
+                                className='cosmonaut-rocket'
+                                animationData={cosmonautWithRocket}
+                                actions={[
+                                    {
+                                        visibility: [0, 0.2],
+                                        type: 'stop',
+                                        frames: [0],
+                                    },
+                                    {
+                                        visibility: [0.2, 0.4],
+                                        type: 'seek',
+                                        frames: [0, 30],
+                                    },
+                                    {
+                                        visibility: [0.4, 1.0],
+                                        type: 'loop',
+                                        frames: [30, 257],
+                                    },
+                                ]}
+                            />
                             <div>
-                                <h3 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h3>
+                                <h2 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h2>
                             </div>
                             <div className='d-flex mt-4 mt-lg-0'>
                                 <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
