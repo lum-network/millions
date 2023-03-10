@@ -1,4 +1,5 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
+import numeral from 'numeral';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
 
@@ -29,8 +30,8 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[]) => {
 
     if (balance) {
         const amount = convertUnitNumber(balance.amount);
-        return amount;
+        return numeral(amount).format('0,0.[000000]');
     }
 
-    return 0;
+    return '0';
 };

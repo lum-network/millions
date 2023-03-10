@@ -74,13 +74,15 @@ const DepositStep1 = (
                         denom: denom.toUpperCase(),
                     })}
                     onMax={() => {
-                        form.setFieldValue('amount', WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances));
+                        const amount = WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances);
+                        form.setFieldValue('amount', amount);
                     }}
                     inputProps={{
                         type: 'number',
                         min: 0,
                         max: otherWallet.balances[0].amount,
                         step: 'any',
+                        lang: 'en',
                         ...form.getFieldProps('amount'),
                     }}
                     price={price}
@@ -106,7 +108,7 @@ const DepositStep1 = (
                 {isLoading ? (
                     <Skeleton height={104} className='mt-4' />
                 ) : (
-                    <Card flat withoutPadding className='mt-4 px-4 py-3'>
+                    <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
                         <div className='winning-chance d-flex flex-row justify-content-between'>
                             <div>
                                 {I18n.t('deposit.chancesHint.winning.title')}
@@ -129,7 +131,7 @@ const DepositStep1 = (
                         </div>
                     </Card>
                 )}
-                <Button type='submit' onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' loading={isLoading}>
+                <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
                     <img src={star} alt='Star' className='me-3' />
                     {I18n.t('deposit.depositBtn')}
                     <img src={star} alt='Star' className='ms-3' />

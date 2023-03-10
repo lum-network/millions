@@ -43,7 +43,7 @@ const AmountInput = (props: Props) => {
             {isLoading ? (
                 <Skeleton height={60} />
             ) : (
-                <div className={`input-container px-3 ${usdValue ? 'py-2' : 'py-3'}`}>
+                <div className={`input-container px-4 ${usdValue ? 'py-2' : 'py-3'}`}>
                     <div className='w-100 d-flex flex-column'>
                         <input className={`default-input p-0 ${inputClassName}`} {...inputProps} />
                         {usdValue ? <p className='price-label mb-0 text-start'>${NumbersUtils.formatTo6digit(usdValue)}</p> : null}
