@@ -67,7 +67,7 @@ const AssetValue = (
         <components.SingleValue {...props}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {icon && <img src={icon} className='value-asset-icon me-2' />} {props.data.label}
+                    {icon && <img src={icon} className='value-asset-icon me-3' />} {props.data.label}
                 </div>
             </div>
         </components.SingleValue>
@@ -112,9 +112,10 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                             borderRadius: 15,
                             borderColor: 'rgba(86, 52, 222, 0.2)',
                             borderWidth: 2,
-                            paddingLeft: '0.5rem',
-                            paddingTop: '0.5rem',
-                            paddingBottom: '0.5rem',
+                            paddingTop: '0.75rem',
+                            paddingLeft: '1.5rem',
+                            paddingRight: '1.5rem',
+                            paddingBottom: '0.75rem',
                             textTransform: 'uppercase',
                             textAlign: 'left',
                             color: '#5634DE',
@@ -139,6 +140,10 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                         singleValue: (provided) => ({
                             ...provided,
                             color: '#5634DE',
+                        }),
+                        valueContainer: (provided) => ({
+                            ...provided,
+                            paddingLeft: 0,
                         }),
                     }}
                     options={options}

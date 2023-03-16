@@ -114,7 +114,7 @@ const Deposit = () => {
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className={`col ${isFirstStep ? 'd-flex' : ''}`}>
-                    <Card withoutPadding={isLastStep} className={`d-flex flex-column justify-content-between ${isFirstStep ? 'flex-grow-1' : ''} ${isLastStep ? 'glow-bg p-4' : ''}`}>
+                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-5 py-3 ${isFirstStep ? 'flex-grow-1' : ''} ${isLastStep ? 'glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}
