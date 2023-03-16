@@ -4,7 +4,7 @@ import { I18n } from 'utils';
 import { Button, Card, Lottie } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
-import cosmonautWithBalloons2 from 'assets/images/cosmonaut_with_balloons_2.png';
+import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
@@ -62,7 +62,14 @@ const Landing = () => {
                     </Card>
                 </div>
                 <div className='position-relative cosmos-game-left col-12 col-xl-6 col-xxl-5'>
-                    <img className='cosmos-with-balloons' src={cosmonautWithBalloons2} alt='Cosmonaut with balloon' />
+                    <Lottie
+                        className='cosmos-with-balloons'
+                        animationData={cosmonautWithBalloons2}
+                        segments={[
+                            [0, 20],
+                            [20, 167],
+                        ]}
+                    />
                 </div>
                 <div className='d-none d-xxl-block col-xxl-1' />
                 <div className='cosmos-game-right col-12 col-xl-6 col-xxl-6'>
@@ -217,8 +224,8 @@ const Landing = () => {
                         <PoolCard denom={'osmo'} tvl={30000} prize={58} />
                         <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
                     </div>
-                    <div className='d-flex flex-column align-items-center mt-4'>
-                        <Button className='d-block d-xl-none mb-3 cta' outline onClick={onClickNewPool}>
+                    <div className='d-flex flex-column align-items-center mt-5'>
+                        <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
                             {I18n.t('landing.pools.newPool')}
                         </Button>
                         <Button className='cta' to={NavigationConstants.POOLS}>
@@ -278,12 +285,12 @@ const Landing = () => {
                                     {
                                         visibility: [0.2, 0.4],
                                         type: 'seek',
-                                        frames: [0, 30],
+                                        frames: [0, 15],
                                     },
                                     {
                                         visibility: [0.4, 1.0],
                                         type: 'loop',
-                                        frames: [30, 257],
+                                        frames: [15, 257],
                                     },
                                 ]}
                             />

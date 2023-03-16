@@ -7,6 +7,10 @@
     opacity: 0;
     animation: cardShow ease-out 400ms forwards;
 
+    @include media-breakpoint-down(md) {
+        border-radius: 30px;
+    }
+
     &.flat {
         border-radius: 8px;
         background-color: $color-primary-light;

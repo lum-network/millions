@@ -56,7 +56,7 @@ const Home = () => {
                             <div className='mt-5 d-flex align-items-center justify-content-between w-100'>
                                 <div className='network'>
                                     <img src={DenomsUtils.getIconFromDenom('atom')} alt='denom' height={32} width={32} />
-                                    <span className='ms-3'>atom</span>
+                                    <span className='ms-2'>atom</span>
                                 </div>
                                 <div>
                                     <CountDown homePage to={'2023-02-28'} />

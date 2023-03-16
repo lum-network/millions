@@ -50,17 +50,17 @@
 
         .cosmos-with-balloons {
             position: absolute;
-            width: 437px;
-            height: 551px;
+            width: 550px;
+            height: 550px;
             right: 0;
             top: -120px;
 
             @include media-breakpoint-down(xl) {
-                width: 392px;
+                width: 494px;
                 height: 494px;
                 top: 0;
                 right: unset;
-                left: calc(50% - 196px);
+                left: calc(50% - 247px);
             }
         }
     }
