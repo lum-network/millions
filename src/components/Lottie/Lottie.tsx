@@ -18,20 +18,23 @@ const Lottie = ({ animationData, className, segments, actions }: IProps) => {
             return;
         }
 
-        if (element.current) {
-            lottieInstance.current?.destroy();
-            lottieInstance.current = lottieReact.loadAnimation({
-                container: element.current,
-                renderer: 'svg',
-                loop: true,
+        setTimeout(() => {
+            if (element.current) {
+                lottieInstance.current?.destroy();
+                lottieInstance.current = lottieReact.loadAnimation({
+                    container: element.current,
+                    renderer: 'svg',
+                    loop: true,
 
-                rendererSettings: {
-                    preserveAspectRatio: 'xMidYMid slice',
-                },
-                animationData,
-            });
-        }
-        lottieInstance.current.playSegments(segments, true);
+                    rendererSettings: {
+                        preserveAspectRatio: 'xMidYMid slice',
+                    },
+                    animationData,
+                });
+            }
+
+            lottieInstance.current.playSegments(segments, true);
+        }, 500);
 
         return () => {
             lottieInstance.current?.destroy();

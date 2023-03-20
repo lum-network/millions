@@ -5,10 +5,7 @@ import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import coin from 'assets/images/coin.svg';
-import coinsStacked from 'assets/images/coins_stacked.svg';
-import discordIcon from 'assets/images/discord.svg';
-import downArrow from 'assets/images/down_arrow.svg';
+import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
 import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect, Lottie } from 'components';
@@ -129,9 +126,9 @@ const MyPlace = () => {
                                 )}
                             </div>
                             <div className='coins-container position-absolute top-0 start-0 w-100 h-100'>
-                                <img src={coin} className='coin-1' alt='coin' />
-                                <img src={coin} className='coin-2' alt='coin' />
-                                <img src={coin} className='coin-3' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-1' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-2' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-3' alt='coin' />
                             </div>
                             <Lottie
                                 className='d-none d-md-block cosmonaut'
@@ -148,7 +145,7 @@ const MyPlace = () => {
                                 balances.map(renderAsset)
                             ) : (
                                 <div className='d-flex flex-column align-items-center justify-content-center'>
-                                    <img src={coinsStacked} alt='Stacked coins' />
+                                    <img src={Assets.images.coinsStacked} alt='Stacked coins' />
                                     <h3 className='mt-2'>{I18n.t('myPlace.noAssets.title')}</h3>
                                     <p className='text-center'>{I18n.t('myPlace.noAssets.description')}</p>
                                     <Button>{I18n.t('myPlace.deposit')}</Button>
@@ -186,7 +183,7 @@ const MyPlace = () => {
                         <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
                         <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
                         <Button className='my-place-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>
-                            <img src={discordIcon} alt='Discord' className='me-2' />
+                            <img src={Assets.images.discord} alt='Discord' className='me-2' />
                             {I18n.t('myPlace.governanceCard.cta')}
                         </Button>
                     </Card>
@@ -199,7 +196,7 @@ const MyPlace = () => {
                         <div className='address-container mb-3'>{lumWallet?.address}</div>
                         <div className='address-container'>{withdrawForm.values.withdrawAddress}</div>
                         <div className='arrow-container position-absolute top-50 start-50 translate-middle'>
-                            <img src={downArrow} alt='down arrow' />
+                            <img src={Assets.images.downArrow} alt='down arrow' />
                         </div>
                     </div>
                     <AmountInput

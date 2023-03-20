@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import infoIcon from 'assets/images/info.svg';
+import Assets from 'assets';
 import { Button, Card, Modal } from 'components';
 import { NavigationConstants, PoolsConstants } from 'constant';
 import { DenomsUtils, I18n } from 'utils';
@@ -131,7 +131,7 @@ const Deposit = () => {
             </div>
 
             <Modal id='quitModal' ref={quitModalRef} withCloseButton={false} dataBsBackdrop='static' bodyClassName='d-flex flex-column align-items-center'>
-                <img src={infoIcon} alt='info' width={42} height={42} />
+                <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('deposit.quitModal.title')}</h3>
                 <div className='d-flex flex-row align-self-stretch justify-content-between'>
                     <Button

@@ -6,9 +6,7 @@ import { Button, Card, CountDown, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
-import coins_staked from 'assets/images/coins_staked_2.svg';
-import star from 'assets/images/yellow_star.svg';
-import arrow from 'assets/images/arrow.svg';
+import Assets from 'assets';
 
 import './Home.scss';
 
@@ -27,7 +25,7 @@ const Home = () => {
                     {numeral(prize).format('0,0[.]0a')} {denom}
                 </span>
                 <div className='address'>{StringsUtils.trunc(address)}</div>
-                <img src={arrow} alt='arrow' />
+                <img src={Assets.images.arrow} alt='arrow' />
             </Button>
         );
     };
@@ -71,7 +69,7 @@ const Home = () => {
                             <Card>
                                 <h3>{I18n.t('home.totalValueLocked')}</h3>
                                 <div className='d-flex align-items-center pt-3'>
-                                    <img alt='coin staked' src={coins_staked} />
+                                    <img alt='coin staked' src={Assets.images.coinsStaked2} />
                                     <span className='ms-3 total-value-locked'>{numeral(67574567).format('$0,0[.]0a')}</span>
                                 </div>
                             </Card>
@@ -99,9 +97,9 @@ const Home = () => {
             </div>
             <div className='d-flex justify-content-center'>
                 <Button className='save-btn' to={NavigationConstants.POOLS}>
-                    <img src={star} alt='Star' />
+                    <img src={Assets.images.yellowStar} alt='Star' />
                     {I18n.t('home.cta')}
-                    <img src={star} alt='Star' />
+                    <img src={Assets.images.yellowStar} alt='Star' />
                 </Button>
             </div>
         </div>

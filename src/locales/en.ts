@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export default {
     welcome: 'Welcome to Millions',
     connectWallet: 'Connect wallet',
@@ -50,7 +52,7 @@ export default {
         faq: 'FAQ',
         openTheApp: 'Open the app',
         saving: {
-            title: 'Win Big by\nSaving Smart',
+            title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a decentralized finance protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account with the highest returns ever made.',
             cta: 'Earn by saving',
@@ -59,7 +61,6 @@ export default {
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
             p1: "That's one small step for Cosmonauts, one giant leap for Cosmos.",
-            // eslint-disable-next-line max-len
             p2: 'Speed up your path to financial tranquility with our thrilling prize-linked savings accounts! Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.',
             p3: 'With no risk and exciting rewards, bring your savings to the moon!',
         },
@@ -81,13 +82,57 @@ export default {
         },
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
-            // eslint-disable-next-line max-len
             p1: 'The utilization of Cosmos technology (Cosmos-SDK, Tendermint BFT, IBC, ICA) for Prize Linked Savings overthrows the savings methods in history. The use of sovereign and interoperable network of blockchains allows easy access with minimal fees, making it a standout in the blockchain industry and another confirmation of the limitless potential of the Interchain of Blockchains.',
             p2: 'With an open-source and audited protocol ensuring that prizes are distributed fairly, saving money has never been so rewarding!',
             cta: 'Want to retire in style?',
         },
         community: {
             title: 'Join the Cosmos\nMillions Community',
+        },
+        faqSection: {
+            title: 'You have Questions? \nWe have the Answers',
+            questions: [
+                {
+                    title: 'What is Cosmos Millions?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'Why it is free?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'How do the prizes are generated?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'What if I don’t win?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'Is there a minimum deposit?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'Why is there a lockup on my deposits?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'How long do I have to claim my prizes? ',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'Is Cosmos Millions code audited?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'What’s the Cosmos Ecosystem?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+                {
+                    title: 'What’s the Lum Network blockchain?',
+                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                },
+            ],
         },
     },
     keplrDownloadModal: {
@@ -132,7 +177,6 @@ export default {
         governanceCard: {
             title: 'Get LUM to participate to Cosmos Millions Protocol',
             description:
-                // eslint-disable-next-line max-len
                 "As a LUM holder in the Lum Network, you play a role in shaping the protocol's future. Your ability to propose and vote on changes to the protocol empowers you to influence the community and guide the network towards a positive future.",
             cta: 'Join our Discord',
         },

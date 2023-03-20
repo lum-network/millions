@@ -1,0 +1,13 @@
+@import 'src/styles/main';
+
+.progress {
+    height: 5px !important;
+    background-color: $color-primary-light !important;
+    overflow: visible !important;
+}
+
+.progress-bar {
+    background-color: $color-primary !important;
+    -webkit-box-shadow: 0 0 10px 2px $color-white;
+    box-shadow: 0 0 10px 2px $color-white;
+}

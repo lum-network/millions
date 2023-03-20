@@ -7,12 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
 import Skeleton from 'react-loading-skeleton';
 
-import star from 'assets/images/yellow_star.svg';
-import infoIcon from 'assets/images/info.svg';
-import lumPurpleLogo from 'assets/images/lum_logo_purple.svg';
-import myPlaceLogo from 'assets/images/my_place.svg';
-import mintscanPurpleLogo from 'assets/images/mintscan_purple.svg';
-import twitterLogo from 'assets/images/twitter_white.svg';
+import Assets from 'assets';
 
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
@@ -118,7 +113,7 @@ const DepositStep1 = (
                             <div>
                                 {I18n.t('deposit.chancesHint.winning.title')}
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
-                                    <img src={infoIcon} />
+                                    <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='winning-chance-tooltip' className='tooltip-light width-400' variant='light' />
                                 </span>
                             </div>
@@ -128,7 +123,7 @@ const DepositStep1 = (
                             <div>
                                 {I18n.t('deposit.chancesHint.averagePrize.title')}
                                 <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
-                                    <img src={infoIcon} />
+                                    <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
                                 </span>
                             </div>
@@ -137,9 +132,9 @@ const DepositStep1 = (
                     </Card>
                 )}
                 <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
-                    <img src={star} alt='Star' className='me-3' />
+                    <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
                     {I18n.t('deposit.depositBtn')}
-                    <img src={star} alt='Star' className='ms-3' />
+                    <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
                 </Button>
             </div>
         </form>
@@ -158,14 +153,14 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
         <div className='step-2'>
             <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between p-4 last-step-card'>
                 <span className='asset-info'>
-                    <img src={DenomsUtils.getIconFromDenom(denom)} className='me-3' />
+                    <img src={DenomsUtils.getIconFromDenom(denom)} alt='denom' className='me-3' />
                     {denom.toUpperCase()}
                 </span>
                 <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
             </Card>
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
-                    <img src={infoIcon} />
+                    <img src={Assets.images.info} alt='info' />
                     <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
                 </span>
                 {I18n.t('deposit.feesWarning')}
@@ -183,9 +178,9 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                 loading={isLoading}
                 className='deposit-cta w-100 mt-4'
             >
-                <img src={star} alt='Star' className='me-3' />
+                <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
                 {I18n.t('deposit.saveAndWinBtn')}
-                <img src={star} alt='Star' className='ms-3' />
+                <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
             </Button>
         </div>
     );
@@ -205,7 +200,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={lumPurpleLogo} alt='Lum Network logo purple' />
+                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' />
                         </div>
                         {I18n.t('deposit.seeOnExplorer')}
                     </button>
@@ -218,7 +213,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={myPlaceLogo} alt='My Place' />
+                            <img src={Assets.images.myPlace} alt='My Place' />
                         </div>
                         {I18n.t('deposit.goToMyPlace')}
                     </button>
@@ -231,7 +226,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={mintscanPurpleLogo} alt='Mintscan' />
+                            <img src={Assets.images.mintscanPurple} alt='Mintscan' />
                         </div>
                         {I18n.t('deposit.seeOnMintscan')}
                     </button>
@@ -243,7 +238,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                     window.open(`${NavigationConstants.TWEET_URL}?text=${encodeURI(I18n.t('deposit.shareTwitterContent'))}`, '_blank');
                 }}
             >
-                <img src={twitterLogo} alt='Twitter' className='me-3' width={25} />
+                <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3' width={25} />
                 {I18n.t('deposit.shareTwitter')}
             </Button>
         </div>

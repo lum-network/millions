@@ -7,5 +7,7 @@ export { default as CountDown } from './CountDown/CountDown';
 export { default as AmountInput } from './AmountInput/AmountInput';
 export { default as AssetsSelect } from './AssetsSelect/AssetsSelect';
 export { default as Lottie } from './Lottie/Lottie';
+export { default as Collapsible } from './Collapsible/Collapsible';
+export { default as ProgressBar } from './ProgressBar/ProgressBar';
 export { default as Modal } from './Modal/Modal';
 export * from './ToastContent/ToastContent';

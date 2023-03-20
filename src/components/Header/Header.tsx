@@ -10,8 +10,7 @@ import { I18n, KeplrUtils, StringsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants, PoolsConstants } from 'constant';
 
-import twitterButton from 'assets/images/twitter_button.svg';
-import discordButton from 'assets/images/discord_button.svg';
+import Assets from 'assets';
 
 import './Header.scss';
 
@@ -104,12 +103,12 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                     </li>
                     <li className='mx-3 mx-lg-4 d-none d-sm-block'>
                         <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img className='scale-hover' src={twitterButton} alt='Twitter' />
+                            <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
                         </a>
                     </li>
                     <li className='d-none d-sm-block'>
                         <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img className='scale-hover' src={discordButton} alt='Discord' />
+                            <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
                     <li className='ms-3 ms-lg-4'>

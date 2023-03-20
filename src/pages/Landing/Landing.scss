@@ -462,4 +462,20 @@
             }
         }
     }
+
+    .faq {
+        padding-top: 150px;
+    }
+
+    .footer {
+        padding-top: 200px;
+
+        .cosmonaut-dab {
+            position: absolute;
+            width: 252px;
+            height: 252px;
+            top: -215px;
+            left: calc(50% - 126px);
+        }
+    }
 }

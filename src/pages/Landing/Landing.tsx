@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { I18n } from 'utils';
-import { Button, Card, Lottie } from 'components';
+import { Button, Card, Lottie, Collapsible } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
+import { gsap, Power1 } from 'gsap';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
@@ -12,27 +13,74 @@ import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
 import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
-import coinsStaked2 from 'assets/images/coins_staked_2.svg';
-import landingArrow from 'assets/images/landing_arrow.svg';
-import landingDoubleArrows from 'assets/images/landing_double_arrows.svg';
-import twitterPlain from 'assets/images/twitter_plain.svg';
-import discordPlain from 'assets/images/discord_plain.svg';
 import numeral from 'numeral';
+import Assets from 'assets';
 
 import './Landing.scss';
 import PoolCard from './components/PoolCard';
 import TestimonialCard from './components/TestimonialCard';
+import { useWindowSize } from 'hooks';
 
 const Landing = () => {
     const onClickNewPool = () => {
         window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
     };
 
+    const timeline = useRef<gsap.core.Timeline>();
+    const { width } = useWindowSize();
+
+    useEffect(() => {
+        // GSAP Section Show Animations
+        if (!timeline.current) {
+            const tl = gsap.timeline();
+            timeline.current = tl;
+            tl.fromTo(`#saving`, { opacity: 0 }, { opacity: 1, duration: 0.5, delay: 0.75 });
+            if (width < LandingConstants.MAX_PHONE_DEVICE_WIDTH) {
+                tl.fromTo(
+                    `#saving .saving-title`,
+                    {
+                        opacity: 0,
+                        y: 10,
+                    },
+                    {
+                        duration: 0.5,
+                        opacity: 1,
+                        y: 0,
+                    },
+                    '=-1',
+                );
+            } else {
+                const titleSplit = new SplitText(`#saving .saving-title`, { type: 'words,chars' });
+                tl.fromTo(
+                    titleSplit.chars,
+                    {
+                        opacity: 0,
+                        color: '#FFFFFF',
+                        textShadow: `0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 50px #ffffff, 0 0 60px #ffffff, 0 0 70px #ffffff`,
+                        ease: Power1.easeIn,
+                    },
+                    {
+                        duration: 0.5,
+                        opacity: 1,
+                        color: '#5634DE',
+                        // eslint-disable-next-line max-len
+                        textShadow: `0 0 10px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0), 0 0 30px rgba(255,255,255,0), 0 0 40px rgba(255,255,255,0), 0 0 50px rgba(255,255,255,0), 0 0 60px rgba(255,255,255,0), 0 0 70px rgba(255,255,255,0)`,
+                        ease: Power1.easeIn,
+                        stagger: 0.075,
+                    },
+                    '=-1',
+                );
+            }
+        }
+    }, [width]);
+
+    const faqQuestions = I18n.t('landing.faqSection.questions', { returnObjects: true });
+
     return (
         <div className='landing-container'>
             <div className='row g-5'>
-                <div className='saving-left col-12 col-xl-6 col-xxl-5'>
-                    <h1 className='mb-4'>{I18n.t('landing.saving.title')}</h1>
+                <div id='saving' className='saving-left col-12 col-xl-6 col-xxl-5'>
+                    <h1 className='saving-title mb-4' dangerouslySetInnerHTML={{ __html: I18n.t('landing.saving.title') }} />
                     <p>{I18n.t('landing.saving.p1')}</p>
                     <p>{I18n.t('landing.saving.p2')}</p>
                     <Button className='cta' to={NavigationConstants.HOME}>
@@ -109,7 +157,7 @@ const Landing = () => {
                             <span className='legend'>{I18n.t('landing.winners.p1')}</span>
                         </div>
                         <div className='mx-5'>
-                            <img src={landingArrow} alt='arrow' className='arrow' />
+                            <img src={Assets.images.landingArrow} alt='arrow' className='arrow' />
                         </div>
                         <div className='d-flex flex-column align-items-center'>
                             <div className='square'>
@@ -139,10 +187,10 @@ const Landing = () => {
                             <span className='legend'>{I18n.t('landing.winners.p2')}</span>
                         </div>
                         <div className='d-flex d-xl-none'>
-                            <img src={landingArrow} alt='arrow' className='arrow' />
+                            <img src={Assets.images.landingArrow} alt='arrow' className='arrow' />
                         </div>
                         <div className='mx-4'>
-                            <img src={landingDoubleArrows} alt='Double arrows' className='arrow-double' />
+                            <img src={Assets.images.landingDoubleArrows} alt='Double arrows' className='arrow-double' />
                         </div>
                         <div className='image-group'>
                             <div className='d-flex flex-column flex-xl-row align-items-center'>
@@ -206,7 +254,7 @@ const Landing = () => {
                         <div className='d-flex align-items-lg-center flex-column flex-lg-row'>
                             <h1>{I18n.t('landing.pools.title')}</h1>
                             <div className='ms-lg-5 d-flex align-items-center'>
-                                <img width={42} height={42} src={coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
+                                <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
                                     <span className='tvl-value'>{numeral(300004567).format('$0,0').replaceAll(',', '\u00a0')}</span>
@@ -245,7 +293,9 @@ const Landing = () => {
                     <h1 className='mb-4'>{I18n.t('landing.future.title')}</h1>
                     <p>{I18n.t('landing.future.p1')}</p>
                     <p>{I18n.t('landing.future.p2')}</p>
-                    <Button className='cta'>{I18n.t('landing.future.cta')}</Button>
+                    <Button to={NavigationConstants.HOME} className='cta'>
+                        {I18n.t('landing.future.cta')}
+                    </Button>
                 </div>
                 <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
                     <Lottie
@@ -299,14 +349,51 @@ const Landing = () => {
                             </div>
                             <div className='d-flex mt-4 mt-lg-0'>
                                 <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
-                                    <img src={twitterPlain} alt='Twitter' />
+                                    <img src={Assets.images.twitterPlain} alt='Twitter' />
                                 </a>
                                 <a className='scale-hover' href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer'>
-                                    <img src={discordPlain} alt='discord' />
+                                    <img src={Assets.images.discordPlain} alt='discord' />
                                 </a>
                             </div>
                         </Card>
                     </div>
+                </div>
+                <div className='faq col-12 order-2'>
+                    <div className='d-flex justify-content-between align-items-center'>
+                        <h1 className='mb-4'>{I18n.t('landing.faqSection.title')}</h1>
+                    </div>
+                    <Card>
+                        {faqQuestions.map((question, index) => (
+                            <Collapsible
+                                key={`faq-question-${index}`}
+                                title={question.title}
+                                content={question.answer}
+                                id={`faq-question-${index}`}
+                                className={index > 0 && index < faqQuestions.length ? 'mt-4' : undefined}
+                            />
+                        ))}
+                    </Card>
+                </div>
+                <div className='col-12 footer order-2'>
+                    <Card>
+                        <Lottie
+                            className='cosmonaut-dab'
+                            animationData={cosmonautDab}
+                            actions={[
+                                {
+                                    visibility: [0, 0.1],
+                                    type: 'stop',
+                                    frames: [0],
+                                },
+                                {
+                                    visibility: [0.1, 0.3],
+                                    type: 'seek',
+                                    frames: [0, 30],
+                                },
+                            ]}
+                        />
+                        Footer
+                    </Card>
                 </div>
             </div>
         </div>

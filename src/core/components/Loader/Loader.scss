@@ -1,0 +1,39 @@
+@import 'src/styles/main';
+
+#loader {
+    .logo {
+        width: 130px;
+        height: 50px;
+    }
+}
+
+#loader {
+    z-index: 9999;
+    opacity: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: $color-white;
+}
+
+#loader.slow-hide {
+    animation: slowHideAnim 300ms forwards linear;
+}
+
+#loader .loading-bar-container {
+    width: 300px;
+    margin-top: 34px;
+}
+
+@keyframes slowHideAnim {
+    90% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        display: none;
+        z-index: -9999;
+    }
+}
