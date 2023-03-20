@@ -18,8 +18,6 @@ import store from './redux/store';
 gsap.config({ nullTargetWarn: false });
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, ScrollToPlugin, CustomEase, SplitText);
 
-ScrollTrigger.normalizeScroll(true);
-
 const App = () => {
     return (
         <Provider store={store}>
