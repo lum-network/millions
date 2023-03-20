@@ -30,6 +30,32 @@ const Landing = () => {
     const { width } = useWindowSize();
 
     useEffect(() => {
+        // GSAP Section Scroll Animations
+        const scrollTrigger = {
+            trigger: `#saving`,
+            start: '5% top',
+            end: '50% top',
+            scrub: true,
+        };
+        gsap.to(`#saving .saving-title`, {
+            translateY: -100,
+            ease: 'none',
+            scrollTrigger: scrollTrigger,
+        });
+        gsap.to(`#saving .description`, {
+            translateY: -75,
+            ease: 'none',
+            scrollTrigger: scrollTrigger,
+            stagger: 0.25,
+        });
+        gsap.to(`#saving .cta`, {
+            translateY: -70,
+            ease: 'none',
+            scrollTrigger: scrollTrigger,
+        });
+    }, []);
+
+    useEffect(() => {
         // GSAP Section Show Animations
         if (!timeline.current) {
             const tl = gsap.timeline();
@@ -71,6 +97,35 @@ const Landing = () => {
                     '=-1',
                 );
             }
+
+            tl.fromTo(
+                `#saving .description`,
+                {
+                    opacity: 0,
+                    y: 10,
+                },
+                {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.25,
+                },
+                '=-0.3',
+            );
+            tl.fromTo(
+                `#saving .cta`,
+                {
+                    opacity: 0,
+                    y: 10,
+                },
+                {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.25,
+                },
+                '=-0.4',
+            );
         }
     }, [width]);
 
@@ -81,8 +136,10 @@ const Landing = () => {
             <div className='row g-5'>
                 <div id='saving' className='saving-left col-12 col-xl-6 col-xxl-5'>
                     <h1 className='saving-title mb-4' dangerouslySetInnerHTML={{ __html: I18n.t('landing.saving.title') }} />
-                    <p>{I18n.t('landing.saving.p1')}</p>
-                    <p>{I18n.t('landing.saving.p2')}</p>
+                    <div className='description'>
+                        <p>{I18n.t('landing.saving.p1')}</p>
+                        <p>{I18n.t('landing.saving.p2')}</p>
+                    </div>
                     <Button className='cta' to={NavigationConstants.HOME}>
                         {I18n.t('landing.saving.cta')}
                     </Button>
