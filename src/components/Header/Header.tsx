@@ -3,8 +3,8 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 
-import logo from 'assets/images/logo.svg';
-import { Button } from 'components';
+import logo from 'assets/lotties/logo.json';
+import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n, KeplrUtils, StringsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
@@ -159,8 +159,16 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         <header className={`navbar fixed-top mt-4 mx-auto container p-4 ${!isLanding ? 'app' : ''}`}>
             <div className='background' />
             <nav className='container d-flex flex-row justify-content-center justify-content-sm-between align-items-center'>
-                <Link to='/'>
-                    <img className='logo' src={logo} alt='Cosmos Millions logo' />
+                <Link to={NavigationConstants.LANDING}>
+                    <Lottie
+                        delay={1100}
+                        className='logo'
+                        animationData={logo}
+                        segments={[
+                            [0, 41],
+                            [41, 257],
+                        ]}
+                    />
                 </Link>
                 <div className='navbar-items-container d-flex flex-row align-items-center'>{renderContent()}</div>
             </nav>

@@ -7,9 +7,10 @@ interface IProps {
     model?: string;
     actions?: Action[];
     segments?: [number, number][];
+    delay?: number;
 }
 
-const Lottie = ({ animationData, className, segments, actions }: IProps) => {
+const Lottie = ({ animationData, className, segments, actions, delay = 500 }: IProps) => {
     const element = useRef<HTMLDivElement>(null);
     const lottieInstance = useRef<any>();
 
@@ -34,7 +35,7 @@ const Lottie = ({ animationData, className, segments, actions }: IProps) => {
             }
 
             lottieInstance.current.playSegments(segments, true);
-        }, 500);
+        }, delay);
 
         return () => {
             lottieInstance.current?.destroy();

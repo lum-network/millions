@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import { I18n } from 'utils';
-import { Button, Card, Lottie, Collapsible } from 'components';
+import { Button, Card, Lottie, Collapsible, AnimatedNumber } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
@@ -158,9 +158,10 @@ const Landing = () => {
                                 ]}
                             />
                             <div className='best-prize-container'>
-                                <div className='d-flex'>
+                                <div className='d-flex counter'>
                                     <span className='currency'>$</span>
-                                    <span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>
+                                    <AnimatedNumber number={6784} />
+                                    {/*<span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>*/}
                                 </div>
                             </div>
                         </div>
@@ -170,6 +171,7 @@ const Landing = () => {
                     <Lottie
                         className='cosmos-with-balloons'
                         animationData={cosmonautWithBalloons2}
+                        delay={2500}
                         segments={[
                             [0, 20],
                             [20, 167],

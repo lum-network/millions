@@ -39,6 +39,19 @@
             text-transform: uppercase;
             width: 100%;
 
+            .counter {
+                user-select: none;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .counter span {
+                display: inline-block;
+                position: relative;
+            }
+
             .currency {
                 margin: 48px 12px 0 0;
                 font-size: 5vw;
