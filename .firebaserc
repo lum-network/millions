@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "lum-network"
+  },
+  "targets": {
+    "lum-network": {
+      "hosting": {
+        "lum-network-million": [
+          "lum-network-million"
+        ],
+        "lum-network-millions": [
+          "lum-network-millions"
+        ]
+      }
+    }
+  }
+}

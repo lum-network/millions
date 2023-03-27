@@ -1,0 +1,14 @@
+{
+  "hosting": [
+    {
+      "target": "lum-network-millions",
+      "public": "build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
+}
+

@@ -19,8 +19,8 @@ const Counter = ({ number, duration = 1000, delay = 1000 }: IProps) => {
     }, []);
 
     const countSpring = useSpring({
-        to: { count, transform: `translate3d(${0}px, 0, 0)` },
-        from: { count: 0, transform: 'translate3d(0, 0, 0)' },
+        to: { count, transform: `translateY(0px)` },
+        from: { count: 0, transform: 'translateY(0px)' },
         config: { duration: duration },
     });
 
