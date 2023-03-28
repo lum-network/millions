@@ -49,9 +49,29 @@ const Landing = () => {
             stagger: 0.25,
         });
         gsap.to(`#saving .cta`, {
-            translateY: -70,
+            translateY: -60,
             ease: 'none',
             scrollTrigger: scrollTrigger,
+            stagger: 0.5,
+        });
+
+        const scrollTrigger2 = {
+            trigger: `#cosmos-game`,
+            start: 'top 60%',
+            end: 'top 10%',
+            scrub: true,
+        };
+
+        gsap.to(`#cosmos-game h1`, {
+            translateY: -90,
+            ease: 'none',
+            scrollTrigger: scrollTrigger2,
+        });
+        gsap.to(`#cosmos-game .cosmos-game-description`, {
+            translateY: -75,
+            ease: 'none',
+            scrollTrigger: scrollTrigger2,
+            stagger: 0.25,
         });
     }, []);
 
@@ -126,6 +146,35 @@ const Landing = () => {
                 },
                 '=-0.4',
             );
+
+            tl.fromTo(
+                `#cosmos-game h1`,
+                {
+                    opacity: 0,
+                    y: 10,
+                },
+                {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.3,
+                },
+                '=0.4',
+            );
+            tl.fromTo(
+                `#cosmos-game .cosmos-game-description`,
+                {
+                    opacity: 0,
+                    y: 10,
+                },
+                {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.3,
+                },
+                '=0.2',
+            );
         }
     }, [width]);
 
@@ -179,11 +228,13 @@ const Landing = () => {
                     />
                 </div>
                 <div className='d-none d-xxl-block col-xxl-1' />
-                <div className='cosmos-game-right col-12 col-xl-6 col-xxl-6'>
+                <div id='cosmos-game' className='cosmos-game-right col-12 col-xl-6 col-xxl-6'>
                     <h1 className='mb-4'>{I18n.t('landing.cosmosGame.title')}</h1>
-                    <p>{I18n.t('landing.cosmosGame.p1')}</p>
-                    <p>{I18n.t('landing.cosmosGame.p2')}</p>
-                    <p>{I18n.t('landing.cosmosGame.p3')}</p>
+                    <div className='cosmos-game-description'>
+                        <p>{I18n.t('landing.cosmosGame.p1')}</p>
+                        <p>{I18n.t('landing.cosmosGame.p2')}</p>
+                        <p>{I18n.t('landing.cosmosGame.p3')}</p>
+                    </div>
                 </div>
                 <div id='howItWorks' className='winners col-12 d-flex flex-column align-items-center'>
                     <h1 className='text-center mb-4'>{I18n.t('landing.winners.title')}</h1>
