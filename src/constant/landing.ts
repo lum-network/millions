@@ -35,3 +35,4 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const MAX_PHONE_DEVICE_WIDTH = 640;
+export const LARGE_SIZE_SCREEN = 1200;

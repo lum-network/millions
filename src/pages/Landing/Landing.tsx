@@ -73,6 +73,19 @@ const Landing = () => {
             scrollTrigger: scrollTrigger2,
             stagger: 0.25,
         });
+
+        const scrollTrigger3 = {
+            trigger: `#howItWorks`,
+            start: 'top 60%',
+            end: 'top 10%',
+            scrub: true,
+        };
+
+        gsap.to(`#howItWorks h1`, {
+            translateY: -30,
+            ease: 'none',
+            scrollTrigger: scrollTrigger3,
+        });
     }, []);
 
     useEffect(() => {
@@ -246,17 +259,17 @@ const Landing = () => {
                                     animationData={cosmonautWithCoin}
                                     actions={[
                                         {
-                                            visibility: [0, 0.2],
+                                            visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0, 0.2] : [0, 0.1],
                                             type: 'stop',
                                             frames: [0],
                                         },
                                         {
-                                            visibility: [0.2, 0.4],
+                                            visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.2, 0.4] : [0.1, 0.3],
                                             type: 'seek',
                                             frames: [0, 30],
                                         },
                                         {
-                                            visibility: [0.4, 1.0],
+                                            visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.4, 1] : [0.3, 1],
                                             type: 'loop',
                                             frames: [30, 100],
                                         },
@@ -310,17 +323,17 @@ const Landing = () => {
                                         animationData={cosmonautWithDuck}
                                         actions={[
                                             {
-                                                visibility: [0, 0.2],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0, 0.2] : [0, 0.35],
                                                 type: 'stop',
                                                 frames: [0],
                                             },
                                             {
-                                                visibility: [0.2, 0.4],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.2, 0.4] : [0.35, 0.55],
                                                 type: 'seek',
                                                 frames: [0, 30],
                                             },
                                             {
-                                                visibility: [0.4, 1.0],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.4, 1] : [0.55, 1],
                                                 type: 'loop',
                                                 frames: [30, 128],
                                             },
@@ -337,17 +350,17 @@ const Landing = () => {
                                         animationData={cosmonautZen}
                                         actions={[
                                             {
-                                                visibility: [0, 0.2],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0, 0.2] : [0, 0.25],
                                                 type: 'stop',
                                                 frames: [0],
                                             },
                                             {
-                                                visibility: [0.2, 0.4],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.2, 0.4] : [0.25, 0.45],
                                                 type: 'seek',
                                                 frames: [0, 30],
                                             },
                                             {
-                                                visibility: [0.4, 1.0],
+                                                visibility: width < LandingConstants.LARGE_SIZE_SCREEN ? [0.4, 1] : [0.45, 1],
                                                 type: 'loop',
                                                 frames: [30, 128],
                                             },
