@@ -31,7 +31,7 @@
             align-items: center;
             font-style: normal;
             font-weight: 400;
-            font-size: 9vw;
+            font-size: min(9vw, 130px);
             color: $color-white;
             border: solid 4px $color-border;
             border-radius: 19px;

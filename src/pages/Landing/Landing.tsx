@@ -380,6 +380,9 @@ const Landing = () => {
                                 <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
+                                    {/*<span className='tvl-value'>*/}
+                                    {/*    <AnimatedNumber prefix='$' number={300004567} />*/}
+                                    {/*</span>*/}
                                     <span className='tvl-value'>{numeral(300004567).format('$0,0').replaceAll(',', '\u00a0')}</span>
                                 </div>
                             </div>
