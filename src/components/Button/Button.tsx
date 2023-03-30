@@ -8,24 +8,35 @@ import './Button.scss';
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
     outline?: boolean;
+    textOnly?: boolean;
     onClick?: () => void;
     to?: string;
+    locationState?: any;
     disabled?: boolean;
     loading?: boolean;
     className?: string;
 }
 
-const Button = ({ children, outline, to, disabled, onClick, loading, className, ...rest }: IProps) => {
+const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, ...rest }: IProps) => {
     if (to) {
         return (
-            <Link to={to} onClick={!loading ? onClick : () => null} className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}>
+            <Link
+                to={to}
+                state={locationState}
+                onClick={!loading ? onClick : () => null}
+                className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}
+            >
                 {loading ? <Loading /> : children}
             </Link>
         );
     }
 
     return (
-        <button onClick={!loading ? onClick : () => null} className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`} {...rest}>
+        <button
+            onClick={!loading ? onClick : () => null}
+            className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${className}`}
+            {...rest}
+        >
             {loading ? <Loading /> : children}
         </button>
     );

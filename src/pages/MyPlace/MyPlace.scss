@@ -49,12 +49,15 @@
         object-fit: contain;
         position: absolute;
         right: -30px;
-        top: calc(190px / 2 * -1)
+        top: calc(190px / 2 * -1);
     }
 }
 
 .asset-card {
     margin-bottom: 1.5rem;
+    background-color: $color-primary-light;
+    border-radius: 13px;
+    cursor: default;
 
     .denom-icon {
         width: 50px;
@@ -75,8 +78,68 @@
         color: white;
     }
 
+    .action-buttons {
+        z-index: 5;
+    }
+
+    &.collapsible {
+        border: none;
+
+        .collapsible-title {
+            width: 100%;
+            justify-content: stretch;
+        }
+
+        .asset-details-card {
+            min-width: 243px;
+
+            .asset-details-icon-container {
+                width: 30px;
+                height: 30px;
+                border-radius: 6.5625px;
+                background-color: $color-primary;
+
+                img {
+                    width: 15px;
+                    height: 15px;
+                }
+            }
+
+            .asset-detail {
+                font-size: 12px;
+                color: $color-primary;
+
+                .asset-detail-amount {
+                    font-size: 14px;
+                    color: $color-black;
+                }
+            }
+        }
+    }
+
     &:last-child {
         margin-bottom: 0;
+    }
+}
+
+.deposit-card {
+    .deposit-state {
+        padding: 12px 14px;
+
+        box-shadow: 0px 4px 23px #f1edff;
+        border-radius: 72px;
+
+        background: #8C8C8C;
+        color: white;
+
+        font-size: 12px;
+        &.success {
+            background: #34ad09;
+        }
+
+        &.failure {
+            background: #FA7676;
+        }
     }
 }
 

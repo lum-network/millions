@@ -5,7 +5,7 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import infoIcon from 'assets/images/info.svg';
 import keplrIcon from 'assets/images/keplr.svg';
 import { Button, Card, Header, Modal } from 'components';
-import { NavigationConstants, PoolsConstants } from 'constant';
+import { NavigationConstants } from 'constant';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
@@ -22,21 +22,31 @@ const MainLayout = () => {
     const logoutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const wallet = useSelector((state: RootState) => state.wallet.lumWallet);
 
+    const appLoading = useSelector((state: RootState) => state.loading.effects.app.init);
+
     const dispatch = useDispatch<Dispatch>();
     const store = useStore();
 
     useEffect(() => {
         const autoConnect = async () => {
-            if (enableAutoConnect && KeplrUtils.isKeplrInstalled() && location.pathname !== NavigationConstants.LANDING) {
-                await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true, chainIds: Object.values(PoolsConstants.POOLS).map((pool) => pool.chainId) }).finally(() => null);
-                await dispatch.wallet.connectOtherWallets();
-            }
+            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: enableAutoConnect === true }).finally(() => null);
+            await dispatch.wallet.connectOtherWallets(null);
         };
 
-        if (!wallet) {
+        if (!wallet && KeplrUtils.isKeplrInstalled() && location.pathname !== NavigationConstants.LANDING && enableAutoConnect) {
             autoConnect().finally(() => null);
         }
     }, [wallet, location, enableAutoConnect]);
+
+    useEffect(() => {
+        if (location.pathname === NavigationConstants.LANDING) {
+            setEnableAutoConnect(false);
+        }
+
+        if (location.state?.autoConnect) {
+            setEnableAutoConnect(true);
+        }
+    }, [location]);
 
     return (
         <>
@@ -44,7 +54,15 @@ const MainLayout = () => {
                 <div className='container fill'>
                     <Header keplrModalRef={keplrModalRef} logoutModalRef={logoutModalRef} />
                     <main className='h-100'>
-                        <Outlet />
+                        {appLoading ? (
+                            <div className='d-flex justify-content-center align-items-center h-75'>
+                                <div className='spinner-border' style={{ width: '3rem', height: '3rem', color: '#5634DE' }} role='status'>
+                                    <span className='visually-hidden'>Loading...</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <Outlet />
+                        )}
                         <RouteListener location={location} />
                     </main>
                 </div>

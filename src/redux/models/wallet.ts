@@ -1,10 +1,13 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
+import { Deposit } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
+import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
-import { PoolsConstants, DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel } from 'models';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -20,6 +23,7 @@ interface IbcTransferPayload {
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: any[];
+    deposits?: Deposit[];
 }
 
 interface SetOtherWalletPayload {
@@ -30,7 +34,7 @@ interface SetOtherWalletPayload {
 
 interface DepositToPoolPayload {
     amount: string;
-    pool: string;
+    pool: PoolModel;
 }
 
 interface WalletState {
@@ -38,7 +42,7 @@ interface WalletState {
     otherWallets: {
         [denom: string]: OtherWalletModel;
     };
-    prizeToClaim: LumTypes.Coin | null;
+    prizesToClaim: Prize[];
 }
 
 export const wallet = createModel<RootModel>()({
@@ -46,6 +50,7 @@ export const wallet = createModel<RootModel>()({
     state: {
         lumWallet: null,
         otherWallets: {},
+        prizesToClaim: [],
     } as WalletState,
     reducers: {
         signInLum(state, payload: LumWallet): WalletState {
@@ -56,6 +61,7 @@ export const wallet = createModel<RootModel>()({
                     address: payload.getAddress(),
                     balances: [],
                     activities: [],
+                    deposits: [],
                 },
             };
         },
@@ -67,6 +73,7 @@ export const wallet = createModel<RootModel>()({
                         ...state.lumWallet,
                         balances: payload.balances || state.lumWallet.balances,
                         activities: payload.activities || state.lumWallet.activities,
+                        deposits: [...(payload.deposits || state.lumWallet.deposits)],
                     },
                 }),
             };
@@ -84,20 +91,18 @@ export const wallet = createModel<RootModel>()({
                 },
             };
         },
-        setPrizeToClaim(state, payload: LumTypes.Coin | null): WalletState {
+        setPrizeToClaim(state, payload: Prize[]): WalletState {
             return {
                 ...state,
-                prizeToClaim: payload,
+                prizesToClaim: payload,
             };
         },
     },
     effects: (dispatch) => ({
-        async enableKeplrAndConnectLumWallet(payload: { chainIds: string[]; silent: boolean }, state) {
+        async enableKeplrAndConnectLumWallet(payload: { silent: boolean }, state) {
             if (state.wallet.lumWallet) {
                 return;
             }
-
-            await LumClient.connect();
 
             const { silent } = payload;
             const keplrWindow = window as KeplrWindow;
@@ -120,7 +125,7 @@ export const wallet = createModel<RootModel>()({
                         chainId: chainId,
                         chainName: chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                         rpc,
-                        rest: rpc.replace('rpc', 'rest'),
+                        rest: rpc.replace(rpc.includes('rpc') ? 'rpc' : '26657', rpc.includes('rpc') ? 'rest' : '1317'),
                         stakeCurrency: {
                             coinDenom: LumConstants.LumDenom,
                             coinMinimalDenom: LumConstants.MicroLumDenom,
@@ -175,7 +180,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await keplrWindow.keplr.enable([...payload.chainIds, chainId]);
+                    await keplrWindow.keplr.enable([...state.pools.pools.map((pool) => pool.chainId), chainId]);
                     if (!keplrWindow.getOfflineSignerAuto) {
                         throw 'Cannot fetch offline signer';
                     }
@@ -183,8 +188,10 @@ export const wallet = createModel<RootModel>()({
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
-                        dispatch.wallet.getLumWalletBalances(lumWallet.getAddress());
-                        dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
+
+                        await dispatch.wallet.getLumWalletBalances(lumWallet.getAddress());
+                        await dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
+                        await dispatch.wallet.getDeposits(lumWallet.getAddress());
                         if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
                     }
                 } catch (e) {
@@ -193,14 +200,18 @@ export const wallet = createModel<RootModel>()({
                 }
             }
         },
-        async connectOtherWallets() {
+        async connectOtherWallets(_, state) {
             const keplrWindow = window as KeplrWindow;
             if (keplrWindow.getOfflineSignerAuto) {
-                for (const pool of Object.values(PoolsConstants.POOLS)) {
+                for (const pool of state.pools.pools) {
                     try {
+                        if (!pool.internalInfos) {
+                            continue;
+                        }
+
                         const offlineSigner = await keplrWindow.getOfflineSignerAuto(pool.chainId);
                         const accounts = await offlineSigner.getAccounts();
-                        await WalletClient.connect(pool.rpc, offlineSigner);
+                        await WalletClient.connect(pool.internalInfos.rpc, offlineSigner);
 
                         if (accounts.length > 0) {
                             const res = await WalletClient.getWalletBalance(accounts[0].address);
@@ -208,11 +219,11 @@ export const wallet = createModel<RootModel>()({
                             dispatch.wallet.setOtherWalletData({
                                 address: accounts[0].address,
                                 balances: res
-                                    ? DenomsUtils.translateIbcBalances([...res.balances], pool.ibcDestChannel, pool.minimalDenom).filter((balance) =>
+                                    ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter((balance) =>
                                           DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
                                       )
                                     : [],
-                                denom: pool.denom,
+                                denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
                             });
                         }
 
@@ -221,13 +232,13 @@ export const wallet = createModel<RootModel>()({
                 }
             }
         },
-        async getLumWalletBalances(address: string) {
+        async getLumWalletBalances(address: string, state) {
             try {
                 const result = await LumClient.getWalletBalances(address);
 
                 if (result) {
                     const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
-                    const filteredBalances = balances.filter((balance) => DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)));
+                    const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom));
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
                 }
             } catch (e) {}
@@ -241,10 +252,53 @@ export const wallet = createModel<RootModel>()({
                 }
             } catch (e) {}
         },
-        async getPrizeToClaim(address: string) {
-            dispatch.wallet.setPrizeToClaim(null);
+        async getDeposits(address: string) {
+            try {
+                const res = await LumClient.getDeposits(address);
+                if (res) {
+                    dispatch.wallet.setLumWalletData({ deposits: res });
+                }
+            } catch (e) {
+                console.log(e);
+            }
         },
-        async ibcTransfer(payload: IbcTransferPayload) {
+        async getPrizeToClaim(address: string) {
+            dispatch.wallet.setPrizeToClaim([
+                {
+                    poolId: Long.fromNumber(1),
+                    drawId: Long.fromNumber(1),
+                    prizeId: Long.fromNumber(1),
+                    state: PrizeState.PRIZE_STATE_PENDING,
+                    winnerAddress: 'lum',
+                    amount: {
+                        amount: '129029110',
+                        denom: 'uosmo',
+                    },
+                    createdAtHeight: Long.fromNumber(1),
+                    updatedAtHeight: Long.fromNumber(1),
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                {
+                    poolId: Long.fromNumber(2),
+                    drawId: Long.fromNumber(2),
+                    prizeId: Long.fromNumber(2),
+                    state: PrizeState.PRIZE_STATE_PENDING,
+                    winnerAddress: 'lum',
+                    amount: {
+                        amount: '58208120',
+                        denom: 'uatom',
+                    },
+                    createdAtHeight: Long.fromNumber(1),
+                    updatedAtHeight: Long.fromNumber(1),
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            ]);
+        },
+        async ibcTransfer(payload: IbcTransferPayload, state) {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
             const convertedAmount = LumUtils.convertUnit(
@@ -267,7 +321,7 @@ export const wallet = createModel<RootModel>()({
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
 
-                    const rpc = type === 'withdraw' ? LumClient.getRpc() : PoolsConstants.POOLS[normalDenom].rpc;
+                    const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
                     if (rpc) {
                         await WalletClient.connect(rpc, offlineSigner);
@@ -298,10 +352,21 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async depositToPool(payload: DepositToPoolPayload) {
-            const result = await LumClient.depositToPool(payload.pool, payload.amount);
+        async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { lumWallet } = state.wallet;
 
-            return result;
+            if (!lumWallet) {
+                return null;
+            }
+
+            try {
+                const result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
+
+                return result;
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         },
     }),
 });

@@ -1,9 +1,95 @@
 @import 'src/styles/main';
 
+.deposit-steps {
+    .winning-chance,
+    .average-prize {
+        div {
+            color: $color-primary;
+        }
+    }
+
+    .card-step-title {
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 29px;
+    }
+
+    .card-step-subtitle {
+        font-size: 16px;
+        margin-top: 1.5rem;
+        margin-left: 4rem;
+        margin-right: 4rem;
+        font-weight: 300;
+        color: $color-grey;
+    }
+
+    .deposit-cta {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 48px;
+        padding: 6px 26px;
+    }
+
+    .fees-warning {
+        border-radius: 12px;
+        font-size: 11px;
+        line-height: 22px;
+        padding: 0.75rem;
+        text-align: center;
+        color: $color-primary;
+    }
+
+    .deposit-warning {
+        font-weight: 300;
+        font-size: 12px;
+        padding: 0.75rem;
+        text-align: center;
+        color: $color-black;
+    }
+}
+
 .step-1 {
     .winning-chance-card {
         padding-top: 1.25rem;
         padding-bottom: 1.25rem;
+    }
+}
+
+.step-2 {
+    .last-step-card {
+        margin-top: 5rem;
+        border-radius: 12px;
+
+        .asset-info {
+            img {
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+            }
+            color: $color-primary;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+        }
+        .deposit-amount {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 22px;
+            line-height: 26px;
+        }
+    }
+
+    .label {
+        font-size: 14px;
+        font-weight: 300;
+    }
+
+    .deposit-warning {
+        border-radius: 12px;
+        a {
+            color: $color-black;
+        }
     }
 }
 
@@ -21,7 +107,7 @@
             border-radius: 8px;
             min-width: 111px;
             min-height: 111px;
-            
+
             img {
                 width: 38px;
                 height: 38px;

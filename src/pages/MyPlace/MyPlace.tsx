@@ -8,21 +8,27 @@ import * as yup from 'yup';
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
-import { Button, Card, Modal, SmallerDecimal, AmountInput, AssetsSelect, Lottie } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Lottie, Collapsible } from 'components';
 import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
-import { NavigationConstants, PoolsConstants } from 'constant';
+import { NavigationConstants } from 'constant';
 
 import './MyPlace.scss';
+import TransferOut from './components/TransferOut/TransferOut';
+import Claim from './components/Claim/Claim';
+import { Deposit, DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 const MyPlace = () => {
-    const { lumWallet, otherWallets, balances, activities, prizeToClaim, prices } = useSelector((state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizesToClaim, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
         balances: state.wallet.lumWallet?.balances,
         activities: state.wallet.lumWallet?.activities,
-        prizeToClaim: state.wallet.prizeToClaim,
+        deposits: state.wallet.lumWallet?.deposits,
+        prizesToClaim: state.wallet.prizesToClaim,
         prices: state.stats.prices,
+        pools: state.pools.pools,
+        isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
 
     const dispatch = useDispatch<Dispatch>();
@@ -42,18 +48,19 @@ const MyPlace = () => {
             const normalDenom = DenomsUtils.getNormalDenom(values.denom);
             const destWallet = otherWallets[normalDenom];
             const amount = values.amount.toString();
+            const pool = pools.find((pool) => pool.nativeDenom === values.denom);
 
-            if (lumWallet && destWallet) {
+            if (lumWallet && destWallet && pool && pool.internalInfos) {
                 await dispatch.wallet.ibcTransfer({
                     toAddress: destWallet.address,
                     fromAddress: lumWallet.address,
                     type: 'withdraw',
                     amount: {
                         amount,
-                        denom: PoolsConstants.POOLS[normalDenom].ibcDenom,
+                        denom: pool.internalInfos.ibcDenom,
                     },
                     normalDenom: normalDenom,
-                    ibcChannel: PoolsConstants.POOLS[normalDenom].ibcSourceChannel,
+                    ibcChannel: pool.internalInfos.ibcSourceChannel,
                     chainId: LumClient.getChainId() || '',
                 });
             }
@@ -74,37 +81,102 @@ const MyPlace = () => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
         const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
         const amount = NumbersUtils.convertUnitNumber(asset.amount);
+        const bondedAmount = 0;
         const price = prices?.[normalDenom];
 
         return (
-            <Card flat key={asset.denom} className='asset-card'>
-                <div className='d-flex justify-content-between align-items-center'>
-                    <div className='d-flex flex-row align-items-center'>
-                        {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
-                        <div className='d-flex flex-column asset-amount'>
-                            <span>
-                                <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
-                            </span>
-                            <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
+            <Collapsible
+                id={`asset-${asset.denom}`}
+                className='asset-card p-3 py-4 p-sm-4 p-xl-5'
+                key={asset.denom}
+                toggleWithButton
+                disabled
+                header={
+                    <>
+                        <div className='d-flex justify-content-between align-items-center flex-grow-1 me-4'>
+                            <div className='d-flex flex-row align-items-center'>
+                                {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                                <div className='d-flex flex-column asset-amount'>
+                                    <span>
+                                        <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                                    </span>
+                                    <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
+                                </div>
+                            </div>
+                            <div className='action-buttons d-flex flex-row align-items-center'>
+                                {normalDenom !== LumConstants.LumDenom ? (
+                                    <Button
+                                        outline
+                                        className='me-3'
+                                        data-bs-toggle='modal'
+                                        data-bs-target='#withdrawModal'
+                                        onClick={async () => {
+                                            onDenomChange(asset.denom);
+                                        }}
+                                    >
+                                        {I18n.t('myPlace.withdraw')}
+                                    </Button>
+                                ) : null}
+                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
+                            </div>
                         </div>
+                    </>
+                }
+                content={
+                    <div className='pt-5 d-flex flex-row'>
+                        <Card flat withoutPadding className='p-3 asset-details-card d-flex justify-content-start align-items-center bg-white'>
+                            <div className='asset-details-icon-container me-3 d-flex align-items-center justify-content-center'>
+                                <img src={Assets.images.checkmark} />
+                            </div>
+                            <div className='asset-detail d-flex flex-column align-items-start'>
+                                Available
+                                <span className='asset-detail-amount'>
+                                    <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                                </span>
+                            </div>
+                        </Card>
+                        <Card flat withoutPadding className='ms-4 p-3 asset-details-card d-flex justify-content-start align-items-center bg-white'>
+                            <div className='asset-details-icon-container me-3 d-flex align-items-center justify-content-center'>
+                                <img src={Assets.images.bonded} />
+                            </div>
+                            <div className='asset-detail d-flex flex-column align-items-start'>
+                                Bonded
+                                <span className='asset-detail-amount'>
+                                    <SmallerDecimal nb={numeral(bondedAmount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                                </span>
+                            </div>
+                        </Card>
                     </div>
-                    <div className='d-flex flex-row align-items-center'>
-                        {normalDenom !== LumConstants.LumDenom ? (
-                            <Button
-                                outline
-                                className='me-3'
-                                data-bs-toggle='modal'
-                                data-bs-target='#withdrawModal'
-                                onClick={async () => {
-                                    onDenomChange(asset.denom);
-                                }}
-                            >
-                                {I18n.t('myPlace.withdraw')}
-                            </Button>
-                        ) : null}
-                        <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
+                }
+            />
+        );
+    };
+
+    const renderDeposit = (deposit: Deposit, index: number) => {
+        const isSuccess = deposit.state === DepositState.DEPOSIT_STATE_SUCCESS;
+        const isFailure = deposit.state === DepositState.DEPOSIT_STATE_FAILURE;
+        return (
+            <Card
+                flat
+                withoutPadding
+                key={`deposit-${deposit.depositId.toString()}`}
+                className={`deposit-card d-flex flex-row align-items-center justify-content-between p-3 py-4 p-sm-4 p-xl-5 ${index > 0 ? 'mt-3' : ''}`}
+            >
+                <div className='d-flex flex-row align-items-center'>
+                    <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
+                    <div className='d-flex flex-column ms-3'>
+                        <h3 className='mb-0'>
+                            {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
+                        </h3>
+                        <p className='mb-0'>
+                            Pool #{deposit.poolId.toString()} - Deposit #{deposit.depositId.toString()}
+                        </p>
                     </div>
                 </div>
+                <div className='d-flex flex-row align-items-start'>
+                    <div className={`deposit-state ${isSuccess ? 'success' : isFailure ? 'failure' : ''}`}>{I18n.t('myPlace.depositStates', { returnObjects: true })[deposit.state]}</div>
+                </div>
+                {isSuccess ? <Button textOnly>Leave Pool</Button> : isFailure ? <Button>Retry</Button> : <p className='text-muted mb-0'>30 min estimated</p>}
             </Card>
         );
     };
@@ -139,6 +211,12 @@ const MyPlace = () => {
                                 ]}
                             />
                         </Card>
+                        {deposits && deposits.length > 0 ? (
+                            <>
+                                <h2 className='mt-4'>{I18n.t('myPlace.deposits')}</h2>
+                                <Card>{deposits.map(renderDeposit)}</Card>
+                            </>
+                        ) : null}
                         <h2 className='mt-4'>{I18n.t('myPlace.assets')}</h2>
                         <Card>
                             {balances && balances.length > 0 ? (
@@ -163,22 +241,31 @@ const MyPlace = () => {
                     </div>
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
-                    {prizeToClaim ? (
+                    {prizesToClaim.length > 0 ? (
                         <div className='mt-4 mt-lg-0'>
-                            <h2>{I18n.t('myPlace.claimPrize')}</h2>
+                            <h2>
+                                <img src={Assets.images.trophy} alt='Trophy' className='me-3' width='24' />
+                                {I18n.t('myPlace.claimPrize')}
+                            </h2>
                             <Card>
                                 <div className='d-flex flex-column prize-to-claim'>
-                                    <span className='asset-amount'>
-                                        <img src={DenomsUtils.getIconFromDenom(prizeToClaim.denom)} className='denom-icon' alt='Denom' />
-                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prizeToClaim.amount)).format('0,0.[00]')} className='me-2' />
-                                        {DenomsUtils.getNormalDenom(prizeToClaim.denom).toUpperCase()}
-                                    </span>
-                                    <Button className='my-place-cta mt-3'>{I18n.t('myPlace.claim')}</Button>
+                                    {prizesToClaim.map((prize, index) =>
+                                        prize.amount ? (
+                                            <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
+                                                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
+                                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0')} className='me-2' />
+                                                {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
+                                            </span>
+                                        ) : null,
+                                    )}
+                                    <Button className='my-place-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                        {I18n.t('myPlace.claim')}
+                                    </Button>
                                 </div>
                             </Card>
                         </div>
                     ) : null}
-                    <h2 className={prizeToClaim ? 'mt-4' : 'mt-4 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
+                    <h2 className={prizesToClaim.length > 0 ? 'mt-4' : 'mt-4 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
                     <Card>
                         <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
                         <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
@@ -189,59 +276,11 @@ const MyPlace = () => {
                     </Card>
                 </div>
             </div>
-            <Modal id='withdrawModal'>
-                <form onSubmit={withdrawForm.handleSubmit}>
-                    <div className='withdraw-title'>{I18n.t('withdraw.title')}</div>
-                    <div className='d-flex flex-column position-relative mt-4'>
-                        <div className='address-container mb-3'>{lumWallet?.address}</div>
-                        <div className='address-container'>{withdrawForm.values.withdrawAddress}</div>
-                        <div className='arrow-container position-absolute top-50 start-50 translate-middle'>
-                            <img src={Assets.images.downArrow} alt='down arrow' />
-                        </div>
-                    </div>
-                    <AmountInput
-                        className='amount-input'
-                        label={I18n.t('withdraw.amountInput.label')}
-                        sublabel={
-                            withdrawForm.values.denom
-                                ? I18n.t('withdraw.amountInput.sublabel', {
-                                      amount: NumbersUtils.formatTo6digit(WalletUtils.getMaxAmount(withdrawForm.values.denom, balances)),
-                                      denom: DenomsUtils.getNormalDenom(withdrawForm.values.denom).toUpperCase(),
-                                  })
-                                : undefined
-                        }
-                        onMax={
-                            withdrawForm.values.denom
-                                ? () => {
-                                      withdrawForm.setFieldValue('amount', WalletUtils.getMaxAmount(withdrawForm.values.denom, balances));
-                                  }
-                                : undefined
-                        }
-                        inputProps={{
-                            type: 'number',
-                            min: 0,
-                            max: WalletUtils.getMaxAmount(withdrawForm.values.denom, balances),
-                            step: 'any',
-                            ...withdrawForm.getFieldProps('amount'),
-                        }}
-                        price={prices?.[DenomsUtils.getNormalDenom(withdrawForm.values.denom)]}
-                        error={withdrawForm.errors.amount}
-                    />
-                    <AssetsSelect
-                        balances={balances || []}
-                        value={withdrawForm.values.denom}
-                        onChange={async (denom) => await onDenomChange(denom)}
-                        options={(balances || [])
-                            .filter((balance) => balance.denom !== LumConstants.MicroLumDenom)
-                            .map((balance) => ({
-                                label: DenomsUtils.getNormalDenom(balance.denom),
-                                value: balance.denom,
-                            }))}
-                    />
-                    <Button type='submit' data-bs-dismiss='modal' className='w-100 mt-4'>
-                        {I18n.t('myPlace.withdraw')}
-                    </Button>
-                </form>
+            <Modal id='withdrawModal' modalWidth={1080} withCloseButton={false}>
+                <TransferOut form={withdrawForm} prices={prices} balances={balances || []} isLoading={isTransferring} />
+            </Modal>
+            <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
+                <Claim prizes={prizesToClaim} prices={prices} onClaim={() => true} onClaimAndCompound={() => true} isLoading={false} />
             </Modal>
         </>
     );

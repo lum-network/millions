@@ -5,65 +5,6 @@
     margin-bottom: 4rem;
 }
 
-.winning-chance,
-.average-prize {
-    div {
-        color: $color-primary;
-    }
-}
-
-.card-step-title {
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 29px;
-}
-
-.card-step-subtitle {
-    font-size: 16px;
-    margin-top: 1.5rem;
-    margin-left: 4rem;
-    margin-right: 4rem;
-    font-weight: 300;
-    color: $color-grey;
-}
-
-.deposit-cta {
-    font-style: normal;
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 48px;
-    padding: 6px 26px;
-}
-
-.last-step-card {
-    margin-top: 5rem;
-    .asset-info {
-        img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-        }
-        color: $color-primary;
-        font-style: normal;
-        font-weight: 400;
-        font-size: 18px;
-    }
-    .deposit-amount {
-        font-style: normal;
-        font-weight: 400;
-        font-size: 22px;
-        line-height: 26px;
-    }
-}
-
-.fees-warning {
-    font-size: 11px;
-    line-height: 22px;
-    padding: 0.75rem;
-    text-align: center;
-    color: $color-primary;
-}
-
 .glow-bg {
     box-shadow: 0px 0px 69px rgba(96, 150, 255, 0.1);
 }

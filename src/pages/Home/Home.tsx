@@ -1,9 +1,12 @@
 import React from 'react';
-import { DenomsUtils, I18n, StringsUtils } from 'utils';
+import { useSelector } from 'react-redux';
+import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 import numeral from 'numeral';
 
 import { Button, Card, CountDown, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
+import { RootState } from 'redux/store';
+
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import Assets from 'assets';
@@ -11,6 +14,10 @@ import Assets from 'assets';
 import './Home.scss';
 
 const Home = () => {
+    const biggestPrize = useSelector((state: RootState) => state.pools.bestPrize);
+    const pools = useSelector((state: RootState) => state.pools.pools);
+    const prices = useSelector((state: RootState) => state.stats.prices);
+
     const renderBigWinnerCard = (denom: string, prize: number, address: string) => {
         return (
             <Button
@@ -30,6 +37,8 @@ const Home = () => {
         );
     };
 
+    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
+
     return (
         <div className='home-container mt-5 mt-xxl-0'>
             <div className='row g-4'>
@@ -48,13 +57,17 @@ const Home = () => {
                             <div className='best-prize-container'>
                                 <div className='d-flex'>
                                     <span className='currency'>$</span>
-                                    <span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>
+                                    <span>
+                                        {numeral(biggestPrize?.amount || '0')
+                                            .format('0,0')
+                                            .replaceAll(',', '\u00a0')}
+                                    </span>
                                 </div>
                             </div>
                             <div className='mt-5 d-flex align-items-center justify-content-between w-100'>
                                 <div className='network'>
-                                    <img src={DenomsUtils.getIconFromDenom('atom')} alt='denom' height={32} width={32} />
-                                    <span className='ms-2'>atom</span>
+                                    <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
+                                    <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                                 </div>
                                 <div>
                                     <CountDown homePage to={'2023-02-28'} />
@@ -70,7 +83,7 @@ const Home = () => {
                                 <h3>{I18n.t('home.totalValueLocked')}</h3>
                                 <div className='d-flex align-items-center pt-3'>
                                     <img alt='coin staked' src={Assets.images.coinsStaked2} />
-                                    <span className='ms-3 total-value-locked'>{numeral(67574567).format('$0,0[.]0a')}</span>
+                                    <span className='ms-3 total-value-locked'>{numeral(tvl).format('$0,0[.]0a')}</span>
                                 </div>
                             </Card>
                         </div>

@@ -8,7 +8,7 @@ import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n, KeplrUtils, StringsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
-import { NavigationConstants, PoolsConstants } from 'constant';
+import { NavigationConstants } from 'constant';
 
 import Assets from 'assets';
 
@@ -73,8 +73,8 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
 
     const connectWallet = async () => {
         if (KeplrUtils.isKeplrInstalled()) {
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false, chainIds: Object.values(PoolsConstants.POOLS).map((pool) => pool.chainId) }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets();
+            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
+            await dispatch.wallet.connectOtherWallets(null);
         } else {
             if (keplrModalRef.current) {
                 keplrModalRef.current.toggle();
@@ -112,7 +112,9 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='ms-3 ms-lg-4'>
-                        <Button to={NavigationConstants.HOME}>{I18n.t('landing.openTheApp')}</Button>
+                        <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
+                            {I18n.t('landing.openTheApp')}
+                        </Button>
                     </li>
                 </ul>
             );

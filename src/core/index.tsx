@@ -6,6 +6,7 @@ import { router } from 'navigation';
 import { Dispatch } from 'redux/store';
 import Assets from 'assets';
 import Loader from './components/Loader/Loader';
+import { NavigationConstants } from 'constant';
 
 const Core = () => {
     const dispatch = useDispatch<Dispatch>();
@@ -54,7 +55,7 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        dispatch.stats.fetchStats().finally(() => null);
+        dispatch.app.init({ withWallets: location.pathname !== NavigationConstants.LANDING }).finally(() => null);
     }, []);
 
     return (

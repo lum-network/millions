@@ -28,7 +28,7 @@ class WalletClient {
             this.walletClient = client;
             this.chainId = await client.getChainId();
         } catch {
-            showErrorToast({ content: I18n.t('errors.client.osmosis') });
+            showErrorToast({ content: I18n.t('errors.client.rpc') });
         }
     };
 

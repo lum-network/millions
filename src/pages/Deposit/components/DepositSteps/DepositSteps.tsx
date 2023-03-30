@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormikProps } from 'formik';
 import { Tooltip } from 'react-tooltip';
-import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
@@ -11,16 +11,19 @@ import Assets from 'assets';
 
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
-import { LumWalletModel, OtherWalletModel } from 'models';
-import { NavigationConstants, PoolsConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
+import { NavigationConstants } from 'constant';
 
 import './DepositSteps.scss';
 
 interface StepProps {
-    denom: string;
+    pool: PoolModel;
+    balances: LumTypes.Coin[];
+    price?: number;
 }
 
-interface Props extends StepProps {
+interface Props {
+    pool: PoolModel;
     currentStep: number;
     steps: {
         title: string;
@@ -40,22 +43,16 @@ interface Props extends StepProps {
 
 const DepositStep1 = (
     props: StepProps & {
-        otherWallet: OtherWalletModel | undefined;
         nonEmptyWallets: OtherWalletModel[];
         form: FormikProps<{ amount: string }>;
         onDeposit: (amount: string) => void;
-        price?: number;
     },
 ) => {
-    const { denom, otherWallet, price, form, nonEmptyWallets, onDeposit } = props;
+    const { pool, balances, price, form, nonEmptyWallets, onDeposit } = props;
 
     const navigate = useNavigate();
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.ibcTransfer);
-
-    if (!otherWallet) {
-        return <div />;
-    }
 
     return (
         <form onSubmit={form.handleSubmit} className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
@@ -65,17 +62,17 @@ const DepositStep1 = (
                     className='amount-input'
                     label={I18n.t('withdraw.amountInput.label')}
                     sublabel={I18n.t('withdraw.amountInput.sublabel', {
-                        amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(otherWallet.balances.length > 0 ? otherWallet.balances[0].amount : '0')),
-                        denom: denom.toUpperCase(),
+                        amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                        denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
                     })}
                     onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(PoolsConstants.POOLS[denom].minimalDenom, otherWallet.balances);
+                        const amount = WalletUtils.getMaxAmount(pool.nativeDenom, balances);
                         form.setFieldValue('amount', amount);
                     }}
                     inputProps={{
                         type: 'number',
                         min: 0,
-                        max: otherWallet.balances.length > 0 ? otherWallet.balances[0].amount : '0',
+                        max: balances.length > 0 ? balances[0].amount : '0',
                         step: 'any',
                         lang: 'en',
                         ...form.getFieldProps('amount'),
@@ -96,7 +93,7 @@ const DepositStep1 = (
                         }
                         return result;
                     }, [])}
-                    value={'u' + (denom || '')}
+                    value={pool.nativeDenom}
                     onChange={(value) => {
                         navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
                     }}
@@ -127,7 +124,7 @@ const DepositStep1 = (
                                     <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
                                 </span>
                             </div>
-                            <div>14 {denom?.toUpperCase()}</div>
+                            <div>14 {DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</div>
                         </div>
                     </Card>
                 )}
@@ -142,22 +139,107 @@ const DepositStep1 = (
 };
 
 const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void }) => {
-    const { denom, amount, initialAmount, onNextStep, onFinishDeposit } = props;
+    const { pool, price, balances, amount, initialAmount, onNextStep, onFinishDeposit } = props;
+
     const dispatch = useDispatch<Dispatch>();
 
-    const [depositAmount] = useState(initialAmount ? LumUtils.convertUnit({ amount: initialAmount, denom: LumConstants.MicroLumDenom }, LumConstants.LumDenom) : amount);
-
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [depositAmount, setDepositAmount] = useState(
+        initialAmount
+            ? NumbersUtils.formatTo6digit(
+                  Number(LumUtils.convertUnit({ amount: initialAmount, denom: LumConstants.MicroLumDenom }, LumConstants.LumDenom)) - (pool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0),
+              )
+            : amount,
+    );
+    const [isModifying, setIsModifying] = useState(false);
+    const [error, setError] = useState('');
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
+    useEffect(() => {
+        const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, balances));
+        const depositAmountNumber = Number(depositAmount);
+
+        if (Number.isNaN(depositAmountNumber)) {
+            setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
+        } else {
+            if (depositAmountNumber > maxAmount) {
+                setError(I18n.t('errors.deposit.greaterThanBalance'));
+            } else if (depositAmountNumber < Number(pool.minDepositAmount)) {
+                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: pool.minDepositAmount }));
+            } else {
+                setError('');
+            }
+        }
+    }, [depositAmount]);
+
+    useEffect(() => {
+        const handler = ({ key }: KeyboardEvent) => {
+            if (key === 'Enter' && !error && !isLoading) {
+                setIsModifying(false);
+            }
+        };
+
+        if (containerRef.current) {
+            const input = containerRef.current.querySelector('input');
+
+            if (input) {
+                input.addEventListener('keyup', handler);
+            }
+        }
+
+        return () => {
+            if (containerRef.current) {
+                const input = containerRef.current.querySelector('input');
+
+                if (input) {
+                    input.removeEventListener('keyup', handler);
+                }
+            }
+        };
+    }, [containerRef]);
+
     return (
-        <div className='step-2'>
-            <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between p-4 last-step-card'>
-                <span className='asset-info'>
-                    <img src={DenomsUtils.getIconFromDenom(denom)} alt='denom' className='me-3' />
-                    {denom.toUpperCase()}
-                </span>
-                <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
+        <div className='step-2' ref={containerRef}>
+            <Card flat withoutPadding className='deposit-warning mt-4'>
+                <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
             </Card>
+            <div className='d-flex flex-row justify-content-between mt-4'>
+                <label className='label'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() })}</label>
+                <Button textOnly onClick={() => setIsModifying(true)}>
+                    Modify
+                </Button>
+            </div>
+            {isModifying ? (
+                <AmountInput
+                    isLoading={isLoading}
+                    className='amount-input mt-2'
+                    onMax={() => {
+                        const amount = WalletUtils.getMaxAmount(pool.nativeDenom, balances);
+                        setDepositAmount(amount);
+                    }}
+                    inputProps={{
+                        type: 'number',
+                        min: 0,
+                        value: depositAmount,
+                        onChange: (e) => {
+                            setDepositAmount(e.target.value);
+                        },
+                        max: balances.length > 0 ? balances[0].amount : '0',
+                        step: 'any',
+                        lang: 'en',
+                    }}
+                    price={price}
+                    error={error}
+                />
+            ) : (
+                <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
+                    <span className='asset-info'>
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(pool.nativeDenom))} className='me-3' alt='denom' />
+                        {DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}
+                    </span>
+                    <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
+                </Card>
+            )}
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                     <img src={Assets.images.info} alt='info' />
@@ -168,10 +250,10 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             <Button
                 type='button'
                 onClick={async () => {
-                    const hash = await dispatch.wallet.depositToPool({ pool: denom, amount: depositAmount });
+                    const res = await dispatch.wallet.depositToPool({ pool, amount: depositAmount });
 
-                    if (hash) {
-                        onFinishDeposit(hash);
+                    if (res && !res.error) {
+                        onFinishDeposit(LumUtils.toHex(res.hash).toUpperCase());
                         onNextStep();
                     }
                 }}
@@ -209,19 +291,6 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                     <button
                         className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
                         onClick={() => {
-                            navigate('/my-place');
-                        }}
-                    >
-                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={Assets.images.myPlace} alt='My Place' />
-                        </div>
-                        {I18n.t('deposit.goToMyPlace')}
-                    </button>
-                </div>
-                <div className='col step-3-cta-container'>
-                    <button
-                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
-                        onClick={() => {
                             window.open(`${NavigationConstants.MINTSCAN}/txs/${txHash}`, '_blank');
                         }}
                     >
@@ -229,6 +298,19 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' />
                         </div>
                         {I18n.t('deposit.seeOnMintscan')}
+                    </button>
+                </div>
+                <div className='col step-3-cta-container'>
+                    <button
+                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                        onClick={() => {
+                            navigate('/my-place');
+                        }}
+                    >
+                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
+                            <img src={Assets.images.myPlace} alt='My Place' />
+                        </div>
+                        {I18n.t('deposit.goToMyPlace')}
                     </button>
                 </div>
             </div>
@@ -246,29 +328,46 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, initialAmount, price, denom, onNextStep, transferForm } = props;
+    const { currentStep, steps, otherWallets, initialAmount, price, pool, onNextStep, transferForm, lumWallet } = props;
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
-    const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[denom]);
+    const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(pool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
 
     useEffect(() => {
-        setOtherWallet(otherWallets[denom]);
+        setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(pool.nativeDenom)]);
         setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
-    }, [otherWallets]);
+    }, [otherWallets, pool]);
 
     return (
         <>
-            <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
+            <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
                 <div className='mb-5 mb-lg-0'>
                     <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
                     <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
                 </div>
                 {currentStep === 0 && (
-                    <DepositStep1 form={transferForm} onDeposit={(amount) => setAmount(amount)} price={price} otherWallet={otherWallet} nonEmptyWallets={nonEmptyWallets} denom={denom} />
+                    <DepositStep1
+                        form={transferForm}
+                        onDeposit={(amount) => setAmount(amount)}
+                        price={price}
+                        balances={(pool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        nonEmptyWallets={nonEmptyWallets}
+                        pool={pool}
+                    />
                 )}
-                {currentStep === 1 && <DepositStep2 initialAmount={initialAmount} amount={amount} onFinishDeposit={(hash) => setTxHash(hash)} denom={denom} onNextStep={onNextStep} />}
+                {currentStep === 1 && (
+                    <DepositStep2
+                        balances={(pool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        initialAmount={initialAmount}
+                        amount={amount}
+                        onFinishDeposit={(hash) => setTxHash(hash)}
+                        pool={pool}
+                        price={price}
+                        onNextStep={onNextStep}
+                    />
+                )}
                 {currentStep === 2 && <DepositStep3 txHash={txHash} />}
             </div>
         </>

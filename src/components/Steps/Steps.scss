@@ -1,19 +1,21 @@
 @import 'src/styles/main';
 
 .steps {
-    margin-right: 10rem;
+    margin-right: 6rem;
     .step {
         position: relative;
         .step-index-container {
             z-index: 2;
             height: 28px;
             width: 28px;
+            min-height: 28px;
+            min-width: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 1px solid $color-light-grey;
-            background-color: $color-background;
+            background-color: var(--step-bg-color);
             color: $color-grey;
             font-family: 'Gotham Rounded';
             font-size: 12px;

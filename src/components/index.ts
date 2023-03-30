@@ -11,4 +11,6 @@ export { default as Collapsible } from './Collapsible/Collapsible';
 export { default as ProgressBar } from './ProgressBar/ProgressBar';
 export { default as AnimatedNumber } from './AnimatedNumber/AnimatedNumber';
 export { default as Modal } from './Modal/Modal';
+export { default as Steps } from './Steps/Steps';
+
 export * from './ToastContent/ToastContent';

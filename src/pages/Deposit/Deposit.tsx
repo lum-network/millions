@@ -5,12 +5,11 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import Assets from 'assets';
-import { Button, Card, Modal } from 'components';
-import { NavigationConstants, PoolsConstants } from 'constant';
+import { Button, Card, Modal, Steps } from 'components';
+import { NavigationConstants } from 'constant';
 import { DenomsUtils, I18n } from 'utils';
 import { RootState, Dispatch } from 'redux/store';
 
-import Steps from './components/Steps/Steps';
 import DepositSteps from './components/DepositSteps/DepositSteps';
 import Error404 from '../404/404';
 
@@ -19,10 +18,11 @@ import './Deposit.scss';
 const Deposit = () => {
     const { denom } = useParams<{ denom: string }>();
 
-    const { otherWallets, lumWallet, prices } = useSelector((state: RootState) => ({
+    const { otherWallets, lumWallet, prices, pool } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
+        pool: state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
     }));
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
@@ -40,21 +40,24 @@ const Deposit = () => {
         }),
         onSubmit: async (values) => {
             const amount = values.amount.toString();
-            const hash = await dispatch.wallet.ibcTransfer({
-                type: 'deposit',
-                fromAddress: otherWallet.address,
-                toAddress: lumWallet?.address || '',
-                amount: {
-                    amount,
-                    denom: 'u' + denom,
-                },
-                normalDenom: PoolsConstants.POOLS[denom || ''].denom,
-                ibcChannel: PoolsConstants.POOLS[denom || ''].ibcDestChannel,
-                chainId: PoolsConstants.POOLS[denom || ''].chainId,
-            });
 
-            if (hash) {
-                setCurrentStep(currentStep + 1);
+            if (pool) {
+                const hash = await dispatch.wallet.ibcTransfer({
+                    type: 'deposit',
+                    fromAddress: otherWallet.address,
+                    toAddress: lumWallet?.address || '',
+                    amount: {
+                        amount,
+                        denom: pool.nativeDenom,
+                    },
+                    normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                    ibcChannel: pool.transferChannelId,
+                    chainId: pool.chainId,
+                });
+
+                if (hash) {
+                    setCurrentStep(currentStep + 1);
+                }
             }
         },
     });
@@ -87,14 +90,14 @@ const Deposit = () => {
         { capture: true },
     );
 
-    if (PoolsConstants.POOLS[denom || ''] === undefined) {
+    if (pool === undefined) {
         return <Error404 />;
     }
 
     const steps = I18n.t('deposit.steps', {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
-        chainName: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(denom || '')].chainName,
+        chainName: pool.internalInfos?.chainName || 'Native Chain',
     });
 
     const isFirstStep = currentStep === 0;
@@ -102,7 +105,7 @@ const Deposit = () => {
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (!otherWallet || !lumWallet) {
+    if (!lumWallet || (denom !== 'lum' && !otherWallet)) {
         return <Navigate to={NavigationConstants.HOME} />;
     }
 
@@ -120,7 +123,7 @@ const Deposit = () => {
                             onNextStep={() => setCurrentStep(currentStep + 1)}
                             currentStep={currentStep}
                             steps={steps}
-                            denom={denom || ''}
+                            pool={pool}
                             price={prices?.[denom || ''] || 0}
                             lumWallet={lumWallet}
                             initialAmount={initialAmount}

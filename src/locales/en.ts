@@ -24,6 +24,7 @@ export default {
     errors: {
         generic: {
             required: '{{ field }} is required',
+            invalid: 'Invalid {{ field }}',
         },
         keplr: {
             notInstalled: 'Please install keplr extension',
@@ -33,11 +34,12 @@ export default {
             wallet: 'Failed to connect to Keplr wallet',
         },
         client: {
-            osmosis: 'Error with RPC connection to Osmosis. IBC transactions may not work.',
+            rpc: 'Error with RPC connection to other chain. IBC transactions may not work.',
             lum: 'Error with RPC connection to Lum Network.',
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
+            lessThanMinDeposit: 'Amount must be greather than minimum deposit of {{ minDeposit }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
         },
@@ -162,13 +164,14 @@ export default {
     },
     myPlace: {
         title: 'My place',
-        assets: 'Assets',
+        assets: 'Available Assets',
         totalBalance: 'Total balance',
         claim: 'Claim',
         claimPrize: 'Claim prize',
-        deposit: 'Deposit',
-        withdraw: 'Withdraw',
+        deposit: 'Deposit in Pool',
+        withdraw: 'Transfer out',
         activities: 'Activities',
+        deposits: 'Pool Deposits',
         noAssets: {
             title: 'No assets yet',
             description: 'It’s time to deposit assets in your wallet\nto participate to the next prize',
@@ -180,6 +183,47 @@ export default {
                 "As a LUM holder in the Lum Network, you play a role in shaping the protocol's future. Your ability to propose and vote on changes to the protocol empowers you to influence the community and guide the network towards a positive future.",
             cta: 'Join our Discord',
         },
+        transferOutModal: {
+            title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',
+            amountInput: {
+                label: 'Select Amount:',
+                sublabel: 'Available: {{ amount }} {{ denom }}',
+            },    
+            steps: [
+                {
+                    title: 'Choose the assets you want to transfer out',
+                    subtitle: 'Redeem your savings or transfer your available tokens',
+                    cardTitle: 'Transfer my available tokens',
+                    cardSubtitle: 'Transfer your tokens from the Lum Network to their native blockchain.',    
+                },
+                {
+                    title: 'Select the tokens to transfer',
+                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet'
+                }
+            ],
+            cta: 'Transfer my available tokens',
+        },
+        claimModal: {
+            title: 'Cosmonaut,\nyour savings are blasting off like a rocketship 🚀',
+            cardTitle: 'Claim my Prizes',
+            steps: [
+                {
+                    title: 'Wonderful! Take a look at what you have won!',
+                    subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws! OR Click on “Claim my prizes” to simply get your prizes',
+                },
+                {
+                    title: 'Confirm your claim in Keplr',
+                    subtitle: 'Accept the transaction to claim your prizes!'
+                },
+                {
+                    title: 'Spread the word!',
+                    subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!'
+                }
+            ],
+            claimAndCompound: 'CLAIM & COMPOUND',
+            claimMyPrizes: 'CLAIM MY PRIZES',
+        },
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error']
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
@@ -204,6 +248,8 @@ export default {
             },
         },
         feesWarning: 'You will need LUM to pay transaction fees',
+        depositWarning: 'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target=\"_blank\" rel=\"noreferrer noopener\" href=\"\">Learn why</a>',
+        depositLabel: 'Amount of {{ denom }} to deposit in the Pool',
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
@@ -212,6 +258,7 @@ export default {
             {
                 title: 'Deposit in the {{ denom }} pool',
                 subtitle: 'Start your saving',
+                cardSubtitle: 'You are about to make your savings beautiful!'
             },
             {
                 title: 'Saving review & share!',

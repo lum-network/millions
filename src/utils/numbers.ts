@@ -35,3 +35,10 @@ export const formatTo6digit = (number: number | string): string => {
 
     return number > 0 ? numeral(number).format('0,0.[000000]') : '0';
 };
+
+export const biggerCoin = (coin1: LumTypes.Coin, coin2: LumTypes.Coin, prices: { [key: string]: number }): LumTypes.Coin => {
+    const coin1Amount = parseFloat(LumUtils.convertUnit(coin1, LumConstants.LumDenom));
+    const coin2Amount = parseFloat(LumUtils.convertUnit(coin2, LumConstants.LumDenom));
+
+    return coin1Amount * prices[coin1.denom] || 1 > coin2Amount * prices[coin1.denom] || 1 ? coin1 : coin2;
+};

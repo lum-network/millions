@@ -1,4 +1,5 @@
 import arrow from './images/arrow.svg';
+import bonded from './images/bonded.svg';
 import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
@@ -17,6 +18,7 @@ import mintscanPurple from './images/mintscan_purple.svg';
 import myPlace from './images/my_place.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
+import trophy from './images/trophy.svg';
 import twitterButton from './images/twitter_button.svg';
 import twitterPlain from './images/twitter_plain.svg';
 import twitterWhite from './images/twitter_white.svg';
@@ -38,6 +40,7 @@ import zaki from './images/testimonials/zaki.png';
 const Assets = {
     images: {
         arrow,
+        bonded,
         checkmark,
         coin,
         coinsStacked,
@@ -56,6 +59,7 @@ const Assets = {
         myPlace,
         star,
         success,
+        trophy,
         twitterButton,
         twitterPlain,
         twitterWhite,

@@ -6,9 +6,11 @@ import Assets from 'assets';
 import './Collapsible.scss';
 
 interface Props {
-    title: string;
-    content: string;
+    header: string | JSX.Element;
+    content: string | JSX.Element;
     id: string;
+    disabled?: boolean;
+    toggleWithButton?: boolean;
     className?: string;
     border?: boolean;
 }
@@ -18,7 +20,7 @@ const Collapsible = (props: Props) => {
     const [bsCollapse, setBsCollapse] = useState<Collapse>();
     const collapseRef = useRef<HTMLDivElement>(null);
 
-    const { title, content, id, className, border = true } = props;
+    const { header, content, id, className, toggleWithButton, disabled, border = true } = props;
 
     useEffect(() => {
         const collapsible = document.getElementById(id);
@@ -36,6 +38,10 @@ const Collapsible = (props: Props) => {
     }, []);
 
     const onToggle = (show: boolean) => {
+        if (disabled) {
+            return;
+        }
+
         if (show) {
             bsCollapse?.show();
         } else {
@@ -44,15 +50,20 @@ const Collapsible = (props: Props) => {
     };
 
     return (
-        <div onClick={() => onToggle(!isShowing)} className={`faq-collapsible ${border ? 'with-border' : ''} ${className}`}>
-            <div className='faq-collapsible-title'>
-                {title}
-                <div className={`collapsible-btn ${isShowing && 'is-showing'} d-flex`}>
-                    <img src={Assets.images.arrow} alt='arrow' />
-                </div>
+        <div onClick={toggleWithButton ? undefined : () => onToggle(!isShowing)} className={`collapsible ${border ? 'with-border' : ''} ${className}`}>
+            <div className='collapsible-title'>
+                {header}
+                {!disabled && (
+                    <div
+                        onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined}
+                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center`}
+                    >
+                        <img src={Assets.images.arrow} alt='arrow' />
+                    </div>
+                )}
             </div>
             <div className='collapse' ref={collapseRef} id={id}>
-                <p className='faq-collapsible-content' dangerouslySetInnerHTML={{ __html: content }} />
+                {typeof content === 'string' ? <p className='collapsible-content' dangerouslySetInnerHTML={{ __html: content }} /> : content}
             </div>
         </div>
     );

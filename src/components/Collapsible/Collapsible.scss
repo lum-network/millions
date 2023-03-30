@@ -1,14 +1,12 @@
 @import 'src/styles/main';
 
-.faq {
-    .faq-collapsible {
-        padding: 20px 24px;
-        border: 2px solid rgba(86, 52, 222, 0.2);
-        border-radius: 15px;
-        cursor: pointer;
-    }
+.collapsible {
+    padding: 20px 24px;
+    border: 2px solid rgba(86, 52, 222, 0.2);
+    border-radius: 15px;
+    cursor: pointer;
 
-    .faq-collapsible .faq-collapsible-title {
+    .collapsible-title {
         font-style: normal;
         font-weight: 400;
         font-size: 18px;
@@ -20,7 +18,7 @@
         align-items: center;
     }
 
-    .faq-collapsible .faq-collapsible-content {
+    .collapsible-content {
         margin-top: 24px;
         color: $color-black;
         font-style: normal;
@@ -29,13 +27,20 @@
         line-height: 19px;
     }
 
-    .faq-collapsible .collapsible-btn img {
-        transition: all 0.25s ease-out;
-        transform-origin: center;
-        transform: rotate(90deg);
-    }
+    .collapsible-btn {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
 
-    .faq-collapsible .collapsible-btn.is-showing img {
-        transform: rotate(270deg);
+        img {
+            width: 10px;
+            transition: all 0.25s ease-out;
+            transform-origin: center;
+            transform: rotate(90deg);
+        }
+
+        &.is-showing img {
+            transform: rotate(270deg);
+        }
     }
 }

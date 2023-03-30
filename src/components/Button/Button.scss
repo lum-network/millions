@@ -49,3 +49,14 @@
         color: $color-white;
     }
 }
+
+.app-btn-text {
+    background-color: transparent;
+    border: none;
+    color: $color-primary;
+    padding: 0;
+    
+    &:hover {
+        color: $color-primary;
+    }   
+}

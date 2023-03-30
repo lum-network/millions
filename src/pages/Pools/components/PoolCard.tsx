@@ -12,8 +12,8 @@ import { NavigationConstants } from 'constant';
 interface IProps {
     denom: string;
     tvl: number;
-    prize: number;
-    drawEndAt: string;
+    prize?: number;
+    drawEndAt?: string;
 }
 
 const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
@@ -28,7 +28,7 @@ const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
                 <span className='name'>{denom}</span>
             </div>
             <div className='prize-container'>
-                <span className='prize-value mb-1'>${price ? numeral(prize * price).format('0,0') : ' --'}</span>
+                <span className='prize-value mb-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</span>
                 <span className='prize'>
                     {numeral(prize).format('0,0')} {denom}
                 </span>
@@ -44,7 +44,7 @@ const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
                 <div className='countdown-container'>
                     <div className='countdown-label'>{I18n.t('pools.drawEndAt')}</div>
                     <div className='countdown'>
-                        <CountDown to={drawEndAt} />
+                        <CountDown to={drawEndAt || new Date(Date.now() + 1000).toString()} />
                     </div>
                 </div>
             </div>

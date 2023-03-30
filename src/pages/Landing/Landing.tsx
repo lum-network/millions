@@ -489,7 +489,7 @@ const Landing = () => {
                         {faqQuestions.map((question, index) => (
                             <Collapsible
                                 key={`faq-question-${index}`}
-                                title={question.title}
+                                header={question.title}
                                 content={question.answer}
                                 id={`faq-question-${index}`}
                                 className={index > 0 && index < faqQuestions.length ? 'mt-4' : undefined}
