@@ -166,7 +166,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         animationData={logo}
                         segments={[
                             [0, 41],
-                            [41, 257],
+                            [41, 400],
                         ]}
                     />
                 </Link>

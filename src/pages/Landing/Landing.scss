@@ -435,7 +435,9 @@
 
     .future-left {
         .cta {
-            @include media-breakpoint-down(md) {
+            width: 230px;
+
+            @include media-breakpoint-down(lg) {
                 width: 100%;
             }
         }
