@@ -19,7 +19,7 @@ header {
 
     .logo {
         width: 130px;
-        height: 75px;
+        height: 35px;
 
         @include media-breakpoint-down(lg) {
             height: 50px;
