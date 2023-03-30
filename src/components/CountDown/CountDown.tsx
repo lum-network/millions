@@ -18,7 +18,7 @@ const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
     const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
-        setRemainingTime(dayjs().diff(dayjs(to), 'seconds'));
+        setRemainingTime(dayjs(to).diff(dayjs(), 'seconds'));
     }, [to]);
 
     useEffect(() => {

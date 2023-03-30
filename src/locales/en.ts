@@ -188,18 +188,18 @@ export default {
             amountInput: {
                 label: 'Select Amount:',
                 sublabel: 'Available: {{ amount }} {{ denom }}',
-            },    
+            },
             steps: [
                 {
                     title: 'Choose the assets you want to transfer out',
                     subtitle: 'Redeem your savings or transfer your available tokens',
                     cardTitle: 'Transfer my available tokens',
-                    cardSubtitle: 'Transfer your tokens from the Lum Network to their native blockchain.',    
+                    cardSubtitle: 'Transfer your tokens from the Lum Network to their native blockchain.',
                 },
                 {
                     title: 'Select the tokens to transfer',
-                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet'
-                }
+                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
+                },
             ],
             cta: 'Transfer my available tokens',
         },
@@ -213,17 +213,17 @@ export default {
                 },
                 {
                     title: 'Confirm your claim in Keplr',
-                    subtitle: 'Accept the transaction to claim your prizes!'
+                    subtitle: 'Accept the transaction to claim your prizes!',
                 },
                 {
                     title: 'Spread the word!',
-                    subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!'
-                }
+                    subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!',
+                },
             ],
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'CLAIM MY PRIZES',
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error']
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error'],
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
@@ -248,7 +248,8 @@ export default {
             },
         },
         feesWarning: 'You will need LUM to pay transaction fees',
-        depositWarning: 'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target=\"_blank\" rel=\"noreferrer noopener\" href=\"\">Learn why</a>',
+        depositWarning:
+            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="">Learn why</a>',
         depositLabel: 'Amount of {{ denom }} to deposit in the Pool',
         steps: [
             {
@@ -258,7 +259,7 @@ export default {
             {
                 title: 'Deposit in the {{ denom }} pool',
                 subtitle: 'Start your saving',
-                cardSubtitle: 'You are about to make your savings beautiful!'
+                cardSubtitle: 'You are about to make your savings beautiful!',
             },
             {
                 title: 'Saving review & share!',

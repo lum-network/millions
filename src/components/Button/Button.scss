@@ -17,6 +17,13 @@
     border-color: $color-primary;
     text-decoration: none;
 
+    @include media-breakpoint-down(md) {
+        padding: 13px 15px;
+        font-size: 18px;
+        line-height: 22px;
+        border-radius: 11px;
+    }
+
     &.disabled {
         opacity: 0.3;
         transform: scale(1) !important;
@@ -55,8 +62,8 @@
     border: none;
     color: $color-primary;
     padding: 0;
-    
+
     &:hover {
         color: $color-primary;
-    }   
+    }
 }

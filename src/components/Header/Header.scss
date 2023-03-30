@@ -18,12 +18,12 @@ header {
     }
 
     .logo {
-        width: 130px;
-        height: 35px;
+        width: 162px;
+        height: 56px;
 
         @include media-breakpoint-down(lg) {
             height: 50px;
-            width: 90px;
+            width: 143px;
         }
     }
 

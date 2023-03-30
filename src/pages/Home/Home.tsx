@@ -3,11 +3,10 @@ import { useSelector } from 'react-redux';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 import numeral from 'numeral';
 
-import { Button, Card, CountDown, Lottie } from 'components';
+import { BestPrizeCard, Button, Card, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 
-import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import Assets from 'assets';
 
@@ -43,38 +42,7 @@ const Home = () => {
         <div className='home-container mt-5 mt-xxl-0'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
-                    <Card className='best-prize-card' withoutPadding>
-                        <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('home.nextBestPrize')}</h3>
-                        <div className='content'>
-                            <Lottie
-                                className='cosmonaut-on-the-moon'
-                                animationData={cosmonautOnTheMoon}
-                                segments={[
-                                    [0, 41],
-                                    [41, 257],
-                                ]}
-                            />
-                            <div className='best-prize-container'>
-                                <div className='d-flex'>
-                                    <span className='currency'>$</span>
-                                    <span>
-                                        {numeral(biggestPrize?.amount || '0')
-                                            .format('0,0')
-                                            .replaceAll(',', '\u00a0')}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className='mt-5 d-flex align-items-center justify-content-between w-100'>
-                                <div className='network'>
-                                    <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
-                                    <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
-                                </div>
-                                <div>
-                                    <CountDown homePage to={'2023-02-28'} />
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
+                    <BestPrizeCard biggestPrize={biggestPrize} countdownTo={'2023-04-12T00:00:00Z'} />
                 </div>
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>

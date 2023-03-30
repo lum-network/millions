@@ -1,5 +1,17 @@
 @import 'src/styles/main';
 
+@mixin make-container($padding-x: $container-padding-x) {
+    width: 100%;
+    padding-right: $padding-x !important;
+    padding-left: $padding-x !important;
+}
+
+.custom-container {
+    @include media-breakpoint-down(sm) {
+        @include make-container(32px);
+    }
+}
+
 .main-layout {
     display: flex;
     padding-top: 130px;

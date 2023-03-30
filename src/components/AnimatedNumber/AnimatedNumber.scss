@@ -1,0 +1,12 @@
+.counter {
+    user-select: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+}
+
+.counter span {
+    display: inline-block;
+    position: relative;
+}

@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
 import { I18n } from 'utils';
-import { Button, Card, Lottie, Collapsible, AnimatedNumber } from 'components';
+import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
-import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
@@ -38,22 +37,24 @@ const Landing = () => {
             scrub: true,
         };
         gsap.to(`#saving .saving-title`, {
-            translateY: -100,
+            translateY: -80,
             ease: 'none',
             scrollTrigger: scrollTrigger,
         });
         gsap.to(`#saving .description`, {
-            translateY: -75,
+            translateY: -70,
             ease: 'none',
             scrollTrigger: scrollTrigger,
             stagger: 0.25,
         });
-        gsap.to(`#saving .cta`, {
-            translateY: -60,
-            ease: 'none',
-            scrollTrigger: scrollTrigger,
-            stagger: 0.5,
-        });
+        if (width > LandingConstants.LARGE_SIZE_SCREEN) {
+            gsap.to(`#saving .cta`, {
+                translateY: -60,
+                ease: 'none',
+                scrollTrigger: scrollTrigger,
+                stagger: 0.5,
+            });
+        }
 
         const scrollTrigger2 = {
             trigger: `#cosmos-game`,
@@ -202,32 +203,36 @@ const Landing = () => {
                         <p>{I18n.t('landing.saving.p1')}</p>
                         <p>{I18n.t('landing.saving.p2')}</p>
                     </div>
-                    <Button className='cta' to={NavigationConstants.HOME}>
+                    <Button className='cta d-none d-lg-flex' to={NavigationConstants.HOME}>
                         {I18n.t('landing.saving.cta')}
                     </Button>
                 </div>
                 <div className='d-none d-xxl-block col-xxl-1' />
                 <div className='col-12 col-xl-6 col-xxl-6'>
-                    <Card className='best-prize-card' withoutPadding>
-                        <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('landing.saving.biggestPrizeToWin')}</h3>
-                        <div className='content'>
-                            <Lottie
-                                className='cosmonaut-on-the-moon'
-                                animationData={cosmonautOnTheMoon}
-                                segments={[
-                                    [0, 41],
-                                    [41, 257],
-                                ]}
-                            />
-                            <div className='best-prize-container'>
-                                <div className='d-flex counter'>
-                                    <span className='currency'>$</span>
-                                    <AnimatedNumber number={6784} />
-                                    {/*<span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>*/}
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
+                    {/*<Card className='best-prize-card' withoutPadding>*/}
+                    {/*    <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('landing.saving.biggestPrizeToWin')}</h3>*/}
+                    {/*    <div className='content'>*/}
+                    {/*        <Lottie*/}
+                    {/*            className='cosmonaut-on-the-moon'*/}
+                    {/*            animationData={cosmonautOnTheMoon}*/}
+                    {/*            segments={[*/}
+                    {/*                [0, 41],*/}
+                    {/*                [41, 257],*/}
+                    {/*            ]}*/}
+                    {/*        />*/}
+                    {/*        <div className='best-prize-container'>*/}
+                    {/*            <div className='d-flex counter'>*/}
+                    {/*                <span className='currency'>$</span>*/}
+                    {/*                <AnimatedNumber number={6784} />*/}
+                    {/*                /!*<span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>*!/*/}
+                    {/*            </div>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*</Card>*/}
+                    <BestPrizeCard biggestPrize={{ amount: '6757', denom: 'lum' }} />
+                    <Button className='cta mt-4 d-lg-none' to={NavigationConstants.HOME}>
+                        {I18n.t('landing.saving.cta')}
+                    </Button>
                 </div>
                 <div className='position-relative cosmos-game-left col-12 col-xl-6 col-xxl-5'>
                     <Lottie

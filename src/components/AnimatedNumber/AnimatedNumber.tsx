@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated, easings } from 'react-spring';
+
+import './AnimatedNumber.scss';
 
 interface IProps {
     number: number;
@@ -7,7 +9,7 @@ interface IProps {
     delay?: number;
 }
 
-const Counter = ({ number, duration = 1000, delay = 1000 }: IProps) => {
+const Counter = ({ number, duration = 1500, delay = 500 }: IProps) => {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
@@ -21,12 +23,12 @@ const Counter = ({ number, duration = 1000, delay = 1000 }: IProps) => {
     const countSpring = useSpring({
         to: { count, transform: `translateY(0px)` },
         from: { count: 0, transform: 'translateY(0px)' },
-        config: { duration: duration },
+        config: { duration, easing: easings.easeOutExpo },
     });
 
     return (
         <div className='counter'>
-            <animated.span style={countSpring}>{countSpring.count.interpolate((val) => Math.floor(val))}</animated.span>
+            <animated.span style={countSpring}>{countSpring.count.interpolate((val) => Math.floor(val).toLocaleString())}</animated.span>
         </div>
     );
 };

@@ -111,7 +111,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
-                    <li className='ms-3 ms-lg-4'>
+                    <li className='ms-3 ms-lg-4 d-none d-sm-block'>
                         <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
                             {I18n.t('landing.openTheApp')}
                         </Button>

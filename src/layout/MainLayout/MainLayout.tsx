@@ -51,7 +51,7 @@ const MainLayout = () => {
     return (
         <>
             <div className='main-layout'>
-                <div className='container fill'>
+                <div className='custom-container container fill'>
                     <Header keplrModalRef={keplrModalRef} logoutModalRef={logoutModalRef} />
                     <main className='h-100'>
                         {appLoading ? (
