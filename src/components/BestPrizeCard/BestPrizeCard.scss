@@ -34,7 +34,7 @@
             align-items: center;
             font-style: normal;
             font-weight: 400;
-            font-size: min(9vw, 130px);
+            //font-size: min(9vw, 130px);
             color: $color-white;
             border: solid 4px $color-border;
             border-radius: 19px;
@@ -43,31 +43,31 @@
             width: 100%;
             font-variant-numeric: tabular-nums;
 
-            .currency {
-                margin: 48px 12px 0 0;
-                font-size: 5vw;
-                line-height: 72px;
-
-                @include media-breakpoint-down(xxl) {
-                    margin: 38px 12px 0 0;
-                }
-
-                @include media-breakpoint-down(xl) {
-                    margin: 24px 12px 0 0;
-                }
-
-                @include media-breakpoint-down(lg) {
-                    margin: 12px 12px 0 0;
-                }
-
-                @include media-breakpoint-down(md) {
-                    margin: 8px 12px 0 0;
-                }
-
-                @include media-breakpoint-down(sm) {
-                    margin: 4px 12px 0 0;
-                }
-            }
+            //.currency {
+            //    margin: 48px 12px 0 0;
+            //    font-size: 5vw;
+            //    line-height: 72px;
+            //
+            //    @include media-breakpoint-down(xxl) {
+            //        margin: 38px 12px 0 0;
+            //    }
+            //
+            //    @include media-breakpoint-down(xl) {
+            //        margin: 24px 12px 0 0;
+            //    }
+            //
+            //    @include media-breakpoint-down(lg) {
+            //        margin: 12px 12px 0 0;
+            //    }
+            //
+            //    @include media-breakpoint-down(md) {
+            //        margin: 8px 12px 0 0;
+            //    }
+            //
+            //    @include media-breakpoint-down(sm) {
+            //        margin: 4px 12px 0 0;
+            //    }
+            //}
         }
 
         .network {

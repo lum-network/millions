@@ -209,27 +209,7 @@ const Landing = () => {
                 </div>
                 <div className='d-none d-xxl-block col-xxl-1' />
                 <div className='col-12 col-xl-6 col-xxl-6'>
-                    {/*<Card className='best-prize-card' withoutPadding>*/}
-                    {/*    <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('landing.saving.biggestPrizeToWin')}</h3>*/}
-                    {/*    <div className='content'>*/}
-                    {/*        <Lottie*/}
-                    {/*            className='cosmonaut-on-the-moon'*/}
-                    {/*            animationData={cosmonautOnTheMoon}*/}
-                    {/*            segments={[*/}
-                    {/*                [0, 41],*/}
-                    {/*                [41, 257],*/}
-                    {/*            ]}*/}
-                    {/*        />*/}
-                    {/*        <div className='best-prize-container'>*/}
-                    {/*            <div className='d-flex counter'>*/}
-                    {/*                <span className='currency'>$</span>*/}
-                    {/*                <AnimatedNumber number={6784} />*/}
-                    {/*                /!*<span>{numeral(6757).format('0,0').replaceAll(',', '\u00a0')}</span>*!/*/}
-                    {/*            </div>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*</Card>*/}
-                    <BestPrizeCard biggestPrize={{ amount: '6757', denom: 'lum' }} />
+                    <BestPrizeCard biggestPrize={{ amount: '675789', denom: 'lum' }} />
                     <Button className='cta mt-4 d-lg-none' to={NavigationConstants.HOME}>
                         {I18n.t('landing.saving.cta')}
                     </Button>
