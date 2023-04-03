@@ -164,7 +164,7 @@ class LumClient {
         // Define fees
         const fee = {
             amount: [{ denom: LumConstants.MicroLumDenom, amount: '25000' }],
-            gas: '100000',
+            gas: '300000',
         };
 
         // Fetch account number and sequence and chain id

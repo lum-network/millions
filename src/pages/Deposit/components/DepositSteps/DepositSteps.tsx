@@ -9,7 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
 
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, ToastUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
@@ -252,7 +252,9 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                 onClick={async () => {
                     const res = await dispatch.wallet.depositToPool({ pool, amount: depositAmount });
 
-                    if (res && !res.error) {
+                    if (res && res.error) {
+                        ToastUtils.showErrorToast({ content: res.error });
+                    } else if (res && res.hash) {
                         onFinishDeposit(LumUtils.toHex(res.hash).toUpperCase());
                         onNextStep();
                     }

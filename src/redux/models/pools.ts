@@ -5,6 +5,7 @@ import { PoolModel } from 'models';
 import { DenomsUtils, LumClient } from 'utils';
 import { RootModel } from '.';
 import { LumTypes } from '@lum-network/sdk-javascript';
+import dayjs from 'dayjs';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -41,11 +42,15 @@ export const pools = createModel<RootModel>()({
 
                     for (const pool of res) {
                         const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
+                        const nextDrawAt = dayjs(pool.lastDrawCreatedAt)
+                            .add(pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0, 'seconds')
+                            .toDate();
 
                         pools.push({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
                             prizes,
+                            nextDrawAt,
                         });
                     }
 

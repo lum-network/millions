@@ -13,7 +13,7 @@ interface IProps {
     denom: string;
     tvl: number;
     prize?: number;
-    drawEndAt?: string;
+    drawEndAt: Date;
 }
 
 const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
@@ -44,7 +44,7 @@ const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
                 <div className='countdown-container'>
                     <div className='countdown-label'>{I18n.t('pools.drawEndAt')}</div>
                     <div className='countdown'>
-                        <CountDown to={drawEndAt || new Date(Date.now() + 1000).toString()} />
+                        <CountDown to={drawEndAt} />
                     </div>
                 </div>
             </div>

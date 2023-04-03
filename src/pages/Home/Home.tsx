@@ -42,7 +42,7 @@ const Home = () => {
         <div className='home-container mt-5 mt-xxl-0'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
-                    <BestPrizeCard biggestPrize={biggestPrize} countdownTo={'2023-04-12T00:00:00Z'} />
+                    <BestPrizeCard biggestPrize={biggestPrize} countdownTo={new Date('2023-04-12T00:00:00Z')} />
                 </div>
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>
@@ -51,7 +51,7 @@ const Home = () => {
                                 <h3>{I18n.t('home.totalValueLocked')}</h3>
                                 <div className='d-flex align-items-center pt-3'>
                                     <img alt='coin staked' src={Assets.images.coinsStaked2} />
-                                    <span className='ms-3 total-value-locked'>{numeral(tvl).format('$0,0[.]0a')}</span>
+                                    <span className='ms-3 total-value-locked'>{numeral(tvl).format('$0,0[.]00a')}</span>
                                 </div>
                             </Card>
                         </div>

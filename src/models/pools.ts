@@ -11,4 +11,5 @@ export interface PoolInternalInfosModel {
 export interface PoolModel extends Pool {
     internalInfos?: PoolInternalInfosModel;
     prizes?: Prize[];
+    nextDrawAt?: Date;
 }

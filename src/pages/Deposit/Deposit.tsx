@@ -55,6 +55,8 @@ const Deposit = () => {
                     chainId: pool.chainId,
                 });
 
+                console.log('Hash: ', hash);
+
                 if (hash) {
                     setCurrentStep(currentStep + 1);
                 }

@@ -9,7 +9,7 @@ import './BestPrizeCard.scss';
 
 interface IProps {
     biggestPrize: LumTypes.Coin | null;
-    countdownTo?: string;
+    countdownTo?: Date;
 }
 
 const calculateFontSize = (charactersCount: number, screenWidth: number): number => {
@@ -57,7 +57,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                 />
                 <div className='best-prize-container'>
                     <div className='d-flex'>
-                        <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3 currency'>
+                        <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3'>
                             $
                         </span>
                         <div style={{ fontSize: `${fontSize}px` }}>

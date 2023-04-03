@@ -4,9 +4,8 @@ import { I18n, TimesUtils } from 'utils';
 import numeral from 'numeral';
 
 interface IProps {
-    to: string;
+    to: Date;
     onCountdownEnd?: () => void;
-
     homePage?: boolean;
 }
 
