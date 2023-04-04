@@ -144,11 +144,9 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
     const dispatch = useDispatch<Dispatch>();
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const [depositAmount, setDepositAmount] = useState(
+    const [depositAmount, setDepositAmount] = useState<string>(
         initialAmount
-            ? NumbersUtils.formatTo6digit(
-                  Number(LumUtils.convertUnit({ amount: initialAmount, denom: LumConstants.MicroLumDenom }, LumConstants.LumDenom)) - (pool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0),
-              )
+            ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (pool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
             : amount,
     );
     const [isModifying, setIsModifying] = useState(false);
@@ -159,7 +157,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
         const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, balances));
         const depositAmountNumber = Number(depositAmount);
 
-        if (Number.isNaN(depositAmountNumber)) {
+        if (Number.isNaN(depositAmount)) {
             setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
         } else {
             if (depositAmountNumber > maxAmount) {
@@ -250,7 +248,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             <Button
                 type='button'
                 onClick={async () => {
-                    const res = await dispatch.wallet.depositToPool({ pool, amount: depositAmount });
+                    const res = await dispatch.wallet.depositToPool({ pool, amount: depositAmount.toString() });
 
                     if (res && res.error) {
                         ToastUtils.showErrorToast({ content: res.error });

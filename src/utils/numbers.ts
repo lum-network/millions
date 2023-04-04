@@ -1,8 +1,12 @@
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import numeral from 'numeral';
 
-export const convertUnitNumber = (nb: number | string): number => {
+export const convertUnitNumber = (nb: number | string, fromDenom = LumConstants.MicroLumDenom, toDenom = LumConstants.LumDenom): number => {
     let amount: string;
+
+    if (!nb) {
+        return 0;
+    }
 
     if (typeof nb === 'string') {
         const split = nb.split('.');
@@ -14,10 +18,10 @@ export const convertUnitNumber = (nb: number | string): number => {
 
     const coin = {
         amount,
-        denom: LumConstants.MicroLumDenom,
+        denom: fromDenom,
     };
 
-    return parseFloat(LumUtils.convertUnit(coin, LumConstants.LumDenom));
+    return parseFloat(LumUtils.convertUnit(coin, toDenom));
 };
 
 export const formatUnit = (coin: LumTypes.Coin, moreDecimal?: boolean): string => {
@@ -33,7 +37,7 @@ export const formatTo6digit = (number: number | string): string => {
         }
     }
 
-    return number > 0 ? numeral(number).format('0,0.[000000]') : '0';
+    return number > 0 ? numeral(number).format('0,0[.]000000') : '0';
 };
 
 export const biggerCoin = (coin1: LumTypes.Coin, coin2: LumTypes.Coin, prices: { [key: string]: number }): LumTypes.Coin => {

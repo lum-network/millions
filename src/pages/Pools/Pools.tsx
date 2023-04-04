@@ -20,6 +20,7 @@ const Pools = () => {
                 {pools.map((pool, index) => (
                     <div className='col-12 col-sm-6 col-lg-4 col-xxl-3' key={`pool-${index}`}>
                         <PoolCard
+                            poolId={pool.poolId}
                             drawEndAt={pool.nextDrawAt || new Date()}
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
                             tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}

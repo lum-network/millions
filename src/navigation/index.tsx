@@ -18,6 +18,7 @@ export const router = createBrowserRouter(
         <Route path='/' element={<MainLayout />}>
             <Route path={NavigationConstants.HOME} element={<HomePage />} />
             <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
+            <Route path={`${NavigationConstants.POOLS}/:denom/:poolId`} element={<DepositPage />} />
             <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
             <Route path={NavigationConstants.MY_PLACE} element={<MyPlacePage />} />
             <Route path={NavigationConstants.LANDING} element={<LandingPage />} />

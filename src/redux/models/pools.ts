@@ -42,8 +42,8 @@ export const pools = createModel<RootModel>()({
 
                     for (const pool of res) {
                         const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
-                        const nextDrawAt = dayjs(pool.lastDrawCreatedAt)
-                            .add(pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0, 'seconds')
+                        const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
+                            .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
                             .toDate();
 
                         pools.push({
