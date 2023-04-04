@@ -162,6 +162,16 @@ class LumClient {
         return { activities: formatTxs(res) };
     };
 
+    getWalletPrizes = async (address: string) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const res = await this.client.queryClient.millions.prizes();
+
+        return { prizes: res };
+    };
+
     getDenomTrace = async (ibcDenom: string) => {
         if (this.client === null) {
             return null;

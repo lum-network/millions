@@ -23,6 +23,7 @@ interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: any[];
     deposits?: DepositModel[];
+    prizes?: Prize[];
 }
 
 interface SetOtherWalletPayload {
@@ -67,6 +68,7 @@ export const wallet = createModel<RootModel>()({
                     balances: [],
                     activities: [],
                     deposits: [],
+                    prizes: [],
                 },
             };
         },
@@ -78,7 +80,8 @@ export const wallet = createModel<RootModel>()({
                         ...state.lumWallet,
                         balances: payload.balances || state.lumWallet.balances,
                         activities: payload.activities || state.lumWallet.activities,
-                        deposits: [...(payload.deposits || state.lumWallet.deposits)],
+                        deposits: payload.deposits || state.lumWallet.deposits,
+                        prizes: payload.prizes || state.lumWallet.prizes,
                     },
                 }),
             };
@@ -237,7 +240,7 @@ export const wallet = createModel<RootModel>()({
         },
         async reloadWalletinfos(address: string) {
             await dispatch.wallet.getLumWalletBalances(address);
-            await dispatch.wallet.getPrizeToClaim(address);
+            await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities(address);
             await dispatch.wallet.getDeposits(address);
             await dispatch.wallet.getWithdrawals(address);
@@ -284,43 +287,18 @@ export const wallet = createModel<RootModel>()({
                 console.log(e);
             }
         },
-        async getPrizeToClaim(address: string) {
-            dispatch.wallet.setPrizeToClaim([
-                {
-                    poolId: Long.fromNumber(1),
-                    drawId: Long.fromNumber(1),
-                    prizeId: Long.fromNumber(1),
-                    state: PrizeState.PRIZE_STATE_PENDING,
-                    winnerAddress: 'lum',
-                    amount: {
-                        amount: '129029110',
-                        denom: 'uosmo',
-                    },
-                    createdAtHeight: Long.fromNumber(1),
-                    updatedAtHeight: Long.fromNumber(1),
-                    expiresAt: new Date(),
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                {
-                    poolId: Long.fromNumber(2),
-                    drawId: Long.fromNumber(2),
-                    prizeId: Long.fromNumber(2),
-                    state: PrizeState.PRIZE_STATE_PENDING,
-                    winnerAddress: 'lum',
-                    amount: {
-                        amount: '58208120',
-                        denom: 'uatom',
-                    },
-                    createdAtHeight: Long.fromNumber(1),
-                    updatedAtHeight: Long.fromNumber(1),
-                    expiresAt: new Date(),
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-            ]);
+        async getPrizes(address: string) {
+            try {
+                const res = await LumClient.getWalletPrizes(address);
+
+                if (res) {
+                    dispatch.wallet.setLumWalletData({ prizes: res.prizes });
+                }
+            } catch (e) {
+                console.log(e);
+            }
         },
-        async ibcTransfer(payload: IbcTransferPayload, state) {
+        async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
             const convertedAmount = LumUtils.convertUnit(
@@ -368,7 +346,7 @@ export const wallet = createModel<RootModel>()({
 
                 await dispatch.wallet.reloadWalletinfos(type === 'withdraw' ? fromAddress : toAddress);
 
-                return result.hash;
+                return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
                 return null;
@@ -401,7 +379,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async leavePool(payload: LeavePoolPayload, state) {
+        async leavePool(payload: LeavePoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const toastId = ToastUtils.showLoadingToast({ content: `Leaving pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}...` });

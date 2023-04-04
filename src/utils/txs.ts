@@ -26,8 +26,6 @@ export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxRe
         // Decode TX to human readable format
         const txData = LumRegistry.decodeTx(rawTx.tx);
 
-        console.log(rawTx);
-        console.log(txData);
         const hash = LumUtils.toHex(rawTx.hash).toUpperCase();
 
         if (hashExists(formattedTxs, hash)) {
@@ -47,7 +45,7 @@ export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxRe
             for (const msg of txData.body.messages) {
                 try {
                     const txInfos = LumUtils.toJSON(LumRegistry.decode(msg));
-                    console.log(txInfos);
+
                     if (typeof txInfos === 'object') {
                         tx.messages.push(msg.typeUrl);
 
