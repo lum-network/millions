@@ -11,8 +11,6 @@ import './Pools.scss';
 const Pools = () => {
     const pools = useSelector((state: RootState) => state.pools.pools);
 
-    console.log(pools);
-
     return (
         <div className='pools-container'>
             <h1>{I18n.t('pools.title')}</h1>
@@ -23,6 +21,7 @@ const Pools = () => {
                             poolId={pool.poolId}
                             drawEndAt={pool.nextDrawAt || new Date()}
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
+                            poolId={pool.poolId.toString()}
                             tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}
                             prize={pool.prizeStrategy?.prizeBatches.reduce((acc, batch) => acc.add(batch.quantity), new Long(0)).toNumber()}
                         />

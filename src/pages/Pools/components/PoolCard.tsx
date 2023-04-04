@@ -8,17 +8,16 @@ import '../Pools.scss';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
 import { NavigationConstants } from 'constant';
-import Long from 'long';
 
 interface IProps {
-    poolId: Long.Long;
     denom: string;
     tvl: number;
+    poolId: string;
     prize?: number;
     drawEndAt: Date;
 }
 
-const PoolCard = ({ denom, tvl, prize, drawEndAt, poolId }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
 
     const price = prices?.[denom];

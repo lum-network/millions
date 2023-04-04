@@ -167,7 +167,7 @@ class LumClient {
             return null;
         }
 
-        const res = await this.client.queryClient.millions.prizes();
+        const res = await this.client.queryClient.millions.accountPrizes(address);
 
         return { prizes: res };
     };
