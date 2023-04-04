@@ -2,9 +2,10 @@ import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, Lum
 import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
-import { PoolModel } from 'models';
+import { DepositModel, PoolModel } from 'models';
 import { NumbersUtils, PoolsUtils } from 'utils';
 import { getNormalDenom } from './denoms';
+import { formatTxs } from './txs';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -120,6 +121,27 @@ class LumClient {
         return deposits;
     };
 
+    getWithdrawals = async (address: string, deposits: DepositModel[]) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const withdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
+
+        if (withdrawals.length > 0) {
+            for (const withdrawal of withdrawals) {
+                const deposit = deposits.find((d) => d.depositId.equals(withdrawal.depositId));
+
+                if (deposit) {
+                    deposit.isWithdrawing = true;
+                    deposit.unbondingEndAt = withdrawal.unbondingEndsAt;
+                }
+            }
+        }
+
+        return [...deposits];
+    };
+
     getWalletBalances = async (address: string) => {
         if (this.client === null) {
             return null;
@@ -135,9 +157,9 @@ class LumClient {
             return null;
         }
 
-        const activities = await Promise.resolve([]);
+        const res = await this.client.searchTx([`message.module='millions' AND transfer.sender='${address}'`, `message.action='Deposit' AND transfer.sender='${address}'`]);
 
-        return { activities };
+        return { activities: formatTxs(res) };
     };
 
     getDenomTrace = async (ibcDenom: string) => {
@@ -165,6 +187,57 @@ class LumClient {
         const fee = {
             amount: [{ denom: LumConstants.MicroLumDenom, amount: '25000' }],
             gas: '300000',
+        };
+
+        // Fetch account number and sequence and chain id
+        const account = await this.client.getAccount(wallet.getAddress());
+        const chainId = this.getChainId();
+
+        if (!account || !chainId) {
+            return null;
+        }
+
+        const { accountNumber, sequence } = account;
+
+        // Create the transaction document
+        const doc: LumTypes.Doc = {
+            chainId,
+            fee,
+            memo: '',
+            messages: [message],
+            signers: [
+                {
+                    accountNumber,
+                    sequence,
+                    publicKey: wallet.getPublicKey(),
+                },
+            ],
+        };
+
+        // Sign and broadcast the transaction using the client
+        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+
+        return {
+            hash: broadcastResult.hash,
+            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+        };
+    };
+
+    leavePool = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Build transaction message
+        const message = LumMessages.BuildMsgWithdrawDeposit(poolId, depositId, wallet.getAddress(), wallet.getAddress());
+
+        // Define fees
+        const fee = {
+            amount: [{ denom: LumConstants.MicroLumDenom, amount: '25000' }],
+            gas: '100000',
         };
 
         // Fetch account number and sequence and chain id

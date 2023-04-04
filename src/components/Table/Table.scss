@@ -1,0 +1,44 @@
+@import 'src/styles/main';
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 1.5rem;
+}
+
+.table tbody tr {
+    border: 0;
+}
+
+.table tbody tr td:first-child {
+    border-color: $color-primary-light;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding-left: 3rem;
+}
+
+.table tbody tr td:last-child {
+    border-color: $color-primary-light;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding-right: 3rem;
+}
+
+.table .table-header {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+
+    color: #ffffff;
+
+    opacity: 0;
+}
+
+.table tbody td {
+    background: $color-primary-light;
+    padding: 2.5rem 8px;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+}

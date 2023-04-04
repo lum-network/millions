@@ -13,10 +13,12 @@ import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants } from 'constant';
 
-import './MyPlace.scss';
-import TransferOut from './components/TransferOut/TransferOut';
 import Claim from './components/Claim/Claim';
-import { Deposit, DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import DepositTable from './components/DepositTable/DepositTable';
+import TransferOut from './components/TransferOut/TransferOut';
+import TransactionsTable from './components/TransationsTable/TransactionsTable';
+
+import './MyPlace.scss';
 
 const MyPlace = () => {
     const { lumWallet, otherWallets, balances, activities, prizesToClaim, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
@@ -152,35 +154,6 @@ const MyPlace = () => {
         );
     };
 
-    const renderDeposit = (deposit: Deposit, index: number) => {
-        const isSuccess = deposit.state === DepositState.DEPOSIT_STATE_SUCCESS;
-        const isFailure = deposit.state === DepositState.DEPOSIT_STATE_FAILURE;
-        return (
-            <Card
-                flat
-                withoutPadding
-                key={`deposit-${deposit.depositId.toString()}`}
-                className={`deposit-card d-flex flex-row align-items-center justify-content-between p-3 py-4 p-sm-4 p-xl-5 ${index > 0 ? 'mt-3' : ''}`}
-            >
-                <div className='d-flex flex-row align-items-center'>
-                    <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
-                    <div className='d-flex flex-column ms-3'>
-                        <h3 className='mb-0'>
-                            {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
-                        </h3>
-                        <p className='mb-0'>
-                            Pool #{deposit.poolId.toString()} - Deposit #{deposit.depositId.toString()}
-                        </p>
-                    </div>
-                </div>
-                <div className='d-flex flex-row align-items-start'>
-                    <div className={`deposit-state ${isSuccess ? 'success' : isFailure ? 'failure' : ''}`}>{I18n.t('myPlace.depositStates', { returnObjects: true })[deposit.state]}</div>
-                </div>
-                {isSuccess ? <Button textOnly>Leave Pool</Button> : isFailure ? <Button>Retry</Button> : <p className='text-muted mb-0'>30 min estimated</p>}
-            </Card>
-        );
-    };
-
     const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
 
     return (
@@ -213,12 +186,14 @@ const MyPlace = () => {
                         </Card>
                         {deposits && deposits.length > 0 ? (
                             <>
-                                <h2 className='mt-4'>{I18n.t('myPlace.deposits')}</h2>
-                                <Card>{deposits.map(renderDeposit)}</Card>
+                                <h2 className='mt-5'>{I18n.t('myPlace.deposits')}</h2>
+                                <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                    <DepositTable deposits={deposits} />
+                                </Card>
                             </>
                         ) : null}
-                        <h2 className='mt-4'>{I18n.t('myPlace.assets')}</h2>
-                        <Card>
+                        <h2 className='mt-5'>{I18n.t('myPlace.assets')}</h2>
+                        <Card className='glow-bg'>
                             {balances && balances.length > 0 ? (
                                 balances.map(renderAsset)
                             ) : (
@@ -231,12 +206,12 @@ const MyPlace = () => {
                             )}
                         </Card>
                         {activities && activities.length > 0 ? (
-                            <div className='mt-4'>
-                                <h2>{I18n.t('myPlace.activities')}</h2>
-                                <Card>
-                                    <div />
+                            <>
+                                <h2 className='mt-5'>{I18n.t('myPlace.activities')}</h2>
+                                <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                    <TransactionsTable transactions={activities} />
                                 </Card>
-                            </div>
+                            </>
                         ) : null}
                     </div>
                 </div>
@@ -247,7 +222,7 @@ const MyPlace = () => {
                                 <img src={Assets.images.trophy} alt='Trophy' className='me-3' width='24' />
                                 {I18n.t('myPlace.claimPrize')}
                             </h2>
-                            <Card>
+                            <Card className='glow-bg'>
                                 <div className='d-flex flex-column prize-to-claim'>
                                     {prizesToClaim.map((prize, index) =>
                                         prize.amount ? (
@@ -265,8 +240,8 @@ const MyPlace = () => {
                             </Card>
                         </div>
                     ) : null}
-                    <h2 className={prizesToClaim.length > 0 ? 'mt-4' : 'mt-4 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
-                    <Card>
+                    <h2 className={prizesToClaim.length > 0 ? 'mt-5' : 'mt-5 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
+                    <Card className='glow-bg'>
                         <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
                         <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
                         <Button className='my-place-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>

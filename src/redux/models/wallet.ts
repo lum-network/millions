@@ -1,13 +1,12 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Deposit } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, NumbersUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, DepositModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -23,7 +22,7 @@ interface IbcTransferPayload {
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: any[];
-    deposits?: Deposit[];
+    deposits?: DepositModel[];
 }
 
 interface SetOtherWalletPayload {
@@ -35,6 +34,12 @@ interface SetOtherWalletPayload {
 interface DepositToPoolPayload {
     amount: string;
     pool: PoolModel;
+}
+
+interface LeavePoolPayload {
+    poolId: Long;
+    denom: string;
+    depositId: Long;
 }
 
 interface WalletState {
@@ -189,9 +194,7 @@ export const wallet = createModel<RootModel>()({
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
 
-                        await dispatch.wallet.getLumWalletBalances(lumWallet.getAddress());
-                        await dispatch.wallet.getPrizeToClaim(lumWallet.getAddress());
-                        await dispatch.wallet.getDeposits(lumWallet.getAddress());
+                        await dispatch.wallet.reloadWalletinfos(lumWallet.getAddress());
                         if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
                     }
                 } catch (e) {
@@ -232,6 +235,13 @@ export const wallet = createModel<RootModel>()({
                 }
             }
         },
+        async reloadWalletinfos(address: string) {
+            await dispatch.wallet.getLumWalletBalances(address);
+            await dispatch.wallet.getPrizeToClaim(address);
+            await dispatch.wallet.getActivities(address);
+            await dispatch.wallet.getDeposits(address);
+            await dispatch.wallet.getWithdrawals(address);
+        },
         async getLumWalletBalances(address: string, state) {
             try {
                 const result = await LumClient.getWalletBalances(address);
@@ -248,13 +258,25 @@ export const wallet = createModel<RootModel>()({
                 const result = await LumClient.getWalletActivites(address);
 
                 if (result) {
-                    dispatch.wallet.setLumWalletData({ activities: result.activities });
+                    dispatch.wallet.setLumWalletData({ activities: [...result.activities] });
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.log(e);
+            }
         },
         async getDeposits(address: string) {
             try {
                 const res = await LumClient.getDeposits(address);
+                if (res) {
+                    dispatch.wallet.setLumWalletData({ deposits: res });
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async getWithdrawals(address: string, state) {
+            try {
+                const res = await LumClient.getWithdrawals(address, state.wallet.lumWallet?.deposits || []);
                 if (res) {
                     dispatch.wallet.setLumWalletData({ deposits: res });
                 }
@@ -316,55 +338,93 @@ export const wallet = createModel<RootModel>()({
 
             const toastId = ToastUtils.showLoadingToast({ content: type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
 
-            if (chainId) {
-                try {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
-
-                    const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
-
-                    if (rpc) {
-                        await WalletClient.connect(rpc, offlineSigner);
-
-                        const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
-
-                        WalletClient.disconnect();
-
-                        if (result && !result.error) {
-                            ToastUtils.updateLoadingToast(toastId, 'success', {
-                                content: `Successfully ${type === 'withdraw' ? 'withdrawn' : 'deposited'} ${amount.amount} ${normalDenom.toUpperCase()}`,
-                            });
-                            return result.hash;
-                        } else {
-                            ToastUtils.updateLoadingToast(toastId, 'error', { content: result?.error || `Failed to ${type}` });
-                            return null;
-                        }
-                    } else {
-                        ToastUtils.updateLoadingToast(toastId, 'error', { content: `${normalDenom.toUpperCase()} rpc is unavailble.` });
-                        return null;
-                    }
-                } catch (e) {
-                    ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
-                    return null;
+            try {
+                if (!chainId) {
+                    throw new Error(`${normalDenom.toUpperCase()} chain-id not found`);
                 }
-            } else {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: `${normalDenom.toUpperCase()} chain-id not found` });
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
+
+                const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
+
+                if (!rpc) {
+                    throw new Error(`${normalDenom.toUpperCase()} rpc is unavailble.`);
+                }
+
+                await WalletClient.connect(rpc, offlineSigner);
+
+                const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+
+                WalletClient.disconnect();
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || `Failed to ${type}`);
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: `Successfully ${type === 'withdraw' ? 'withdrawn' : 'deposited'} ${amount.amount} ${normalDenom.toUpperCase()}`,
+                });
+
+                await dispatch.wallet.reloadWalletinfos(type === 'withdraw' ? fromAddress : toAddress);
+
+                return result.hash;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
                 return null;
             }
         },
         async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            if (!lumWallet) {
-                return null;
-            }
+            const toastId = ToastUtils.showLoadingToast({ content: `Depositing to ${DenomsUtils.getNormalDenom(payload.pool.denom)} pool...` });
 
             try {
+                if (!lumWallet) {
+                    throw new Error('No wallet connected');
+                }
+
                 const result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
 
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || `Failed to deposit`);
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: `Successfully deposited ${NumbersUtils.convertUnitNumber(payload.amount)} ${DenomsUtils.getNormalDenom(payload.pool.denom)}`,
+                });
+
+                await dispatch.wallet.reloadWalletinfos(lumWallet.address);
                 return result;
             } catch (e) {
-                console.log(e);
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to deposit to ${DenomsUtils.getNormalDenom(payload.pool.denom)} pool` });
+                return null;
+            }
+        },
+        async leavePool(payload: LeavePoolPayload, state) {
+            const { lumWallet } = state.wallet;
+
+            const toastId = ToastUtils.showLoadingToast({ content: `Leaving pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}...` });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error('No wallet connected');
+                }
+
+                const result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || '');
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: `Successfully left ${payload.denom.toUpperCase()} #${payload.poolId.toString()}`,
+                });
+
+                await dispatch.wallet.reloadWalletinfos(lumWallet.address);
+                return result;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to leave pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}` });
                 return null;
             }
         },

@@ -223,7 +223,7 @@ export default {
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'CLAIM MY PRIZES',
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding In Progress']
     },
     withdraw: {
         title: 'Withdraw IBC Asset',

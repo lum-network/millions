@@ -4,6 +4,8 @@ import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
 import coinsStaked2 from './images/coins_stacked_2.svg';
+import claim from './images/claim.svg';
+import deposit from './images/deposit.svg';
 import discord from './images/discord.svg';
 import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
@@ -45,6 +47,8 @@ const Assets = {
         coin,
         coinsStacked,
         coinsStaked2,
+        claim,
+        deposit,
         discord,
         discordButton,
         discordPlain,

@@ -1,0 +1,19 @@
+.transactions-table {
+    .table tbody td {
+        padding: 1rem 8px;
+
+        .tx-icon-container {
+            width: 32px;
+            height: 32px;
+
+            background: #ffffff;
+            border-radius: 7px;
+
+            img {
+                width: 14px;
+                height: 14px;
+                object-fit: contain;
+            }
+        }
+    }
+}

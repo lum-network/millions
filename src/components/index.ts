@@ -13,5 +13,6 @@ export { default as AnimatedNumber } from './AnimatedNumber/AnimatedNumber';
 export { default as BestPrizeCard } from './BestPrizeCard/BestPrizeCard';
 export { default as Modal } from './Modal/Modal';
 export { default as Steps } from './Steps/Steps';
+export { default as Table } from './Table/Table';
 
 export * from './ToastContent/ToastContent';
