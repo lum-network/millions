@@ -12,11 +12,12 @@ import { NavigationConstants } from 'constant';
 interface IProps {
     denom: string;
     tvl: number;
+    poolId: string;
     prize?: number;
     drawEndAt: Date;
 }
 
-const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
 
     const price = prices?.[denom];
@@ -49,7 +50,7 @@ const PoolCard = ({ denom, tvl, prize, drawEndAt }: IProps) => {
                 </div>
             </div>
             <div className='w-100'>
-                <Button to={`${NavigationConstants.POOLS}/${denom}`} className='w-100'>
+                <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId}`} className='w-100'>
                     {I18n.t('pools.cta')}
                 </Button>
             </div>

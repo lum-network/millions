@@ -1,12 +1,12 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, NumbersUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, DepositModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, DepositModel, TransactionModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -21,7 +21,7 @@ interface IbcTransferPayload {
 
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
-    activities?: any[];
+    activities?: TransactionModel[];
     deposits?: DepositModel[];
     prizes?: Prize[];
 }
@@ -48,7 +48,6 @@ interface WalletState {
     otherWallets: {
         [denom: string]: OtherWalletModel;
     };
-    prizesToClaim: Prize[];
 }
 
 export const wallet = createModel<RootModel>()({
@@ -56,7 +55,6 @@ export const wallet = createModel<RootModel>()({
     state: {
         lumWallet: null,
         otherWallets: {},
-        prizesToClaim: [],
     } as WalletState,
     reducers: {
         signInLum(state, payload: LumWallet): WalletState {
@@ -97,12 +95,6 @@ export const wallet = createModel<RootModel>()({
                         balances: data.balances || [],
                     },
                 },
-            };
-        },
-        setPrizeToClaim(state, payload: Prize[]): WalletState {
-            return {
-                ...state,
-                prizesToClaim: payload,
             };
         },
     },
@@ -369,7 +361,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully deposited ${NumbersUtils.convertUnitNumber(payload.amount)} ${DenomsUtils.getNormalDenom(payload.pool.denom)}`,
+                    content: `Successfully deposited ${payload.amount} ${DenomsUtils.getNormalDenom(payload.pool.denom)}`,
                 });
 
                 await dispatch.wallet.reloadWalletinfos(lumWallet.address);

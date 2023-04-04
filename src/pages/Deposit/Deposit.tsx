@@ -16,13 +16,13 @@ import Error404 from '../404/404';
 import './Deposit.scss';
 
 const Deposit = () => {
-    const { denom } = useParams<{ denom: string }>();
+    const { denom, poolId } = useParams<{ denom: string; poolId: string }>();
 
     const { otherWallets, lumWallet, prices, pool } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
-        pool: state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
+        pool: state.pools.pools.find((pool) => pool.poolId.toString() === poolId),
     }));
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);

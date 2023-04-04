@@ -21,13 +21,13 @@ import TransactionsTable from './components/TransationsTable/TransactionsTable';
 import './MyPlace.scss';
 
 const MyPlace = () => {
-    const { lumWallet, otherWallets, balances, activities, prizesToClaim, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
         balances: state.wallet.lumWallet?.balances,
         activities: state.wallet.lumWallet?.activities,
         deposits: state.wallet.lumWallet?.deposits,
-        prizesToClaim: state.wallet.prizesToClaim,
+        prizes: state.wallet.lumWallet?.prizes,
         prices: state.stats.prices,
         pools: state.pools.pools,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
@@ -216,7 +216,7 @@ const MyPlace = () => {
                     </div>
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
-                    {prizesToClaim.length > 0 ? (
+                    {prizes && prizes.length > 0 ? (
                         <div className='mt-4 mt-lg-0'>
                             <h2>
                                 <img src={Assets.images.trophy} alt='Trophy' className='me-3' width='24' />
@@ -224,7 +224,7 @@ const MyPlace = () => {
                             </h2>
                             <Card className='glow-bg'>
                                 <div className='d-flex flex-column prize-to-claim'>
-                                    {prizesToClaim.map((prize, index) =>
+                                    {prizes.slice(0, 3).map((prize, index) =>
                                         prize.amount ? (
                                             <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
                                                 <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
@@ -240,7 +240,7 @@ const MyPlace = () => {
                             </Card>
                         </div>
                     ) : null}
-                    <h2 className={prizesToClaim.length > 0 ? 'mt-5' : 'mt-5 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
+                    <h2 className={prizes && prizes.length > 0 ? 'mt-5' : 'mt-5 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
                     <Card className='glow-bg'>
                         <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
                         <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
@@ -254,9 +254,11 @@ const MyPlace = () => {
             <Modal id='withdrawModal' modalWidth={1080} withCloseButton={false}>
                 <TransferOut form={withdrawForm} prices={prices} balances={balances || []} isLoading={isTransferring} />
             </Modal>
-            <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
-                <Claim prizes={prizesToClaim} prices={prices} onClaim={() => true} onClaimAndCompound={() => true} isLoading={false} />
-            </Modal>
+            {prizes && (
+                <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
+                    <Claim prizes={prizes.slice(0, 3)} prices={prices} onClaim={() => true} onClaimAndCompound={() => true} isLoading={false} />
+                </Modal>
+            )}
         </>
     );
 };
