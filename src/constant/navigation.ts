@@ -14,3 +14,5 @@ export const KEPLR_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/ke
 
 // Link to C Millions doc on gitbook 'Learn more about Interchain wallets' when released
 export const INTERCHAIN_WALLETS_DOC = '';
+
+export type PoolsParams = { poolId: string; denom: string };

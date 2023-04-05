@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormikProps } from 'formik';
 import { Tooltip } from 'react-tooltip';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
 import Skeleton from 'react-loading-skeleton';
@@ -142,6 +142,8 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
     const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onFinishDeposit } = props;
 
     const dispatch = useDispatch<Dispatch>();
+    const navigate = useNavigate();
+    const { denom } = useParams<NavigationConstants.PoolsParams>();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [depositAmount, setDepositAmount] = useState<string>(
@@ -249,6 +251,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                     }))}
                     value={poolToDeposit.poolId.toString()}
                     onChange={(value) => {
+                        navigate(`${NavigationConstants.POOLS}/${denom}/${value}`);
                         setPoolToDeposit(pools.find((p) => p.poolId.toString() === value) || poolToDeposit);
                     }}
                 />

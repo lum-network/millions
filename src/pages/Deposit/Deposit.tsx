@@ -16,7 +16,7 @@ import Error404 from '../404/404';
 import './Deposit.scss';
 
 const Deposit = () => {
-    const { poolId, denom } = useParams<{ poolId: string; denom: string }>();
+    const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
 
     const { otherWallets, lumWallet, prices, pools, pool } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
