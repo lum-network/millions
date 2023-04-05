@@ -249,6 +249,8 @@ export const wallet = createModel<RootModel>()({
             try {
                 const result = await LumClient.getWalletActivites(address);
 
+                console.log(result);
+
                 if (result) {
                     dispatch.wallet.setLumWalletData({ activities: [...result.activities] });
                 }

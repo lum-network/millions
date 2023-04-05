@@ -157,9 +157,13 @@ class LumClient {
             return null;
         }
 
-        const res = await this.client.searchTx([`message.module='millions' AND transfer.sender='${address}'`, `message.action='Deposit' AND transfer.sender='${address}'`]);
+        const res = await this.client.searchTx([
+            `message.module='millions' AND transfer.sender='${address}'`,
+            `message.action='Deposit' AND transfer.sender='${address}'`,
+            `message.action='Withdraw' AND transfer.sender='${address}'`,
+        ]);
 
-        return { activities: formatTxs(res) };
+        return { activities: formatTxs(res, true) };
     };
 
     getWalletPrizes = async (address: string) => {
