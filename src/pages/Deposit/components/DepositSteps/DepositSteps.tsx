@@ -10,20 +10,21 @@ import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
 import { DenomsUtils, I18n, NumbersUtils, ToastUtils, WalletUtils } from 'utils';
-import { AmountInput, AssetsSelect, Button, Card, SmallerDecimal } from 'components';
+import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
 
 import './DepositSteps.scss';
 
 interface StepProps {
-    pool: PoolModel;
+    currentPool: PoolModel;
     balances: LumTypes.Coin[];
     price?: number;
 }
 
 interface Props {
-    pool: PoolModel;
+    currentPool: PoolModel;
+    pools: PoolModel[];
     currentStep: number;
     steps: {
         title: string;
@@ -48,7 +49,7 @@ const DepositStep1 = (
         onDeposit: (amount: string) => void;
     },
 ) => {
-    const { pool, balances, price, form, nonEmptyWallets, onDeposit } = props;
+    const { currentPool, balances, price, form, nonEmptyWallets, onDeposit } = props;
 
     const navigate = useNavigate();
 
@@ -59,14 +60,13 @@ const DepositStep1 = (
             <div className='w-100 mt-5'>
                 <AmountInput
                     isLoading={isLoading}
-                    className='amount-input'
                     label={I18n.t('withdraw.amountInput.label')}
                     sublabel={I18n.t('withdraw.amountInput.sublabel', {
                         amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
-                        denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
+                        denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                     })}
                     onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(pool.nativeDenom, balances);
+                        const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances);
                         form.setFieldValue('amount', amount);
                     }}
                     inputProps={{
@@ -93,7 +93,7 @@ const DepositStep1 = (
                         }
                         return result;
                     }, [])}
-                    value={pool.nativeDenom}
+                    value={currentPool.nativeDenom}
                     onChange={(value) => {
                         navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
                     }}
@@ -124,7 +124,7 @@ const DepositStep1 = (
                                     <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
                                 </span>
                             </div>
-                            <div>14 {DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</div>
+                            <div>14 {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</div>
                         </div>
                     </Card>
                 )}
@@ -138,23 +138,24 @@ const DepositStep1 = (
     );
 };
 
-const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void }) => {
-    const { pool, price, balances, amount, initialAmount, onNextStep, onFinishDeposit } = props;
+const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void; pools: PoolModel[] }) => {
+    const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onFinishDeposit } = props;
 
     const dispatch = useDispatch<Dispatch>();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [depositAmount, setDepositAmount] = useState<string>(
         initialAmount
-            ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (pool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
+            ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
             : amount,
     );
+    const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(false);
     const [error, setError] = useState('');
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
     useEffect(() => {
-        const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, balances));
+        const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances));
         const depositAmountNumber = Number(depositAmount);
 
         if (Number.isNaN(depositAmount)) {
@@ -162,8 +163,8 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
         } else {
             if (depositAmountNumber > maxAmount) {
                 setError(I18n.t('errors.deposit.greaterThanBalance'));
-            } else if (depositAmountNumber < Number(pool.minDepositAmount)) {
-                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: pool.minDepositAmount }));
+            } else if (depositAmountNumber < Number(poolToDeposit.minDepositAmount)) {
+                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: poolToDeposit.minDepositAmount }));
             } else {
                 setError('');
             }
@@ -202,7 +203,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
                 <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
             </Card>
             <div className='d-flex flex-row justify-content-between mt-4'>
-                <label className='label'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() })}</label>
+                <label className='label'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
                 <Button textOnly onClick={() => setIsModifying(true)}>
                     Modify
                 </Button>
@@ -210,9 +211,9 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             {isModifying ? (
                 <AmountInput
                     isLoading={isLoading}
-                    className='amount-input mt-2'
+                    className='mt-2'
                     onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(pool.nativeDenom, balances);
+                        const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances);
                         setDepositAmount(amount);
                     }}
                     inputProps={{
@@ -232,11 +233,25 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             ) : (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
                     <span className='asset-info'>
-                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(pool.nativeDenom))} className='me-3' alt='denom' />
-                        {DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
+                        {DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}
                     </span>
                     <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
                 </Card>
+            )}
+            {pools.length > 1 && (
+                <PoolSelect
+                    className='mt-4'
+                    pools={pools}
+                    options={pools.map((pool) => ({
+                        value: pool.poolId.toString(),
+                        label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - Pool #${pool.poolId.toString()}`,
+                    }))}
+                    value={poolToDeposit.poolId.toString()}
+                    onChange={(value) => {
+                        setPoolToDeposit(pools.find((p) => p.poolId.toString() === value) || poolToDeposit);
+                    }}
+                />
             )}
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
@@ -248,7 +263,7 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             <Button
                 type='button'
                 onClick={async () => {
-                    const res = await dispatch.wallet.depositToPool({ pool, amount: depositAmount.toString() });
+                    const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount.toString() });
 
                     if (res && res.error) {
                         ToastUtils.showErrorToast({ content: res.error });
@@ -304,13 +319,13 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                     <button
                         className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
                         onClick={() => {
-                            navigate('/my-place');
+                            navigate(NavigationConstants.MY_SAVINGS);
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={Assets.images.myPlace} alt='My Place' />
+                            <img src={Assets.images.mySavings} alt='My savings' />
                         </div>
-                        {I18n.t('deposit.goToMyPlace')}
+                        {I18n.t('deposit.goToMySavings')}
                     </button>
                 </div>
             </div>
@@ -328,17 +343,17 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, initialAmount, price, pool, onNextStep, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, initialAmount, price, pools, currentPool, onNextStep, transferForm, lumWallet } = props;
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
-    const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(pool.nativeDenom)]);
+    const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
 
     useEffect(() => {
-        setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(pool.nativeDenom)]);
+        setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
         setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
-    }, [otherWallets, pool]);
+    }, [otherWallets, currentPool]);
 
     return (
         <>
@@ -349,21 +364,22 @@ const DepositSteps = (props: Props) => {
                 </div>
                 {currentStep === 0 && (
                     <DepositStep1
+                        currentPool={currentPool}
                         form={transferForm}
                         onDeposit={(amount) => setAmount(amount)}
                         price={price}
-                        balances={(pool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
                         nonEmptyWallets={nonEmptyWallets}
-                        pool={pool}
                     />
                 )}
                 {currentStep === 1 && (
                     <DepositStep2
-                        balances={(pool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
                         initialAmount={initialAmount}
                         amount={amount}
                         onFinishDeposit={(hash) => setTxHash(hash)}
-                        pool={pool}
+                        currentPool={currentPool}
+                        pools={pools}
                         price={price}
                         onNextStep={onNextStep}
                     />

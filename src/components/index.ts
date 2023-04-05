@@ -14,5 +14,6 @@ export { default as BestPrizeCard } from './BestPrizeCard/BestPrizeCard';
 export { default as Modal } from './Modal/Modal';
 export { default as Steps } from './Steps/Steps';
 export { default as Table } from './Table/Table';
+export { default as PoolSelect } from './PoolSelect/PoolSelect';
 
 export * from './ToastContent/ToastContent';

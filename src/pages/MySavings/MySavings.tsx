@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import numeral from 'numeral';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
@@ -18,9 +18,9 @@ import DepositTable from './components/DepositTable/DepositTable';
 import TransferOut from './components/TransferOut/TransferOut';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
 
-import './MyPlace.scss';
+import './MySavings.scss';
 
-const MyPlace = () => {
+const MySavings = () => {
     const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
@@ -69,6 +69,11 @@ const MyPlace = () => {
         },
     });
 
+    const [claimCurrentStep, setClaimCurrentStep] = useState(0);
+
+    const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
+    const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
+
     const onDenomChange = async (denom: string) => {
         const normalDenom = DenomsUtils.getNormalDenom(denom);
 
@@ -77,6 +82,25 @@ const MyPlace = () => {
             denom,
             amount: '0',
         });
+    };
+
+    const onClaim = async () => {
+        if (!prizesToClaim || !prizesToClaim.length) return;
+
+        setClaimCurrentStep(claimCurrentStep + 1);
+
+        const res = await dispatch.wallet.claimPrizes(prizesToClaim);
+        if (!res || (res && res.error)) {
+            setClaimCurrentStep(claimCurrentStep - 1);
+        } else {
+            setClaimCurrentStep(claimCurrentStep + 1);
+        }
+    };
+
+    const onClaimAndCompound = async () => {
+        if (!prizesToClaim || !prizesToClaim.length) return;
+
+        await dispatch.wallet.claimAndCompoundPrizes(prizesToClaim);
     };
 
     const renderAsset = (asset: LumTypes.Coin) => {
@@ -116,10 +140,10 @@ const MyPlace = () => {
                                             onDenomChange(asset.denom);
                                         }}
                                     >
-                                        {I18n.t('myPlace.withdraw')}
+                                        {I18n.t('mySavings.withdraw')}
                                     </Button>
                                 ) : null}
-                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('myPlace.deposit')}</Button>
+                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('mySavings.deposit')}</Button>
                             </div>
                         </div>
                     </>
@@ -154,14 +178,12 @@ const MyPlace = () => {
         );
     };
 
-    const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
-
     return (
-        <>
+        <div className='mt-5'>
             <div className='row'>
                 <div className='col-12 col-lg-8 col-xxl-9'>
                     <div>
-                        <h2>{I18n.t('myPlace.totalBalance')}</h2>
+                        <h2>{I18n.t('mySavings.totalBalance')}</h2>
                         <Card className='balance-card'>
                             <div className='my-auto d-flex flex-column justify-content-center'>
                                 {totalBalancePrice ? (
@@ -186,28 +208,28 @@ const MyPlace = () => {
                         </Card>
                         {deposits && deposits.length > 0 ? (
                             <>
-                                <h2 className='mt-5'>{I18n.t('myPlace.deposits')}</h2>
+                                <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
                                 <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <DepositTable deposits={deposits} />
                                 </Card>
                             </>
                         ) : null}
-                        <h2 className='mt-5'>{I18n.t('myPlace.assets')}</h2>
+                        <h2 className='mt-5'>{I18n.t('mySavings.assets')}</h2>
                         <Card className='glow-bg'>
                             {balances && balances.length > 0 ? (
                                 balances.map(renderAsset)
                             ) : (
                                 <div className='d-flex flex-column align-items-center justify-content-center'>
                                     <img src={Assets.images.coinsStacked} alt='Stacked coins' />
-                                    <h3 className='mt-2'>{I18n.t('myPlace.noAssets.title')}</h3>
-                                    <p className='text-center'>{I18n.t('myPlace.noAssets.description')}</p>
-                                    <Button>{I18n.t('myPlace.deposit')}</Button>
+                                    <h3 className='mt-2'>{I18n.t('mySavings.noAssets.title')}</h3>
+                                    <p className='text-center'>{I18n.t('mySavings.noAssets.description')}</p>
+                                    <Button>{I18n.t('mySavings.deposit')}</Button>
                                 </div>
                             )}
                         </Card>
                         {activities && activities.length > 0 ? (
                             <>
-                                <h2 className='mt-5'>{I18n.t('myPlace.activities')}</h2>
+                                <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
                                 <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <TransactionsTable transactions={activities} />
                                 </Card>
@@ -216,51 +238,77 @@ const MyPlace = () => {
                     </div>
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
-                    {prizes && prizes.length > 0 ? (
-                        <div className='mt-4 mt-lg-0'>
-                            <h2>
-                                <img src={Assets.images.trophy} alt='Trophy' className='me-3' width='24' />
-                                {I18n.t('myPlace.claimPrize')}
-                            </h2>
+                    <div className='row'>
+                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                            <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
+                                <h2>
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    {I18n.t('mySavings.claimPrize')}
+                                </h2>
+                                <Card className='glow-bg'>
+                                    <div className='d-flex flex-column prize-to-claim'>
+                                        {prizesToClaim.map((prize, index) => {
+                                            if (!prize.amount) {
+                                                return null;
+                                            }
+
+                                            const amount = Number(NumbersUtils.convertUnitNumber(prize.amount.amount));
+
+                                            return (
+                                                <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
+                                                    <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
+                                                    <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000' : '0,0')} className='me-2' />
+                                                    {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
+                                                </span>
+                                            );
+                                        })}
+                                        <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                            {I18n.t('mySavings.claim')}
+                                        </Button>
+                                    </div>
+                                </Card>
+                            </div>
+                        ) : null}
+                        <div className={`col-12 col-md-6 col-lg-12 ${prizesToClaim && prizesToClaim.length > 0 ? 'mt-5 mt-md-5 mt-lg-5' : 'mt-5 mt-lg-0'}`}>
+                            <h2>{I18n.t('mySavings.governance')}</h2>
                             <Card className='glow-bg'>
-                                <div className='d-flex flex-column prize-to-claim'>
-                                    {prizes.slice(0, 3).map((prize, index) =>
-                                        prize.amount ? (
-                                            <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
-                                                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
-                                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0')} className='me-2' />
-                                                {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
-                                            </span>
-                                        ) : null,
-                                    )}
-                                    <Button className='my-place-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
-                                        {I18n.t('myPlace.claim')}
-                                    </Button>
-                                </div>
+                                <h3>{I18n.t('mySavings.governanceCard.title')}</h3>
+                                <p className='mt-4 mb-5'>{I18n.t('mySavings.governanceCard.description')}</p>
+                                <Button className='my-savings-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>
+                                    <img src={Assets.images.discord} alt='Discord' className='me-2' />
+                                    {I18n.t('mySavings.governanceCard.cta')}
+                                </Button>
                             </Card>
                         </div>
-                    ) : null}
-                    <h2 className={prizes && prizes.length > 0 ? 'mt-5' : 'mt-5 mt-lg-0'}>{I18n.t('myPlace.governance')}</h2>
-                    <Card className='glow-bg'>
-                        <h3>{I18n.t('myPlace.governanceCard.title')}</h3>
-                        <p className='mt-4 mb-5'>{I18n.t('myPlace.governanceCard.description')}</p>
-                        <Button className='my-place-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>
-                            <img src={Assets.images.discord} alt='Discord' className='me-2' />
-                            {I18n.t('myPlace.governanceCard.cta')}
-                        </Button>
-                    </Card>
+                    </div>
                 </div>
             </div>
             <Modal id='withdrawModal' modalWidth={1080} withCloseButton={false}>
                 <TransferOut form={withdrawForm} prices={prices} balances={balances || []} isLoading={isTransferring} />
             </Modal>
-            {prizes && (
+            {prizesToClaim && (
                 <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
-                    <Claim prizes={prizes.slice(0, 3)} prices={prices} onClaim={() => true} onClaimAndCompound={() => true} isLoading={false} />
+                    <Claim prizes={prizesToClaim} prices={prices} onClaimAndCompound={onClaimAndCompound} isLoading={false} currentStep={claimCurrentStep} />
                 </Modal>
             )}
-        </>
+            <Modal id='claimOnlyWarning' withCloseButton={false}>
+                <img src={Assets.images.info} alt='info' width={42} height={42} />
+                <h3 className='my-4'>{I18n.t('mySavings.claimOnlyModal.title')}</h3>
+                <p>{I18n.t('mySavings.claimOnlyModal.subtitle')}</p>
+                <Card flat withoutPadding className='claim-only-warning p-4 mt-4'>
+                    {I18n.t('mySavings.claimOnlyModal.info')}
+                </Card>
+                <div className='d-flex flex-row align-items-center justify-content-between mt-4'>
+                    <Button type='button' outline data-bs-dismiss='modal' onClick={onClaim} className='w-100 me-3'>
+                        {I18n.t('mySavings.claimOnlyModal.claimBtn')}
+                    </Button>
+                    <Button type='button' data-bs-dismiss='modal' onClick={onClaimAndCompound} className='w-100'>
+                        {I18n.t('mySavings.claimOnlyModal.claimAndCompoundBtn')}
+                    </Button>
+                </div>
+            </Modal>
+        </div>
     );
 };
 
-export default MyPlace;
+export default MySavings;

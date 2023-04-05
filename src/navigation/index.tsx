@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Location } from 'react-router-dom';
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { HomePage, MyPlacePage, PoolsPage, DepositPage, LandingPage, Error404 } from 'pages';
+import { HomePage, MySavingsPage, PoolsPage, DepositPage, LandingPage, Error404 } from 'pages';
 import { MainLayout } from 'layout';
 
 export const RouteListener = ({ location }: { location: Location }): JSX.Element | null => {
@@ -20,7 +20,7 @@ export const router = createBrowserRouter(
             <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
             <Route path={`${NavigationConstants.POOLS}/:denom/:poolId`} element={<DepositPage />} />
             <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
-            <Route path={NavigationConstants.MY_PLACE} element={<MyPlacePage />} />
+            <Route path={NavigationConstants.MY_SAVINGS} element={<MySavingsPage />} />
             <Route path={NavigationConstants.LANDING} element={<LandingPage />} />
             <Route path='*' element={<Error404 />} />
         </Route>,

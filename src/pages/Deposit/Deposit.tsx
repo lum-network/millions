@@ -18,10 +18,11 @@ import './Deposit.scss';
 const Deposit = () => {
     const { poolId, denom } = useParams<{ poolId: string; denom: string }>();
 
-    const { otherWallets, lumWallet, prices, pool } = useSelector((state: RootState) => ({
+    const { otherWallets, lumWallet, prices, pools, pool } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
+        pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
     }));
 
@@ -123,7 +124,8 @@ const Deposit = () => {
                             onNextStep={() => setCurrentStep(currentStep + 1)}
                             currentStep={currentStep}
                             steps={steps}
-                            pool={pool}
+                            pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}
+                            currentPool={pool}
                             price={prices?.[denom || ''] || 0}
                             lumWallet={lumWallet}
                             initialAmount={initialAmount}

@@ -17,7 +17,7 @@ import landingDoubleArrows from './images/landing_double_arrows.svg';
 import logo from './images/logo.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
-import myPlace from './images/my_place.svg';
+import mySavings from './images/my_place.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
 import trophy from './images/trophy.svg';
@@ -60,7 +60,7 @@ const Assets = {
         logo,
         lumLogoPurple,
         mintscanPurple,
-        myPlace,
+        mySavings,
         star,
         success,
         trophy,

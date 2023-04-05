@@ -215,6 +215,45 @@ class LumClient {
         };
     };
 
+    multiDeposit = async (wallet: LumWallet, toDeposit: { pool: PoolModel; amount: string }[]) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Build transaction message
+        const messages = [];
+
+        for (const deposit of toDeposit) {
+            messages.push(
+                LumMessages.BuildMsgMillionsDeposit(deposit.pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
+                    amount: deposit.amount,
+                    denom: deposit.pool.nativeDenom,
+                }),
+            );
+        }
+
+        // Define fees
+        const fee = WalletUtils.buildTxFee('25000', '300000');
+
+        // Create the transaction document
+        const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
+
+        // Sign and broadcast the transaction using the client
+        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+
+        return {
+            hash: broadcastResult.hash,
+            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+        };
+    };
+
     leavePool = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
         if (this.client === null) {
             return null;
@@ -228,6 +267,40 @@ class LumClient {
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
+
+        // Sign and broadcast the transaction using the client
+        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+
+        return {
+            hash: broadcastResult.hash,
+            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+        };
+    };
+
+    claimPrizes = async (wallet: LumWallet, prizes: Prize[]) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Build transaction message
+        const messages = [];
+
+        for (const prize of prizes) {
+            messages.push(LumMessages.BuildMsgClaimPrize(prize.poolId, prize.drawId, prize.prizeId, wallet.getAddress()));
+        }
+
+        // Define fees
+        const fee = WalletUtils.buildTxFee('25000', '500000');
+
+        // Create the transaction document
+        const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
 
         if (!doc) {
             return null;

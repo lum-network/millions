@@ -133,8 +133,8 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to={NavigationConstants.MY_PLACE} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                        {I18n.t('myPlace.title')}
+                    <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                        {I18n.t('mySavings.title')}
                     </NavLink>
                 </li>
                 <li className='ms-lg-5 ms-4'>

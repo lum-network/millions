@@ -137,6 +137,7 @@ export default {
             ],
         },
     },
+    keplrKeystoreChange: 'Keplr Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
@@ -162,8 +163,8 @@ export default {
         cta: 'Deposit',
         drawEndAt: 'Time left to join:',
     },
-    myPlace: {
-        title: 'My place',
+    mySavings: {
+        title: 'My Savings',
         assets: 'Available Assets',
         totalBalance: 'Total balance',
         claim: 'Claim',
@@ -223,6 +224,13 @@ export default {
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'CLAIM MY PRIZES',
         },
+        claimOnlyModal: {
+            title: 'Hey Cosmonaut 🧑‍🚀',
+            subtitle: "Are you sure you don't want to compound your prizes ?",
+            info: 'Participants who compound increase\ndrastically their next winning chances!',
+            claimBtn: 'Just claim',
+            claimAndCompoundBtn: "Let's compound 🎉",
+        },
         depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding In Progress'],
     },
     withdraw: {
@@ -270,7 +278,7 @@ export default {
         ],
         shareTwitter: 'Share on Twitter',
         shareTwitterContent: "I just deposited on Lum Network's Cosmos Millions project\nDo the same if you want to start saving and earning !",
-        goToMyPlace: 'Go to my place',
+        goToMySavings: 'Go to my savings',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
         quitModal: {

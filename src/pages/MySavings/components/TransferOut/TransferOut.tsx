@@ -25,30 +25,30 @@ const TransferOut = ({
 }) => {
     const [currentStep, setCurrentStep] = useState(0);
 
-    const steps = I18n.t('myPlace.transferOutModal.steps', {
+    const steps = I18n.t('mySavings.transferOutModal.steps', {
         returnObjects: true,
     });
 
     return (
         <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
             <div className='col text-start'>
-                <h1 className='steps-title'>{I18n.t('myPlace.transferOutModal.title')}</h1>
+                <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
                 <Steps currentStep={currentStep} steps={steps} stepBackgroundColor='white' />
             </div>
             <div className='col d-flex'>
                 <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
-                    <div className='h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
+                    <div className='h-100 d-flex flex-column text-center py-sm-4'>
                         <div className='mb-5 mb-lg-0'>
                             <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
                             <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
                         </div>
                         <form onSubmit={form.handleSubmit} className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
-                            <div className='w-100 mt-5'>
+                            <div className='w-100'>
                                 <AmountInput
                                     isLoading={isLoading}
-                                    className='amount-input'
-                                    label={I18n.t('myPlace.transferOutModal.amountInput.label')}
-                                    sublabel={I18n.t('myPlace.transferOutModal.amountInput.sublabel', {
+                                    className='mt-5'
+                                    label={I18n.t('mySavings.transferOutModal.amountInput.label')}
+                                    sublabel={I18n.t('mySavings.transferOutModal.amountInput.sublabel', {
                                         amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
                                         denom: DenomsUtils.getNormalDenom(form.values.denom).toUpperCase(),
                                     })}
@@ -68,7 +68,7 @@ const TransferOut = ({
                                     error={form.errors.amount}
                                 />
                             </div>
-                            <div className='mt-5'>
+                            <div className='mt-4'>
                                 <AssetsSelect
                                     isLoading={isLoading}
                                     balances={balances}
@@ -93,7 +93,7 @@ const TransferOut = ({
                                     </Card>
                                 )}
                                 <Button type='submit' onClick={() => setCurrentStep(currentStep + 1)} className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
-                                    {I18n.t('myPlace.transferOutModal.cta')}
+                                    {I18n.t('mySavings.transferOutModal.cta')}
                                 </Button>
                             </div>
                         </form>

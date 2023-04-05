@@ -66,7 +66,7 @@ const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
                     </div>
                 </td>
                 <td className='align-middle'>
-                    <div className={`deposit-state rounded-pill ${statusClassName}`}>{I18n.t('myPlace.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state]}</div>
+                    <div className={`deposit-state rounded-pill ${statusClassName}`}>{I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state]}</div>
                 </td>
                 <td className='align-middle'>
                     <div className='d-flex justify-content-end'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>

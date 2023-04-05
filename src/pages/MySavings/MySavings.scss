@@ -147,7 +147,7 @@
     }
 }
 
-.my-place-cta {
+.my-savings-cta {
     width: 100%;
 }
 
@@ -183,15 +183,22 @@
         font-weight: 700;
         line-height: 20px;
     }
-
-    .amount-input {
-        margin-top: 5rem;
-        margin-bottom: 3rem;
-    }
 }
 
-@include media-breakpoint-down(lg) {
-    .my-place-cta {
-        width: max-content;
+#claimOnlyModal {
+    h3 {
+        color: $color-black;
+    }
+
+    p {
+        font-weight: 400;
+        font-size: 16px;
+    }
+
+    .claim-only-warning {
+        font-weight: 300;
+        font-size: 16px;
+        line-height: 19px;
+        text-align: center;
     }
 }
