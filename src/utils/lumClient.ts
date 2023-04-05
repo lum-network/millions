@@ -3,7 +3,7 @@ import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 import { DepositModel, PoolModel } from 'models';
-import { NumbersUtils, PoolsUtils } from 'utils';
+import { NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { getNormalDenom } from './denoms';
 import { formatTxs } from './txs';
 
@@ -194,35 +194,14 @@ class LumClient {
         });
 
         // Define fees
-        const fee = {
-            amount: [{ denom: LumConstants.MicroLumDenom, amount: '25000' }],
-            gas: '300000',
-        };
-
-        // Fetch account number and sequence and chain id
-        const account = await this.client.getAccount(wallet.getAddress());
-        const chainId = this.getChainId();
-
-        if (!account || !chainId) {
-            return null;
-        }
-
-        const { accountNumber, sequence } = account;
+        const fee = WalletUtils.buildTxFee('25000', '300000');
 
         // Create the transaction document
-        const doc: LumTypes.Doc = {
-            chainId,
-            fee,
-            memo: '',
-            messages: [message],
-            signers: [
-                {
-                    accountNumber,
-                    sequence,
-                    publicKey: wallet.getPublicKey(),
-                },
-            ],
-        };
+        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
 
         // Sign and broadcast the transaction using the client
         const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
@@ -245,35 +224,14 @@ class LumClient {
         const message = LumMessages.BuildMsgWithdrawDeposit(poolId, depositId, wallet.getAddress(), wallet.getAddress());
 
         // Define fees
-        const fee = {
-            amount: [{ denom: LumConstants.MicroLumDenom, amount: '25000' }],
-            gas: '100000',
-        };
-
-        // Fetch account number and sequence and chain id
-        const account = await this.client.getAccount(wallet.getAddress());
-        const chainId = this.getChainId();
-
-        if (!account || !chainId) {
-            return null;
-        }
-
-        const { accountNumber, sequence } = account;
+        const fee = WalletUtils.buildTxFee('25000', '300000');
 
         // Create the transaction document
-        const doc: LumTypes.Doc = {
-            chainId,
-            fee,
-            memo: '',
-            messages: [message],
-            signers: [
-                {
-                    accountNumber,
-                    sequence,
-                    publicKey: wallet.getPublicKey(),
-                },
-            ],
-        };
+        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
 
         // Sign and broadcast the transaction using the client
         const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);

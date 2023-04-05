@@ -1,7 +1,10 @@
-import { LumTypes } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes, LumWallet } from '@lum-network/sdk-javascript';
 import numeral from 'numeral';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
+import { Message } from '@lum-network/sdk-javascript/build/messages';
+
+type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 
 export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: string]: number }) => {
     let totalBalance = 0;
@@ -34,4 +37,38 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[]) => {
     }
 
     return '0';
+};
+
+export const buildTxFee = (fee: string, gas: string): Fee => {
+    return {
+        amount: [
+            {
+                amount: fee,
+                denom: LumConstants.MicroLumDenom,
+            },
+        ],
+        gas,
+    };
+};
+
+export const buildTxDoc = (fee: Fee, wallet: LumWallet, messages: Message[], chainId: string | null, account: LumTypes.Account | null): LumTypes.Doc | null => {
+    if (!account || !chainId) {
+        return null;
+    }
+
+    const { accountNumber, sequence } = account;
+
+    return {
+        chainId,
+        fee,
+        memo: '',
+        messages,
+        signers: [
+            {
+                accountNumber,
+                sequence,
+                publicKey: wallet.getPublicKey(),
+            },
+        ],
+    };
 };
