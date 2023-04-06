@@ -153,7 +153,7 @@ class LumClient {
         return { balances };
     };
 
-    getWalletActivites = async (address: string) => {
+    getWalletActivities = async (address: string) => {
         if (this.client === null) {
             return null;
         }

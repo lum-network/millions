@@ -22,7 +22,7 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
 
         return (
             <tr key={`transaction-${transaction.hash}`}>
-                <td className='align-middle'>
+                <td className='align-middle p-3'>
                     <div className='d-flex flex-row align-items-center'>
                         {icon && (
                             <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
@@ -32,7 +32,7 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
                         <h4 className='mb-0'>{type}</h4>
                     </div>
                 </td>
-                <td className='align-middle'>
+                <td className='align-middle p-3'>
                     <div className='d-flex flex-row align-items-center justify-content-end'>
                         <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} />
                         <h4 className='ms-2 mb-0'>{DenomsUtils.getNormalDenom(transaction.amount[0].denom).toUpperCase()}</h4>

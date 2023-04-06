@@ -37,7 +37,7 @@ export const formatTo6digit = (number: number | string): string => {
         }
     }
 
-    return number > 0 ? numeral(number).format('0,0[.]000000') : '0';
+    return number > 0 ? numeral(number).format('0,0.000000') : '0';
 };
 
 export const biggerCoin = (coin1: LumTypes.Coin, coin2: LumTypes.Coin, prices: { [key: string]: number }): LumTypes.Coin => {

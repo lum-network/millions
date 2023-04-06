@@ -247,7 +247,7 @@ export const wallet = createModel<RootModel>()({
         },
         async getActivities(address: string) {
             try {
-                const result = await LumClient.getWalletActivites(address);
+                const result = await LumClient.getWalletActivities(address);
 
                 console.log(result);
 
