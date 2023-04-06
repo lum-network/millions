@@ -85,7 +85,9 @@ const MySavings = () => {
     };
 
     const onClaim = async () => {
-        if (!prizesToClaim || !prizesToClaim.length) return;
+        if (!prizesToClaim || !prizesToClaim.length) {
+            return;
+        }
 
         setClaimCurrentStep(claimCurrentStep + 1);
 
@@ -257,7 +259,7 @@ const MySavings = () => {
                                             return (
                                                 <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
                                                     <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
-                                                    <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000' : '0,0')} className='me-2' />
+                                                    <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
                                                     {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
                                                 </span>
                                             );
