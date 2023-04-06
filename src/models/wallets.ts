@@ -8,7 +8,7 @@ export interface LumWalletModel {
     address: string;
     balances: LumTypes.Coin[];
     activities: TransactionModel[];
-    deposits: DepositModel[];
+    deposits: Partial<DepositModel>[];
     prizes: Prize[];
 }
 

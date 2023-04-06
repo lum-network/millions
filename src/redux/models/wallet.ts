@@ -23,7 +23,7 @@ interface IbcTransferPayload {
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: TransactionModel[];
-    deposits?: DepositModel[];
+    deposits?: Partial<DepositModel>[];
     prizes?: Prize[];
 }
 
@@ -231,8 +231,7 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities(address);
-            await dispatch.wallet.getDeposits(address);
-            await dispatch.wallet.getWithdrawals(address);
+            await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
         async getLumWalletBalances(address: string, state) {
             try {
@@ -249,8 +248,6 @@ export const wallet = createModel<RootModel>()({
             try {
                 const result = await LumClient.getWalletActivities(address);
 
-                console.log(result);
-
                 if (result) {
                     dispatch.wallet.setLumWalletData({ activities: [...result.activities] });
                 }
@@ -258,19 +255,9 @@ export const wallet = createModel<RootModel>()({
                 console.log(e);
             }
         },
-        async getDeposits(address: string) {
+        async getDepositsAndWithdrawals(address: string) {
             try {
-                const res = await LumClient.getDeposits(address);
-                if (res) {
-                    dispatch.wallet.setLumWalletData({ deposits: res });
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        },
-        async getWithdrawals(address: string, state) {
-            try {
-                const res = await LumClient.getWithdrawals(address, state.wallet.lumWallet?.deposits || []);
+                const res = await LumClient.getDepositsAndWithdrawals(address);
                 if (res) {
                     dispatch.wallet.setLumWalletData({ deposits: res });
                 }

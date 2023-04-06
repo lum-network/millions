@@ -10,7 +10,11 @@ import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
 
-const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
+interface IProps {
+    deposits: (Partial<DepositModel> | DepositModel)[];
+}
+
+const DepositTable = ({ deposits }: IProps) => {
     const dispatch = useDispatch<Dispatch>();
     const onLeavePool = async (deposit: DepositModel) => {
         await dispatch.wallet.leavePool({
@@ -20,7 +24,7 @@ const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
         });
     };
 
-    const renderRow = (deposit: DepositModel) => {
+    const renderRow = (deposit: DepositModel | Partial<DepositModel>) => {
         let statusClassName = '';
         let cta: string | JSX.Element = '';
 
@@ -28,7 +32,7 @@ const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
             case DepositState.DEPOSIT_STATE_SUCCESS:
                 statusClassName = 'success';
                 cta = (
-                    <Button textOnly onClick={async () => await onLeavePool(deposit)}>
+                    <Button textOnly onClick={async () => await onLeavePool(deposit as DepositModel)}>
                         Leave Pool
                     </Button>
                 );
@@ -51,7 +55,7 @@ const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
         }
 
         return (
-            <tr key={`deposit-${deposit.depositId.toString()}`}>
+            <tr key={`deposit-${deposit.depositId?.toString()}`}>
                 <td className='align-middle'>
                     <div className='d-flex flex-row align-items-center'>
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
@@ -60,13 +64,15 @@ const DepositTable = ({ deposits }: { deposits: DepositModel[] }) => {
                                 {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                             </h3>
                             <p className='mb-0'>
-                                Pool #{deposit.poolId.toString()} - Deposit #{deposit.depositId.toString()}
+                                Pool #{deposit.poolId?.toString()} - Deposit #{deposit.depositId?.toString()}
                             </p>
                         </div>
                     </div>
                 </td>
                 <td className='align-middle'>
-                    <div className={`deposit-state rounded-pill ${statusClassName}`}>{I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state]}</div>
+                    <div className={`deposit-state rounded-pill ${statusClassName}`}>
+                        {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
+                    </div>
                 </td>
                 <td className='align-middle'>
                     <div className='d-flex justify-content-end'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>

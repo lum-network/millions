@@ -112,35 +112,28 @@ class LumClient {
         };
     };
 
-    getDeposits = async (address: string) => {
+    getDepositsAndWithdrawals = async (address: string): Promise<null | Partial<DepositModel>[]> => {
         if (this.client === null) {
             return null;
         }
 
         const deposits = await this.client.queryClient.millions.accountDeposits(address);
-
-        return deposits;
-    };
-
-    getWithdrawals = async (address: string, deposits: DepositModel[]) => {
-        if (this.client === null) {
-            return null;
-        }
-
         const withdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
 
-        if (withdrawals.length > 0) {
-            for (const withdrawal of withdrawals) {
-                const deposit = deposits.find((d) => d.depositId.equals(withdrawal.depositId));
+        const withdrawalsToDeposit: Partial<DepositModel>[] = [];
 
-                if (deposit) {
-                    deposit.isWithdrawing = true;
-                    deposit.unbondingEndAt = withdrawal.unbondingEndsAt;
-                }
-            }
+        for (const withdrawal of withdrawals) {
+            withdrawalsToDeposit.push({
+                poolId: withdrawal.poolId,
+                amount: withdrawal.amount,
+                depositId: withdrawal.withdrawalId,
+                depositorAddress: withdrawal.depositorAddress,
+                isWithdrawing: true,
+                unbondingEndAt: withdrawal.unbondingEndsAt,
+            });
         }
 
-        return [...deposits];
+        return [...deposits, ...withdrawalsToDeposit];
     };
 
     getWalletBalances = async (address: string) => {

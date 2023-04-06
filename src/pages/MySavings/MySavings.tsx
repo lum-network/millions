@@ -154,7 +154,7 @@ const MySavings = () => {
                     <div className='pt-5 d-flex flex-row'>
                         <Card flat withoutPadding className='p-3 asset-details-card d-flex justify-content-start align-items-center bg-white'>
                             <div className='asset-details-icon-container me-3 d-flex align-items-center justify-content-center'>
-                                <img src={Assets.images.checkmark} />
+                                <img src={Assets.images.checkmark} alt='checkmark' />
                             </div>
                             <div className='asset-detail d-flex flex-column align-items-start'>
                                 Available
@@ -165,7 +165,7 @@ const MySavings = () => {
                         </Card>
                         <Card flat withoutPadding className='ms-4 p-3 asset-details-card d-flex justify-content-start align-items-center bg-white'>
                             <div className='asset-details-icon-container me-3 d-flex align-items-center justify-content-center'>
-                                <img src={Assets.images.bonded} />
+                                <img src={Assets.images.bonded} alt='bonded' />
                             </div>
                             <div className='asset-detail d-flex flex-column align-items-start'>
                                 Bonded
@@ -189,7 +189,7 @@ const MySavings = () => {
                         <Card className='balance-card'>
                             <div className='my-auto d-flex flex-column justify-content-center'>
                                 {totalBalancePrice ? (
-                                    <SmallerDecimal big nb={numeral(totalBalancePrice).format('$0,0.[00]')} className='balance-number mt-3' />
+                                    <SmallerDecimal big nb={numeral(totalBalancePrice).format('$0,0[.]00')} className='balance-number mt-3' />
                                 ) : (
                                     <div className='balance-number'>$ --</div>
                                 )}
