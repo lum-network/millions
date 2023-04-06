@@ -6,6 +6,7 @@ import { DepositModel, PoolModel } from 'models';
 import { NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { getNormalDenom } from './denoms';
 import { formatTxs } from './txs';
+import { searchTxByTags } from '@lum-network/sdk-javascript/build/utils';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -158,9 +159,14 @@ class LumClient {
         }
 
         const res = await this.client.searchTx([
-            `message.module='millions' AND transfer.sender='${address}'`,
-            `message.action='Deposit' AND transfer.sender='${address}'`,
-            `message.action='Withdraw' AND transfer.sender='${address}'`,
+            searchTxByTags([
+                { key: 'message.module', value: 'millions' },
+                { key: 'transfer.sender', value: address },
+            ]),
+            searchTxByTags([
+                { key: 'message.action', value: 'Deposit' },
+                { key: 'message.sender', value: address },
+            ]),
         ]);
 
         return { activities: formatTxs(res, true) };
