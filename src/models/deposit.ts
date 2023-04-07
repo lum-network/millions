@@ -4,3 +4,7 @@ export interface DepositModel extends MillionsDeposit {
     isWithdrawing?: boolean;
     unbondingEndAt?: Date;
 }
+
+export interface AggregatedDepositModel extends Partial<DepositModel> {
+    deposits: Partial<DepositModel>[];
+}

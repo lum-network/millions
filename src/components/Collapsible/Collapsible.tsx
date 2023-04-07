@@ -62,7 +62,7 @@ const Collapsible = (props: Props) => {
                     </div>
                 )}
             </div>
-            <div className='collapse' ref={collapseRef} id={id}>
+            <div className='collapse w-100' ref={collapseRef} id={id}>
                 {typeof content === 'string' ? <p className='collapsible-content' dangerouslySetInnerHTML={{ __html: content }} /> : content}
             </div>
         </div>

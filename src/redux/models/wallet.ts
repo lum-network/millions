@@ -7,7 +7,7 @@ import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, DepositModel, TransactionModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -23,7 +23,7 @@ interface IbcTransferPayload {
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
     activities?: TransactionModel[];
-    deposits?: Partial<DepositModel>[];
+    deposits?: AggregatedDepositModel[];
     prizes?: Prize[];
 }
 
@@ -258,6 +258,7 @@ export const wallet = createModel<RootModel>()({
         async getDepositsAndWithdrawals(address: string) {
             try {
                 const res = await LumClient.getDepositsAndWithdrawals(address);
+
                 if (res) {
                     dispatch.wallet.setLumWalletData({ deposits: res });
                 }

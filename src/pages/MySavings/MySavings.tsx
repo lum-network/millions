@@ -128,7 +128,7 @@ const MySavings = () => {
                                     <span>
                                         <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
                                     </span>
-                                    <small className='p-0'>{price ? numeral(amount * price).format('$0,0.[00]') : '$ --'}</small>
+                                    <small className='p-0'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</small>
                                 </div>
                             </div>
                             <div className='action-buttons d-flex flex-row align-items-center'>

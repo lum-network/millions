@@ -2,7 +2,7 @@ import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, Lum
 import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
-import { DepositModel, PoolModel } from 'models';
+import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { getNormalDenom } from './denoms';
 import { formatTxs } from './txs';
@@ -112,12 +112,15 @@ class LumClient {
         };
     };
 
-    getDepositsAndWithdrawals = async (address: string): Promise<null | Partial<DepositModel>[]> => {
+    getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
         if (this.client === null) {
             return null;
         }
 
         const deposits = await this.client.queryClient.millions.accountDeposits(address);
+
+        const aggregatedDeposits = PoolsUtils.reduceDepositsByPoolId(deposits);
+
         const withdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
 
         const withdrawalsToDeposit: Partial<DepositModel>[] = [];
@@ -133,7 +136,9 @@ class LumClient {
             });
         }
 
-        return [...deposits, ...withdrawalsToDeposit];
+        const aggregatedWithdrawals = PoolsUtils.reduceDepositsByPoolId(withdrawalsToDeposit);
+
+        return [...aggregatedDeposits, ...aggregatedWithdrawals];
     };
 
     getWalletBalances = async (address: string) => {

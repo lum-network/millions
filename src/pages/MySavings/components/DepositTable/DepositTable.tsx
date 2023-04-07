@@ -3,15 +3,15 @@ import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
-import { Button, Table } from 'components';
-import { DepositModel } from 'models';
+import { Button, Collapsible } from 'components';
+import { AggregatedDepositModel, DepositModel } from 'models';
 import { Dispatch } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
 
 interface IProps {
-    deposits: (Partial<DepositModel> | DepositModel)[];
+    deposits: AggregatedDepositModel[];
 }
 
 const DepositTable = ({ deposits }: IProps) => {
@@ -24,7 +24,7 @@ const DepositTable = ({ deposits }: IProps) => {
         });
     };
 
-    const renderRow = (deposit: DepositModel | Partial<DepositModel>) => {
+    const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
         let statusClassName = '';
         let cta: string | JSX.Element = '';
 
@@ -55,8 +55,8 @@ const DepositTable = ({ deposits }: IProps) => {
         }
 
         return (
-            <tr key={`deposit-${deposit.depositId?.toString()}`}>
-                <td className='align-middle'>
+            <div className={className} key={`deposit-${index}`}>
+                <div>
                     <div className='d-flex flex-row align-items-center'>
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                         <div className='d-flex flex-column ms-3'>
@@ -68,20 +68,55 @@ const DepositTable = ({ deposits }: IProps) => {
                             </p>
                         </div>
                     </div>
-                </td>
-                <td className='align-middle'>
+                </div>
+                <div>
                     <div className={`deposit-state rounded-pill ${statusClassName}`}>
                         {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                     </div>
-                </td>
-                <td className='align-middle'>
+                </div>
+                <div>
                     <div className='d-flex justify-content-end'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>
-                </td>
-            </tr>
+                </div>
+            </div>
         );
     };
 
-    return <Table className='deposits-table'>{deposits.map((deposit) => renderRow(deposit))}</Table>;
+    const renderRow = (deposit: AggregatedDepositModel, index: number) => {
+        if (deposit.deposits.length > 1) {
+            return (
+                <Collapsible
+                    key={`collapsible-deposit-${index}`}
+                    className='d-flex flex-column collapsible-deposits deposit-card'
+                    header={
+                        <div className='d-flex align-items-center justify-content-between w-100' key={`deposit-${index}`}>
+                            <div>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
+                                    <div className='d-flex flex-column ms-3'>
+                                        <h3 className='mb-0'>
+                                            {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
+                                        </h3>
+                                        <p className='mb-0'>Pool #{deposit.poolId?.toString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='me-5'>
+                                <div className={`deposit-state rounded-pill success`}>
+                                    {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    content={<>{deposit.deposits.map((deposit, index) => renderGenericRow(deposit, index, 'deposit-card-collapse'))}</>}
+                    id={`collapsible-deposits-${index}`}
+                />
+            );
+        }
+
+        return renderGenericRow(deposit, index, 'deposit-card');
+    };
+
+    return <div className='deposits-table'>{deposits.map((deposit, index) => renderRow(deposit, index))}</div>;
 };
 
 export default DepositTable;
