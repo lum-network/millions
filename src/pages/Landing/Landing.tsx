@@ -169,7 +169,7 @@ const Landing = () => {
                         </div>
                     </Card>
                 </div>
-                <div className='position-relative cosmos-game-left col-12 col-xl-6 col-xxl-5'>
+                <div className='position-relative cosmos-game-left col-12 col-lg-5'>
                     <Lottie
                         className='cosmos-with-balloons'
                         animationData={cosmonautWithBalloons2}
@@ -180,8 +180,7 @@ const Landing = () => {
                         ]}
                     />
                 </div>
-                <div className='d-none d-xxl-block col-xxl-1' />
-                <div id='cosmos-game' className='cosmos-game-right col-12 col-xl-6 col-xxl-6'>
+                <div id='cosmos-game' className='cosmos-game-right col-12 col-lg-7'>
                     <Card>
                         <h2 className='mb-4 text-center'>{I18n.t('landing.cosmosGame.title')}</h2>
                         <div className='cosmos-game-description'>

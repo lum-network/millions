@@ -64,12 +64,16 @@
 
         .cosmos-with-balloons {
             position: absolute;
-            width: 550px;
-            height: 550px;
+            width: 580px;
+            height: 580px;
             right: 0;
-            top: -120px;
+            top: -60px;
 
             @include media-breakpoint-down(xl) {
+                right: -100px;
+            }
+
+            @include media-breakpoint-down(lg) {
                 width: 494px;
                 height: 494px;
                 top: 0;
@@ -80,7 +84,11 @@
     }
 
     .cosmos-game-right {
-        margin-top: 70px;
+        margin-top: 150px;
+
+        @include media-breakpoint-down(lg) {
+            margin-top: 50px;
+        }
     }
 
     .winners {
