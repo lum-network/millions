@@ -30,52 +30,7 @@ const Landing = () => {
 
     useEffect(() => {
         // GSAP Section Scroll Animations
-        const scrollTrigger = {
-            trigger: `#saving`,
-            start: '5% top',
-            end: '50% top',
-            scrub: true,
-        };
-        gsap.to(`#saving .saving-title`, {
-            translateY: -80,
-            ease: 'none',
-            scrollTrigger: scrollTrigger,
-        });
-        gsap.to(`#saving .description`, {
-            translateY: -70,
-            ease: 'none',
-            scrollTrigger: scrollTrigger,
-            stagger: 0.25,
-        });
-        if (width > LandingConstants.LARGE_SIZE_SCREEN) {
-            gsap.to(`#saving .cta`, {
-                translateY: -60,
-                ease: 'none',
-                scrollTrigger: scrollTrigger,
-                stagger: 0.5,
-            });
-        }
-
-        const scrollTrigger2 = {
-            trigger: `#cosmos-game`,
-            start: 'top 60%',
-            end: 'top 10%',
-            scrub: true,
-        };
-
-        gsap.to(`#cosmos-game h1`, {
-            translateY: -90,
-            ease: 'none',
-            scrollTrigger: scrollTrigger2,
-        });
-        gsap.to(`#cosmos-game .cosmos-game-description`, {
-            translateY: -75,
-            ease: 'none',
-            scrollTrigger: scrollTrigger2,
-            stagger: 0.25,
-        });
-
-        const scrollTrigger3 = {
+        const scrollTriggerHowItWorks = {
             trigger: `#howItWorks`,
             start: 'top 60%',
             end: 'top 10%',
@@ -85,7 +40,7 @@ const Landing = () => {
         gsap.to(`#howItWorks h1`, {
             translateY: -30,
             ease: 'none',
-            scrollTrigger: scrollTrigger3,
+            scrollTrigger: scrollTriggerHowItWorks,
         });
     }, []);
 
@@ -162,7 +117,7 @@ const Landing = () => {
             );
 
             tl.fromTo(
-                `#cosmos-game h1`,
+                `#cosmos-game h2`,
                 {
                     opacity: 0,
                     y: 10,
@@ -197,22 +152,22 @@ const Landing = () => {
     return (
         <div className='landing-container'>
             <div className='row g-5'>
-                <div id='saving' className='saving-left col-12 col-xl-6 col-xxl-5'>
-                    <h1 className='saving-title mb-4' dangerouslySetInnerHTML={{ __html: I18n.t('landing.saving.title') }} />
-                    <div className='description'>
-                        <p>{I18n.t('landing.saving.p1')}</p>
-                        <p>{I18n.t('landing.saving.p2')}</p>
-                    </div>
-                    <Button className='cta d-none d-lg-flex' to={NavigationConstants.HOME}>
-                        {I18n.t('landing.saving.cta')}
-                    </Button>
-                </div>
-                <div className='d-none d-xxl-block col-xxl-1' />
-                <div className='col-12 col-xl-6 col-xxl-6'>
-                    <BestPrizeCard biggestPrize={{ amount: '675789', denom: 'lum' }} />
-                    <Button className='cta mt-4 d-lg-none' to={NavigationConstants.HOME}>
-                        {I18n.t('landing.saving.cta')}
-                    </Button>
+                <div id='saving' className='saving col-12'>
+                    <Card withoutPadding className='d-flex flex-column flex-lg-row'>
+                        <div style={{ flex: 1 }} className='p-4 p-xxl-5'>
+                            <h2 className='saving-title mb-4' dangerouslySetInnerHTML={{ __html: I18n.t('landing.saving.title') }} />
+                            <div className='description'>
+                                <p>{I18n.t('landing.saving.p1')}</p>
+                                <p>{I18n.t('landing.saving.p2')}</p>
+                            </div>
+                            <Button className='cta' to={NavigationConstants.HOME}>
+                                {I18n.t('landing.saving.cta')}
+                            </Button>
+                        </div>
+                        <div style={{ flex: 2 }}>
+                            <BestPrizeCard biggestPrize={{ amount: '675789', denom: 'lum' }} />
+                        </div>
+                    </Card>
                 </div>
                 <div className='position-relative cosmos-game-left col-12 col-xl-6 col-xxl-5'>
                     <Lottie
@@ -227,12 +182,18 @@ const Landing = () => {
                 </div>
                 <div className='d-none d-xxl-block col-xxl-1' />
                 <div id='cosmos-game' className='cosmos-game-right col-12 col-xl-6 col-xxl-6'>
-                    <h1 className='mb-4'>{I18n.t('landing.cosmosGame.title')}</h1>
-                    <div className='cosmos-game-description'>
-                        <p>{I18n.t('landing.cosmosGame.p1')}</p>
-                        <p>{I18n.t('landing.cosmosGame.p2')}</p>
-                        <p>{I18n.t('landing.cosmosGame.p3')}</p>
-                    </div>
+                    <Card>
+                        <h2 className='mb-4 text-center'>{I18n.t('landing.cosmosGame.title')}</h2>
+                        <div className='cosmos-game-description'>
+                            <p className='text-center'>{I18n.t('landing.cosmosGame.p1')}</p>
+                            <Card withoutPadding flat className='p-3 mb-4'>
+                                <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p2')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3'>
+                                <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p3')}</p>
+                            </Card>
+                        </div>
+                    </Card>
                 </div>
                 <div id='howItWorks' className='winners col-12 d-flex flex-column align-items-center'>
                     <h1 className='text-center mb-4'>{I18n.t('landing.winners.title')}</h1>

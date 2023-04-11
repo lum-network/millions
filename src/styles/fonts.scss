@@ -1,5 +1,4 @@
 @import 'colors.scss';
-//@import 'src/styles/main';
 
 h1 {
     color: $color-primary;
@@ -66,6 +65,14 @@ p {
     font-family: 'Gotham Rounded';
     src: url('../assets/fonts/gotham-rounded/GothamRounded-Bold.ttf') format('truetype'), url('../assets/fonts/gotham-rounded/GothamRounded-Bold.woff') format('woff');
     font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@Font-face {
+    font-family: 'GT Maru';
+    src: url('../assets/fonts/gt-maru/GTMaru-Black.ttf') format('truetype');
+    font-weight: 900;
     font-style: normal;
     font-display: swap;
 }

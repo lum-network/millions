@@ -27,25 +27,29 @@
         font-size: 42px;
         line-height: 50px;
         color: $color-primary;
+
+        @include media-breakpoint-down(md) {
+            font-size: 38px;
+            line-height: 46px;
+        }
     }
 
     p {
         font-style: normal;
         font-weight: 300;
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 18px;
+        line-height: 22px;
         color: $color-black;
         margin-bottom: 24px;
-
-        @include media-breakpoint-down(md) {
-            font-size: 18px;
-            line-height: 22px;
-        }
     }
 
-    .saving-left {
+    .text-flat-card {
+        color: $color-primary;
+        margin-bottom: 0;
+    }
+
+    .saving {
         .cta {
-            margin-top: 8px;
             width: 180px;
 
             @include media-breakpoint-down(lg) {
@@ -53,6 +57,7 @@
             }
         }
     }
+
 
     .cosmos-game-left {
         height: 480px;

@@ -13,8 +13,8 @@ interface IProps {
 }
 
 const calculateFontSize = (charactersCount: number, screenWidth: number): number => {
-    const MAX_FONT_SIZE = 120;
-    const MIN_FONT_SIZE = 40;
+    const MAX_FONT_SIZE = 140;
+    const MIN_FONT_SIZE = 50;
     const MAX_CHARACTERS = 10;
     const MIN_CHARACTERS = 4;
 
@@ -45,16 +45,10 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
 
     return (
         <Card className='best-prize-card' withoutPadding>
-            <h3 className='pt-xl-5 pb-xl-4 ps-xl-5 py-4 ps-4'>{I18n.t('home.nextBestPrize')}</h3>
             <div className='content'>
-                <Lottie
-                    className='cosmonaut-on-the-moon'
-                    animationData={cosmonautOnTheMoon}
-                    segments={[
-                        [0, 41],
-                        [41, 257],
-                    ]}
-                />
+                <div className='title-container'>
+                    <h3 className=''>{I18n.t('home.nextBestPrize')}</h3>
+                </div>
                 <div className='best-prize-container'>
                     <div className='d-flex'>
                         <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3'>
@@ -66,7 +60,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                     </div>
                 </div>
                 {countdownTo && (
-                    <div className='mt-5 d-flex align-items-center justify-content-between w-100'>
+                    <div className='d-flex align-items-center justify-content-between w-100 best-prize-countdown'>
                         <div className='network'>
                             <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
@@ -76,6 +70,14 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                         </div>
                     </div>
                 )}
+                <Lottie
+                    className='cosmonaut-on-the-moon'
+                    animationData={cosmonautOnTheMoon}
+                    segments={[
+                        [0, 41],
+                        [41, 257],
+                    ]}
+                />
             </div>
         </Card>
     );
