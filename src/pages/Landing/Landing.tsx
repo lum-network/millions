@@ -346,7 +346,7 @@ const Landing = () => {
                         <PoolCard denom={'soon'} tvl={0} prize={123659} />
                     </div>
                 </div>
-                <div className='faq col-12'>
+                <div id='faq' className='faq col-12'>
                     <div className='d-flex justify-content-between align-items-center'>
                         <h1 className='mb-4'>{I18n.t('landing.faqSection.title')}</h1>
                     </div>

@@ -24,14 +24,14 @@
         border-radius: 11px;
     }
 
+    &:hover {
+        transform: scale(1.05) !important;
+    }
+
     &.disabled {
         opacity: 0.3;
         transform: scale(1) !important;
     }
-}
-
-.app-btn:hover {
-    transform: scale(1.05);
 }
 
 .app-btn-outline {

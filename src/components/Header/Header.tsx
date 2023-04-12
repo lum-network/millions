@@ -82,7 +82,7 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
                     </span>
                 </li>
                 <li className='d-none d-md-block'>
-                    <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                    <a href='#faq' className='navlink opacity-100'>
                         {I18n.t('landing.faq')}
                     </a>
                 </li>
