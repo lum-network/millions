@@ -1,15 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
 
 import { router } from 'navigation';
-import { Dispatch } from 'redux/store';
 import Assets from 'assets';
 import Loader from './components/Loader/Loader';
-import { NavigationConstants } from 'constant';
 
 const Core = () => {
-    const dispatch = useDispatch<Dispatch>();
     const [progress, setProgress] = useState<number>(5);
     const [loading, setLoading] = useState<boolean>(true);
     const loadingStartsAt = useRef<Date>(new Date());

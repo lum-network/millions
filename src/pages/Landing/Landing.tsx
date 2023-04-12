@@ -9,15 +9,12 @@ import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.jso
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
-import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
-import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import numeral from 'numeral';
 import Assets from 'assets';
 
 import './Landing.scss';
 import PoolCard from './components/PoolCard';
-import TestimonialCard from './components/TestimonialCard';
 import { useWindowSize } from 'hooks';
 
 const Landing = () => {
