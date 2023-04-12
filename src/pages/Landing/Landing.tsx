@@ -187,7 +187,7 @@ const Landing = () => {
                             <p className='text-center'>To participate, you have to:</p>
                             <div className='d-flex flex-column flex-sm-row'>
                                 <Card withoutPadding flat className='p-3 mb-4 mb-sm-0 h-100 me-0 me-sm-4'>
-                                    <p className='text-flat-card'>Register before the deadline (2023 May 01)</p>
+                                    <p className='text-flat-card'>Register before the deadline (May 3rd 12:00 UTC)</p>
                                 </Card>
                                 <Card withoutPadding flat className='p-3 h-100'>
                                     <p className='text-flat-card'>Deposit at least 1 ATOM in the ATOM pool</p>
@@ -342,8 +342,8 @@ const Landing = () => {
                     </div>
                     <div className='pools-cards-container cards-list'>
                         <PoolCard denom={'atom'} tvl={30000} prize={6123659} />
-                        <PoolCard denom={'soon'} tvl={0} prize={1283659} />
-                        <PoolCard denom={'soon'} tvl={0} prize={123659} />
+                        <PoolCard denom={'Pool #2 Soon'} tvl={0} prize={1283659} />
+                        <PoolCard denom={'Pool #3 Soon'} tvl={0} prize={123659} />
                     </div>
                 </div>
                 <div id='faq' className='faq col-12'>

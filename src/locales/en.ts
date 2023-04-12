@@ -49,7 +49,7 @@ export default {
         },
     },
     landing: {
-        howItWorks: 'How it works',
+        howItWorks: 'How it Works',
         documentation: 'Documentation',
         faq: 'FAQ',
         openTheApp: 'Open the app',
@@ -70,7 +70,7 @@ export default {
             title: 'One Winner, No Losers!',
             p1: 'Deposit\nyour assets',
             p2: 'You’re eligible to all the next\nprizes automatically ',
-            p3: 'You win! Auto-compound your prize to boost your chances of earning more next time!',
+            p3: 'You win! Compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for another chance next week!',
             or: 'OR',
         },
@@ -104,7 +104,7 @@ export default {
                 },
                 {
                     title: 'How will the $5 000 launch incentives be distributed?',
-                    answer: 'To give an incentive for people that register early, $5 000 worth of delegated deposits will be randomly distributed to 50 users ($100 each). The requirements to be part of the 50 chosen ones are to:<br /><br /><ul><li>Register before the deadline (2023-05-01)</li><br /><li>Deposit at least 1 ATOM in the ATOM pool</li></ul>You will be entitled to the prizes corresponding to this extra $100 participation for the next 3 months. At the end of the 3 months, you will keep the tokens you deposited and the incentive tokens will go back to the protocol.',
+                    answer: 'To give an incentive for people that register early, $5 000 worth of delegated deposits will be randomly distributed to 50 users ($100 each). The requirements to be part of the 50 chosen ones are to:<br /><br /><ul><li>Register before the deadline (May 3rd 12:00 UTC)</li><br /><li>Deposit at least 1 ATOM in the ATOM pool</li></ul>You will be entitled to the prizes corresponding to this extra $100 participation for the next 3 months. At the end of the 3 months, you will keep the tokens you deposited and the incentive tokens will go back to the protocol.',
                 },
                 {
                     title: 'What are delegated deposits?',

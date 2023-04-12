@@ -26,6 +26,7 @@ import twitterPlain from './images/twitter_plain.svg';
 import twitterWhite from './images/twitter_white.svg';
 import warning from './images/warning.svg';
 import yellowStar from './images/yellow_star.svg';
+import cosmonautCoin from './images/cosmonaut_coin.png';
 
 import atom from './images/chains/atom.svg';
 import cre from './images/chains/cre.svg';
@@ -69,6 +70,7 @@ const Assets = {
         twitterWhite,
         warning,
         yellowStar,
+        cosmonautCoin,
     },
     testimonials: {
         chjango,

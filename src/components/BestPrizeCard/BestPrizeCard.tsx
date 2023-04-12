@@ -48,8 +48,8 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
             <div className='content'>
                 <div className='title-container'>
                     <h3 className='d-flex flex-row'>
-                        Time left to register&nbsp;
-                        <CountDown to={new Date('2023-05-01')} />
+                        Time left to register:&nbsp;
+                        <CountDown to={new Date(Date.UTC(2023, 4, 3, 12))} />
                     </h3>
                 </div>
                 <div className='best-prize-container'>
