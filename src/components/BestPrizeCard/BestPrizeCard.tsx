@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils } from 'utils';
 import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import { LumTypes } from '@lum-network/sdk-javascript';
