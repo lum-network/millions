@@ -295,6 +295,13 @@
                     width: 320px;
                 }
 
+                .soon-container {
+                    background-color: #DBDBDB;
+                    width: 88px;
+                    height: 88px;
+                    border-radius: 44px;
+                }
+
                 .name {
                     font-style: normal;
                     font-weight: 400;
@@ -307,7 +314,6 @@
                     border: $color-black 1px solid;
                     border-radius: 20px;
                     padding: 4px 10px;
-                    text-transform: uppercase;
                 }
 
                 .tvl-container {
@@ -324,7 +330,6 @@
                         font-size: 34px;
                         line-height: 41px;
                         color: $color-black;
-                        text-transform: uppercase;
                     }
 
                     .tvl-legend {
@@ -488,7 +493,7 @@
     }
 
     .faq {
-        padding-top: 150px;
+        padding-top: 50px;
     }
 
     .footer {
@@ -499,7 +504,7 @@
             position: absolute;
             width: 252px;
             height: 252px;
-            top: 48px;
+            top: 46px;
             left: calc(50% - 126px);
         }
     }

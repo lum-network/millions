@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { I18n } from 'utils';
 import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
-import { LandingConstants, NavigationConstants } from 'constant';
+import { LandingConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
@@ -10,7 +10,6 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
-import numeral from 'numeral';
 import Assets from 'assets';
 
 import './Landing.scss';
@@ -18,8 +17,8 @@ import PoolCard from './components/PoolCard';
 import { useWindowSize } from 'hooks';
 
 const Landing = () => {
-    const onClickNewPool = () => {
-        window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
+    const onClickParticipate = () => {
+        window.open('https://jpd0pqf6mcx.typeform.com/to/AimExuyx', '_blank')?.focus();
     };
 
     const timeline = useRef<gsap.core.Timeline>();
@@ -157,8 +156,8 @@ const Landing = () => {
                                 <p>{I18n.t('landing.saving.p1')}</p>
                                 <p>{I18n.t('landing.saving.p2')}</p>
                             </div>
-                            <Button className='cta' to={NavigationConstants.HOME}>
-                                {I18n.t('landing.saving.cta')}
+                            <Button className='cta' onClick={onClickParticipate}>
+                                Participate now
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
@@ -179,15 +178,24 @@ const Landing = () => {
                 </div>
                 <div id='cosmos-game' className='cosmos-game-right col-12 col-lg-7'>
                     <Card>
-                        <h2 className='mb-4 text-center'>{I18n.t('landing.cosmosGame.title')}</h2>
+                        <h2 className='mb-4 text-center'>
+                            $5 000 incentives for
+                            <br />
+                            early registrations
+                        </h2>
                         <div className='cosmos-game-description'>
-                            <p className='text-center'>{I18n.t('landing.cosmosGame.p1')}</p>
-                            <Card withoutPadding flat className='p-3 mb-4'>
-                                <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p2')}</p>
-                            </Card>
-                            <Card withoutPadding flat className='p-3'>
-                                <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p3')}</p>
-                            </Card>
+                            <p className='text-center'>To participate, you have to:</p>
+                            <div className='d-flex flex-column flex-sm-row'>
+                                <Card withoutPadding flat className='p-3 mb-4 mb-sm-0 h-100 me-0 me-sm-4'>
+                                    <p className='text-flat-card'>Register before the deadline (2023 May 01)</p>
+                                </Card>
+                                <Card withoutPadding flat className='p-3 h-100'>
+                                    <p className='text-flat-card'>Deposit at least 1 ATOM in the ATOM pool</p>
+                                </Card>
+                            </div>
+                            <div className='d-flex justify-content-center mt-4'>
+                                <Button onClick={onClickParticipate}>Participate now</Button>
+                            </div>
                         </div>
                     </Card>
                 </div>
@@ -322,31 +330,20 @@ const Landing = () => {
                                 <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
-                                    {/*<span className='tvl-value'>*/}
-                                    {/*    <AnimatedNumber prefix='$' number={300004567} />*/}
-                                    {/*</span>*/}
-                                    <span className='tvl-value'>{numeral(300004567).format('$0,0').replaceAll(',', '\u00a0')}</span>
+                                    <span className='tvl-value'>Coming soon</span>
                                 </div>
                             </div>
                         </div>
                         <div className='d-none d-xl-flex'>
-                            <Button outline onClick={onClickNewPool}>
+                            <Button outline disabled>
                                 {I18n.t('landing.pools.newPool')}
                             </Button>
                         </div>
                     </div>
                     <div className='pools-cards-container cards-list'>
-                        <PoolCard denom={'atom'} tvl={30000} prize={58} />
-                        <PoolCard denom={'osmo'} tvl={30000} prize={58} />
-                        <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
-                    </div>
-                    <div className='d-flex flex-column align-items-center mt-5'>
-                        <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
-                            {I18n.t('landing.pools.newPool')}
-                        </Button>
-                        <Button className='cta' to={NavigationConstants.POOLS}>
-                            {I18n.t('landing.pools.cta')}
-                        </Button>
+                        <PoolCard denom={'atom'} tvl={30000} prize={6123659} />
+                        <PoolCard denom={'soon'} tvl={0} prize={1283659} />
+                        <PoolCard denom={'soon'} tvl={0} prize={123659} />
                     </div>
                 </div>
                 <div className='faq col-12'>

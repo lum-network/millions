@@ -7,6 +7,7 @@ import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n } from 'utils';
 import { NavigationConstants } from 'constant';
+import { Tooltip } from 'react-tooltip';
 
 import Assets from 'assets';
 
@@ -60,6 +61,10 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
         }
     }, []);
 
+    const onClickParticipate = () => {
+        window.open('https://jpd0pqf6mcx.typeform.com/to/AimExuyx', '_blank')?.focus();
+    };
+
     const renderContent = () => {
         return (
             <ul className='nav d-flex align-items-center'>
@@ -69,9 +74,12 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
                     </a>
                 </li>
                 <li className='mx-3 mx-lg-4 d-none d-md-block'>
-                    <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                        {I18n.t('landing.documentation')}
-                    </a>
+                    <span data-tooltip-id='average-prize-tooltip' data-tooltip-html='Coming soon' className='ms-2'>
+                        <a className='navlink' style={{ cursor: 'pointer', opacity: 0.5 }}>
+                            {I18n.t('landing.documentation')}
+                        </a>
+                        <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
+                    </span>
                 </li>
                 <li className='d-none d-md-block'>
                     <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
@@ -89,9 +97,7 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
                     </a>
                 </li>
                 <li className='ms-3 ms-lg-4 d-none d-sm-block'>
-                    <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
-                        Participate now
-                    </Button>
+                    <Button onClick={onClickParticipate}>Participate now</Button>
                 </li>
             </ul>
         );
