@@ -54,10 +54,6 @@ const Core = () => {
         }
     }, []);
 
-    useEffect(() => {
-        dispatch.app.init({ withWallets: location.pathname !== NavigationConstants.LANDING }).finally(() => null);
-    }, []);
-
     return (
         <>
             <Loader progress={progress} loading={loading} />

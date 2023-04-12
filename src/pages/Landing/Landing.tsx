@@ -352,84 +352,7 @@ const Landing = () => {
                         </Button>
                     </div>
                 </div>
-                <div className='col-12 testimonials'>
-                    <div className='testimonials-container cards-list'>
-                        {LandingConstants.TESTIMONIALS.map((testimonial, index) => (
-                            <TestimonialCard key={index} testimonial={testimonial} />
-                        ))}
-                    </div>
-                </div>
-                <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
-                <div className='future-left col-12 col-xl-7 order-1 order-xl-0'>
-                    <h1 className='mb-4'>{I18n.t('landing.future.title')}</h1>
-                    <p>{I18n.t('landing.future.p1')}</p>
-                    <p>{I18n.t('landing.future.p2')}</p>
-                    <Button to={NavigationConstants.HOME} className='cta'>
-                        {I18n.t('landing.future.cta')}
-                    </Button>
-                </div>
-                <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
-                    <Lottie
-                        className='cosmonaut-in-pool'
-                        animationData={cosmonautInPool}
-                        actions={[
-                            {
-                                visibility: [0, 0.2],
-                                type: 'stop',
-                                frames: [0],
-                            },
-                            {
-                                visibility: [0.2, 0.4],
-                                type: 'seek',
-                                frames: [0, 30],
-                            },
-                            {
-                                visibility: [0.4, 1.0],
-                                type: 'loop',
-                                frames: [30, 128],
-                            },
-                        ]}
-                    />
-                </div>
-                <div className='community col-12 d-flex align-items-center flex-column order-2'>
-                    <div className='col-xxl-7 col-xl-8 col-lg-9 col-md-10 col-12'>
-                        <Card className='d-flex justify-content-between align-items-center flex-column flex-lg-row community-card'>
-                            <Lottie
-                                className='cosmonaut-rocket'
-                                animationData={cosmonautWithRocket}
-                                actions={[
-                                    {
-                                        visibility: [0, 0.2],
-                                        type: 'stop',
-                                        frames: [0],
-                                    },
-                                    {
-                                        visibility: [0.2, 0.4],
-                                        type: 'seek',
-                                        frames: [0, 15],
-                                    },
-                                    {
-                                        visibility: [0.4, 1.0],
-                                        type: 'loop',
-                                        frames: [15, 257],
-                                    },
-                                ]}
-                            />
-                            <div>
-                                <h2 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h2>
-                            </div>
-                            <div className='d-flex mt-4 mt-lg-0'>
-                                <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
-                                    <img src={Assets.images.twitterPlain} alt='Twitter' />
-                                </a>
-                                <a className='scale-hover' href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer'>
-                                    <img src={Assets.images.discordPlain} alt='discord' />
-                                </a>
-                            </div>
-                        </Card>
-                    </div>
-                </div>
-                <div className='faq col-12 order-2'>
+                <div className='faq col-12'>
                     <div className='d-flex justify-content-between align-items-center'>
                         <h1 className='mb-4'>{I18n.t('landing.faqSection.title')}</h1>
                     </div>
@@ -445,26 +368,16 @@ const Landing = () => {
                         ))}
                     </Card>
                 </div>
-                <div className='col-12 footer order-2'>
-                    <Card>
-                        <Lottie
-                            className='cosmonaut-dab'
-                            animationData={cosmonautDab}
-                            actions={[
-                                {
-                                    visibility: [0, 0.1],
-                                    type: 'stop',
-                                    frames: [0],
-                                },
-                                {
-                                    visibility: [0.1, 0.3],
-                                    type: 'seek',
-                                    frames: [0, 30],
-                                },
-                            ]}
-                        />
-                        Footer
-                    </Card>
+                <div className='col-12 footer'>
+                    <Lottie
+                        className='cosmonaut-dab'
+                        animationData={cosmonautDab}
+                        delay={2500}
+                        segments={[
+                            [0, 30],
+                            [30, 35],
+                        ]}
+                    />
                 </div>
             </div>
         </div>

@@ -1,30 +1,19 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { RefObject, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 
 import logo from 'assets/lotties/logo.json';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { I18n, KeplrUtils, StringsUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
+import { I18n } from 'utils';
 import { NavigationConstants } from 'constant';
 
 import Assets from 'assets';
 
 import './Header.scss';
 
-const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
-    const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
+const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
     const timeline = useRef<gsap.core.Timeline>();
-    const dispatch = useDispatch<Dispatch>();
-    const [isLanding, setIsLanding] = useState(false);
-
-    const location = useLocation();
-
-    useEffect(() => {
-        setIsLanding(window.location.pathname === NavigationConstants.LANDING);
-    }, [location.pathname]);
 
     useEffect(() => {
         // Enables Header GSAP animation only on the landing page
@@ -71,86 +60,37 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
     }, []);
 
-    const connectWallet = async () => {
-        if (KeplrUtils.isKeplrInstalled()) {
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(null);
-        } else {
-            if (keplrModalRef.current) {
-                keplrModalRef.current.toggle();
-            }
-        }
-    };
-
     const renderContent = () => {
-        if (isLanding) {
-            return (
-                <ul className='nav d-flex align-items-center'>
-                    <li className='d-none d-lg-block'>
-                        <a href='#howItWorks' className='navlink opacity-100'>
-                            {I18n.t('landing.howItWorks')}
-                        </a>
-                    </li>
-                    <li className='mx-3 mx-lg-4 d-none d-md-block'>
-                        <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            {I18n.t('landing.documentation')}
-                        </a>
-                    </li>
-                    <li className='d-none d-md-block'>
-                        <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            {I18n.t('landing.faq')}
-                        </a>
-                    </li>
-                    <li className='mx-3 mx-lg-4 d-none d-sm-block'>
-                        <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
-                        </a>
-                    </li>
-                    <li className='d-none d-sm-block'>
-                        <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
-                            <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
-                        </a>
-                    </li>
-                    <li className='ms-3 ms-lg-4 d-none d-sm-block'>
-                        <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
-                            {I18n.t('landing.openTheApp')}
-                        </Button>
-                    </li>
-                </ul>
-            );
-        }
-
         return (
             <ul className='nav d-flex align-items-center'>
-                <li>
-                    <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                        {I18n.t('home.title')}
-                    </NavLink>
+                <li className='d-none d-lg-block'>
+                    <a href='#howItWorks' className='navlink opacity-100'>
+                        {I18n.t('landing.howItWorks')}
+                    </a>
                 </li>
-                <li className='mx-lg-5 mx-4'>
-                    <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                        {I18n.t('pools.title')}
-                    </NavLink>
+                <li className='mx-3 mx-lg-4 d-none d-md-block'>
+                    <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        {I18n.t('landing.documentation')}
+                    </a>
                 </li>
-                <li>
-                    <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                        {I18n.t('mySavings.title')}
-                    </NavLink>
+                <li className='d-none d-md-block'>
+                    <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        {I18n.t('landing.faq')}
+                    </a>
                 </li>
-                <li className='ms-lg-5 ms-4'>
-                    <Button
-                        outline
-                        onClick={
-                            !address
-                                ? connectWallet
-                                : () => {
-                                      if (logoutModalRef.current) {
-                                          logoutModalRef.current.toggle();
-                                      }
-                                  }
-                        }
-                    >
-                        {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
+                <li className='mx-3 mx-lg-4 d-none d-sm-block'>
+                    <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
+                    </a>
+                </li>
+                <li className='d-none d-sm-block'>
+                    <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
+                    </a>
+                </li>
+                <li className='ms-3 ms-lg-4 d-none d-sm-block'>
+                    <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
+                        Participate now
                     </Button>
                 </li>
             </ul>
@@ -158,7 +98,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     };
 
     return (
-        <header className={`navbar fixed-top mt-4 mx-auto container p-4 ${!isLanding ? 'app' : ''}`}>
+        <header className={`navbar fixed-top mt-4 mx-auto container p-4`}>
             <div className='background' />
             <nav className='container d-flex flex-row justify-content-center justify-content-sm-between align-items-center'>
                 <Link to={NavigationConstants.LANDING}>

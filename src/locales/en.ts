@@ -96,43 +96,23 @@ export default {
             questions: [
                 {
                     title: 'What is Cosmos Millions?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    answer: 'Cosmos Millions is a decentralized prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
                 },
                 {
-                    title: 'Why it is free?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'How are the prizes generated?',
+                    answer: 'Cosmos Millions generates its prizes based on the interest earned from deposited savings.<br />Whenever users make a deposit into the platform, the tokens are gathered into a pool and sent to their native blockchain. Then, the tokens are delegated to validators, and they start earning interest. This interest (staking rewards) is then used to generate prizes for the users on a larger scale than what each user could get individually.<br /><br />To ensure the safety and security of the deposited funds, Cosmos Millions delegates to some of the most reliable validators in the Interchain. You can leave a Cosmos Millions pool at any time and your tokens will be sent back to your wallet.',
                 },
                 {
-                    title: 'How do the prizes are generated?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'How will the $5 000 launch incentives be distributed?',
+                    answer: 'To give an incentive for people that register early, $5 000 worth of delegated deposits will be randomly distributed to 50 users ($100 each). The requirements to be part of the 50 chosen ones are to:<br /><br /><ul><li>Register before the deadline (2023-05-01)</li><br /><li>Deposit at least 1 ATOM in the ATOM pool</li></ul>You will be entitled to the prizes corresponding to this extra $100 participation for the next 3 months. At the end of the 3 months, you will keep the tokens you deposited and the incentive tokens will go back to the protocol.',
                 },
                 {
-                    title: 'What if I don’t win?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'Is there a minimum deposit?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'Why is there a lockup on my deposits?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'How long do I have to claim my prizes? ',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'What are delegated deposits?',
+                    answer: 'Delegated deposits give are a way for a Cosmos Millions user to participate in a pool, and assign the prizes they win to another wallet. Therefore, it gives the beneficiary wallet a higher chance to be picked as the winner of the prizes. At launch, Cosmos Millions itself will delegate some deposits to 50 users that registered early.',
                 },
                 {
                     title: 'Is Cosmos Millions code audited?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'What’s the Cosmos Ecosystem?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'What’s the Lum Network blockchain?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    answer: 'Yes! Cosmos Millions code has been reviewed by [insert audit name]',
                 },
             ],
         },
