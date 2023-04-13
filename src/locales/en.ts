@@ -212,6 +212,10 @@ export default {
             claimAndCompoundBtn: "Let's compound 🎉",
         },
         depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
+        depositError: {
+            title: 'Deposit error',
+            description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
+        },
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
