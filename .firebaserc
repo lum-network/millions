@@ -8,8 +8,8 @@
         "lum-network-million": [
           "lum-network-million"
         ],
-        "lum-network-millions": [
-          "lum-network-millions"
+        "lum-network-millions-testnet": [
+          "lum-network-millions-testnet"
         ]
       }
     }

@@ -70,7 +70,7 @@ export default {
             title: 'One Winner, No Losers!',
             p1: 'Deposit\nyour assets',
             p2: 'You’re eligible to all the next\nprizes automatically ',
-            p3: 'You win! Auto-compound your prize to boost your chances of earning more next time!',
+            p3: 'You win! Compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for another chance next week!',
             or: 'OR',
         },
@@ -231,11 +231,11 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding In Progress'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
         depositError: {
             title: 'Deposit error',
-            description: 'Check your deposits ! An error occured and you should be able to retry your failed deposit(s).'
-        }
+            description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
+        },
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
