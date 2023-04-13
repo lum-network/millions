@@ -101,7 +101,6 @@ const Deposit = () => {
         chainName: pool.internalInfos?.chainName || 'Native Chain',
     });
 
-    const isFirstStep = currentStep === 0;
     const isLastStep = currentStep === steps.length - 1;
 
     const otherWallet = otherWallets[denom || ''];
@@ -117,11 +116,15 @@ const Deposit = () => {
                     <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
-                <div className={`col ${isFirstStep ? 'd-flex' : ''}`}>
-                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-5 py-3 ${isFirstStep ? 'flex-grow-1' : ''} ${isLastStep ? 'glow-bg' : ''}`}>
+                <div className='col'>
+                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-5 py-3 ${isLastStep ? 'glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}
+                            onPrevStep={(amount) => {
+                                setCurrentStep(currentStep - 1);
+                                transferForm.setFieldValue('amount', amount);
+                            }}
                             currentStep={currentStep}
                             steps={steps}
                             pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}

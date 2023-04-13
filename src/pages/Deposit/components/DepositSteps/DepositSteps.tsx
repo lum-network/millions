@@ -36,6 +36,7 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
+    onPrevStep: (amount: string) => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
     initialAmount?: string;
@@ -138,8 +139,10 @@ const DepositStep1 = (
     );
 };
 
-const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void; pools: PoolModel[] }) => {
-    const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onFinishDeposit } = props;
+const DepositStep2 = (
+    props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void; onPrevStep: (amount: string) => void; pools: PoolModel[] },
+) => {
+    const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onPrevStep, onFinishDeposit } = props;
 
     const dispatch = useDispatch<Dispatch>();
     const navigate = useNavigate();
@@ -157,15 +160,12 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
     useEffect(() => {
-        const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances));
         const depositAmountNumber = Number(depositAmount);
 
         if (Number.isNaN(depositAmount)) {
             setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
         } else {
-            if (depositAmountNumber > maxAmount) {
-                setError(I18n.t('errors.deposit.greaterThanBalance'));
-            } else if (depositAmountNumber < Number(poolToDeposit.minDepositAmount)) {
+            if (depositAmountNumber < Number(poolToDeposit.minDepositAmount)) {
                 setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: poolToDeposit.minDepositAmount }));
             } else {
                 setError('');
@@ -266,7 +266,13 @@ const DepositStep2 = (props: StepProps & { amount: string; onFinishDeposit: (has
             <Button
                 type='button'
                 onClick={async () => {
-                    const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount.toString() });
+                    const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances));
+
+                    if (Number(depositAmount) > maxAmount) {
+                        onPrevStep(depositAmount);
+                        return;
+                    }
+                    const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
 
                     if (res && res.error) {
                         ToastUtils.showErrorToast({ content: res.error });
@@ -346,7 +352,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, initialAmount, price, pools, currentPool, onNextStep, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, initialAmount, price, pools, currentPool, onNextStep, onPrevStep, transferForm, lumWallet } = props;
 
     const [amount, setAmount] = useState('');
     const [txHash, setTxHash] = useState('');
@@ -385,6 +391,7 @@ const DepositSteps = (props: Props) => {
                         pools={pools}
                         price={price}
                         onNextStep={onNextStep}
+                        onPrevStep={onPrevStep}
                     />
                 )}
                 {currentStep === 2 && <DepositStep3 txHash={txHash} />}

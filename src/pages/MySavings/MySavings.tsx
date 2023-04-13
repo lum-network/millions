@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
-import { Button, Card, Modal, SmallerDecimal, Lottie, Collapsible } from 'components';
-import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible } from 'components';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { RootState } from 'redux/store';
 import { NavigationConstants } from 'constant';
 
-import Claim from './components/Claim/Claim';
 import DepositTable from './components/DepositTable/DepositTable';
-import TransferOut from './components/TransferOut/TransferOut';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
+import ClaimModal from './components/Modals/Claim/Claim';
+import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 
 import './MySavings.scss';
 
 const MySavings = () => {
+    const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
@@ -33,77 +32,8 @@ const MySavings = () => {
         isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
 
-    const dispatch = useDispatch<Dispatch>();
-
-    const withdrawForm = useFormik({
-        initialValues: {
-            withdrawAddress: '',
-            denom: '',
-            amount: '',
-        },
-        validationSchema: yup.object().shape({
-            withdrawAddress: yup.string().required(I18n.t('errors.generic.required', { field: 'Withdraw address' })),
-            denom: yup.string().required(I18n.t('errors.generic.required', { field: 'Asset' })),
-            amount: yup.string().required(I18n.t('errors.generic.required', { field: 'Amount' })),
-        }),
-        onSubmit: async (values) => {
-            const normalDenom = DenomsUtils.getNormalDenom(values.denom);
-            const destWallet = otherWallets[normalDenom];
-            const amount = values.amount.toString();
-            const pool = pools.find((pool) => pool.nativeDenom === values.denom);
-
-            if (lumWallet && destWallet && pool && pool.internalInfos) {
-                await dispatch.wallet.ibcTransfer({
-                    toAddress: destWallet.address,
-                    fromAddress: lumWallet.address,
-                    type: 'withdraw',
-                    amount: {
-                        amount,
-                        denom: pool.internalInfos.ibcDenom,
-                    },
-                    normalDenom: normalDenom,
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
-                    chainId: LumClient.getChainId() || '',
-                });
-            }
-        },
-    });
-
-    const [claimCurrentStep, setClaimCurrentStep] = useState(0);
-
     const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
-
-    const onDenomChange = async (denom: string) => {
-        const normalDenom = DenomsUtils.getNormalDenom(denom);
-
-        await withdrawForm.setValues({
-            withdrawAddress: otherWallets[normalDenom]?.address || '',
-            denom,
-            amount: '0',
-        });
-    };
-
-    const onClaim = async () => {
-        if (!prizesToClaim || !prizesToClaim.length) {
-            return;
-        }
-
-        setClaimCurrentStep(claimCurrentStep + 1);
-
-        const res = await dispatch.wallet.claimPrizes(prizesToClaim);
-        if (!res || (res && res.error)) {
-            setClaimCurrentStep(claimCurrentStep - 1);
-        } else {
-            setClaimCurrentStep(claimCurrentStep + 1);
-        }
-    };
-
-    const onClaimAndCompound = async () => {
-        if (!prizesToClaim || !prizesToClaim.length) return;
-
-        await dispatch.wallet.claimAndCompoundPrizes(prizesToClaim);
-    };
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -139,7 +69,7 @@ const MySavings = () => {
                                         data-bs-toggle='modal'
                                         data-bs-target='#withdrawModal'
                                         onClick={async () => {
-                                            onDenomChange(asset.denom);
+                                            setAssetToTransferOut(asset.denom);
                                         }}
                                     >
                                         {I18n.t('mySavings.withdraw')}
@@ -182,6 +112,13 @@ const MySavings = () => {
 
     return (
         <div className='mt-5'>
+            {deposits && deposits.find((deposit) => deposit.errorState) ? (
+                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
+                    <img src={Assets.images.info} width='45' />
+                    <h3 className='mx-3 mb-0'>{I18n.t('mySavings.depositError.title')}</h3>
+                    <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
+                </Card>
+            ) : null}
             <div className='row'>
                 <div className='col-12 col-lg-8 col-xxl-9'>
                     <div>
@@ -285,30 +222,10 @@ const MySavings = () => {
                     </div>
                 </div>
             </div>
-            <Modal id='withdrawModal' modalWidth={1080} withCloseButton={false}>
-                <TransferOut form={withdrawForm} prices={prices} balances={balances || []} isLoading={isTransferring} />
-            </Modal>
-            {prizesToClaim && (
-                <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
-                    <Claim prizes={prizesToClaim} prices={prices} onClaimAndCompound={onClaimAndCompound} isLoading={false} currentStep={claimCurrentStep} />
-                </Modal>
+            {assetToTransferOut && lumWallet && (
+                <TransferOutModal asset={assetToTransferOut} lumWallet={lumWallet} otherWallets={otherWallets} pools={pools} prices={prices} balances={balances || []} isLoading={isTransferring} />
             )}
-            <Modal id='claimOnlyWarning' withCloseButton={false}>
-                <img src={Assets.images.info} alt='info' width={42} height={42} />
-                <h3 className='my-4'>{I18n.t('mySavings.claimOnlyModal.title')}</h3>
-                <p>{I18n.t('mySavings.claimOnlyModal.subtitle')}</p>
-                <Card flat withoutPadding className='claim-only-warning p-4 mt-4'>
-                    {I18n.t('mySavings.claimOnlyModal.info')}
-                </Card>
-                <div className='d-flex flex-row align-items-center justify-content-between mt-4'>
-                    <Button type='button' outline data-bs-dismiss='modal' onClick={onClaim} className='w-100 me-3'>
-                        {I18n.t('mySavings.claimOnlyModal.claimBtn')}
-                    </Button>
-                    <Button type='button' data-bs-dismiss='modal' onClick={onClaimAndCompound} className='w-100'>
-                        {I18n.t('mySavings.claimOnlyModal.claimAndCompoundBtn')}
-                    </Button>
-                </div>
-            </Modal>
+            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} />}
         </div>
     );
 };
