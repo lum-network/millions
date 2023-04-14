@@ -1,20 +1,11 @@
 {
-  "projects": {
-    "default": "lum-network"
-  },
+  "projects": {},
   "targets": {
-    "lum-network-millions": {
+    "lum-network": {
       "hosting": {
         "mainnet": [
           "lum-network-millions"
         ],
-        "testnet": [
-          "lum-network-millions-testnet"
-        ]
-      }
-    },
-    "lum-network": {
-      "hosting": {
         "testnet": [
           "lum-network-millions-testnet"
         ]
