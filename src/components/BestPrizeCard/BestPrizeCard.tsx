@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const calculateFontSize = (charactersCount: number, screenWidth: number): number => {
-    const MAX_FONT_SIZE = 140;
+    const MAX_FONT_SIZE = 160;
     const MIN_FONT_SIZE = 50;
     const MAX_CHARACTERS = 10;
     const MIN_CHARACTERS = 4;

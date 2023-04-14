@@ -13,12 +13,5 @@
         ]
       }
     },
-    "lum-network": {
-      "hosting": {
-        "testnet": [
-          "lum-network-millions-testnet"
-        ]
-      }
-    }
   }
 }

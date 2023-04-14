@@ -96,7 +96,7 @@ export default {
             questions: [
                 {
                     title: 'What is Cosmos Millions?',
-                    answer: 'Cosmos Millions is a decentralized prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
+                    answer: 'Cosmos Millions is a prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
                 },
                 {
                     title: 'How are the prizes generated?',
@@ -112,7 +112,7 @@ export default {
                 },
                 {
                     title: 'Is Cosmos Millions code audited?',
-                    answer: 'Yes! Cosmos Millions code has been reviewed by [insert audit name]',
+                    answer: 'Yes! Cosmos Millions code is currently under review by a third-party company. ',
                 },
             ],
         },
