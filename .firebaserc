@@ -1,9 +1,7 @@
 {
-  "projects": {
-    "default": "lum-network"
-  },
+  "projects": {},
   "targets": {
-    "lum-network-millions": {
+    "lum-network": {
       "hosting": {
         "mainnet": [
           "lum-network-millions"
@@ -12,6 +10,6 @@
           "lum-network-millions-testnet"
         ]
       }
-    },
+    }
   }
 }

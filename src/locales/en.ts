@@ -67,7 +67,7 @@ export default {
             p3: 'With no risk and exciting rewards, bring your savings to the moon!',
         },
         winners: {
-            title: 'One Winner, No Losers!',
+            title: 'How it Works',
             p1: 'Deposit\nyour assets',
             p2: 'You’re eligible to all the next\nprizes automatically ',
             p3: 'You win! Compound your prize to boost your chances of earning more next time!',
