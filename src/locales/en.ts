@@ -108,7 +108,7 @@ export default {
                 },
                 {
                     title: 'What are delegated deposits?',
-                    answer: 'Delegated deposits give are a way for a Cosmos Millions user to participate in a pool, and assign the prizes they win to another wallet. Therefore, it gives the beneficiary wallet a higher chance to be picked as the winner of the prizes. At launch, Cosmos Millions itself will delegate some deposits to 50 users that registered early.',
+                    answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes. For the launch, Cosmos Millions itself will delegate deposits to 50 users that registered early.',
                 },
                 {
                     title: 'Is Cosmos Millions code audited?',
