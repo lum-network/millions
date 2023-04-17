@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import Skeleton from 'react-loading-skeleton';
 import { Tooltip } from 'react-tooltip';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
@@ -21,6 +20,7 @@ interface Props {
 const Claim = ({ prizes, prices }: Props) => {
     const [claimOnly, setClaimOnly] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
 
@@ -42,7 +42,9 @@ const Claim = ({ prizes, prices }: Props) => {
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep - 1);
         } else {
-            setCurrentStep(currentStep + 1);
+            if (modalRef.current) {
+                modalRef.current.hide();
+            }
         }
     };
 
@@ -66,11 +68,11 @@ const Claim = ({ prizes, prices }: Props) => {
     });
 
     return (
-        <Modal id='claimModal' modalWidth={1080} withCloseButton={false}>
+        <Modal id='claimModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} stepBackgroundColor='white' />
+                    <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
@@ -118,7 +120,8 @@ const Claim = ({ prizes, prices }: Props) => {
                                                 prize.amount ? (
                                                     <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-4' : ''}`}>
                                                         <div className='d-flex flex-row align-items-end justify-content-between text-start mb-2'>
-                                                            ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} <br /> Pool #{prize.poolId.toString()} - Draw #{prize.drawId.toString()}
+                                                            ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} <br /> {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -
+                                                            {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId.toString() })}
                                                             <div className='date'>{dayjs(prize.createdAt).format('dddd, MMMM D h:mm A')}</div>
                                                         </div>
                                                         <Card withoutPadding flat className='d-flex flex-row align-items-center text-start px-4 py-3'>
@@ -141,17 +144,13 @@ const Claim = ({ prizes, prices }: Props) => {
                                             )}
                                         </div>
                                         <div className='mt-4'>
-                                            {isLoading ? (
-                                                <Skeleton height={42} />
-                                            ) : (
-                                                <Card flat withoutPadding className='fees-warning'>
-                                                    <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
-                                                        <img src={Assets.images.info} alt='info' />
-                                                        <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
-                                                    </span>
-                                                    {I18n.t('deposit.feesWarning')}
-                                                </Card>
-                                            )}
+                                            <Card flat withoutPadding className='fees-warning'>
+                                                <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
+                                                    <img src={Assets.images.info} alt='info' />
+                                                    <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                                                </span>
+                                                {I18n.t('deposit.feesWarning')}
+                                            </Card>
                                             <Button type='button' onClick={() => setClaimOnly(true)} outline className='w-100 mt-4'>
                                                 {I18n.t('mySavings.claimModal.claimMyPrizes')}
                                             </Button>

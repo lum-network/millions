@@ -1,3 +1,17 @@
+@import 'src/styles/main';
+
 .modal-dialog {
     --bs-modal-border-radius: 23px;
+    --bs-modal-bg: #F4F4F4;
+}
+
+
+.modal-content {
+    padding: 4rem;
+}
+
+@include media-breakpoint-down(sm) {
+    .modal-content {
+        padding: 2rem;
+    }
 }

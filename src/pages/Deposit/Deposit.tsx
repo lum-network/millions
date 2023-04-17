@@ -4,13 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import Assets from 'assets';
-import { Button, Card, Modal, Steps } from 'components';
+import { Card, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { DenomsUtils, I18n } from 'utils';
 import { RootState, Dispatch } from 'redux/store';
 
 import DepositSteps from './components/DepositSteps/DepositSteps';
+import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
+import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
 
 import './Deposit.scss';
@@ -30,6 +31,7 @@ const Deposit = () => {
     const [currentStep, setCurrentStep] = useState(existsInLumBalances ? 1 : 0);
     const [initialAmount] = useState(existsInLumBalances ? existsInLumBalances.amount : undefined);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
 
     const transferForm = useFormik({
@@ -122,8 +124,10 @@ const Deposit = () => {
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}
                             onPrevStep={(amount) => {
-                                setCurrentStep(currentStep - 1);
                                 transferForm.setFieldValue('amount', amount);
+                                if (ibcModalRef.current) {
+                                    ibcModalRef.current.toggle();
+                                }
                             }}
                             currentStep={currentStep}
                             steps={steps}
@@ -137,36 +141,13 @@ const Deposit = () => {
                     </Card>
                 </div>
             </div>
-
-            <Modal id='quitModal' ref={quitModalRef} withCloseButton={false} dataBsBackdrop='static' bodyClassName='d-flex flex-column align-items-center'>
-                <img src={Assets.images.info} alt='info' width={42} height={42} />
-                <h3 className='my-4'>{I18n.t('deposit.quitModal.title')}</h3>
-                <div className='d-flex flex-row align-self-stretch justify-content-between'>
-                    <Button
-                        outline
-                        className='w-100'
-                        onClick={() => {
-                            if (quitModalRef.current) {
-                                quitModalRef.current.hide();
-                            }
-                            blocker.proceed?.();
-                        }}
-                    >
-                        {I18n.t('common.continue')}
-                    </Button>
-                    <Button
-                        className='w-100 ms-4'
-                        onClick={() => {
-                            if (quitModalRef.current) {
-                                quitModalRef.current.hide();
-                            }
-                            blocker.reset?.();
-                        }}
-                    >
-                        {I18n.t('common.cancel')}
-                    </Button>
-                </div>
-            </Modal>
+            <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
+            <IbcTransferModal
+                modalRef={ibcModalRef}
+                onConfirm={() => {
+                    setCurrentStep(currentStep - 1);
+                }}
+            />
         </>
     );
 };

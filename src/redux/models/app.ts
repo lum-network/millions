@@ -20,7 +20,7 @@ export const app = createModel<RootModel>()({
             await dispatch.pools.getNextBestPrize(null);
 
             if (payload.withWallets) {
-                await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
+                await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
                 await dispatch.wallet.connectOtherWallets(null);
             }
 

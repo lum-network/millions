@@ -70,8 +70,8 @@ const MainLayout = () => {
             <Modal id='get-keplr-modal' ref={keplrModalRef} withCloseButton={false}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
-                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-4 p-4'>
-                    <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-4' />
+                <Card flat withoutPadding className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'>
+                    <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <p
                             dangerouslySetInnerHTML={{
@@ -83,7 +83,7 @@ const MainLayout = () => {
                         </a>
                     </div>
                 </Card>
-                <div className='d-flex flex-row align-self-stretch justify-content-between'>
+                <div className='d-flex flex-column flex-sm-row align-self-stretch justify-content-between'>
                     <Button
                         outline
                         className='w-100'
@@ -96,7 +96,7 @@ const MainLayout = () => {
                         {I18n.t('keplrDownloadModal.later')}
                     </Button>
                     <Button
-                        className='w-100 ms-4'
+                        className='w-100 ms-0 ms-sm-4 mt-4 mt-sm-0'
                         onClick={() => {
                             window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
                             if (keplrModalRef.current) {

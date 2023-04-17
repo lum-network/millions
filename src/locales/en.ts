@@ -20,6 +20,7 @@ export default {
     common: {
         continue: 'Continue',
         cancel: 'Cancel',
+        retry: 'Retry',
     },
     errors: {
         generic: {
@@ -162,6 +163,7 @@ export default {
         tvl: 'TVL:',
         cta: 'Deposit',
         drawEndAt: 'Time left to join:',
+        poolId: 'Pool #{{ poolId }}'
     },
     mySavings: {
         title: 'My Savings',
@@ -173,6 +175,8 @@ export default {
         withdraw: 'Transfer out',
         activities: 'Activities',
         deposits: 'Pool Deposits',
+        leavePoolCta: 'Leave Pool',
+        transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',
             description: 'It’s time to deposit assets in your wallet\nto participate to the next prize',
@@ -222,7 +226,8 @@ export default {
                 },
             ],
             claimAndCompound: 'CLAIM & COMPOUND',
-            claimMyPrizes: 'CLAIM MY PRIZES',
+            claimMyPrizes: 'Claim My Prizes',
+            drawId: 'Draw #{{ drawId }}',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
@@ -235,6 +240,28 @@ export default {
         depositError: {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
+        },
+        leavePoolModal: {
+            title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',
+            steps: [
+                {
+                    title: 'Choose the pool you want to leave',
+                    subtitle: 'Redeem your savings\nor transfer your available tokens',
+                    cardTitle: 'Leave pool',
+                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="">Learn why</a>',
+                },
+                {
+                    title: 'Select the savings to redeem',
+                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your Keplr wallet',
+                },
+            ],
+            warnings: {
+                title: 'Once the unbonding period begins you will:',
+                draws: 'Not be selected for all future draws',
+                cancel: 'Not be able to cancel the unbonding',
+                waiting: 'Need to wait 21 days for the amount to be liquid',
+            },
+            cta: 'Leave pool',
         },
     },
     withdraw: {
@@ -281,12 +308,17 @@ export default {
             },
         ],
         shareTwitter: 'Share on Twitter',
-        shareTwitterContent: "I just deposited on Lum Network's Cosmos Millions project\nDo the same if you want to start saving and earning !",
+        shareTwitterContent:
+            'My savings are going to the moon :rocket: I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍:rocket: saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
         goToMySavings: 'Go to my savings',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
         quitModal: {
             title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
         },
+        ibcTransferModal: {
+            title: 'You are trying to deposit more than your available balance on Lum Network, you will need to transfer coins to Lum Network first to complete your deposit',
+        },
+        depositId: 'Deposit #{{ depositId }}',
     },
 };

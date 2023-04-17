@@ -140,7 +140,14 @@ const DepositStep1 = (
 };
 
 const DepositStep2 = (
-    props: StepProps & { amount: string; onFinishDeposit: (hash: string) => void; initialAmount?: string; onNextStep: () => void; onPrevStep: (amount: string) => void; pools: PoolModel[] },
+    props: StepProps & {
+        amount: string;
+        onFinishDeposit: (infos: { hash: string; amount: string; denom: string; tvl: string }) => void;
+        initialAmount?: string;
+        onNextStep: () => void;
+        onPrevStep: (amount: string) => void;
+        pools: PoolModel[];
+    },
 ) => {
     const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onPrevStep, onFinishDeposit } = props;
 
@@ -155,7 +162,7 @@ const DepositStep2 = (
             : amount,
     );
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
-    const [isModifying, setIsModifying] = useState(false);
+    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
     const [error, setError] = useState('');
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
@@ -221,7 +228,7 @@ const DepositStep2 = (
                     inputProps={{
                         type: 'number',
                         min: 0,
-                        value: depositAmount,
+                        value: Number(depositAmount) < 0 ? '0' : depositAmount,
                         onChange: (e) => {
                             setDepositAmount(e.target.value);
                         },
@@ -247,7 +254,7 @@ const DepositStep2 = (
                     pools={pools}
                     options={pools.map((pool) => ({
                         value: pool.poolId.toString(),
-                        label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - Pool #${pool.poolId.toString()}`,
+                        label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
                     }))}
                     value={poolToDeposit.poolId.toString()}
                     onChange={(value) => {
@@ -277,7 +284,12 @@ const DepositStep2 = (
                     if (res && res.error) {
                         ToastUtils.showErrorToast({ content: res.error });
                     } else if (res && res.hash) {
-                        onFinishDeposit(LumUtils.toHex(res.hash).toUpperCase());
+                        onFinishDeposit({
+                            hash: LumUtils.toHex(res.hash).toUpperCase(),
+                            amount: depositAmount,
+                            denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
+                            tvl: poolToDeposit.tvlAmount,
+                        });
                         onNextStep();
                     }
                 }}
@@ -292,7 +304,7 @@ const DepositStep2 = (
     );
 };
 
-const DepositStep3 = ({ txHash }: { txHash: string }) => {
+const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; denom: string; tvl: string } }) => {
     const navigate = useNavigate();
 
     return (
@@ -302,7 +314,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                     <button
                         className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
                         onClick={() => {
-                            window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txHash}`, '_blank');
+                            window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
@@ -315,7 +327,7 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
                     <button
                         className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
                         onClick={() => {
-                            window.open(`${NavigationConstants.MINTSCAN}/txs/${txHash}`, '_blank');
+                            window.open(`${NavigationConstants.MINTSCAN}/txs/${txInfos.hash}`, '_blank');
                         }}
                     >
                         <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
@@ -341,7 +353,15 @@ const DepositStep3 = ({ txHash }: { txHash: string }) => {
             <Button
                 className='deposit-cta mt-5'
                 onClick={() => {
-                    window.open(`${NavigationConstants.TWEET_URL}?text=${encodeURI(I18n.t('deposit.shareTwitterContent'))}`, '_blank');
+                    window.open(
+                        `${NavigationConstants.TWEET_URL}?text=${encodeURI(
+                            I18n.t(
+                                'deposit.shareTwitterContent',
+                                txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: NumbersUtils.convertUnitNumber(txInfos.tvl) + ' ' + txInfos.denom } : {},
+                            ),
+                        )}`,
+                        '_blank',
+                    );
                 }}
             >
                 <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3' width={25} />
@@ -355,7 +375,12 @@ const DepositSteps = (props: Props) => {
     const { currentStep, steps, otherWallets, initialAmount, price, pools, currentPool, onNextStep, onPrevStep, transferForm, lumWallet } = props;
 
     const [amount, setAmount] = useState('');
-    const [txHash, setTxHash] = useState('');
+    const [txInfos, setTxInfos] = useState<{
+        hash: string;
+        denom: string;
+        amount: string;
+        tvl: string;
+    } | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
 
@@ -386,7 +411,7 @@ const DepositSteps = (props: Props) => {
                         balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
                         initialAmount={initialAmount}
                         amount={amount}
-                        onFinishDeposit={(hash) => setTxHash(hash)}
+                        onFinishDeposit={(hash) => setTxInfos(hash)}
                         currentPool={currentPool}
                         pools={pools}
                         price={price}
@@ -394,7 +419,7 @@ const DepositSteps = (props: Props) => {
                         onPrevStep={onPrevStep}
                     />
                 )}
-                {currentStep === 2 && <DepositStep3 txHash={txHash} />}
+                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} />}
             </div>
         </>
     );

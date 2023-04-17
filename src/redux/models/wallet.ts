@@ -429,9 +429,9 @@ export const wallet = createModel<RootModel>()({
             for (const prize of payload) {
                 if (!prize.amount) continue;
 
-                const existingItemIndex = toDeposit.findIndex((d) => d.pool.poolId === prize.poolId);
+                const existingItemIndex = toDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
                 if (existingItemIndex === -1) {
-                    const pool = state.pools.pools.find((p) => p.poolId === prize.poolId);
+                    const pool = state.pools.pools.find((p) => p.poolId.equals(prize.poolId));
 
                     if (!pool) continue;
 

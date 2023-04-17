@@ -44,11 +44,11 @@
 
         font-size: 12px;
         &.success {
-            background: #34ad09;
+            background: $color-success;
         }
 
         &.failure {
-            background: #FA7676;
+            background: $color-failure;
         }
     }
 }

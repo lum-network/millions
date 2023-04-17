@@ -33,19 +33,29 @@
 
 .fees-warning {
     border-radius: 12px;
-    font-size: 11px;
-    line-height: 22px;
+    font-size: 12px;
+    line-height: 24px;
     padding: 0.75rem;
     text-align: center;
     color: $color-primary;
 }
 
-.deposit-warning {
-    font-weight: 300;
-    font-size: 12px;
-    padding: 0.75rem;
-    text-align: center;
-    color: $color-black;
+.asset-info {
+    img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+    }
+    color: $color-primary;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+}
+.deposit-amount {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 26px;
 }
 
 .step-1 {
@@ -59,24 +69,6 @@
     .last-step-card {
         margin-top: 5rem;
         border-radius: 12px;
-
-        .asset-info {
-            img {
-                width: 30px;
-                height: 30px;
-                object-fit: contain;
-            }
-            color: $color-primary;
-            font-style: normal;
-            font-weight: 400;
-            font-size: 18px;
-        }
-        .deposit-amount {
-            font-style: normal;
-            font-weight: 400;
-            font-size: 22px;
-            line-height: 26px;
-        }
     }
 
     .label {
@@ -85,6 +77,11 @@
     }
 
     .deposit-warning {
+        font-weight: 300;
+        font-size: 14px;
+        padding: 0.75rem;
+        text-align: center;
+        color: $color-black;
         border-radius: 12px;
         a {
             color: $color-black;

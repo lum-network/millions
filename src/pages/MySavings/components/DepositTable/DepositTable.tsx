@@ -1,29 +1,19 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { useDispatch } from 'react-redux';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 import { Button, Collapsible } from 'components';
 import { AggregatedDepositModel, DepositModel } from 'models';
-import { Dispatch } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
 
 interface IProps {
     deposits: AggregatedDepositModel[];
+    onLeavePool: (deposit: DepositModel) => void;
 }
 
-const DepositTable = ({ deposits }: IProps) => {
-    const dispatch = useDispatch<Dispatch>();
-    const onLeavePool = async (deposit: DepositModel) => {
-        await dispatch.wallet.leavePool({
-            poolId: deposit.poolId,
-            depositId: deposit.depositId,
-            denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
-        });
-    };
-
+const DepositTable = ({ deposits, onLeavePool }: IProps) => {
     const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
         let statusClassName = '';
         let cta: string | JSX.Element = '';
@@ -32,20 +22,20 @@ const DepositTable = ({ deposits }: IProps) => {
             case DepositState.DEPOSIT_STATE_SUCCESS:
                 statusClassName = 'success';
                 cta = (
-                    <Button textOnly onClick={async () => await onLeavePool(deposit as DepositModel)}>
-                        Leave Pool
+                    <Button textOnly onClick={() => onLeavePool(deposit as DepositModel)} data-bs-target='#leavePoolModal' data-bs-toggle='modal'>
+                        {I18n.t('mySavings.leavePoolCta')}
                     </Button>
                 );
                 break;
 
             case DepositState.DEPOSIT_STATE_FAILURE:
                 statusClassName = 'failure';
-                cta = <Button>Retry</Button>;
+                cta = <Button>{I18n.t('common.retry')}</Button>;
                 break;
 
             case DepositState.DEPOSIT_STATE_IBC_TRANSFER:
             case DepositState.DEPOSIT_STATE_ICA_DELEGATE:
-                cta = 'Usually ~1 minute';
+                cta = I18n.t('mySavings.transferWaitingCta');
                 break;
         }
 
@@ -64,7 +54,7 @@ const DepositTable = ({ deposits }: IProps) => {
                                 {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                             </h3>
                             <p className='mb-0'>
-                                Pool #{deposit.poolId?.toString()} - Deposit #{deposit.depositId?.toString()}
+                                {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} - {I18n.t('deposit.depositId', { depositId: deposit.depositId?.toString() || '' })}
                             </p>
                         </div>
                     </div>
@@ -96,7 +86,7 @@ const DepositTable = ({ deposits }: IProps) => {
                                         <h3 className='mb-0'>
                                             {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                         </h3>
-                                        <p className='mb-0'>Pool #{deposit.poolId?.toString()}</p>
+                                        <p className='mb-0'>{I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })}</p>
                                     </div>
                                 </div>
                             </div>

@@ -15,11 +15,15 @@ import DepositTable from './components/DepositTable/DepositTable';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
 import ClaimModal from './components/Modals/Claim/Claim';
 import TransferOutModal from './components/Modals/TransferOut/TransferOut';
+import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
+import { DepositModel } from 'models';
 
 const MySavings = () => {
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
+    const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
+
     const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
@@ -133,7 +137,7 @@ const MySavings = () => {
                             </div>
                             <div className='coins-container position-absolute top-0 start-0 w-100 h-100'>
                                 <img src={Assets.images.coin} className='coin-1' alt='coin' />
-                                <img src={Assets.images.coin} className='coin-2' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-2 d-block d-md-none' alt='coin' />
                                 <img src={Assets.images.coin} className='coin-3' alt='coin' />
                             </div>
                             <Lottie
@@ -149,7 +153,7 @@ const MySavings = () => {
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
                                 <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
-                                    <DepositTable deposits={deposits} />
+                                    <DepositTable deposits={deposits} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
                                 </Card>
                             </>
                         ) : null}
@@ -226,6 +230,7 @@ const MySavings = () => {
                 <TransferOutModal asset={assetToTransferOut} lumWallet={lumWallet} otherWallets={otherWallets} pools={pools} prices={prices} balances={balances || []} isLoading={isTransferring} />
             )}
             {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} />}
+            <LeavePoolModal deposit={depositToLeave} />
         </div>
     );
 };

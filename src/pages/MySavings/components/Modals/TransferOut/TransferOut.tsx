@@ -75,7 +75,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} stepBackgroundColor='white' />
+                    <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className='col d-flex'>
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>

@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Card = ({ children, className, withoutPadding, flat }: IProps) => {
-    return <div className={`${withoutPadding ? '' : 'p-3 py-4 p-sm-4 p-xl-5'} app-card ${flat && 'flat'} ${className}`}>{children}</div>;
+    return <div className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className}`}>{children}</div>;
 };
 
 export default Card;
