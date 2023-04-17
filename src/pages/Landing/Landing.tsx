@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { I18n } from 'utils';
 import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
-import { LandingConstants } from 'constant';
+import { LandingConstants, NavigationConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
@@ -19,6 +19,10 @@ import { useWindowSize } from 'hooks';
 const Landing = () => {
     const onClickParticipate = () => {
         window.open('https://jpd0pqf6mcx.typeform.com/to/AimExuyx', '_blank')?.focus();
+    };
+
+    const onClickDiscord = () => {
+        window.open(NavigationConstants.DISCORD, '_blank')?.focus();
     };
 
     const timeline = useRef<gsap.core.Timeline>();
@@ -326,16 +330,9 @@ const Landing = () => {
                     <div className='d-flex justify-content-between align-items-center mb-4'>
                         <div className='d-flex align-items-lg-center flex-column flex-lg-row'>
                             <h1>{I18n.t('landing.pools.title')}</h1>
-                            <div className='ms-lg-5 d-flex align-items-center'>
-                                <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
-                                <div className='d-flex flex-column'>
-                                    <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
-                                    <span className='tvl-value'>Coming soon</span>
-                                </div>
-                            </div>
                         </div>
                         <div className='d-none d-xl-flex'>
-                            <Button outline disabled>
+                            <Button outline onClick={onClickDiscord}>
                                 {I18n.t('landing.pools.newPool')}
                             </Button>
                         </div>
