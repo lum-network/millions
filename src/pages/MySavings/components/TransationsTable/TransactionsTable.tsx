@@ -18,6 +18,14 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
                 type = 'Deposit';
                 icon = Assets.images.deposit;
                 break;
+            case LumMessages.MsgWithdrawDepositUrl:
+                type = 'Leave Pool';
+                icon = Assets.images.leavePool;
+                break;
+            case LumMessages.MsgClaimPrizeUrl:
+                type = 'Claim Prize';
+                icon = Assets.images.claim;
+                break;
         }
 
         return (
@@ -29,13 +37,15 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
                                 <img src={icon} alt='tx icon' />
                             </div>
                         )}
-                        <h4 className='mb-0'>{type}</h4>
+                        <h4 className='mb-0'>
+                            {type} {transaction.messages.length > 1 ? <span className='msg-count-badge ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</span> : null}
+                        </h4>
                     </div>
                 </td>
                 <td className='align-middle p-3'>
                     <div className='d-flex flex-row align-items-center justify-content-end'>
-                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} />
-                        <h4 className='ms-2 mb-0'>{DenomsUtils.getNormalDenom(transaction.amount[0].denom).toUpperCase()}</h4>
+                        {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
+                        <h4 className='ms-2 mb-0'>{DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}</h4>
                     </div>
                 </td>
             </tr>

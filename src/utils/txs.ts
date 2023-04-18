@@ -6,6 +6,14 @@ type MillionsTxInfos = {
     amount: LumTypes.Coin;
 };
 
+type MillionsWithdrawDeposit = {
+    toAddress: string;
+};
+
+type MillionsClaimPrize = {
+    winnerAddress: string;
+};
+
 export const isMillionsDepositTx = (
     info: {
         amount?: LumTypes.Coin;
@@ -16,6 +24,14 @@ export const isMillionsDepositTx = (
     } | null,
 ): info is MillionsTxInfos => {
     return !!(info && info.amount && info.depositorAddress && info.isSponsor !== undefined && info.poolId);
+};
+
+export const isMillionsWithdrawDeposit = (info: { toAddress?: string; depositorAddress?: string } | null): info is MillionsWithdrawDeposit => {
+    return !!(info && info.toAddress && info.depositorAddress);
+};
+
+export const isMillionsClaimPrize = (info: { winnerAddress?: string } | null): info is MillionsClaimPrize => {
+    return !!(info && info.winnerAddress);
 };
 
 export const hashExists = (txs: TransactionModel[], hash: string): boolean => txs.findIndex((tx) => tx.hash === hash) > -1;
@@ -53,12 +69,16 @@ export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxRe
                         if (msg.typeUrl.includes('millions')) {
                             if (isMillionsDepositTx(txInfos)) {
                                 tx.amount = [txInfos.amount];
-                                formattedTxs.push(tx);
+                            } else if (isMillionsWithdrawDeposit(txInfos)) {
+                                tx.amount = [];
+                            } else if (isMillionsClaimPrize(txInfos)) {
+                                tx.amount = [];
                             }
                         }
                     }
                 } catch {}
             }
+            formattedTxs.push(tx);
         }
     }
 

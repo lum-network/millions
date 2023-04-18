@@ -162,8 +162,8 @@ class LumClient {
                 { key: 'transfer.sender', value: address },
             ]),
             searchTxByTags([
-                { key: 'message.action', value: 'Deposit' },
-                { key: 'message.sender', value: address },
+                { key: 'message.module', value: 'millions' },
+                { key: 'transfer.recipient', value: address },
             ]),
         ]);
 
