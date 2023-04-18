@@ -11,6 +11,8 @@ import './Pools.scss';
 const Pools = () => {
     const pools = useSelector((state: RootState) => state.pools.pools);
 
+    console.log(pools);
+
     return (
         <div className='pools-container mt-5'>
             <h1>{I18n.t('pools.title')}</h1>

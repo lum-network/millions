@@ -1,5 +1,5 @@
 import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
-import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
+// import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
@@ -65,12 +65,12 @@ class LumClient {
             return null;
         }
 
-        //const prizes = await this.client.queryClient.millions.poolPrizes(pool);
-        const prizes = new Promise<Prize[]>((resolve) => {
-            setTimeout(() => {
-                resolve([...(poolId.equals(1) ? ATOM_POOL_PRIZES : OSMO_POOL_PRIZES)]);
-            }, 300);
-        });
+        const prizes = await this.client.queryClient.millions.poolPrizes(poolId);
+        // const prizes = new Promise<Prize[]>((resolve) => {
+        //     setTimeout(() => {
+        //         resolve([...(poolId.equals(1) ? ATOM_POOL_PRIZES : OSMO_POOL_PRIZES)]);
+        //     }, 300);
+        // });
 
         return prizes;
     };
