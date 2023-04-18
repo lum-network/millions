@@ -1,6 +1,7 @@
 import { LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { TransactionModel } from 'models';
 import Long from 'long';
+import { getDenomFromIbc } from './denoms';
 
 type MillionsTxInfos = {
     amount: LumTypes.Coin;
@@ -36,7 +37,7 @@ export const isMillionsClaimPrize = (info: { winnerAddress?: string } | null): i
 
 export const hashExists = (txs: TransactionModel[], hash: string): boolean => txs.findIndex((tx) => tx.hash === hash) > -1;
 
-export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): TransactionModel[] => {
+export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): Promise<TransactionModel[]> => {
     const formattedTxs: TransactionModel[] = [];
 
     for (const rawTx of rawTxs) {
@@ -68,6 +69,9 @@ export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxRe
 
                         if (msg.typeUrl.includes('millions')) {
                             if (isMillionsDepositTx(txInfos)) {
+                                if (txInfos.amount.denom.startsWith('ibc/')) {
+                                    txInfos.amount.denom = await getDenomFromIbc(txInfos.amount.denom);
+                                }
                                 tx.amount = [txInfos.amount];
                             } else if (isMillionsWithdrawDeposit(txInfos)) {
                                 tx.amount = [];

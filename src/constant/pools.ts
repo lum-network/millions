@@ -7,9 +7,9 @@ export const POOLS: {
     osmo: PoolInternalInfosModel;
 } = {
     atom: {
-        rpc: 'https://rpc-cosmos.imperator.co',
+        rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
         chainName: 'Cosmos Hub',
-        ibcSourceChannel: 'channel-3',
+        ibcSourceChannel: 'channel-0',
         ibcDenom: 'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23',
     },
     juno: {

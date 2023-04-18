@@ -39,7 +39,6 @@ interface Props {
     onPrevStep: (amount: string) => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
-    initialAmount?: string;
     price?: number;
 }
 
@@ -164,21 +163,30 @@ const DepositStep2 = (
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
     const [error, setError] = useState('');
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
+    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool || state.loading.effects.wallet.reloadWalletInfos);
 
     useEffect(() => {
         const depositAmountNumber = Number(depositAmount);
+        const minDeposit = Number(NumbersUtils.convertUnitNumber(poolToDeposit.minDepositAmount));
 
         if (Number.isNaN(depositAmount)) {
             setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
         } else {
-            if (depositAmountNumber < Number(poolToDeposit.minDepositAmount)) {
-                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: poolToDeposit.minDepositAmount }));
+            if (depositAmountNumber < minDeposit) {
+                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit }));
             } else {
                 setError('');
             }
         }
     }, [depositAmount]);
+
+    useEffect(() => {
+        if (initialAmount) {
+            setDepositAmount(
+                (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6),
+            );
+        }
+    }, [initialAmount]);
 
     useEffect(() => {
         const handler = ({ key }: KeyboardEvent) => {
@@ -274,9 +282,10 @@ const DepositStep2 = (
                 type='button'
                 onClick={async () => {
                     const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances));
+                    const depositAmountNumber = Number(depositAmount);
 
-                    if (Number(depositAmount) > maxAmount) {
-                        onPrevStep(depositAmount);
+                    if (depositAmountNumber > maxAmount) {
+                        onPrevStep((depositAmountNumber - maxAmount).toFixed(6));
                         return;
                     }
                     const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
@@ -372,8 +381,7 @@ const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; de
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, initialAmount, price, pools, currentPool, onNextStep, onPrevStep, transferForm, lumWallet } = props;
-
+    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<{
         hash: string;
@@ -383,11 +391,17 @@ const DepositSteps = (props: Props) => {
     } | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+    const [initialAmount, setInitialAmount] = useState('0');
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
         setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
     }, [otherWallets, currentPool]);
+
+    useEffect(() => {
+        const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
+        setInitialAmount(existsInLumBalances ? existsInLumBalances.amount : '0');
+    }, [lumWallet]);
 
     return (
         <>
@@ -408,7 +422,7 @@ const DepositSteps = (props: Props) => {
                 )}
                 {currentStep === 1 && (
                     <DepositStep2
-                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={lumWallet?.balances || []}
                         initialAmount={initialAmount}
                         amount={amount}
                         onFinishDeposit={(hash) => setTxInfos(hash)}

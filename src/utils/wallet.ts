@@ -72,3 +72,21 @@ export const buildTxDoc = (fee: Fee, wallet: LumWallet, messages: Message[], cha
         ],
     };
 };
+
+export const updatedBalances = (currentBalance?: LumTypes.Coin[], newBalance?: LumTypes.Coin[]) => {
+    if (!currentBalance || !newBalance) {
+        return false;
+    }
+
+    if (currentBalance.length !== newBalance.length) {
+        return true;
+    }
+
+    const balanceChanged = currentBalance.some((balance) => {
+        const newBalanceAmount = newBalance.find((b) => b.denom === balance.denom)?.amount;
+
+        return newBalanceAmount !== balance.amount;
+    });
+
+    return balanceChanged;
+};

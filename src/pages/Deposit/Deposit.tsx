@@ -29,7 +29,6 @@ const Deposit = () => {
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(existsInLumBalances ? 1 : 0);
-    const [initialAmount] = useState(existsInLumBalances ? existsInLumBalances.amount : undefined);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
@@ -72,7 +71,7 @@ const Deposit = () => {
             if (!transferForm.dirty) {
                 blocker.reset();
             } else {
-                if (quitModalRef.current) {
+                if (quitModalRef.current && currentStep > 1) {
                     quitModalRef.current.toggle();
                 }
             }
@@ -135,7 +134,6 @@ const Deposit = () => {
                             currentPool={pool}
                             price={prices?.[denom || ''] || 0}
                             lumWallet={lumWallet}
-                            initialAmount={initialAmount}
                             otherWallets={otherWallets}
                         />
                     </Card>
