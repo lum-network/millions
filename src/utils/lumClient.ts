@@ -119,7 +119,7 @@ class LumClient {
 
         const deposits = await this.client.queryClient.millions.accountDeposits(address);
 
-        const aggregatedDeposits = PoolsUtils.reduceDepositsByPoolId(deposits);
+        const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
 
         const withdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
 
@@ -136,7 +136,7 @@ class LumClient {
             });
         }
 
-        const aggregatedWithdrawals = PoolsUtils.reduceDepositsByPoolId(withdrawalsToDeposit);
+        const aggregatedWithdrawals = await PoolsUtils.reduceDepositsByPoolId(withdrawalsToDeposit);
 
         return [...aggregatedDeposits, ...aggregatedWithdrawals];
     };
@@ -162,12 +162,12 @@ class LumClient {
                 { key: 'transfer.sender', value: address },
             ]),
             searchTxByTags([
-                { key: 'message.action', value: 'Deposit' },
-                { key: 'message.sender', value: address },
+                { key: 'message.module', value: 'millions' },
+                { key: 'transfer.recipient', value: address },
             ]),
         ]);
 
-        return { activities: formatTxs(res, true) };
+        return { activities: await formatTxs(res, true) };
     };
 
     getWalletPrizes = async (address: string) => {
@@ -198,7 +198,7 @@ class LumClient {
         // Build transaction message
         const message = LumMessages.BuildMsgMillionsDeposit(pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
             amount: LumUtils.convertUnit({ amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
-            denom: pool.nativeDenom,
+            denom: pool.denom,
         });
 
         // Define fees

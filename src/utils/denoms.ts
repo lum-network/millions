@@ -11,6 +11,22 @@ export const getNormalDenom = (denom: string) => {
     return denom;
 };
 
+export const getDenomFromIbc = async (denom: string) => {
+    let computedDenom = denom;
+
+    if (!denom.startsWith('ibc/')) {
+        return computedDenom;
+    }
+
+    await LumClient.getDenomTrace(denom).then((res) => {
+        if (res && res.denomTrace) {
+            computedDenom = res.denomTrace.baseDenom;
+        }
+    });
+
+    return computedDenom;
+};
+
 export const getIconFromDenom = (denom: string) => {
     denom = getNormalDenom(denom);
 

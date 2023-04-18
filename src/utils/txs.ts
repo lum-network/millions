@@ -1,9 +1,18 @@
 import { LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { TransactionModel } from 'models';
 import Long from 'long';
+import { getDenomFromIbc } from './denoms';
 
 type MillionsTxInfos = {
     amount: LumTypes.Coin;
+};
+
+type MillionsWithdrawDeposit = {
+    toAddress: string;
+};
+
+type MillionsClaimPrize = {
+    winnerAddress: string;
 };
 
 export const isMillionsDepositTx = (
@@ -18,9 +27,17 @@ export const isMillionsDepositTx = (
     return !!(info && info.amount && info.depositorAddress && info.isSponsor !== undefined && info.poolId);
 };
 
+export const isMillionsWithdrawDeposit = (info: { toAddress?: string; depositorAddress?: string } | null): info is MillionsWithdrawDeposit => {
+    return !!(info && info.toAddress && info.depositorAddress);
+};
+
+export const isMillionsClaimPrize = (info: { winnerAddress?: string } | null): info is MillionsClaimPrize => {
+    return !!(info && info.winnerAddress);
+};
+
 export const hashExists = (txs: TransactionModel[], hash: string): boolean => txs.findIndex((tx) => tx.hash === hash) > -1;
 
-export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): TransactionModel[] => {
+export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): Promise<TransactionModel[]> => {
     const formattedTxs: TransactionModel[] = [];
 
     for (const rawTx of rawTxs) {
@@ -52,13 +69,20 @@ export const formatTxs = (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxRe
 
                         if (msg.typeUrl.includes('millions')) {
                             if (isMillionsDepositTx(txInfos)) {
+                                if (txInfos.amount.denom.startsWith('ibc/')) {
+                                    txInfos.amount.denom = await getDenomFromIbc(txInfos.amount.denom);
+                                }
                                 tx.amount = [txInfos.amount];
-                                formattedTxs.push(tx);
+                            } else if (isMillionsWithdrawDeposit(txInfos)) {
+                                tx.amount = [];
+                            } else if (isMillionsClaimPrize(txInfos)) {
+                                tx.amount = [];
                             }
                         }
                     }
                 } catch {}
             }
+            formattedTxs.push(tx);
         }
     }
 

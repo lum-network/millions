@@ -5,7 +5,7 @@ import { Window as KeplrWindow } from '@keplr-wallet/types';
 import dayjs from 'dayjs';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
@@ -120,9 +120,9 @@ export const wallet = createModel<RootModel>()({
                 try {
                     await keplrWindow.keplr.experimentalSuggestChain({
                         chainId: chainId,
-                        chainName: chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
+                        chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                         rpc,
-                        rest: rpc.replace(rpc.includes('rpc') ? 'rpc' : '26657', rpc.includes('rpc') ? 'rest' : '1317'),
+                        rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
                         stakeCurrency: {
                             coinDenom: LumConstants.LumDenom,
                             coinMinimalDenom: LumConstants.MicroLumDenom,
@@ -177,7 +177,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await keplrWindow.keplr.enable([...state.pools.pools.map((pool) => pool.chainId), chainId]);
+                    await keplrWindow.keplr.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
                     if (!keplrWindow.getOfflineSignerAuto) {
                         throw 'Cannot fetch offline signer';
                     }
@@ -199,11 +199,59 @@ export const wallet = createModel<RootModel>()({
             const keplrWindow = window as KeplrWindow;
             if (keplrWindow.getOfflineSignerAuto) {
                 for (const pool of state.pools.pools) {
-                    try {
-                        if (!pool.internalInfos) {
-                            continue;
-                        }
+                    if (!pool.internalInfos) {
+                        continue;
+                    }
 
+                    try {
+                        if (pool.chainId === 'gaia-devnet') {
+                            await KeplrUtils.enableKeplrWithInfos({
+                                bech32Config: {
+                                    bech32PrefixAccAddr: 'cosmos',
+                                    bech32PrefixAccPub: 'cosmospub',
+                                    bech32PrefixConsAddr: 'cosmosvalcons',
+                                    bech32PrefixConsPub: 'cosmosvalconspub',
+                                    bech32PrefixValAddr: 'cosmosvaloper',
+                                    bech32PrefixValPub: 'cosmosvaloperpub',
+                                },
+                                bip44: {
+                                    coinType: 118,
+                                },
+                                chainId: 'gaia-devnet',
+                                chainName: 'Cosmos Hub [Test Millions]',
+                                chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cosmoshub/chain.png',
+                                currencies: [
+                                    {
+                                        coinDecimals: 6,
+                                        coinDenom: 'ATOM',
+                                        coinGeckoId: 'cosmos',
+                                        coinMinimalDenom: 'uatom',
+                                    },
+                                ],
+                                features: [],
+                                feeCurrencies: [
+                                    {
+                                        coinDecimals: 6,
+                                        coinDenom: 'ATOM',
+                                        coinGeckoId: 'cosmos',
+                                        coinMinimalDenom: 'uatom',
+                                        gasPriceStep: {
+                                            average: 0.025,
+                                            high: 0.03,
+                                            low: 0.01,
+                                        },
+                                    },
+                                ],
+                                rest: 'https://testnet-rpc.cosmosmillions.com/atom/rest',
+                                rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
+                                stakeCurrency: {
+                                    coinDecimals: 6,
+                                    coinDenom: 'ATOM',
+                                    coinGeckoId: 'cosmos',
+                                    coinMinimalDenom: 'uatom',
+                                },
+                            });
+                        }
                         const offlineSigner = await keplrWindow.getOfflineSignerAuto(pool.chainId);
                         const accounts = await offlineSigner.getAccounts();
                         await WalletClient.connect(pool.internalInfos.rpc, offlineSigner);
@@ -223,7 +271,9 @@ export const wallet = createModel<RootModel>()({
                         }
 
                         WalletClient.disconnect();
-                    } catch {}
+                    } catch (e) {
+                        console.error((e as Error).message);
+                    }
                 }
             }
         },
@@ -233,16 +283,20 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.getActivities(address);
             await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
-        async getLumWalletBalances(address: string, state) {
+        async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
                 const result = await LumClient.getWalletBalances(address);
 
                 if (result) {
                     const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
-                    const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom));
+                    const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom);
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
+
+                    return filteredBalances;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.log(e);
+            }
         },
         async getActivities(address: string) {
             try {
@@ -321,6 +375,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(result?.error || `Failed to ${type}`);
                 }
 
+                while (true) {
+                    await new Promise((resolve) => {
+                        setTimeout(resolve, 10000);
+                    });
+
+                    const newBalances = await dispatch.wallet.getLumWalletBalances(toAddress);
+
+                    if (WalletUtils.updatedBalances(state.wallet.lumWallet?.balances, newBalances)) {
+                        break;
+                    }
+                }
+
                 ToastUtils.updateLoadingToast(toastId, 'success', {
                     content: `Successfully ${type === 'withdraw' ? 'withdrawn' : 'deposited'} ${amount.amount} ${normalDenom.toUpperCase()}`,
                 });
@@ -336,7 +402,7 @@ export const wallet = createModel<RootModel>()({
         async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Depositing to ${DenomsUtils.getNormalDenom(payload.pool.denom)} pool...` });
+            const toastId = ToastUtils.showLoadingToast({ content: `Depositing to ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()} pool...` });
 
             try {
                 if (!lumWallet) {
@@ -350,13 +416,13 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully deposited ${payload.amount} ${DenomsUtils.getNormalDenom(payload.pool.denom)}`,
+                    content: `Successfully deposited ${payload.amount} ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()}`,
                 });
 
                 await dispatch.wallet.reloadWalletInfos(lumWallet.address);
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to deposit to ${DenomsUtils.getNormalDenom(payload.pool.denom)} pool` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to deposit to ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()} pool` });
                 return null;
             }
         },

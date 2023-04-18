@@ -14,6 +14,7 @@ import info from './images/info.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
+import leavePool from './images/leave_pool.svg';
 import logo from './images/logo.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
@@ -57,6 +58,7 @@ const Assets = {
         keplr,
         landingArrow,
         landingDoubleArrows,
+        leavePool,
         logo,
         lumLogoPurple,
         mintscanPurple,

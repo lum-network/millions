@@ -3,6 +3,7 @@ import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/milli
 import { biggerCoin } from './numbers';
 import { AggregatedDepositModel, DepositModel } from 'models';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { getDenomFromIbc } from './denoms';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
@@ -30,7 +31,7 @@ export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number })
     return bestPrize;
 };
 
-export const reduceDepositsByPoolId = (deposits: Partial<DepositModel>[]) => {
+export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[]) => {
     const aggregatedDeposits: AggregatedDepositModel[] = [];
 
     for (const deposit of deposits) {
@@ -43,20 +44,44 @@ export const reduceDepositsByPoolId = (deposits: Partial<DepositModel>[]) => {
         const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString());
 
         if (existingDeposit && deposit.state === DepositState.DEPOSIT_STATE_SUCCESS) {
-            existingDeposit.deposits.push(deposit);
+            existingDeposit.deposits.push({
+                ...deposit,
+                amount: deposit.amount
+                    ? {
+                          denom: await getDenomFromIbc(deposit.amount.denom),
+                          amount: deposit.amount?.amount || '0',
+                      }
+                    : undefined,
+            });
 
             const depositAmounts = existingDeposit.deposits.map((d) => Number(d.amount?.amount) || 0);
             const totalDepositAmount = depositAmounts.reduce((a, b) => a + b, 0);
 
             existingDeposit.amount = {
                 ...existingDeposit.amount,
-                denom: existingDeposit.amount?.denom || '',
+                denom: await getDenomFromIbc(existingDeposit.amount?.denom || ''),
                 amount: totalDepositAmount.toString(),
             };
         } else {
             aggregatedDeposits.push({
                 ...deposit,
-                deposits: [{ ...deposit }],
+                amount: deposit.amount
+                    ? {
+                          ...deposit.amount,
+                          denom: await getDenomFromIbc(deposit.amount.denom),
+                      }
+                    : undefined,
+                deposits: [
+                    {
+                        ...deposit,
+                        amount: deposit.amount
+                            ? {
+                                  ...deposit.amount,
+                                  denom: await getDenomFromIbc(deposit.amount.denom),
+                              }
+                            : undefined,
+                    },
+                ],
             });
         }
     }
