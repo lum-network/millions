@@ -95,7 +95,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     const renderContent = () => {
         if (isLanding) {
             return (
-                <ul className='navbar-nav align-items-stretch align-items-lg-center ms-auto'>
+                <ul className='navbar-nav flex-row align-items-center ms-auto'>
                     <li className='nav-item' {...dismissMenuProps}>
                         <a href='#howItWorks' className='navlink opacity-100'>
                             {I18n.t('landing.howItWorks')}
@@ -131,7 +131,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
 
         return (
-            <ul className='navbar-nav align-items-stretch align-items-lg-center ms-auto'>
+            <ul className='navbar-nav flex-row align-items-center ms-auto'>
                 <li className='nav-item' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('home.title')}
