@@ -39,7 +39,7 @@ const Home = () => {
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
     return (
-        <div className='home-container mt-5 mt-xxl-0'>
+        <div className='home-container mt-5'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
                     <BestPrizeCard biggestPrize={biggestPrize} countdownTo={new Date('2023-04-12T00:00:00Z')} />

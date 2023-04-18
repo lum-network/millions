@@ -1,10 +1,6 @@
 @import 'src/styles/main';
 
 .home-container {
-    @include media-breakpoint-down(xl) {
-        padding-top: 30px;
-    }
-
     .cosmonaut-with-balloons {
         position: absolute;
         width: 225px;

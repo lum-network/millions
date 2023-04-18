@@ -50,9 +50,9 @@ const MainLayout = () => {
 
     return (
         <>
+            <Header keplrModalRef={keplrModalRef} logoutModalRef={logoutModalRef} />
             <div className='main-layout'>
                 <div className='custom-container container fill'>
-                    <Header keplrModalRef={keplrModalRef} logoutModalRef={logoutModalRef} />
                     <main className='h-100'>
                         {appLoading ? (
                             <div className='d-flex justify-content-center align-items-center h-75'>

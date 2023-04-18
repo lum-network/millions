@@ -36,6 +36,7 @@
     "querystring-es3": "^0.2.1",
     "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
+    "react-burger-menu": "^3.0.9",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.2.0",
     "react-loading-skeleton": "^3.1.1",
@@ -86,6 +87,7 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.6",
     "@types/numeral": "^2.0.2",
+    "@types/react-burger-menu": "^2.8.3",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.34.0",

@@ -2,6 +2,7 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { gsap } from 'gsap';
+import { slide as Menu } from 'react-burger-menu';
 
 import logo from 'assets/lotties/logo.json';
 import { Button, Lottie } from 'components';
@@ -13,14 +14,17 @@ import { NavigationConstants } from 'constant';
 import Assets from 'assets';
 
 import './Header.scss';
+import { useWindowSize } from 'hooks';
 
 const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const timeline = useRef<gsap.core.Timeline>();
     const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const location = useLocation();
+    const winSizes = useWindowSize();
 
     useEffect(() => {
         setIsLanding(window.location.pathname === NavigationConstants.LANDING);
@@ -71,6 +75,12 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
     }, []);
 
+    const dismissMenuProps = {
+        onClick: () => {
+            setIsMenuOpen(false);
+        },
+    };
+
     const connectWallet = async () => {
         if (KeplrUtils.isKeplrInstalled()) {
             await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
@@ -85,33 +95,33 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     const renderContent = () => {
         if (isLanding) {
             return (
-                <ul className='nav d-flex align-items-center'>
-                    <li className='d-none d-lg-block'>
+                <ul className='navbar-nav align-items-stretch align-items-lg-center ms-auto'>
+                    <li className='nav-item' {...dismissMenuProps}>
                         <a href='#howItWorks' className='navlink opacity-100'>
                             {I18n.t('landing.howItWorks')}
                         </a>
                     </li>
-                    <li className='mx-3 mx-lg-4 d-none d-md-block'>
+                    <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
                         <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
                             {I18n.t('landing.documentation')}
                         </a>
                     </li>
-                    <li className='d-none d-md-block'>
+                    <li className='nav-item' {...dismissMenuProps}>
                         <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
                             {I18n.t('landing.faq')}
                         </a>
                     </li>
-                    <li className='mx-3 mx-lg-4 d-none d-sm-block'>
+                    <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
                         <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
                             <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
                         </a>
                     </li>
-                    <li className='d-none d-sm-block'>
+                    <li className='nav-item' {...dismissMenuProps}>
                         <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
-                    <li className='ms-3 ms-lg-4 d-none d-sm-block'>
+                    <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
                         <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
                             {I18n.t('landing.openTheApp')}
                         </Button>
@@ -121,23 +131,23 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
 
         return (
-            <ul className='nav d-flex align-items-center'>
-                <li>
+            <ul className='navbar-nav align-items-stretch align-items-lg-center ms-auto'>
+                <li className='nav-item' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('home.title')}
                     </NavLink>
                 </li>
-                <li className='mx-lg-5 mx-4'>
+                <li className='nav-item mx-lg-5 mx-0 mx-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('pools.title')}
                     </NavLink>
                 </li>
-                <li>
+                <li className='nav-item mt-3 mt-lg-0' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('mySavings.title')}
                     </NavLink>
                 </li>
-                <li className='ms-lg-5 ms-4'>
+                <li className='nav-item ms-lg-5 ms-0 ms-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
                     <Button
                         outline
                         onClick={
@@ -157,24 +167,51 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         );
     };
 
+    const renderBurger = () => {
+        return (
+            <button
+                className='navbar-toggler d-flex align-items-center justify-content-center'
+                type='button'
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-controls='offcanvasNavbar'
+                aria-label='Toggle navigation'
+            >
+                <span className='navbar-toggler-icon'></span>
+            </button>
+        );
+    };
+
     return (
-        <header className={`navbar fixed-top mt-4 mx-auto container p-4 ${!isLanding ? 'app' : ''}`}>
-            <div className='background' />
-            <nav className='container d-flex flex-row justify-content-center justify-content-sm-between align-items-center'>
-                <Link to={NavigationConstants.LANDING}>
-                    <Lottie
-                        delay={1100}
-                        className='logo'
-                        animationData={logo}
-                        segments={[
-                            [0, 41],
-                            [41, 400],
-                        ]}
-                    />
-                </Link>
-                <div className='navbar-items-container d-flex flex-row align-items-center'>{renderContent()}</div>
-            </nav>
-        </header>
+        <>
+            <header className={`navbar fixed-top container mt-4 mx-auto px-4 py-2 py-lg-4 ${!isLanding ? 'app' : ''}`}>
+                <div className='background' />
+                <nav>
+                    <Link to={NavigationConstants.LANDING}>
+                        <Lottie
+                            delay={1100}
+                            className='logo'
+                            animationData={logo}
+                            segments={[
+                                [0, 41],
+                                [41, 400],
+                            ]}
+                        />
+                    </Link>
+                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= 992 ? renderBurger() : renderContent()}</div>
+                </nav>
+            </header>
+            {winSizes.width <= 992 && (
+                <Menu right customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onStateChange={(state) => setIsMenuOpen(state.isOpen)}>
+                    <div className='d-flex flex-row justify-content-between mb-4'>
+                        <h3 className='offcanvas-title' id='offcanvasNavbarLabel'>
+                            Cosmos Millions
+                        </h3>
+                        <button type='button' className='btn-close' aria-label='Close' {...dismissMenuProps}></button>
+                    </div>
+                    {renderContent()}
+                </Menu>
+            )}
+        </>
     );
 };
 
