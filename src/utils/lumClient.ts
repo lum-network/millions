@@ -10,7 +10,7 @@ import { searchTxByTags } from '@lum-network/sdk-javascript/build/utils';
 
 class LumClient {
     private static instance: LumClient | null = null;
-    private rpc: string = process.env.REACT_APP_RPC_URL ?? '';
+    private rpc: string = process.env.REACT_APP_RPC_LUM ?? '';
     private client: Client | null = null;
     private chainId: string | null = null;
 
