@@ -425,7 +425,7 @@ const DepositSteps = (props: Props) => {
                         balances={lumWallet?.balances || []}
                         initialAmount={initialAmount}
                         amount={amount}
-                        onFinishDeposit={(hash) => setTxInfos(hash)}
+                        onFinishDeposit={(infos) => setTxInfos(infos)}
                         currentPool={currentPool}
                         pools={pools}
                         price={price}

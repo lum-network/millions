@@ -44,7 +44,7 @@ const Deposit = () => {
             const amount = values.amount.toString();
 
             if (pool) {
-                const hash = await dispatch.wallet.ibcTransfer({
+                const res = await dispatch.wallet.ibcTransfer({
                     type: 'deposit',
                     fromAddress: otherWallet.address,
                     toAddress: lumWallet?.address || '',
@@ -57,21 +57,21 @@ const Deposit = () => {
                     chainId: pool.chainId,
                 });
 
-                if (hash) {
+                if (res && !res.error) {
                     setCurrentStep(currentStep + 1);
                 }
             }
         },
     });
 
-    const blocker = useBlocker(transferForm.dirty);
+    const blocker = useBlocker(transferForm.dirty && currentStep < 2);
 
     useEffect(() => {
         if (blocker.state === 'blocked') {
             if (!transferForm.dirty) {
                 blocker.reset();
             } else {
-                if (quitModalRef.current && currentStep > 1) {
+                if (quitModalRef.current) {
                     quitModalRef.current.toggle();
                 }
             }

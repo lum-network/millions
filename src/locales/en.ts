@@ -163,7 +163,7 @@ export default {
         tvl: 'TVL:',
         cta: 'Deposit',
         drawEndAt: 'Time left to join:',
-        poolId: 'Pool #{{ poolId }}'
+        poolId: 'Pool #{{ poolId }}',
     },
     mySavings: {
         title: 'My Savings',
@@ -228,6 +228,8 @@ export default {
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
+            shareTwitterContent:
+                'My savings are going to the moon :rocket: I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍:rocket: saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',

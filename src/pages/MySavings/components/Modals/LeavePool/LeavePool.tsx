@@ -62,7 +62,7 @@ const LeavePool = ({ deposit }: Props) => {
                 leavePoolModal.removeEventListener('hidden.bs.modal', handler);
             }
         };
-    });
+    }, []);
 
     return (
         <Modal id='leavePoolModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
