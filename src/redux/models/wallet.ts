@@ -381,7 +381,7 @@ export const wallet = createModel<RootModel>()({
                         setTimeout(resolve, 10000);
                     });
 
-                    const newBalances = await dispatch.wallet.getLumWalletBalances(toAddress);
+                    const newBalances = await dispatch.wallet.getLumWalletBalances(type === 'withdraw' ? fromAddress : toAddress);
 
                     if (WalletUtils.updatedBalances(state.wallet.lumWallet?.balances, newBalances)) {
                         break;

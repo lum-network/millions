@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { LumTypes } from '@lum-network/sdk-javascript';
+import React, { useEffect, useState } from 'react';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { Tooltip } from 'react-tooltip';
 import Skeleton from 'react-loading-skeleton';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,23 +8,25 @@ import * as yup from 'yup';
 
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Modal, Steps } from 'components';
+import { ModalHandlers } from 'components/Modal/Modal';
 import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
+import { Dispatch, RootState } from 'redux/store';
 
 interface Props {
-    asset: string;
+    asset: string | null;
     isLoading: boolean;
     lumWallet: LumWalletModel;
     otherWallets: { [key: string]: OtherWalletModel };
     pools: PoolModel[];
     balances: LumTypes.Coin[];
     prices: { [key: string]: number };
+    modalRef: React.RefObject<ModalHandlers>;
 }
 
-const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
+const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Props) => {
     const [currentStep, setCurrentStep] = useState(0);
-
+    const [assetToTransfer, setAssetToTransfer] = useState<string>(asset || '');
     const { lumWallet, otherWallets } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
@@ -34,8 +36,8 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
 
     const form = useFormik({
         initialValues: {
-            withdrawAddress: otherWallets[DenomsUtils.getNormalDenom(asset)]?.address || '',
-            denom: asset,
+            withdrawAddress: otherWallets[DenomsUtils.getNormalDenom(assetToTransfer)]?.address || '',
+            denom: assetToTransfer,
             amount: '',
         },
         validationSchema: yup.object().shape({
@@ -50,7 +52,9 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
             const pool = pools.find((pool) => pool.nativeDenom === values.denom);
 
             if (lumWallet && destWallet && pool && pool.internalInfos) {
-                await dispatch.wallet.ibcTransfer({
+                setCurrentStep(currentStep + 1);
+
+                const res = await dispatch.wallet.ibcTransfer({
                     toAddress: values.withdrawAddress,
                     fromAddress: lumWallet.address,
                     type: 'withdraw',
@@ -62,16 +66,49 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
                     ibcChannel: pool.internalInfos.ibcSourceChannel,
                     chainId: LumClient.getChainId() || '',
                 });
+
+                if (res && !res.error) {
+                    if (modalRef.current) {
+                        modalRef.current.hide();
+                    }
+                }
             }
         },
     });
+
+    useEffect(() => {
+        if (asset) {
+            setAssetToTransfer(asset);
+            form.setFieldValue('denom', asset);
+            form.setFieldValue('withdrawAddress', otherWallets[DenomsUtils.getNormalDenom(asset)]?.address || '');
+        }
+    }, [asset]);
+
+    useEffect(() => {
+        const handler = () => {
+            setCurrentStep(0);
+            setAssetToTransfer('');
+        };
+
+        const withdrawModal = document.getElementById('#withdrawModal');
+
+        if (withdrawModal) {
+            withdrawModal.addEventListener('hidden.bs.modal', handler);
+        }
+
+        return () => {
+            if (withdrawModal) {
+                withdrawModal.removeEventListener('hidden.bs.modal', handler);
+            }
+        };
+    }, []);
 
     const steps = I18n.t('mySavings.transferOutModal.steps', {
         returnObjects: true,
     });
 
     return (
-        <Modal id='withdrawModal' modalWidth={1080} withCloseButton={false}>
+        <Modal id='withdrawModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
@@ -118,10 +155,12 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
                                         onChange={(value) => {
                                             form.setFieldValue('denom', value);
                                         }}
-                                        options={balances.map((balance) => ({
-                                            label: DenomsUtils.getNormalDenom(balance.denom),
-                                            value: balance.denom,
-                                        }))}
+                                        options={balances
+                                            .filter((balance) => balance.denom !== LumConstants.MicroLumDenom)
+                                            .map((balance) => ({
+                                                label: DenomsUtils.getNormalDenom(balance.denom),
+                                                value: balance.denom,
+                                            }))}
                                     />
                                     {isLoading ? (
                                         <Skeleton height={42} className='mt-4' />
@@ -134,7 +173,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools }: Props) => {
                                             {I18n.t('deposit.feesWarning')}
                                         </Card>
                                     )}
-                                    <Button type='submit' onClick={() => setCurrentStep(currentStep + 1)} className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
+                                    <Button type='submit' className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
                                         {I18n.t('mySavings.transferOutModal.cta')}
                                     </Button>
                                 </div>

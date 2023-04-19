@@ -1,22 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { LumUtils } from '@lum-network/sdk-javascript';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { Tooltip } from 'react-tooltip';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
+import { Tooltip } from 'react-tooltip';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps } from 'components';
+import { ModalHandlers } from 'components/Modal/Modal';
+import { NavigationConstants } from 'constant';
+import { PoolModel } from 'models';
+import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './Claim.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch, RootState } from 'redux/store';
-import { LumUtils } from '@lum-network/sdk-javascript';
-import { NavigationConstants } from 'constant';
-import { useNavigate } from 'react-router-dom';
-import { PoolModel } from 'models';
-import { ModalHandlers } from 'components/Modal/Modal';
-import { flushSync } from 'react-dom';
 
 interface Props {
     prizes: Prize[];
@@ -130,7 +129,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             return;
         }
 
-        flushSync(() => setCurrentStep(currentStep + 1));
+        setCurrentStep(currentStep + 1);
 
         const res = await (compound ? dispatch.wallet.claimAndCompoundPrizes(prizes) : dispatch.wallet.claimPrizes(prizes));
 

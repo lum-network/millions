@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
@@ -6,10 +6,12 @@ import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
-import { Button, Card, SmallerDecimal, Lottie, Collapsible } from 'components';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
-import { RootState } from 'redux/store';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
 import { NavigationConstants } from 'constant';
+import { DepositModel } from 'models';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import Error404 from 'pages/404/404';
+import { RootState } from 'redux/store';
 
 import DepositTable from './components/DepositTable/DepositTable';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
@@ -18,7 +20,6 @@ import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
-import { DepositModel } from 'models';
 
 const MySavings = () => {
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
@@ -35,6 +36,8 @@ const MySavings = () => {
         pools: state.pools.pools,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
+
+    const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
@@ -70,8 +73,8 @@ const MySavings = () => {
                                     <Button
                                         outline
                                         className='me-3'
-                                        data-bs-toggle='modal'
                                         data-bs-target='#withdrawModal'
+                                        data-bs-toggle='modal'
                                         onClick={async () => {
                                             setAssetToTransferOut(asset.denom);
                                         }}
@@ -113,6 +116,10 @@ const MySavings = () => {
             />
         );
     };
+
+    if (!lumWallet) {
+        return <Error404 />;
+    }
 
     return (
         <div className='mt-5'>
@@ -226,9 +233,16 @@ const MySavings = () => {
                     </div>
                 </div>
             </div>
-            {assetToTransferOut && lumWallet && (
-                <TransferOutModal asset={assetToTransferOut} lumWallet={lumWallet} otherWallets={otherWallets} pools={pools} prices={prices} balances={balances || []} isLoading={isTransferring} />
-            )}
+            <TransferOutModal
+                modalRef={transferOutModalRef}
+                asset={assetToTransferOut}
+                lumWallet={lumWallet}
+                otherWallets={otherWallets}
+                pools={pools}
+                prices={prices}
+                balances={balances || []}
+                isLoading={isTransferring}
+            />
             {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} pools={pools} />}
             <LeavePoolModal deposit={depositToLeave} />
         </div>
