@@ -64,14 +64,14 @@ const Deposit = () => {
         },
     });
 
-    const blocker = useBlocker(transferForm.dirty);
+    const blocker = useBlocker(transferForm.dirty && currentStep < 2);
 
     useEffect(() => {
         if (blocker.state === 'blocked') {
             if (!transferForm.dirty) {
                 blocker.reset();
             } else {
-                if (quitModalRef.current && currentStep > 1) {
+                if (quitModalRef.current) {
                     quitModalRef.current.toggle();
                 }
             }

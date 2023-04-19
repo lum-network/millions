@@ -229,7 +229,7 @@ const MySavings = () => {
             {assetToTransferOut && lumWallet && (
                 <TransferOutModal asset={assetToTransferOut} lumWallet={lumWallet} otherWallets={otherWallets} pools={pools} prices={prices} balances={balances || []} isLoading={isTransferring} />
             )}
-            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} />}
+            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} pools={pools} />}
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

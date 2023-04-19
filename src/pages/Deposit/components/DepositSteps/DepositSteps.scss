@@ -101,13 +101,22 @@
             color: $color-primary;
             background-color: $color-primary-light;
             border-radius: 8px;
-            min-width: 111px;
+            min-width: 100%;
             min-height: 111px;
 
             img {
                 width: 38px;
                 height: 38px;
                 object-fit: contain;
+            }
+
+            @include media-breakpoint-down(xl) {
+                //min-width: 90px;
+                min-height: 90px;
+                img {
+                    width: 30px;
+                    height: 30px;
+                }
             }
         }
     }

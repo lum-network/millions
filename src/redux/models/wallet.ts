@@ -100,7 +100,7 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async enableKeplrAndConnectLumWallet(payload: { silent: boolean }, state) {
+        async enableKeplrAndConnectLumWallet(payload: { silent: boolean } /* state */) {
             const { silent } = payload;
             const keplrWindow = window as KeplrWindow;
 
@@ -282,6 +282,7 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities(address);
             await dispatch.wallet.getDepositsAndWithdrawals(address);
+            await dispatch.pools.fetchPools();
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
