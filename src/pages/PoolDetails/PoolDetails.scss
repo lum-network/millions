@@ -1,0 +1,26 @@
+@import 'src/styles/main';
+
+.pool-details-container {
+    .biggest-prize-container {}
+
+    .prize-draw-card {
+        margin-top: 4rem;
+        .pool-illustration {
+            position: absolute;
+            right: 3rem;
+            bottom: 0;
+            width: 232px;
+            height: 235px;
+        }
+    }
+
+    .deposit-btn {
+        height: fit-content;
+    }
+
+    .cosmonaut-dab {
+        width: 252px;
+        height: 252px;
+        margin-bottom: -84px;
+    }
+}

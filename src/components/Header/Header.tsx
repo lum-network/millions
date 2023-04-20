@@ -56,7 +56,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     useEffect(() => {
         const scrollTrigger = {
             start: 'top top',
-            end: '5% top',
+            end: '3% top',
             scrub: true,
         };
 

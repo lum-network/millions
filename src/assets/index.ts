@@ -35,6 +35,9 @@ import evmos from './images/chains/evmos.svg';
 import lum from './images/chains/lum.svg';
 import osmo from './images/chains/osmo.svg';
 
+import atomIllustration from './images/chains/atom_illu.png';
+import osmoIllustration from './images/chains/osmo_illu.png';
+
 import chjango from './images/testimonials/chjango.png';
 import ethan from './images/testimonials/ethan.png';
 import sunny from './images/testimonials/sunny.png';
@@ -80,11 +83,13 @@ const Assets = {
     },
     chains: {
         atom,
+        atomIllustration,
         cre,
         cro,
         evmos,
         lum,
         osmo,
+        osmoIllustration,
     },
 };
 

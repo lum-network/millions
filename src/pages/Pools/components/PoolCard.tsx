@@ -1,13 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 
 import { Button, Card, CountDown } from 'components';
+import { NavigationConstants } from 'constant';
+import { RootState } from 'redux/store';
 import { DenomsUtils, I18n } from 'utils';
 
 import '../Pools.scss';
-import { useSelector } from 'react-redux';
-import { RootState } from 'redux/store';
-import { NavigationConstants } from 'constant';
 
 interface IProps {
     denom: string;
@@ -19,11 +20,17 @@ interface IProps {
 
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
+    const navigate = useNavigate();
 
     const price = prices?.[denom];
 
     return (
-        <Card className='pool-card-container'>
+        <Card
+            className='pool-card-container'
+            onClick={() => {
+                navigate(`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`);
+            }}
+        >
             <img width={88} height={88} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
             <div className='name-container'>
                 <span className='name'>{denom}</span>
@@ -50,7 +57,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
                 </div>
             </div>
             <div className='w-100'>
-                <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId}`} className='w-100'>
+                <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId}`} className='deposit-cta w-100'>
                     {I18n.t('pools.cta')}
                 </Button>
             </div>

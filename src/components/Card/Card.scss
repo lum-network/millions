@@ -17,6 +17,10 @@
         animation: none;
         opacity: 1;
     }
+
+    &.clickable {
+        cursor: pointer;
+    }
 }
 
 @keyframes cardShow {

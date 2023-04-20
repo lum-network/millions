@@ -6,6 +6,7 @@ export interface PoolInternalInfosModel {
     chainName: string;
     ibcSourceChannel: string;
     ibcDenom: string;
+    illustration?: string;
 }
 
 export interface PoolModel extends Pool {

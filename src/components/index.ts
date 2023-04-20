@@ -16,5 +16,6 @@ export { default as Steps } from './Steps/Steps';
 export { default as Table } from './Table/Table';
 export { default as PoolSelect } from './PoolSelect/PoolSelect';
 export { default as Tooltip } from './Tooltip/Tooltip';
+export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 
 export * from './ToastContent/ToastContent';

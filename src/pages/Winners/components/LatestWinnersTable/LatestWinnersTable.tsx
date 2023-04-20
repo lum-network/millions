@@ -1,5 +1,6 @@
 import React from 'react';
 import { LumTypes } from '@lum-network/sdk-javascript';
+import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 
@@ -8,7 +9,6 @@ import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 
 import './LatestWinnersTable.scss';
-import dayjs from 'dayjs';
 
 const LatestWinnersTable = ({
     winners,

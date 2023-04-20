@@ -22,7 +22,15 @@
             background-color: $color-primary;
             color: $color-primary-light;
             font-size: 12px;
-            line-height: 24px;
+            max-height: 24px;
+        }
+
+        .amount {
+            color: $color-black;
+        }
+
+        h4 {
+            line-height: 36px;
         }
      }
 }

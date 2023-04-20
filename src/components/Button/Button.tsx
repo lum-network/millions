@@ -23,7 +23,14 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
             <Link
                 to={to}
                 state={locationState}
-                onClick={!loading ? onClick : () => null}
+                onClick={
+                    !loading
+                        ? (event) => {
+                              event.stopPropagation();
+                              onClick?.();
+                          }
+                        : () => null
+                }
                 className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}
             >
                 {loading ? <Loading /> : children}

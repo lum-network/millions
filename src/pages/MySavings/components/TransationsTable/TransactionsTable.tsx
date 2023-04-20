@@ -37,16 +37,19 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
                                 <img src={icon} alt='tx icon' />
                             </div>
                         )}
-                        <h4 className='mb-0'>
-                            {type} {transaction.messages.length > 1 ? <span className='msg-count-badge ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</span> : null}
-                        </h4>
+                        <h4 className='mb-0 align-middle'>{type}</h4>
+                        {transaction.messages.length > 1 ? (
+                            <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
+                        ) : null}
                     </div>
                 </td>
-                <td className='align-middle p-3'>
-                    <div className='d-flex flex-row align-items-center justify-content-end'>
-                        {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
-                        <h4 className='ms-2 mb-0'>{DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}</h4>
-                    </div>
+                <td className='align-middle text-end p-3'>
+                    <h4 className='mb-0 align-middle'>
+                        <span className='me-2 amount'>
+                            {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
+                        </span>
+                        {DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}
+                    </h4>
                 </td>
             </tr>
         );

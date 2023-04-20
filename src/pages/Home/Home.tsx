@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import numeral from 'numeral';
 
-import { BestPrizeCard, Button, Card, Lottie } from 'components';
+import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 
@@ -16,19 +16,6 @@ const Home = () => {
     const biggestPrize = useSelector((state: RootState) => state.pools.bestPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
-
-    const renderBigWinnerCard = (denom: string, prize: number, address: string) => {
-        return (
-            <Button to={NavigationConstants.WINNERS} outline className='big-winner-card'>
-                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
-                <span className='prize'>
-                    {numeral(prize).format('0,0[.]0a')} {denom}
-                </span>
-                <div className='address'>{StringsUtils.trunc(address)}</div>
-                <img src={Assets.images.arrow} alt='arrow' />
-            </Button>
-        );
-    };
 
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
@@ -61,9 +48,9 @@ const Home = () => {
                                 />
                                 <h3>{I18n.t('home.lastBigWinners')}</h3>
                                 <div className='big-winners-container pt-4'>
-                                    {renderBigWinnerCard('evmos', 14564, 'lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f')}
-                                    {renderBigWinnerCard('lum', 23456543, 'lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f')}
-                                    {renderBigWinnerCard('atom', 143, 'lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f')}
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={14564} denom='evmos' />
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={23456543} denom='lum' />
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={143} denom='atom' />
                                 </div>
                             </Card>
                         </div>

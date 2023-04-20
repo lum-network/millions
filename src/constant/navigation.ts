@@ -1,6 +1,7 @@
 export const LANDING = '/';
 export const HOME = '/home';
 export const POOLS = '/pools';
+export const POOL_DETAILS = '/pools/details';
 export const MY_SAVINGS = '/my-savings';
 export const WINNERS = '/winners';
 export const LUM_EXPLORER = 'https://explorer.lum.network';

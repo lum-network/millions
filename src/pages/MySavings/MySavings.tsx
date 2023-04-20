@@ -173,7 +173,7 @@ const MySavings = () => {
                                     <img src={Assets.images.coinsStacked} alt='Stacked coins' />
                                     <h3 className='mt-2'>{I18n.t('mySavings.noAssets.title')}</h3>
                                     <p className='text-center'>{I18n.t('mySavings.noAssets.description')}</p>
-                                    <Button>{I18n.t('mySavings.deposit')}</Button>
+                                    <Button to={NavigationConstants.POOLS}>{I18n.t('mySavings.deposit')}</Button>
                                 </div>
                             )}
                         </Card>
