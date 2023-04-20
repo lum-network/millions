@@ -1,9 +1,8 @@
 import Assets from 'assets';
-import { Button, Card, Modal, SmallerDecimal, Steps } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
 import { DepositModel } from 'models';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from 'react-tooltip';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
@@ -65,7 +64,7 @@ const LeavePool = ({ deposit }: Props) => {
     }, []);
 
     return (
-        <Modal id='leavePoolModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
+        <Modal id='leavePoolModal' ref={modalRef} dataBsBackdrop='static' modalWidth={1080} withCloseButton={false}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.leavePoolModal.title')}</h1>
@@ -106,7 +105,7 @@ const LeavePool = ({ deposit }: Props) => {
                                     <Card flat withoutPadding className='fees-warning mt-4'>
                                         <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                             <img src={Assets.images.info} alt='info' />
-                                            <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                                            <Tooltip id='fees-tooltip' />
                                         </span>
                                         {I18n.t('deposit.feesWarning')}
                                     </Card>

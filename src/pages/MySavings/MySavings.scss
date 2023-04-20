@@ -80,6 +80,20 @@
 
     .action-buttons {
         z-index: 5;
+
+        @include media-breakpoint-down(md) {
+            .app-btn {
+                font-size: 12px;
+                padding: 12px 18px;
+            }
+        }
+
+        @include media-breakpoint-only(lg) {
+            .app-btn {
+                font-size: 12px;
+                padding: 12px 18px;
+            }
+        }
     }
 
     &.collapsible {
@@ -135,6 +149,14 @@
         letter-spacing: 0;
         text-align: left;
         color: $color-primary;
+    }
+
+    @include media-breakpoint-only(lg) {
+        font-size: 20px;
+    }
+
+    @include media-breakpoint-down(md) {
+        font-size: 20px;
     }
 }
 

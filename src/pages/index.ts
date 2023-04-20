@@ -4,3 +4,4 @@ export { default as MySavingsPage } from './MySavings/MySavings';
 export { default as DepositPage } from './Deposit/Deposit';
 export { default as LandingPage } from './Landing/Landing';
 export { default as Error404 } from './404/404';
+export { default as Winners } from './Winners/Winners';

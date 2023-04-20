@@ -350,7 +350,7 @@ export const wallet = createModel<RootModel>()({
                 denom: amount.denom,
             };
 
-            const toastId = ToastUtils.showLoadingToast({ content: type === 'withdraw' ? 'Withdrawing...' : 'Depositing...' });
+            const toastId = ToastUtils.showLoadingToast({ content: 'Transferring...' });
 
             try {
                 if (!chainId) {
@@ -373,7 +373,7 @@ export const wallet = createModel<RootModel>()({
                 WalletClient.disconnect();
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || `Failed to ${type}`);
+                    throw new Error(result?.error || 'Failed to transfer, please try again later.');
                 }
 
                 while (true) {
@@ -389,14 +389,14 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully ${type === 'withdraw' ? 'withdrawn' : 'deposited'} ${amount.amount} ${normalDenom.toUpperCase()}`,
+                    content: `Successfully transfered ${amount.amount} ${normalDenom.toUpperCase()} to ${type === 'withdraw' ? 'native chain' : 'Lum Network'}`,
                 });
 
                 await dispatch.wallet.reloadWalletInfos(type === 'withdraw' ? fromAddress : toAddress);
 
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to ${type}` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || 'Failed to transfer, please try again later.' });
                 return null;
             }
         },

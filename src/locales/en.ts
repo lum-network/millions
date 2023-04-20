@@ -229,7 +229,7 @@ export default {
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
             shareTwitterContent:
-                'My savings are going to the moon :rocket: I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍:rocket: saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+                'My savings are going to the moon 🚀 I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
@@ -250,7 +250,7 @@ export default {
                     title: 'Choose the pool you want to leave',
                     subtitle: 'Redeem your savings\nor transfer your available tokens',
                     cardTitle: 'Leave pool',
-                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="">Learn why</a>',
+                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
                 },
                 {
                     title: 'Select the savings to redeem',
@@ -277,7 +277,7 @@ export default {
         title: 'Few steps away\nfrom your deposit',
         depositBtn: 'Deposit',
         saveAndWinBtn: 'Save & Win',
-        fees: 'Fees warning',
+        fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
             winning: {
                 title: 'Winning chances',
@@ -290,7 +290,7 @@ export default {
         },
         feesWarning: 'You will need LUM to pay transaction fees',
         depositWarning:
-            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="">Learn why</a>',
+            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount of {{ denom }} to deposit in the Pool',
         steps: [
             {
@@ -311,7 +311,7 @@ export default {
         ],
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
-            'My savings are going to the moon :rocket: I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍:rocket: saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+            'My savings are going to the moon 🚀 I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
         goToMySavings: 'Go to my savings',
         seeOnMintscan: 'See transaction on Mintscan',
         seeOnExplorer: 'See transaction on Lum Explorer',
@@ -323,4 +323,8 @@ export default {
         },
         depositId: 'Deposit #{{ depositId }}',
     },
+    luckiestWinners: {
+        title: 'Luckiest Winners',
+        latestWinners: 'Latest Winners',
+    }
 };

@@ -56,7 +56,7 @@ const Collapsible = (props: Props) => {
                 {!disabled && (
                     <div
                         onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined}
-                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center`}
+                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center ms-4`}
                     >
                         <img src={Assets.images.arrow} alt='arrow' />
                     </div>

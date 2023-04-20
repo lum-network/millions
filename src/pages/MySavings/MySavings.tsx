@@ -58,7 +58,7 @@ const MySavings = () => {
                 disabled
                 header={
                     <>
-                        <div className='d-flex justify-content-between align-items-center flex-grow-1 me-4'>
+                        <div className='d-flex justify-content-between align-items-center flex-grow-1'>
                             <div className='d-flex flex-row align-items-center'>
                                 {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
                                 <div className='d-flex flex-column asset-amount'>
@@ -159,7 +159,7 @@ const MySavings = () => {
                         {deposits && deposits.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
-                                <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                <Card withoutPadding className='py-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <DepositTable deposits={deposits} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
                                 </Card>
                             </>
@@ -180,7 +180,7 @@ const MySavings = () => {
                         {activities && activities.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
-                                <Card withoutPadding className='py-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                <Card withoutPadding className='py-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <TransactionsTable transactions={activities} />
                                 </Card>
                             </>
@@ -205,7 +205,7 @@ const MySavings = () => {
                                             const amount = Number(NumbersUtils.convertUnitNumber(prize.amount.amount));
 
                                             return (
-                                                <span className={`asset-amount ${index > 0 ? 'mt-3' : ''}`} key={`prize-to-claim-${index}`}>
+                                                <span className={`asset-amount ${index > 0 ? 'mt-4' : ''}`} key={`prize-to-claim-${index}`}>
                                                     <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
                                                     <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
                                                     {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}

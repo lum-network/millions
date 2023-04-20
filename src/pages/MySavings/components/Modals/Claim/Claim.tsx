@@ -3,12 +3,11 @@ import { LumUtils } from '@lum-network/sdk-javascript';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
-import { Tooltip } from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import Assets from 'assets';
-import { Button, Card, Modal, SmallerDecimal, Steps } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { NavigationConstants } from 'constant';
 import { PoolModel } from 'models';
@@ -96,7 +95,7 @@ const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.Re
                                 I18n.t(infos.compounded ? 'deposit.shareTwitterContent' : 'mySavings.claimModal.shareTwitterContent', {
                                     amount: infos.amount,
                                     denom: infos.denom,
-                                    tvl: NumbersUtils.convertUnitNumber(infos.tvl) + ' ' + infos.denom,
+                                    tvl: infos.tvl + ' ' + infos.denom,
                                 }),
                             )}`,
                             '_blank',
@@ -142,9 +141,9 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setCurrentStep(2);
             setShareInfos({
                 hash: LumUtils.toHex(res.hash).toUpperCase(),
-                amount: prizes.reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0).toString(),
-                denom: prizes[0].amount?.denom || '',
-                tvl: pool?.tvlAmount || '',
+                amount: NumbersUtils.formatTo6digit(prizes.reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0)),
+                denom: DenomsUtils.getNormalDenom(prizes[0].amount?.denom || '').toUpperCase(),
+                tvl: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')),
                 compounded: compound,
             });
         }
@@ -170,7 +169,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     });
 
     return (
-        <Modal id='claimModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
+        <Modal id='claimModal' ref={modalRef} modalWidth={1080}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
@@ -253,7 +252,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 <Card flat withoutPadding className='fees-warning'>
                                                     <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                                         <img src={Assets.images.info} alt='info' />
-                                                        <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                                                        <Tooltip id='fees-tooltip' />
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>

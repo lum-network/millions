@@ -1,0 +1,10 @@
+@import 'src/styles/main';
+
+.app-tooltip {
+    font-size: 14px;
+    color: $color-black;
+    
+    a {        
+        color: $color-black;
+    }
+}

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import { Tooltip } from 'react-tooltip';
 import Skeleton from 'react-loading-skeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import Assets from 'assets';
-import { AmountInput, AssetsSelect, Button, Card, Modal, Steps } from 'components';
+import { AmountInput, AssetsSelect, Button, Card, Modal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
@@ -108,7 +107,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
     });
 
     return (
-        <Modal id='withdrawModal' ref={modalRef} modalWidth={1080} withCloseButton={false}>
+        <Modal id='withdrawModal' ref={modalRef} modalWidth={1080}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
@@ -168,7 +167,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                         <Card flat withoutPadding className='fees-warning mt-4'>
                                             <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                                 <img src={Assets.images.info} alt='info' />
-                                                <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                                                <Tooltip id='fees-tooltip' />
                                             </span>
                                             {I18n.t('deposit.feesWarning')}
                                         </Card>

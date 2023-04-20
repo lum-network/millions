@@ -19,13 +19,7 @@ const Home = () => {
 
     const renderBigWinnerCard = (denom: string, prize: number, address: string) => {
         return (
-            <Button
-                onClick={() => {
-                    window.open(`${NavigationConstants.LUM_EXPLORER}/account/${address}`, '_blank')?.focus();
-                }}
-                outline
-                className='big-winner-card'
-            >
+            <Button to={NavigationConstants.WINNERS} outline className='big-winner-card'>
                 <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
                 <span className='prize'>
                     {numeral(prize).format('0,0[.]0a')} {denom}

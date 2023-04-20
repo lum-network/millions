@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FormikProps } from 'formik';
-import { Tooltip } from 'react-tooltip';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
 import { DenomsUtils, I18n, NumbersUtils, ToastUtils, WalletUtils } from 'utils';
-import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal } from 'components';
+import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
 
@@ -111,7 +110,7 @@ const DepositStep1 = (
                                 {I18n.t('deposit.chancesHint.winning.title')}
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='winning-chance-tooltip' className='tooltip-light width-400' variant='light' />
+                                    <Tooltip id='winning-chance-tooltip' />
                                 </span>
                             </div>
                             <div>14%</div>
@@ -121,7 +120,7 @@ const DepositStep1 = (
                                 {I18n.t('deposit.chancesHint.averagePrize.title')}
                                 <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
+                                    <Tooltip id='average-prize-tooltip' />
                                 </span>
                             </div>
                             <div>14 {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</div>
@@ -163,7 +162,7 @@ const DepositStep2 = (
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
     const [error, setError] = useState('');
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool || state.loading.effects.wallet.reloadWalletInfos);
+    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
     useEffect(() => {
         const depositAmountNumber = Number(depositAmount);
@@ -274,7 +273,7 @@ const DepositStep2 = (
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                     <img src={Assets.images.info} alt='info' />
-                    <Tooltip id='fees-tooltip' className='tooltip-light width-400' variant='light' />
+                    <Tooltip id='fees-tooltip' />
                 </span>
                 {I18n.t('deposit.feesWarning')}
             </Card>
@@ -295,9 +294,9 @@ const DepositStep2 = (
                     } else if (res && res.hash) {
                         onFinishDeposit({
                             hash: LumUtils.toHex(res.hash).toUpperCase(),
-                            amount: depositAmount,
+                            amount: NumbersUtils.formatTo6digit(depositAmount),
                             denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
-                            tvl: poolToDeposit.tvlAmount,
+                            tvl: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber),
                         });
                         onNextStep();
                     }
@@ -364,10 +363,7 @@ const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; de
                 onClick={() => {
                     window.open(
                         `${NavigationConstants.TWEET_URL}?text=${encodeURI(
-                            I18n.t(
-                                'deposit.shareTwitterContent',
-                                txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: NumbersUtils.convertUnitNumber(txInfos.tvl) + ' ' + txInfos.denom } : {},
-                            ),
+                            I18n.t('deposit.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
                         )}`,
                         '_blank',
                     );
