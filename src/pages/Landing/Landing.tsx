@@ -183,7 +183,7 @@ const Landing = () => {
                 <div id='cosmos-game' className='cosmos-game-right col-12 col-lg-7'>
                     <Card>
                         <h2 className='mb-4 text-center'>
-                            $5 000 incentives for
+                            $5 000 ATOM incentives for
                             <br />
                             early registrations
                         </h2>
