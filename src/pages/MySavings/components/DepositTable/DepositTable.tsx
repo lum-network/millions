@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
-import { Button, Collapsible } from 'components';
+import { Button, Collapsible, SmallerDecimal } from 'components';
 import { AggregatedDepositModel, DepositModel } from 'models';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
@@ -45,8 +45,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
         }
 
         return (
-            <div className={className} key={`deposit-${index}`}>
-                <div>
+            <div className={`${className}`} key={`deposit-${index}`}>
+                <div className='col-6'>
                     <div className='d-flex flex-row align-items-center'>
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                         <div className='d-flex flex-column ms-3'>
@@ -59,12 +59,12 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                         </div>
                     </div>
                 </div>
-                <div>
+                <div className='col-2'>
                     <div className={`deposit-state rounded-pill ${statusClassName}`}>
                         {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                     </div>
                 </div>
-                <div>
+                <div className='col-4'>
                     <div className='d-flex justify-content-end'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>
                 </div>
             </div>
@@ -78,14 +78,15 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                     key={`collapsible-deposit-${index}`}
                     className='d-flex flex-column collapsible-deposits deposit-card'
                     buttonBorder
+                    toggleWithButton
                     header={
-                        <div className='d-flex align-items-center justify-content-between w-100' key={`deposit-${index}`}>
-                            <div>
+                        <div className='d-flex align-items-center w-100' key={`deposit-${index}`}>
+                            <div className='col-6'>
                                 <div className='d-flex flex-row align-items-center'>
                                     <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                                     <div className='d-flex flex-column ms-3'>
                                         <h3 className='mb-0'>
-                                            {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))}{' '}
+                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
                                             {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                         </h3>
                                         <p className='mb-0'>
@@ -94,7 +95,7 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className='me-5'>
+                            <div className='col-2'>
                                 <div className={`deposit-state rounded-pill success`}>
                                     {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                                 </div>

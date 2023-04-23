@@ -27,6 +27,12 @@
             color: $color-primary;
             cursor: pointer;
             width: unset;
+            position: absolute;
+            right: 74px;
+
+            @include media-breakpoint-down(xl) {
+                right: 50px;
+            }
         }
     }
 
