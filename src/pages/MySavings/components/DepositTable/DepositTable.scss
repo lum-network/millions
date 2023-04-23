@@ -27,10 +27,9 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 24px;
+        padding-top: 24px;
 
-        &:first-child {
-            margin-top: 42px;
-        }
+        border-top: rgba(86, 52, 222, 0.3) 1px solid;
     }
 
     .deposit-state {

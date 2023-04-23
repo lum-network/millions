@@ -13,6 +13,7 @@ interface Props {
     toggleWithButton?: boolean;
     className?: string;
     border?: boolean;
+    buttonBorder?: boolean;
 }
 
 const Collapsible = (props: Props) => {
@@ -20,7 +21,7 @@ const Collapsible = (props: Props) => {
     const [bsCollapse, setBsCollapse] = useState<Collapse>();
     const collapseRef = useRef<HTMLDivElement>(null);
 
-    const { header, content, id, className, toggleWithButton, disabled, border = true } = props;
+    const { header, content, id, className, toggleWithButton, disabled, border = true, buttonBorder } = props;
 
     useEffect(() => {
         const collapsible = document.getElementById(id);
@@ -56,8 +57,9 @@ const Collapsible = (props: Props) => {
                 {!disabled && (
                     <div
                         onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined}
-                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center ms-4`}
+                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center ms-4 ${buttonBorder ? 'with-button-border' : ''}`}
                     >
+                        {buttonBorder && (isShowing ? <span className='me-3'>Close&nbsp;details</span> : <span className='me-3'>Open&nbsp;details</span>)}
                         <img src={Assets.images.arrow} alt='arrow' />
                     </div>
                 )}

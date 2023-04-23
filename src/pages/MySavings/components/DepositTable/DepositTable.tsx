@@ -77,6 +77,7 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                 <Collapsible
                     key={`collapsible-deposit-${index}`}
                     className='d-flex flex-column collapsible-deposits deposit-card'
+                    buttonBorder
                     header={
                         <div className='d-flex align-items-center justify-content-between w-100' key={`deposit-${index}`}>
                             <div>
@@ -87,7 +88,9 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                                             {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))}{' '}
                                             {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                         </h3>
-                                        <p className='mb-0'>{I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })}</p>
+                                        <p className='mb-0'>
+                                            {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} - {I18n.t('deposit.deposits', { count: deposits.length })}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

@@ -250,7 +250,8 @@ export default {
                     title: 'Choose the pool you want to leave',
                     subtitle: 'Redeem your savings\nor transfer your available tokens',
                     cardTitle: 'Leave pool',
-                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+                    cardSubtitle:
+                        'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
                 },
                 {
                     title: 'Select the savings to redeem',
@@ -322,9 +323,11 @@ export default {
             title: 'You are trying to deposit more than your available balance on Lum Network, you will need to transfer coins to Lum Network first to complete your deposit',
         },
         depositId: 'Deposit #{{ depositId }}',
+        deposits_one: '{{ count }} Deposit',
+        deposits_other: '{{ count }} Deposits',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
         latestWinners: 'Latest Winners',
-    }
+    },
 };
