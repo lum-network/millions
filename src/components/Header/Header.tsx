@@ -5,16 +5,17 @@ import { gsap } from 'gsap';
 import { slide as Menu } from 'react-burger-menu';
 
 import logo from 'assets/lotties/logo.json';
+import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
+
+import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { I18n, KeplrUtils, StringsUtils } from 'utils';
+import { useWindowSize } from 'hooks';
+import { I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { NavigationConstants } from 'constant';
 
-import Assets from 'assets';
-
 import './Header.scss';
-import { useWindowSize } from 'hooks';
 
 const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
@@ -92,7 +93,18 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
     };
 
-    const renderContent = () => {
+    const copyAddress = () => {
+        navigator.clipboard.writeText('<empty clipboard>').then(
+            () => {
+                ToastUtils.showSuccessToast({ content: 'Copied address to clipboard !' });
+            },
+            () => {
+                ToastUtils.showErrorToast({ content: 'Failed to copy address to clipboard, try again later' });
+            },
+        );
+    };
+
+    const renderContent = (inBurgerMenu: boolean) => {
         if (isLanding) {
             return (
                 <ul className='navbar-nav flex-row align-items-center ms-auto'>
@@ -121,8 +133,8 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
-                    <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
-                        <Button to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
+                    <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0'>
+                        <Button to={NavigationConstants.HOME} {...dismissMenuProps} locationState={{ autoConnect: true }}>
                             {I18n.t('landing.openTheApp')}
                         </Button>
                     </li>
@@ -137,31 +149,36 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         {I18n.t('home.title')}
                     </NavLink>
                 </li>
-                <li className='nav-item mx-lg-5 mx-0 mx-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
+                <li className='nav-item mx-lg-5 mx-0 mx-lg-4 mt-4 mt-lg-0' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('pools.title')}
                     </NavLink>
                 </li>
-                <li className='nav-item mt-3 mt-lg-0' {...dismissMenuProps}>
+                <li className='nav-item mt-4 mt-lg-0' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('mySavings.title')}
                     </NavLink>
                 </li>
-                <li className='nav-item ms-lg-5 ms-0 ms-lg-4 mt-3 mt-lg-0' {...dismissMenuProps}>
-                    <Button
-                        outline
-                        onClick={
-                            !address
-                                ? connectWallet
-                                : () => {
-                                      if (logoutModalRef.current) {
-                                          logoutModalRef.current.toggle();
-                                      }
-                                  }
-                        }
-                    >
-                        {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
-                    </Button>
+                {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
+                <li className='nav-item ms-lg-5 ms-0 ms-lg-4 mt-4 mt-lg-0' {...dismissMenuProps}>
+                    <div className='d-flex flex-row'>
+                        <Button outline className='flex-grow-1' onClick={!address ? connectWallet : copyAddress}>
+                            {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
+                        </Button>
+                        {address && !inBurgerMenu ? (
+                            <Button
+                                textOnly
+                                className='ms-4'
+                                onClick={() => {
+                                    if (logoutModalRef.current) {
+                                        logoutModalRef.current.show();
+                                    }
+                                }}
+                            >
+                                <img src={Assets.images.logout} />
+                            </Button>
+                        ) : null}
+                    </div>
                 </li>
             </ul>
         );
@@ -197,18 +214,51 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             ]}
                         />
                     </Link>
-                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= 992 ? renderBurger() : renderContent()}</div>
+                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= 992 ? renderBurger() : renderContent(false)}</div>
                 </nav>
             </header>
             {winSizes.width <= 992 && (
-                <Menu right customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onStateChange={(state) => setIsMenuOpen(state.isOpen)}>
-                    <div className='d-flex flex-row justify-content-between mb-4'>
-                        <h3 className='offcanvas-title' id='offcanvasNavbarLabel'>
-                            Cosmos Millions
-                        </h3>
-                        <button type='button' className='btn-close' aria-label='Close' {...dismissMenuProps}></button>
+                <Menu
+                    right
+                    customBurgerIcon={false}
+                    customCrossIcon={false}
+                    width={winSizes.width < 576 ? winSizes.width : 390}
+                    isOpen={isMenuOpen}
+                    onStateChange={(state) => setIsMenuOpen(state.isOpen)}
+                >
+                    <div className='d-flex flex-row justify-content-between menu-header pt-3'>
+                        <Link to={NavigationConstants.LANDING} {...dismissMenuProps}>
+                            <Lottie
+                                delay={1100}
+                                className='logo'
+                                animationData={logo}
+                                segments={[
+                                    [0, 41],
+                                    [41, 400],
+                                ]}
+                            />
+                        </Link>
+                        <div className='d-flex flex-row align-items-center'>
+                            {address ? (
+                                <Button
+                                    textOnly
+                                    className='me-3'
+                                    onClick={() => {
+                                        setIsMenuOpen(false);
+                                        if (logoutModalRef.current) {
+                                            logoutModalRef.current.show();
+                                        }
+                                    }}
+                                >
+                                    <img src={Assets.images.logout} />
+                                </Button>
+                            ) : null}
+                            <button className='close-btn d-flex align-items-center justify-content-center' type='button' aria-label='Close burger menu' {...dismissMenuProps}>
+                                <span className='btn-close'></span>
+                            </button>
+                        </div>
                     </div>
-                    {renderContent()}
+                    {renderContent(true)}
                 </Menu>
             )}
         </>

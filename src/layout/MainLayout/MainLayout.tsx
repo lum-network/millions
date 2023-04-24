@@ -6,13 +6,13 @@ import infoIcon from 'assets/images/info.svg';
 import keplrIcon from 'assets/images/keplr.svg';
 import { Button, Card, Header, Modal } from 'components';
 import { NavigationConstants } from 'constant';
+import { useVisibilityState } from 'hooks';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
-import { I18n, KeplrUtils } from 'utils';
+import { I18n, KeplrUtils, ToastUtils } from 'utils';
 
 import './MainLayout.scss';
-import { useVisibilityState } from 'hooks';
 
 const MainLayout = () => {
     const [enableAutoConnect, setEnableAutoConnect] = useState(true);
@@ -54,10 +54,12 @@ const MainLayout = () => {
     useEffect(() => {
         if (visibilityState === 'visible') {
             if (wallet && location.pathname !== NavigationConstants.POOLS) {
-                dispatch.wallet.reloadWalletInfos(wallet.address);
+                // DISABLE Auto refresh for now
+
+                //dispatch.wallet.reloadWalletInfos(wallet.address);
                 setBalanceFetchInterval(
                     setInterval(() => {
-                        dispatch.wallet.reloadWalletInfos(wallet.address);
+                        //dispatch.wallet.reloadWalletInfos(wallet.address);
                     }, 30000),
                 );
             }
@@ -69,6 +71,36 @@ const MainLayout = () => {
             }
         }
     }, [visibilityState]);
+
+    useEffect(() => {
+        const keplrKeystoreChangeHandler = () => {
+            console.log('keystore handler');
+            if (wallet) {
+                ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
+                dispatch({ type: 'LOGOUT' });
+                dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
+                dispatch.wallet.connectOtherWallets(null);
+            }
+        };
+
+        window.addEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
+
+        if (wallet && !balanceFetchInterval) {
+            setBalanceFetchInterval(
+                setInterval(() => {
+                    //dispatch.wallet.reloadWalletInfos(wallet.address);
+                }, 30000),
+            );
+        }
+
+        if (!wallet && balanceFetchInterval) {
+            clearInterval(balanceFetchInterval);
+        }
+
+        return () => {
+            window.removeEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
+        };
+    }, [wallet]);
 
     return (
         <>

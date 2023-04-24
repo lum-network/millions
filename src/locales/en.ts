@@ -282,7 +282,7 @@ export default {
         chancesHint: {
             winning: {
                 title: 'Winning chances',
-                hint: 'Winning chances hint',
+                hint: '',
             },
             averagePrize: {
                 title: 'Average prize',
@@ -296,7 +296,9 @@ export default {
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
-                subtitle: 'Put your tokens into on our chain to participate',
+                subtitle: 'Transfer your ATOM from {{ chainName }} to Lum Network',
+                cardTitle: 'Deposit into a pool',                
+                cadSubtitle: 'Transfer your ATOM from\n{{ chainName }} to Lum Network',
             },
             {
                 title: 'Deposit in the {{ denom }} pool',
