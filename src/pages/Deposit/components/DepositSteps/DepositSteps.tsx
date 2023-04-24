@@ -36,6 +36,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (amount: string) => void;
+    onTwitterShare: () => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
     price?: number;
@@ -312,7 +313,7 @@ const DepositStep2 = (
     );
 };
 
-const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; denom: string; tvl: string } }) => {
+const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: { hash: string; amount: string; denom: string; tvl: string }; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
@@ -367,6 +368,7 @@ const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; de
                         )}`,
                         '_blank',
                     );
+                    onTwitterShare();
                 }}
             >
                 <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3' width={25} />
@@ -377,7 +379,7 @@ const DepositStep3 = ({ txInfos }: { txInfos: { hash: string; amount: string; de
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<{
         hash: string;
@@ -429,7 +431,7 @@ const DepositSteps = (props: Props) => {
                         onPrevStep={onPrevStep}
                     />
                 )}
-                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} />}
+                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} onTwitterShare={onTwitterShare} />}
             </div>
         </>
     );

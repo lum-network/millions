@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 import { Card, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
+import { useVisibilityState } from 'hooks';
 import { DenomsUtils, I18n } from 'utils';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -29,6 +30,7 @@ const Deposit = () => {
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(existsInLumBalances ? 1 : 0);
+    const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
@@ -65,6 +67,7 @@ const Deposit = () => {
     });
 
     const blocker = useBlocker(transferForm.dirty && currentStep < 2);
+    const visibilityState = useVisibilityState();
 
     useEffect(() => {
         if (blocker.state === 'blocked') {
@@ -92,6 +95,12 @@ const Deposit = () => {
         { capture: true },
     );
 
+    useEffect(() => {
+        if (visibilityState === 'visible' && shareState === 'sharing') {
+            setShareState('shared');
+        }
+    }, [visibilityState, shareState]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -115,7 +124,7 @@ const Deposit = () => {
             <div className='row row-cols-1 row-cols-lg-2 py-5 h-100 gy-5'>
                 <div className='col'>
                     <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} />
+                    <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                 </div>
                 <div className='col'>
                     <Card withoutPadding className={`d-flex flex-column justify-content-between px-5 py-3 ${isLastStep ? 'glow-bg' : ''}`}>
@@ -128,6 +137,7 @@ const Deposit = () => {
                                     ibcModalRef.current.toggle();
                                 }
                             }}
+                            onTwitterShare={() => setShareState('sharing')}
                             currentStep={currentStep}
                             steps={steps}
                             pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}

@@ -2,9 +2,9 @@ import React from 'react';
 
 import './Table.scss';
 
-const Table = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+const Table = ({ children, className, responsive = true }: { children: React.ReactNode; className?: string; responsive?: boolean }) => {
     return (
-        <div className={`table-responsive ${className}`}>
+        <div className={`${responsive ? 'table-responsive' : ''} ${className}`}>
             <table className='table table-borderless mb-0'>
                 <tbody>{children}</tbody>
             </table>

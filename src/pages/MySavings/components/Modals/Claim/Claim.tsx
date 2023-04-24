@@ -15,6 +15,7 @@ import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './Claim.scss';
+import { useVisibilityState } from 'hooks';
 
 interface Props {
     prizes: Prize[];
@@ -24,7 +25,7 @@ interface Props {
 
 type ShareInfos = { hash: string; amount: string; denom: string; tvl: string; compounded: boolean };
 
-const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.RefObject<ModalHandlers> }) => {
+const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
@@ -39,9 +40,6 @@ const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.Re
                         <button
                             className='scale-hover d-flex flex-column align-items-center justify-content-center'
                             onClick={() => {
-                                if (modalRef.current) {
-                                    modalRef.current.hide();
-                                }
                                 window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${infos.hash}`, '_blank');
                             }}
                         >
@@ -55,9 +53,6 @@ const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.Re
                         <button
                             className='scale-hover d-flex flex-column align-items-center justify-content-center'
                             onClick={() => {
-                                if (modalRef.current) {
-                                    modalRef.current.hide();
-                                }
                                 window.open(`${NavigationConstants.MINTSCAN}/txs/${infos.hash}`, '_blank');
                             }}
                         >
@@ -87,9 +82,6 @@ const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.Re
                 <Button
                     className='deposit-cta mt-5'
                     onClick={() => {
-                        if (modalRef.current) {
-                            modalRef.current.hide();
-                        }
                         window.open(
                             `${NavigationConstants.TWEET_URL}?text=${encodeURI(
                                 I18n.t(infos.compounded ? 'deposit.shareTwitterContent' : 'mySavings.claimModal.shareTwitterContent', {
@@ -100,6 +92,7 @@ const ShareClaim = ({ infos, modalRef }: { infos: ShareInfos; modalRef: React.Re
                             )}`,
                             '_blank',
                         );
+                        onTwitterShare();
                     }}
                 >
                     <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3' width={25} />
@@ -114,6 +107,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const [claimOnly, setClaimOnly] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [shareInfos, setShareInfos] = useState<ShareInfos | null>(null);
+    const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
+
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
@@ -122,6 +117,14 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const steps = I18n.t('mySavings.claimModal.steps', {
         returnObjects: true,
     });
+
+    const visibilityState = useVisibilityState();
+
+    useEffect(() => {
+        if (visibilityState === 'visible' && shareState === 'sharing') {
+            setShareState('shared');
+        }
+    }, [visibilityState, shareState]);
 
     const onClaim = async (compound: boolean) => {
         if (!prizes.length) {
@@ -153,6 +156,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
         const handler = () => {
             setCurrentStep(0);
             setClaimOnly(false);
+            setShareInfos(null);
+            setShareState(null);
         };
 
         const claimModal = document.getElementById('claimModal');
@@ -173,12 +178,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} />
+                    <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                 </div>
                 <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
                         {currentStep === 2 && shareInfos ? (
-                            <ShareClaim infos={shareInfos} modalRef={modalRef} />
+                            <ShareClaim infos={shareInfos} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
                         ) : (
                             <div className={`${!claimOnly ? 'h-100' : ''} d-flex flex-column justify-content-between text-center py-sm-4`}>
                                 {claimOnly ? (

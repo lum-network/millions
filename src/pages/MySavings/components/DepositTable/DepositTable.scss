@@ -2,53 +2,133 @@
 
 .deposits-table {
     padding: 1rem 0;
+    .table {
+        border-spacing: 0 0;
 
-    .collapsible-deposits {
-        border: 0;
-        padding: 12px 0;
-    }
+        & > tbody {
+            & > tr.collapsible-row {
+                padding: 2rem;
+                background-color: $color-primary-light;
 
-    .deposit-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: $color-primary-light;
-        border-radius: 8px;
-        padding: 25px 32px;
-        width: 100%;
 
-        &:not(:last-child) {
-            margin-bottom: 24px;
-        }
-    }
+                .collapsible-row > td {
+                    background-clip: padding-box;
 
-    .deposit-card-collapse {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 24px;
+                    &:last-child {
+                        border-color: #f1edff;
+                        border-top-right-radius: 15px;
+                        border-bottom-right-radius: 15px;
+                    }
+                }
+            }
 
-        &:first-child {
-            margin-top: 42px;
-        }
-    }
+            & > tr.collapse-row {
+                transform: translateY(-15px);
 
-    .deposit-state {
-        width: fit-content;
-        padding: 7px 14px;
+                td {
+                    background-color: $color-primary-light;
+                    height: 0;
+                    &:last-child {
+                        border-top-right-radius: 0;
+                        padding-bottom: 0;
+                    }
+                    &:first-child {
+                        border-top-right-radius: 0;
+                        border-top-left-radius: 0;
+                    }
+                }
 
-        box-shadow: 0 4px 23px #f1edff;
+                table tbody tr td > div {
+                    border-top: 1px solid #5634de33;
+                }
 
-        background: #8C8C8C;
-        color: white;
+                table tbody tr td div {
+                    &.deposit-state {
+                        display: none;
+                    }
+                    &.app-btn {
+                        width: fit-content;
+                    }
+                }
+                
+                table tbody tr:first-child td {
+                    border-top: 0;
+                    
+                }
+            }
 
-        font-size: 12px;
-        &.success {
-            background: $color-success;
-        }
+            & > tr:empty {
+                height: 2rem;
 
-        &.failure {
-            background: $color-failure;
+                @include media-breakpoint-down(xl) {
+                    height: 1.5rem;
+                }
+            }
+
+            .collapsible-deposits {
+                border: 0;
+            }
+
+            .collapsible-deposits-items {
+                display: table;
+                width: 100%;
+
+                .deposit-item-row {
+                    display: table-row;
+
+                    .deposit-item-cell {
+                        display: table-cell;
+                        vertical-align: middle;
+                        border-top: 1px solid #5634de33;
+
+                        .app-btn {
+                            width: fit-content;
+                        }
+                    }
+                }
+            }
+
+            .deposit-card {
+                background-color: $color-primary-light;
+                border-radius: 8px;
+                padding: 25px 32px;
+                width: 100%;
+
+                &:not(:last-child) {
+                    margin-bottom: 24px;
+                }
+            }
+
+            .deposit-card-collapse {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 24px;
+
+                &:first-child {
+                    margin-top: 42px;
+                }
+            }
+
+            .deposit-state {
+                display: block;
+                width: fit-content;
+                padding: 7px 14px;
+
+                box-shadow: 0 4px 23px #f1edff;
+
+                background: #8c8c8c;
+                color: white;
+
+                font-size: 12px;
+                &.success {
+                    background: $color-success;
+                }
+
+                &.failure {
+                    background: $color-failure;
+                }
+            }
         }
     }
 }

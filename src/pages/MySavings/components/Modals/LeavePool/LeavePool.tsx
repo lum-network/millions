@@ -74,8 +74,8 @@ const LeavePool = ({ deposit }: Props) => {
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
                         <div className='h-100 d-flex flex-column text-center py-sm-4'>
                             <div className='mb-5 mb-lg-0'>
-                                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: steps[currentStep].cardTitle || steps[currentStep].title }} />
-                                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: steps[currentStep].cardSubtitle || steps[currentStep].subtitle }} />
+                                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: steps[currentStep]?.cardTitle || steps[currentStep]?.title }} />
+                                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: steps[currentStep]?.cardSubtitle || steps[currentStep]?.subtitle }} />
                             </div>
                             <div className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
                                 <div className='warnings mt-4 text-start'>

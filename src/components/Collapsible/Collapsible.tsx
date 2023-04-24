@@ -10,9 +10,11 @@ interface Props {
     content: string | JSX.Element;
     id: string;
     disabled?: boolean;
+    withButton?: boolean;
     toggleWithButton?: boolean;
     className?: string;
     border?: boolean;
+    collapseButton?: JSX.Element;
 }
 
 const Collapsible = (props: Props) => {
@@ -20,7 +22,7 @@ const Collapsible = (props: Props) => {
     const [bsCollapse, setBsCollapse] = useState<Collapse>();
     const collapseRef = useRef<HTMLDivElement>(null);
 
-    const { header, content, id, className, toggleWithButton, disabled, border = true } = props;
+    const { header, content, id, className, toggleWithButton, disabled, collapseButton, withButton = true, border = true } = props;
 
     useEffect(() => {
         const collapsible = document.getElementById(id);
@@ -50,17 +52,21 @@ const Collapsible = (props: Props) => {
     };
 
     return (
-        <div onClick={toggleWithButton ? undefined : () => onToggle(!isShowing)} className={`collapsible ${border ? 'with-border' : ''} ${className}`}>
+        <div onClick={toggleWithButton ? undefined : () => onToggle(!isShowing)} className={`collapsible ${border ? 'with-border' : ''} ${isShowing && 'is-showing'}  ${className}`}>
             <div className='collapsible-title'>
                 {header}
-                {!disabled && (
-                    <div
-                        onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined}
-                        className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center ms-4`}
-                    >
-                        <img src={Assets.images.arrow} alt='arrow' />
-                    </div>
-                )}
+                {!withButton
+                    ? null
+                    : !disabled &&
+                      (collapseButton ? (
+                          <div onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined} className={`${isShowing && 'is-showing'}`}>
+                              {collapseButton}
+                          </div>
+                      ) : (
+                          <div onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined} className={`collapsible-btn d-flex align-items-center justify-content-center ms-4`}>
+                              <img src={Assets.images.arrow} alt='arrow' className='collapse-arrow' />
+                          </div>
+                      ))}
             </div>
             <div className='collapse w-100' ref={collapseRef} id={id}>
                 {typeof content === 'string' ? <p className='collapsible-content' dangerouslySetInnerHTML={{ __html: content }} /> : content}
