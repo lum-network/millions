@@ -64,7 +64,7 @@ const LeavePool = ({ deposit }: Props) => {
     }, []);
 
     return (
-        <Modal id='leavePoolModal' ref={modalRef} dataBsBackdrop='static' modalWidth={1080} withCloseButton={false}>
+        <Modal id='leavePoolModal' ref={modalRef} modalWidth={1080}>
             <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.leavePoolModal.title')}</h1>

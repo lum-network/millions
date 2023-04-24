@@ -1,6 +1,7 @@
 @import 'src/styles/main';
 
 .home-container {
+    position: relative;
     .cosmonaut-with-balloons {
         position: absolute;
         width: 225px;
@@ -22,6 +23,19 @@
     .big-winners-container {
         display: flex;
         flex-direction: column;
+    }
+
+    .save-and-win-btn-container {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        left: 50%;
+        bottom: 60px;
+
+        @include media-breakpoint-up(xxl) {
+            position: relative;
+            bottom: 0;
+        }
     }
 
     .save-btn {

@@ -5,6 +5,7 @@ import numeral from 'numeral';
 
 import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
 import { RootState } from 'redux/store';
 
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
@@ -18,6 +19,8 @@ const Home = () => {
     const prices = useSelector((state: RootState) => state.stats.prices);
 
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
+
+    const winSizes = useWindowSize();
 
     return (
         <div className='home-container mt-5'>
@@ -57,8 +60,9 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className='d-flex justify-content-center'>
-                <Button className='save-btn' to={NavigationConstants.POOLS}>
+            {winSizes.width < 1400 && <div style={{ height: 150 }} />}
+            <div className='start-50 translate-middle-x save-and-win-btn-container'>
+                <Button className='save-btn glow-bg' to={NavigationConstants.POOLS}>
                     <img src={Assets.images.yellowStar} alt='Star' />
                     {I18n.t('home.cta')}
                     <img src={Assets.images.yellowStar} alt='Star' />
