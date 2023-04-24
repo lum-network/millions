@@ -1,8 +1,9 @@
 import { LumConstants, LumTypes, LumWallet } from '@lum-network/sdk-javascript';
-import numeral from 'numeral';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
 import { Message } from '@lum-network/sdk-javascript/build/messages';
+import { AggregatedDepositModel } from 'models';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 
@@ -24,7 +25,31 @@ export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: str
     return missingPrice ? null : totalBalance;
 };
 
-export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[]) => {
+export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] | undefined, prices: { [denom: string]: number }) => {
+    let totalBalance = 0;
+    let missingPrice = false;
+
+    if (!deposits) {
+        return null;
+    }
+
+    deposits
+        .filter((deposit) => deposit.state === DepositState.DEPOSIT_STATE_SUCCESS)
+        .forEach((deposit) => {
+            const price = Object.entries(prices).find((price) => price[0] === getNormalDenom(deposit.amount?.denom || ''));
+            const convertedAmount = convertUnitNumber(deposit.amount?.amount || '0');
+
+            if (price) {
+                totalBalance += convertedAmount * price[1];
+            } else {
+                missingPrice = true;
+            }
+        });
+
+    return missingPrice ? null : totalBalance;
+};
+
+export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmount?: number) => {
     if (!denom || !balances) {
         return '0';
     }
@@ -33,7 +58,12 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[]) => {
 
     if (balance) {
         const amount = convertUnitNumber(balance.amount);
-        return numeral(amount).format('0,0.[000000]');
+
+        if (feesAmount) {
+            return (amount - feesAmount).toFixed(6);
+        }
+
+        return amount.toFixed(6);
     }
 
     return '0';

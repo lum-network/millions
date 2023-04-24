@@ -276,7 +276,7 @@ export default {
     },
     deposit: {
         title: 'Few steps away\nfrom your deposit',
-        depositBtn: 'Deposit',
+        transferBtn: 'Transfer',
         saveAndWinBtn: 'Save & Win',
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
@@ -297,13 +297,12 @@ export default {
             {
                 title: 'Transfer {{ denom }} to Lum Network',
                 subtitle: 'Transfer your ATOM from {{ chainName }} to Lum Network',
-                cardTitle: 'Deposit into a pool',                
-                cadSubtitle: 'Transfer your ATOM from\n{{ chainName }} to Lum Network',
+                cardSubtitle: 'Transfer your ATOM from\n{{ chainName }} to Lum Network',
             },
             {
-                title: 'Deposit in the {{ denom }} pool',
+                title: 'Deposit into {{ denom }} pool',
                 subtitle: 'Start your saving',
-                cardSubtitle: 'You are about to make your savings beautiful!',
+                cardSubtitle: 'You are about to make your\nsavings beautiful!',
             },
             {
                 title: 'Saving review & share!',

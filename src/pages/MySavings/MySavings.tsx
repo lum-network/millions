@@ -39,7 +39,7 @@ const MySavings = () => {
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
-    const totalBalancePrice = balances ? WalletUtils.getTotalBalance(balances, prices) : null;
+    const totalBalancePrice = balances ? WalletUtils.getTotalBalanceFromDeposits(deposits, prices) : null;
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
 
     const renderAsset = (asset: LumTypes.Coin) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -130,7 +130,7 @@ const DepositStep1 = (
                 )}
                 <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
                     <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
-                    {I18n.t('deposit.depositBtn')}
+                    {I18n.t('deposit.transferBtn')}
                     <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
                 </Button>
             </div>
@@ -154,7 +154,6 @@ const DepositStep2 = (
     const navigate = useNavigate();
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const containerRef = useRef<HTMLDivElement>(null);
     const [depositAmount, setDepositAmount] = useState<string>(
         initialAmount
             ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
@@ -195,42 +194,32 @@ const DepositStep2 = (
             }
         };
 
-        if (containerRef.current) {
-            const input = containerRef.current.querySelector('input');
-
-            if (input) {
-                input.addEventListener('keyup', handler);
-            }
-        }
+        document.addEventListener('keyup', handler);
 
         return () => {
-            if (containerRef.current) {
-                const input = containerRef.current.querySelector('input');
-
-                if (input) {
-                    input.removeEventListener('keyup', handler);
-                }
-            }
+            document.removeEventListener('keyup', handler);
         };
-    }, [containerRef]);
+    }, []);
 
     return (
-        <div className='step-2' ref={containerRef}>
+        <div className='step-2'>
             <Card flat withoutPadding className='deposit-warning mt-4'>
                 <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
             </Card>
             <div className='d-flex flex-row justify-content-between mt-4'>
                 <label className='label'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
-                <Button textOnly onClick={() => setIsModifying(true)}>
-                    Modify
-                </Button>
+                {!isModifying && (
+                    <Button textOnly onClick={() => setIsModifying(true)}>
+                        Modify
+                    </Button>
+                )}
             </div>
             {isModifying ? (
                 <AmountInput
                     isLoading={isLoading}
                     className='mt-2'
                     onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances);
+                        const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, 0.005);
                         setDepositAmount(amount);
                     }}
                     inputProps={{
