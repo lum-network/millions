@@ -12,9 +12,11 @@ import { RouteListener } from 'navigation';
 import { I18n, KeplrUtils } from 'utils';
 
 import './MainLayout.scss';
+import { useVisibilityState } from 'hooks';
 
 const MainLayout = () => {
     const [enableAutoConnect, setEnableAutoConnect] = useState(true);
+    const [balanceFetchInterval, setBalanceFetchInterval] = useState<NodeJS.Timeout | null>(null);
 
     const location = useLocation();
 
@@ -26,6 +28,7 @@ const MainLayout = () => {
 
     const dispatch = useDispatch<Dispatch>();
     const store = useStore();
+    const visibilityState = useVisibilityState();
 
     useEffect(() => {
         const autoConnect = async () => {
@@ -47,6 +50,25 @@ const MainLayout = () => {
             setEnableAutoConnect(true);
         }
     }, [location]);
+
+    useEffect(() => {
+        if (visibilityState === 'visible') {
+            if (wallet && location.pathname !== NavigationConstants.POOLS) {
+                dispatch.wallet.reloadWalletInfos(wallet.address);
+                setBalanceFetchInterval(
+                    setInterval(() => {
+                        dispatch.wallet.reloadWalletInfos(wallet.address);
+                    }, 30000),
+                );
+            }
+        }
+
+        if (visibilityState === 'hidden') {
+            if (balanceFetchInterval) {
+                clearInterval(balanceFetchInterval);
+            }
+        }
+    }, [visibilityState]);
 
     return (
         <>
