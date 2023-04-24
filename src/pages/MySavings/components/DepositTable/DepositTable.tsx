@@ -40,7 +40,7 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
         }
 
         if (deposit.isWithdrawing) {
-            cta = dayjs(deposit.unbondingEndAt).utc().diff(dayjs().utc(), 'day') + ' day(s) remaining';
+            cta = dayjs(deposit.unbondingEndAt).toNow(true) + ' remaining';
             statusClassName = '';
         }
 
@@ -51,7 +51,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                         <div className='d-flex flex-column ms-3'>
                             <h3 className='mb-0'>
-                                {NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0')} {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
+                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
+                                {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                             </h3>
                             <p className='mb-0'>
                                 {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} - {I18n.t('deposit.depositId', { depositId: deposit.depositId?.toString() || '' })}
