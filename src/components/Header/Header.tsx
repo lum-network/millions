@@ -242,7 +242,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             {address ? (
                                 <Button
                                     textOnly
-                                    className='me-3'
+                                    className='me-2 me-sm-3'
                                     onClick={() => {
                                         setIsMenuOpen(false);
                                         if (logoutModalRef.current) {

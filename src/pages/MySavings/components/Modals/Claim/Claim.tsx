@@ -257,26 +257,26 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 <Card flat withoutPadding className='fees-warning'>
                                                     <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                                         <img src={Assets.images.info} alt='info' />
-                                                        <Tooltip id='fees-tooltip' />
+                                                        <Tooltip id='fees-tooltip' delay={2000} />
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
-                                                <Button type='button' onClick={() => setClaimOnly(true)} outline className='w-100 mt-4'>
-                                                    {I18n.t('mySavings.claimModal.claimMyPrizes')}
-                                                </Button>
-                                                <hr />
                                                 <Button
                                                     type='button'
                                                     onClick={() => {
                                                         onClaim(true);
                                                     }}
-                                                    className='w-100'
+                                                    className='w-100 mt-4'
                                                     disabled={isLoading}
                                                     loading={isLoading}
                                                 >
                                                     <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
                                                     {I18n.t('mySavings.claimModal.claimAndCompound')}
                                                     <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
+                                                </Button>
+                                                <hr />
+                                                <Button type='button' onClick={() => setClaimOnly(true)} outline className='w-100'>
+                                                    {I18n.t('mySavings.claimModal.claimMyPrizes')}
                                                 </Button>
                                             </div>
                                         </div>

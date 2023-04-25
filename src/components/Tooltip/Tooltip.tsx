@@ -3,8 +3,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import './Tooltip.scss';
 
-const Tooltip = ({ id }: { id: string }) => {
-    return <ReactTooltip id={id} clickable className='tooltip-light app-tooltip width-400' variant='light' delayHide={2000} />;
+const Tooltip = ({ id, delay }: { id: string; delay?: number }) => {
+    return <ReactTooltip id={id} clickable className='tooltip-light app-tooltip width-400' variant='light' delayHide={delay} />;
 };
 
 export default Tooltip;

@@ -105,7 +105,7 @@ const LeavePool = ({ deposit }: Props) => {
                                     <Card flat withoutPadding className='fees-warning mt-4'>
                                         <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                             <img src={Assets.images.info} alt='info' />
-                                            <Tooltip id='fees-tooltip' />
+                                            <Tooltip id='fees-tooltip' delay={2000} />
                                         </span>
                                         {I18n.t('deposit.feesWarning')}
                                     </Card>

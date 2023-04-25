@@ -7,7 +7,7 @@ import { I18n } from 'utils';
 
 const IbcTransfer = ({ modalRef, onConfirm }: { modalRef: React.RefObject<ModalHandlers>; onConfirm: () => void }) => {
     return (
-        <Modal id='ibcTransfer' ref={modalRef}>
+        <Modal id='ibcTransferModal' ref={modalRef}>
             <img src={Assets.images.info} alt='info' width={42} height={42} />
             <h3 className='my-4'>{I18n.t('deposit.ibcTransferModal.title')}</h3>
             <div className='d-flex flex-row align-self-stretch justify-content-between'>

@@ -2,7 +2,7 @@ import React from 'react';
 import { LumMessages } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
-import { SmallerDecimal, Table } from 'components';
+import { SmallerDecimal, Table, Tooltip } from 'components';
 import { TransactionModel } from 'models';
 import { DenomsUtils, NumbersUtils } from 'utils';
 
@@ -39,7 +39,10 @@ const TransactionsTable = ({ transactions }: { transactions: TransactionModel[] 
                         )}
                         <h4 className='mb-0 align-middle'>{type}</h4>
                         {transaction.messages.length > 1 ? (
-                            <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
+                            <span data-tooltip-id={`claim-tooltip-${transaction.hash}`} data-tooltip-html={`${transaction.messages.length} prizes claimed`}>
+                                <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
+                                <Tooltip id={`claim-tooltip-${transaction.hash}`} />
+                            </span>
                         ) : null}
                     </div>
                 </td>

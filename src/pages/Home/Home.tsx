@@ -23,14 +23,14 @@ const Home = () => {
     const winSizes = useWindowSize();
 
     return (
-        <div className='home-container mt-5'>
+        <div className='home-container mt-3 mt-lg-5'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
                     <BestPrizeCard biggestPrize={biggestPrize} countdownTo={new Date('2023-04-12T00:00:00Z')} />
                 </div>
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>
-                        <div className='col-xxl-12 col-lg-6 col-xl-6 col-md-12 col-sm-12'>
+                        <div className='col-12 col-lg-6 col-xxl-12'>
                             <Card>
                                 <h3>{I18n.t('home.totalValueLocked')}</h3>
                                 <div className='d-flex align-items-center pt-3'>
@@ -39,7 +39,7 @@ const Home = () => {
                                 </div>
                             </Card>
                         </div>
-                        <div className='col-xxl-12 col-lg-6 col-xl-6 col-md-12 col-sm-12'>
+                        <div className='col-12 col-lg-6 col-xxl-12'>
                             <Card>
                                 <Lottie
                                     className='cosmonaut-with-balloons'
@@ -60,7 +60,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            {winSizes.width < 1400 && <div style={{ height: 150 }} />}
+            {winSizes.height < 895 && <div style={{ height: winSizes.width < 576 ? 50 : 150 }} />}
             <div className='start-50 translate-middle-x save-and-win-btn-container'>
                 <Button className='save-btn glow-bg' to={NavigationConstants.POOLS}>
                     <img src={Assets.images.yellowStar} alt='Star' />

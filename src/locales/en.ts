@@ -165,6 +165,18 @@ export default {
         drawEndAt: 'Time left to join:',
         poolId: 'Pool #{{ poolId }}',
     },
+    poolDetails: {
+        myDeposits: 'My {{ denom }} deposits',
+        biggestPrize: 'Biggest Prize',
+        nextDraw: 'Next Draw',
+        viewDetails: 'View Details',
+        winners: {
+            title: 'Winners in Numbers',
+            totalPrizes: 'Total prizes won',
+            totalPoolPrizes: "Total number of pool's prizes",
+            bestPrizeWon: 'Best Prize won',
+        }
+    },
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
@@ -173,7 +185,7 @@ export default {
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',
         withdraw: 'Transfer out',
-        activities: 'Activities',
+        activities: 'Past Transactions',
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         transferWaitingCta: 'Usually ~1 minute',
@@ -321,7 +333,7 @@ export default {
             title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
         },
         ibcTransferModal: {
-            title: 'You are trying to deposit more than your available balance on Lum Network, you will need to transfer coins to Lum Network first to complete your deposit',
+            title: 'You are trying to deposit more tokens than your available balance on the Lum Network.\n\nIf you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.',
         },
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',

@@ -9,6 +9,18 @@
         right: -100px;
         top: 70px;
         overflow: hidden;
+
+        @include media-breakpoint-down(lg) {
+            right: 50px;
+        }
+
+        @include media-breakpoint-down(md) {
+            right: -25px;
+        }
+
+        @include media-breakpoint-down(sm) {
+            display: none;
+        }
     }
 
     .total-value-locked {
@@ -32,9 +44,13 @@
         left: 50%;
         bottom: 60px;
 
-        @include media-breakpoint-up(xxl) {
+        @media screen and (min-height: 895px) {
             position: relative;
             bottom: 0;
+        }
+
+        @include media-breakpoint-down(sm) {
+            bottom: 30px;
         }
     }
 

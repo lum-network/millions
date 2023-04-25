@@ -78,7 +78,7 @@ const DepositStep1 = (
                         ...form.getFieldProps('amount'),
                     }}
                     price={price}
-                    error={form.errors.amount}
+                    error={form.touched.amount ? form.errors.amount : ''}
                 />
             </div>
             <div className='mt-5'>
@@ -263,7 +263,7 @@ const DepositStep2 = (
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                     <img src={Assets.images.info} alt='info' />
-                    <Tooltip id='fees-tooltip' />
+                    <Tooltip id='fees-tooltip' delay={2000} />
                 </span>
                 {I18n.t('deposit.feesWarning')}
             </Card>

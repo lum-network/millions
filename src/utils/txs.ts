@@ -1,7 +1,8 @@
-import { LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import { LumConstants, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { TransactionModel } from 'models';
 import Long from 'long';
 import { getDenomFromIbc } from './denoms';
+import { NumbersUtils } from 'utils';
 
 type MillionsTxInfos = {
     amount: LumTypes.Coin;
@@ -37,13 +38,32 @@ export const isMillionsClaimPrize = (info: { winnerAddress?: string } | null): i
 
 export const hashExists = (txs: TransactionModel[], hash: string): boolean => txs.findIndex((tx) => tx.hash === hash) > -1;
 
+export const findAmountInLogs = async (logs: any, event: string, index: number) => {
+    if (!Array.isArray(logs)) {
+        return [];
+    }
+
+    const claimEvent = logs[index]?.events.find((ev: any) => ev.type === event);
+
+    if (!claimEvent) {
+        return [];
+    } else {
+        const amount = claimEvent.attributes.find((attr: any) => attr.key === 'amount');
+        if (!amount) {
+            return [];
+        } else {
+            const denom = amount.value.match(amount.value.includes('ibc') ? /(ibc\/.+)/g : /\D+/g)[0];
+            return [{ denom: await getDenomFromIbc(denom), amount: amount.value.replace(denom, '') }];
+        }
+    }
+};
+
 export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): Promise<TransactionModel[]> => {
     const formattedTxs: TransactionModel[] = [];
 
     for (const rawTx of rawTxs) {
         // Decode TX to human-readable format
         const txData = LumRegistry.decodeTx(rawTx.tx);
-
         const hash = LumUtils.toHex(rawTx.hash).toUpperCase();
 
         if (hashExists(formattedTxs, hash)) {
@@ -60,7 +80,7 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
         };
 
         if (txData.body && txData.body.messages) {
-            for (const msg of txData.body.messages) {
+            for (const [index, msg] of txData.body.messages.entries()) {
                 try {
                     const txInfos = LumUtils.toJSON(LumRegistry.decode(msg));
 
@@ -74,9 +94,25 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
                                 }
                                 tx.amount = [txInfos.amount];
                             } else if (isMillionsWithdrawDeposit(txInfos)) {
-                                tx.amount = [];
+                                const logs = JSON.parse(rawTx.result.log || '');
+                                tx.amount = await findAmountInLogs(logs, 'withdraw_deposit', index);
                             } else if (isMillionsClaimPrize(txInfos)) {
-                                tx.amount = [];
+                                const logs = JSON.parse(rawTx.result.log || '');
+
+                                if (tx.amount.length > 0) {
+                                    const msgAmount = await findAmountInLogs(logs, 'prize_claim', index);
+                                    const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
+                                    const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
+
+                                    tx.amount = [
+                                        {
+                                            amount: NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed(6),
+                                            denom: tx.amount[0].denom,
+                                        },
+                                    ];
+                                } else {
+                                    tx.amount = await findAmountInLogs(logs, 'prize_claim', index);
+                                }
                             }
                         }
                     }

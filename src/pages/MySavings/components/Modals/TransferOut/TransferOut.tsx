@@ -143,7 +143,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                             ...form.getFieldProps('amount'),
                                         }}
                                         price={prices[DenomsUtils.getNormalDenom(form.values.denom)]}
-                                        error={form.errors.amount}
+                                        error={form.touched.amount ? form.errors.amount : ''}
                                     />
                                 </div>
                                 <div className='mt-4'>
@@ -167,7 +167,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                         <Card flat withoutPadding className='fees-warning mt-4'>
                                             <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                                 <img src={Assets.images.info} alt='info' />
-                                                <Tooltip id='fees-tooltip' />
+                                                <Tooltip id='fees-tooltip' delay={2000} />
                                             </span>
                                             {I18n.t('deposit.feesWarning')}
                                         </Card>
