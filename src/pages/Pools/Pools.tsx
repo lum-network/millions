@@ -12,7 +12,7 @@ const Pools = () => {
     const pools = useSelector((state: RootState) => state.pools.pools);
 
     return (
-        <div className='pools-container mt-5'>
+        <div className='pools-container mt-3 mt-lg-5'>
             <h1>{I18n.t('pools.title')}</h1>
             <div className='row g-xxl-5 g-4'>
                 {pools.map((pool, index) => (

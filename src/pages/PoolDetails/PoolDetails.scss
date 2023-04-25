@@ -1,6 +1,33 @@
 @import 'src/styles/main';
 
 .pool-details-container {
+    h1 {
+        @include media-breakpoint-down(lg) {
+            @include font-size(2rem);
+        }
+    }
+    
+    h2 {        
+        @include media-breakpoint-down(lg) {
+            @include font-size(1.5rem);
+        }
+    }
+
+    h4 {        
+        @include media-breakpoint-down(lg) {
+            @include font-size(0.75rem);
+        }
+    }
+
+    .pool-icon {
+        width: 64px;
+        height: 64px;
+        
+        @include media-breakpoint-down(lg) {
+            width: 40px;
+            height: 40px;
+        }
+    }
     .biggest-prize-container {}
 
     .prize-draw-card {
@@ -12,6 +39,16 @@
             width: 232px;
             height: 235px;
         }
+
+        @include media-breakpoint-down(lg) {
+            margin-top: 2rem;
+        }
+    }
+
+    .big-winner-card {
+        @include media-breakpoint-down(lg) {
+            width: auto;
+        }
     }
 
     .deposit-btn {
@@ -22,5 +59,15 @@
         width: 252px;
         height: 252px;
         margin-bottom: -84px;
+        
+        @include media-breakpoint-only(lg) {
+            margin-bottom: -60px;
+        }
+
+        @include media-breakpoint-down(lg) {
+            width: 190px;
+            height: 190px;
+            margin-bottom: -52px;
+        }
     }
 }

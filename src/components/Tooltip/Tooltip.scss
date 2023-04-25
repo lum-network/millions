@@ -1,5 +1,15 @@
 @import 'src/styles/main';
 
+.tooltip-light {
+    box-shadow: 0 2px 11px rgba(0, 0, 0, 0.11);
+    color: $color-black !important;
+    border-radius: 8px !important;
+}
+
+.tooltip-light.font-bold {
+    font-weight: bold;
+}
+
 .app-tooltip {
     font-size: 14px;
     color: $color-black;

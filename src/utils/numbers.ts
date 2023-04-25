@@ -13,7 +13,7 @@ export const convertUnitNumber = (nb: number | string, fromDenom = LumConstants.
 
         amount = split[0];
     } else {
-        amount = nb.toFixed();
+        amount = nb.toFixed(fromDenom.startsWith('u') ? 0 : 6);
     }
 
     const coin = {

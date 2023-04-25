@@ -21,7 +21,7 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, ScrollToPlugin, CustomEase,
 const App = () => {
     return (
         <Provider store={store}>
-            <ToastContainer hideProgressBar closeButton={false} position='bottom-right' />
+            <ToastContainer hideProgressBar closeButton={false} position='bottom-left' />
             <Core />
         </Provider>
     );

@@ -61,7 +61,7 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                     </div>
                 </div>
                 <div className='col-2'>
-                    <div className={`deposit-state rounded-pill ${statusClassName}`}>
+                    <div className={`deposit-state rounded-pill text-nowrap ${statusClassName}`}>
                         {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                     </div>
                 </div>

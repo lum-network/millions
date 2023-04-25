@@ -104,9 +104,11 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
                                     const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
                                     const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
 
+                                    const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+
                                     tx.amount = [
                                         {
-                                            amount: NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed(6),
+                                            amount,
                                             denom: tx.amount[0].denom,
                                         },
                                     ];
