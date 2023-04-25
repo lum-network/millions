@@ -5,7 +5,6 @@ import numeral from 'numeral';
 
 import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
-import { useWindowSize } from 'hooks';
 import { RootState } from 'redux/store';
 
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
@@ -19,8 +18,6 @@ const Home = () => {
     const prices = useSelector((state: RootState) => state.stats.prices);
 
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
-
-    const winSizes = useWindowSize();
 
     return (
         <div className='home-container mt-3 mt-lg-5'>
@@ -51,16 +48,15 @@ const Home = () => {
                                 />
                                 <h3>{I18n.t('home.lastBigWinners')}</h3>
                                 <div className='big-winners-container pt-4'>
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={14564} denom='evmos' />
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={23456543} denom='lum' />
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={143} denom='atom' />
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={14564} denom='evmos' className='flex-grow-1' />
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={23456543} denom='lum' className='flex-grow-1' />
+                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={143} denom='atom' className='flex-grow-1' />
                                 </div>
                             </Card>
                         </div>
                     </div>
                 </div>
             </div>
-            {winSizes.height < 895 && <div style={{ height: winSizes.width < 576 ? 50 : 150 }} />}
             <div className='start-50 translate-middle-x save-and-win-btn-container'>
                 <Button className='save-btn glow-bg' to={NavigationConstants.POOLS}>
                     <img src={Assets.images.yellowStar} alt='Star' />

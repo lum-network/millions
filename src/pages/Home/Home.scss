@@ -2,6 +2,12 @@
 
 .home-container {
     position: relative;
+    padding-bottom: 80px;
+
+    @media screen and (min-height: 900.02px) and (min-width: 1400.02px) {
+        padding-bottom: 0;
+    }
+
     .cosmonaut-with-balloons {
         position: absolute;
         width: 225px;
@@ -35,6 +41,7 @@
     .big-winners-container {
         display: flex;
         flex-direction: column;
+        justify-content: stretch;
     }
 
     .save-and-win-btn-container {
@@ -44,9 +51,9 @@
         left: 50%;
         bottom: 60px;
 
-        @media screen and (min-height: 895px) {
+        @media screen and (min-height: 900.02px) and (min-width: 1400.02px) {
             position: relative;
-            bottom: 0;
+            bottom: unset;
         }
 
         @include media-breakpoint-down(sm) {

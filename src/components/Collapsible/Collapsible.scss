@@ -17,6 +17,7 @@
         justify-content: space-between;
         align-items: center;
 
+        position: relative;
         .with-button-border {
             border: 1.8px solid $color-primary;
             border-radius: 12px;
@@ -27,11 +28,17 @@
             cursor: pointer;
             width: unset;
             position: absolute;
-            right: 74px;
-
-            @include media-breakpoint-down(xl) {
-                right: 50px;
+            right: 0;
+            
+            @include media-breakpoint-down(md) {
+                bottom: 0;
             }
+        }
+        
+        @include media-breakpoint-down(md) {
+            align-items: stretch;
+            justify-content: flex-start;
+            flex-direction: column;
         }
     }
 

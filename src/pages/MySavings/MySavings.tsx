@@ -58,7 +58,7 @@ const MySavings = () => {
                 disabled
                 header={
                     <>
-                        <div className='d-flex justify-content-between align-items-center flex-grow-1'>
+                        <div className='d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-center flex-grow-1'>
                             <div className='d-flex flex-row align-items-center'>
                                 {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
                                 <div className='d-flex flex-column asset-amount'>
@@ -68,11 +68,11 @@ const MySavings = () => {
                                     <small className='p-0'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</small>
                                 </div>
                             </div>
-                            <div className='action-buttons d-flex flex-row align-items-center'>
+                            <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-md-0'>
                                 {normalDenom !== LumConstants.LumDenom ? (
                                     <Button
                                         outline
-                                        className='me-3'
+                                        className='me-0 me-md-3 mb-3 mb-md-0 flex-grow-1'
                                         data-bs-target='#withdrawModal'
                                         data-bs-toggle='modal'
                                         onClick={async () => {
@@ -82,7 +82,9 @@ const MySavings = () => {
                                         {I18n.t('mySavings.withdraw')}
                                     </Button>
                                 ) : null}
-                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`}>{I18n.t('mySavings.deposit')}</Button>
+                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`} className='flex-grow-1'>
+                                    {I18n.t('mySavings.deposit')}
+                                </Button>
                             </div>
                         </div>
                     </>
@@ -122,7 +124,7 @@ const MySavings = () => {
     }
 
     return (
-        <div className='mt-5'>
+        <div className='my-savings-container mt-3 mt-lg-5'>
             {deposits && deposits.find((deposit) => deposit.errorState) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img src={Assets.images.info} width='45' />

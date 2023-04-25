@@ -60,12 +60,12 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                     </div>
                 </div>
                 {countdownTo && (
-                    <div className='d-flex align-items-center justify-content-between w-100 best-prize-countdown'>
-                        <div className='network'>
+                    <div className='d-flex flex-column flex-sm-row align-items-center justify-content-between w-100 best-prize-countdown'>
+                        <div className='network mt-4 mt-sm-0'>
                             <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                         </div>
-                        <div>
+                        <div className='mt-4 mt-sm-0'>
                             <CountDown homePage to={countdownTo} />
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-networ
 
 import { Button, Collapsible, SmallerDecimal } from 'components';
 import { AggregatedDepositModel, DepositModel } from 'models';
+import { useWindowSize } from 'hooks';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
@@ -14,6 +15,8 @@ interface IProps {
 }
 
 const DepositTable = ({ deposits, onLeavePool }: IProps) => {
+    const winSizes = useWindowSize();
+
     const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
         let statusClassName = '';
         let cta: string | JSX.Element = '';
@@ -44,9 +47,17 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
             statusClassName = '';
         }
 
+        const ActionsContainer = ({ children }: { children: JSX.Element[] }) => {
+            if (winSizes.width < 768) {
+                return <div className='row pt-3'>{children}</div>;
+            }
+
+            return <>{children}</>;
+        };
+
         return (
             <div className={`${className}`} key={`deposit-${index}`}>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <div className='d-flex flex-row align-items-center'>
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                         <div className='d-flex flex-column ms-3'>
@@ -60,14 +71,16 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                         </div>
                     </div>
                 </div>
-                <div className='col-2'>
-                    <div className={`deposit-state rounded-pill text-nowrap ${statusClassName}`}>
-                        {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
+                <ActionsContainer>
+                    <div className='col-6 col-md-2'>
+                        <div className={`deposit-state rounded-pill text-nowrap ${statusClassName}`}>
+                            {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
+                        </div>
                     </div>
-                </div>
-                <div className='col-4'>
-                    <div className='d-flex justify-content-end'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>
-                </div>
+                    <div className='col-6 col-md-4'>
+                        <div className='d-flex justify-content-end align-items-center h-100'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>
+                    </div>
+                </ActionsContainer>
             </div>
         );
     };
@@ -81,8 +94,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                     buttonBorder
                     toggleWithButton
                     header={
-                        <div className='d-flex align-items-center w-100' key={`deposit-${index}`}>
-                            <div className='col-6'>
+                        <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
+                            <div className='col-12 col-md-6'>
                                 <div className='d-flex flex-row align-items-center'>
                                     <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
                                     <div className='d-flex flex-column ms-3'>
@@ -96,8 +109,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-2'>
-                                <div className={`deposit-state rounded-pill success`}>
+                            <div className='col-12 col-md-2'>
+                                <div className={`deposit-state rounded-pill success mt-3 mt-md-0`}>
                                     {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                                 </div>
                             </div>

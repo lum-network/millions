@@ -25,4 +25,8 @@
         line-height: 14px;
         color: $color-black;
     }
+
+    @include media-breakpoint-down(sm) {
+        width: 100%;
+    }
 }

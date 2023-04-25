@@ -313,12 +313,12 @@ export default {
             },
             {
                 title: 'Deposit into {{ denom }} pool',
-                subtitle: 'Start your saving',
+                subtitle: 'Start your saving streak!',
                 cardSubtitle: 'You are about to make your\nsavings beautiful!',
             },
             {
-                title: 'Saving review & share!',
-                subtitle: 'By sharing Cosmos Millions to your community you will contribute to and increase the collective prize pool.',
+                title: 'Saving review & spread the word!',
+                subtitle: 'Share your Cosmos Millions deposit on Twitter and contribute to increase the collective prize pool!',
                 cardTitle: 'Your savings say thanks! ✌️',
                 cardSubtitle: 'You are always eligible for all the next draws coming! Share your winning on Twitter to see how high the total amount saved can go!',
             },

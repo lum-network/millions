@@ -20,6 +20,13 @@
         &:not(:last-child) {
             margin-bottom: 24px;
         }
+
+
+        @include media-breakpoint-down(md) {
+            align-items: stretch;
+            justify-content: flex-start;
+            flex-direction: column;
+        }
     }
 
     .deposit-card-collapse {
@@ -34,6 +41,12 @@
         h3 {
             font-size: 18px;
             line-height: 22px;
+        }
+
+        @include media-breakpoint-down(md) {
+            align-items: stretch;
+            justify-content: flex-start;
+            flex-direction: column;
         }
     }
 

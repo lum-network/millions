@@ -17,11 +17,13 @@
     border-color: $color-primary;
     text-decoration: none;
 
-    @include media-breakpoint-down(md) {
-        padding: 13px 15px;
-        font-size: 18px;
-        line-height: 22px;
-        border-radius: 11px;
+    &:not(.app-btn-text) {
+        @include media-breakpoint-down(md) {
+            padding: 13px 15px;
+            font-size: 18px;
+            line-height: 22px;
+            border-radius: 11px;
+        }
     }
 
     &.disabled {

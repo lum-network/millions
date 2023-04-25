@@ -3,7 +3,6 @@
 .transactions-table {
     .table tbody td {
         padding: 1rem 8px;
-
         .tx-icon-container {
             width: 32px;
             height: 32px;
@@ -33,4 +32,41 @@
             line-height: 36px;
         }
      }
+}
+
+@include media-breakpoint-down(sm) {
+    .transactions-table {
+        .table,
+        .table tbody,
+        .table tbody tr {
+            display: block;
+        }
+
+        .table tbody td {
+            display: inline-block;
+            width: 100%;
+            &:first-child {
+                border-bottom-left-radius: 0px;
+                border-top-right-radius: 13px;
+            }
+
+            &:last-child {
+                border-bottom-left-radius: 13px;
+                border-top-right-radius: 0px;
+            }
+
+        }
+
+        .table tbody tr:first-child {
+            margin-top: 0.75rem;
+        }
+
+        .table tbody tr:last-child {
+            margin-bottom: 0.75rem;
+        }
+
+        .table tbody tr {
+            margin-bottom: 1rem;
+        }
+    }
 }
