@@ -13,7 +13,7 @@ import Assets from 'assets';
 import './Home.scss';
 
 const Home = () => {
-    const biggestPrize = useSelector((state: RootState) => state.pools.bestPrize);
+    const bestPoolPrize = useSelector((state: RootState) => state.pools?.bestPoolPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
 
@@ -22,9 +22,11 @@ const Home = () => {
     return (
         <div className='home-container mt-3 mt-lg-5'>
             <div className='row g-4'>
-                <div className='col-xxl-7 col-12'>
-                    <BestPrizeCard biggestPrize={biggestPrize} countdownTo={new Date('2023-04-12T00:00:00Z')} />
-                </div>
+                {bestPoolPrize && (
+                    <div className='col-xxl-7 col-12'>
+                        <BestPrizeCard biggestPrize={bestPoolPrize.prizeToWin} countdownTo={bestPoolPrize.nextDrawAt} />
+                    </div>
+                )}
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>
                         <div className='col-12 col-lg-6 col-xxl-12'>

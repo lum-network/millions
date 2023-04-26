@@ -165,7 +165,7 @@ const Landing = () => {
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
-                            <BestPrizeCard biggestPrize={{ amount: '675789', denom: 'lum' }} />
+                            <BestPrizeCard biggestPrize={{ amount: 675789000000, denom: 'lum' }} />
                         </div>
                     </Card>
                 </div>

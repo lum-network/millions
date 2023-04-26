@@ -1,5 +1,6 @@
 import { Pool } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { BalanceModel } from './index';
 
 export interface PoolInternalInfosModel {
     rpc: string;
@@ -13,4 +14,5 @@ export interface PoolModel extends Pool {
     internalInfos?: PoolInternalInfosModel;
     prizes?: Prize[];
     nextDrawAt?: Date;
+    prizeToWin: BalanceModel | null;
 }

@@ -1,4 +1,3 @@
-import Long from 'long';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
@@ -22,7 +21,7 @@ const Pools = () => {
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
                             poolId={pool.poolId.toString()}
                             tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}
-                            prize={pool.prizeStrategy?.prizeBatches.reduce((acc, batch) => acc.add(batch.quantity), new Long(0)).toNumber()}
+                            prize={pool.prizeToWin?.amount}
                         />
                     </div>
                 ))}
