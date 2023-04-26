@@ -37,9 +37,9 @@ const LatestWinnersTable = ({
                     </span>
                     <span className='date ms-3'>{dayjs(winner.timestamp).format('D MMM YYYY')}</span>
                 </td>
-                <td className='py-3 px-4 align-middle text-end'>
+                <td className='py-3 px-4 align-bottom align-md-middle text-end'>
                     <div className='d-flex flex-column winner-amount'>
-                        <div>
+                        <div className='text-nowrap'>
                             {NumbersUtils.convertUnitNumber(winner.amount.amount)} <span className='denom'>{DenomsUtils.getNormalDenom(winner.amount.denom).toUpperCase()}</span>
                         </div>
                         <small className='usd-price'>

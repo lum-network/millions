@@ -96,9 +96,9 @@ const latestWinners = [
 
 const Winners = () => {
     return (
-        <div className='luckiest-winners-container mt-5'>
+        <div className='luckiest-winners-container mt-3 mt-lg-5'>
             <h1 className='mb-0'>{I18n.t('luckiestWinners.title')}</h1>
-            <div className='row gy-4 py-4'>
+            <div className='row gy-4 py-2 py-lg-4'>
                 {luckiestWinners.map((winner, index) => (
                     <div className='col-12 col-sm-6 col-lg-3' key={`winner-${index}`}>
                         <LuckiestWinnerCard winner={winner} />
@@ -106,7 +106,7 @@ const Winners = () => {
                 ))}
             </div>
             <h1 className='mt-4'>{I18n.t('luckiestWinners.latestWinners')}</h1>
-            <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-4 glow-bg'>
+            <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-2 mt-lg-4 glow-bg'>
                 <LatestWinnersTable winners={latestWinners} />
                 <Lottie className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle' animationData={cosmonautWithRocket} />
             </Card>

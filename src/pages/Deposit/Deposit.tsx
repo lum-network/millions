@@ -127,7 +127,7 @@ const Deposit = () => {
                     <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                 </div>
                 <div className='col'>
-                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-5 py-3 ${isLastStep ? 'glow-bg' : ''}`}>
+                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 ${isLastStep ? 'glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}

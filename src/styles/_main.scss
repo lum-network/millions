@@ -1,6 +1,22 @@
-@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
+
 @import 'fonts';
 @import 'colors';
+
+$utilities: map-merge(
+    $utilities,
+    (
+        'align':
+            map-merge(
+                map-get($utilities, 'align'),
+                (
+                    responsive: true,
+                )
+            ),
+    )
+);
+
+@import '~bootstrap/scss/utilities/api';
 
 html body {
     font-family: 'Gotham Rounded', sans-serif;

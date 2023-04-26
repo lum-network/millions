@@ -219,7 +219,7 @@ const DepositStep2 = (
                 <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
             </Card>
             <div className='d-flex flex-row justify-content-between mt-4'>
-                <label className='label'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
+                <label className='label text-start'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
                 {!isModifying && (
                     <Button textOnly onClick={() => setIsModifying(true)}>
                         Modify
@@ -250,10 +250,10 @@ const DepositStep2 = (
                 />
             ) : (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
-                    <span className='asset-info'>
+                    <div className='asset-info d-flex flex-row'>
                         <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
-                        {DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}
-                    </span>
+                        <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}</span>
+                    </div>
                     <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
                 </Card>
             )}
@@ -405,7 +405,7 @@ const DepositSteps = (props: Props) => {
     return (
         <>
             <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-                <div className='mb-5 mb-lg-0'>
+                <div className='mb-3 mb-sm-5 mb-lg-0'>
                     <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
                     <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
                 </div>

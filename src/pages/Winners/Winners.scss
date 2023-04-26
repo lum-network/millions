@@ -1,6 +1,12 @@
 @import 'src/styles/main';
 
 .luckiest-winners-container {
+    h1 {
+        @include media-breakpoint-down(lg) {
+            @include font-size(2rem);
+        }
+    }
+
     .cosmonaut-rocket {
         height: 162px;
         width: 162px;

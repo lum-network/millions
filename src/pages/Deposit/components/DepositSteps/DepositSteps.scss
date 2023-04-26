@@ -11,6 +11,7 @@
         font-style: normal;
         font-weight: 400;
         font-size: 24px;
+        white-space: nowrap;
         line-height: 48px;
         padding: 6px 26px;
     }
@@ -29,6 +30,11 @@
     margin-right: 4rem;
     font-weight: 300;
     color: $color-grey;
+    
+    @include media-breakpoint-down(sm) {        
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
 }
 
 .fees-warning {

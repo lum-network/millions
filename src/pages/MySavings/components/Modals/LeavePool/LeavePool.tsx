@@ -65,15 +65,15 @@ const LeavePool = ({ deposit }: Props) => {
 
     return (
         <Modal id='leavePoolModal' ref={modalRef} modalWidth={1080}>
-            <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
+            <div className='row row-cols-1 row-cols-lg-2'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.leavePoolModal.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className='col'>
-                    <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
+                    <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 mt-5 mt-lg-0 glow-bg'>
                         <div className='h-100 d-flex flex-column text-center py-sm-4'>
-                            <div className='mb-5 mb-lg-0'>
+                            <div className='mb-3 mb-sm-5 mb-lg-0'>
                                 <div className='card-step-title' dangerouslySetInnerHTML={{ __html: steps[currentStep]?.cardTitle || steps[currentStep]?.title }} />
                                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: steps[currentStep]?.cardSubtitle || steps[currentStep]?.subtitle }} />
                             </div>
@@ -92,10 +92,10 @@ const LeavePool = ({ deposit }: Props) => {
                                 </div>
                                 <div className='w-100 mt-4'>
                                     <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
-                                        <span className='asset-info'>
+                                        <div className='asset-info d-flex flex-row'>
                                             <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(deposit?.amount?.denom || ''))} className='me-3' alt='denom' />
-                                            {DenomsUtils.getNormalDenom(deposit?.amount?.denom || '').toUpperCase()}
-                                        </span>
+                                            <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(deposit?.amount?.denom || '').toUpperCase()}</span>
+                                        </div>
                                         <div className='deposit-amount'>
                                             <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0'))} />
                                         </div>

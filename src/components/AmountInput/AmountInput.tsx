@@ -35,7 +35,7 @@ const AmountInput = (props: Props) => {
     return (
         <div className={`amount-input ${className}`}>
             {label || sublabel ? (
-                <div className='labels-container mb-2'>
+                <div className='labels-container mb-2 text-start'>
                     {label ? <label className='label'>{isLoading ? <Skeleton width={190} /> : label}</label> : null}
                     {sublabel ? <label className='sublabel'>{isLoading ? <Skeleton width={120} /> : sublabel}</label> : null}
                 </div>

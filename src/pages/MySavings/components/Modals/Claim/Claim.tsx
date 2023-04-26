@@ -175,20 +175,20 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     return (
         <Modal id='claimModal' ref={modalRef} modalWidth={1080}>
-            <div className='row row-cols-1 row-cols-lg-2 h-100 gy-5'>
+            <div className='row row-cols-1 row-cols-lg-2'>
                 <div className='col text-start'>
                     <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                 </div>
                 <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
-                    <Card withoutPadding className='d-flex flex-column justify-content-between px-5 py-3 flex-grow-1 glow-bg'>
+                    <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
                         {currentStep === 2 && shareInfos ? (
                             <ShareClaim infos={shareInfos} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
                         ) : (
                             <div className={`${!claimOnly ? 'h-100' : ''} d-flex flex-column justify-content-between text-center py-sm-4`}>
                                 {claimOnly ? (
                                     <>
-                                        <div className='mb-5 mb-lg-0'>
+                                        <div className='mb-3 mb-sm-5 mb-lg-0'>
                                             <div className='card-step-title'>{I18n.t('mySavings.claimOnlyModal.title')}</div>
                                             <div className='card-step-subtitle'>{I18n.t('mySavings.claimOnlyModal.subtitle')}</div>
                                         </div>
@@ -206,7 +206,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                     </>
                                 ) : (
                                     <>
-                                        <div className='mb-5 mb-lg-0'>
+                                        <div className='mb-3 mb-sm-5 mb-lg-0'>
                                             <div className='card-title d-flex flex-row align-items-baseline justify-content-center'>
                                                 <img src={Assets.images.trophy} alt='Trophy' className='me-3' />
                                                 {I18n.t('mySavings.claimModal.cardTitle')}
