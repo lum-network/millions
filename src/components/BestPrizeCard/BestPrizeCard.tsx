@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
-import { LumTypes } from '@lum-network/sdk-javascript';
 import { useWindowSize } from 'hooks';
+import { BalanceModel } from 'models';
 
 import './BestPrizeCard.scss';
 
 interface IProps {
-    biggestPrize: LumTypes.Coin | null;
+    biggestPrize: BalanceModel | null;
     countdownTo?: Date;
 }
 
@@ -40,7 +40,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
             return;
         }
 
-        setFontSize(calculateFontSize(biggestPrize?.amount.length, width));
+        setFontSize(calculateFontSize(NumbersUtils.convertUnitNumber(biggestPrize?.amount).toFixed().length, width));
     }, [biggestPrize]);
 
     return (
@@ -55,7 +55,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                             $
                         </span>
                         <div style={{ fontSize: `${fontSize}px` }}>
-                            <AnimatedNumber number={Number(biggestPrize?.amount) ?? 0} />
+                            <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize?.amount || 0)} />
                         </div>
                     </div>
                 </div>

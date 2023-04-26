@@ -20,7 +20,6 @@ interface IProps {
 
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
-    const loadingPrizeToWin = useSelector((state: RootState) => state.loading.effects.pools.fetchPoolsRewards);
     const navigate = useNavigate();
 
     const price = prices?.[denom];

@@ -4,20 +4,19 @@ import { PoolsConstants } from 'constant';
 import { PoolModel } from 'models';
 import { DenomsUtils, LumClient } from 'utils';
 import { RootModel } from '.';
-import { LumTypes } from '@lum-network/sdk-javascript';
 import dayjs from 'dayjs';
 import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
-    bestPrize: LumTypes.Coin | null;
+    bestPoolPrize: PoolModel | null;
 }
 
 export const pools = createModel<RootModel>()({
     name: 'pools',
     state: {
         pools: [],
-        bestPrize: null,
+        bestPoolPrize: null,
     } as PoolsState,
     reducers: {
         setPools: (state: PoolsState, pools: PoolModel[]): PoolsState => {
@@ -26,10 +25,10 @@ export const pools = createModel<RootModel>()({
                 pools,
             };
         },
-        setBestPrize: (state: PoolsState, bestPrize: LumTypes.Coin | null): PoolsState => {
+        setBestPoolPrize: (state: PoolsState, bestPoolPrize: PoolModel | null): PoolsState => {
             return {
                 ...state,
-                bestPrize,
+                bestPoolPrize,
             };
         },
     },
@@ -53,6 +52,7 @@ export const pools = createModel<RootModel>()({
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
                             prizes,
                             nextDrawAt,
+                            prizeToWin: null,
                         });
                     }
 
@@ -79,6 +79,7 @@ export const pools = createModel<RootModel>()({
             }
 
             dispatch.pools.setPools(pools);
+            dispatch.pools.getNextBestPrize(null);
         },
         async getPoolPrizes(poolId: Long) {
             try {
@@ -91,17 +92,25 @@ export const pools = createModel<RootModel>()({
         },
         async getNextBestPrize(_, state) {
             try {
-                const payload = state.pools.pools;
+                const pools = state.pools.pools;
 
-                if (!payload || payload.length === 0) {
+                if (!pools || pools.length === 0) {
                     return;
                 }
 
-                const res = await LumClient.getNextBestPrize(payload, state.stats.prices);
+                const filterPools = pools.filter((p) => p.prizeToWin).sort((a, b) => b.prizeToWin!.amount - a.prizeToWin!.amount);
 
-                if (res) {
-                    dispatch.pools.setBestPrize(res);
+                if (filterPools.length === 0) {
+                    return;
                 }
+
+                dispatch.pools.setBestPoolPrize(filterPools[0]);
+
+                // const res = await LumClient.getNextBestPrize(payload, state.stats.prices);
+
+                // if (res) {
+                //     dispatch.pools.setBestPrize(res);
+                // }
             } catch {}
         },
     }),

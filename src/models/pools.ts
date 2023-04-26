@@ -14,5 +14,5 @@ export interface PoolModel extends Pool {
     internalInfos?: PoolInternalInfosModel;
     prizes?: Prize[];
     nextDrawAt?: Date;
-    prizeToWin?: BalanceModel;
+    prizeToWin: BalanceModel | null;
 }
