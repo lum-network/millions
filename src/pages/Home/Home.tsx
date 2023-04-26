@@ -24,7 +24,7 @@ const Home = () => {
             <div className='row g-4'>
                 {bestPoolPrize && (
                     <div className='col-xxl-7 col-12'>
-                        <BestPrizeCard biggestPrize={bestPoolPrize.prizeToWin} countdownTo={bestPoolPrize.nextDrawAt} />
+                        <BestPrizeCard biggestPrize={bestPoolPrize.prizeToWin} poolId={bestPoolPrize.poolId.toString()} countdownTo={bestPoolPrize.nextDrawAt} />
                     </div>
                 )}
                 <div className='col-xxl-5 col-12'>

@@ -1,20 +1,26 @@
 import React, { useEffect } from 'react';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils } from 'utils';
-import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
+import { useNavigate } from 'react-router-dom';
+
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
+import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
+import { NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { BalanceModel } from 'models';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils } from 'utils';
 
 import './BestPrizeCard.scss';
 
 interface IProps {
     biggestPrize: BalanceModel | null;
+    poolId: string;
     countdownTo?: Date;
 }
 
-const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
+const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
     const { width } = useWindowSize();
     const [fontSize, setFontSize] = React.useState(0);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!biggestPrize) {
@@ -25,7 +31,11 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
     }, [biggestPrize]);
 
     return (
-        <Card className='best-prize-card' withoutPadding>
+        <Card
+            className='best-prize-card'
+            withoutPadding
+            onClick={biggestPrize ? () => navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`) : undefined}
+        >
             <div className='content'>
                 <div className='title-container'>
                     <h3 className=''>{I18n.t('home.nextBestPrize')}</h3>
