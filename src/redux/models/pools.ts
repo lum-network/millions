@@ -98,6 +98,7 @@ export const pools = createModel<RootModel>()({
                     return;
                 }
 
+                //FIXME: Filter by prizeToWin in Fiat, not in Token
                 const filterPools = pools.filter((p) => p.prizeToWin).sort((a, b) => b.prizeToWin!.amount - a.prizeToWin!.amount);
 
                 if (filterPools.length === 0) {
