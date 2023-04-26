@@ -106,7 +106,7 @@ const Winners = () => {
                 ))}
             </div>
             <h1 className='mt-4'>{I18n.t('luckiestWinners.latestWinners')}</h1>
-            <Card withoutPadding className='py-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-4 glow-bg'>
+            <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-4 glow-bg'>
                 <LatestWinnersTable winners={latestWinners} />
                 <Lottie className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle' animationData={cosmonautWithRocket} />
             </Card>

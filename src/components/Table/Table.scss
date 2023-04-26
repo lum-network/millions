@@ -2,7 +2,11 @@
 
 .table {
     border-collapse: separate;
-    border-spacing: 0 1rem;
+    border-spacing: 0 1.5rem;
+
+    @include media-breakpoint-down(xl) {
+        border-spacing: 0 1rem;
+    }
 }
 
 .table tbody tr {

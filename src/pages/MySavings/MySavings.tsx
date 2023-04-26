@@ -206,7 +206,7 @@ const MySavings = () => {
                             </>
                         ) : null}
                         <h2 className='mt-5'>{I18n.t('mySavings.assets')}</h2>
-                        <Card withoutPadding className='glow-bg py-3 py-sm-4 py-xl-4 px-3 px-sm-4 px-xl-5'>
+                        <Card withoutPadding className='glow-bg py-3 py-sm-4 py-xl-5 px-3 px-sm-4 px-xl-5'>
                             {balances && balances.length > 0 ? (
                                 balances.map(renderAsset)
                             ) : (

@@ -1,8 +1,12 @@
 @import 'src/styles/main';
 
 .deposits-table {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
 
+    @include media-breakpoint-down(xl) {
+        padding: 1rem 0;
+    }
+    
     .collapsible-deposits {
         border: 0;
         padding: 12px 0;
