@@ -9,7 +9,7 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
 import { NavigationConstants } from 'constant';
 import { DepositModel } from 'models';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import Error404 from 'pages/404/404';
 import { RootState } from 'redux/store';
 
@@ -20,6 +20,7 @@ import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
+import { useWindowSize } from 'hooks';
 
 const MySavings = () => {
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
@@ -39,7 +40,9 @@ const MySavings = () => {
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
-    const totalBalancePrice = balances ? WalletUtils.getTotalBalanceFromDeposits(deposits, prices) : null;
+    const winSizes = useWindowSize();
+
+    const totalBalancePrice = balances ? numeral(WalletUtils.getTotalBalanceFromDeposits(deposits, prices)).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
 
     const renderAsset = (asset: LumTypes.Coin) => {
@@ -72,7 +75,7 @@ const MySavings = () => {
                                 {normalDenom !== LumConstants.LumDenom ? (
                                     <Button
                                         outline
-                                        className='me-0 me-md-3 mb-3 mb-md-0 flex-grow-1'
+                                        className='me-0 me-sm-3 mb-3 mb-sm-0 flex-grow-1'
                                         data-bs-target='#withdrawModal'
                                         data-bs-toggle='modal'
                                         onClick={async () => {
@@ -139,7 +142,12 @@ const MySavings = () => {
                         <Card className='balance-card'>
                             <div className='my-auto d-flex flex-column justify-content-center'>
                                 {totalBalancePrice ? (
-                                    <SmallerDecimal big nb={numeral(totalBalancePrice).format('$0,0[.]00')} className='balance-number mt-3' />
+                                    <SmallerDecimal
+                                        big
+                                        nb={totalBalancePrice}
+                                        fontSize={winSizes.width < 576 ? FontsUtils.calculateFontSize(totalBalancePrice.length, winSizes.width, 42) : undefined}
+                                        className='balance-number mt-3'
+                                    />
                                 ) : (
                                     <div className='balance-number'>$ --</div>
                                 )}
@@ -158,16 +166,47 @@ const MySavings = () => {
                                 ]}
                             />
                         </Card>
+                        {prizesToClaim && prizesToClaim.length > 0 && winSizes.width <= 992 ? (
+                            <div className='mt-5 mt-lg-0'>
+                                <h2>
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    {I18n.t('mySavings.claimPrize')}
+                                </h2>
+                                <Card className='glow-bg'>
+                                    <div className='d-flex flex-column prize-to-claim'>
+                                        {prizesToClaim.map((prize, index) => {
+                                            if (!prize.amount) {
+                                                return null;
+                                            }
+
+                                            const amount = Number(NumbersUtils.convertUnitNumber(prize.amount.amount));
+
+                                            return (
+                                                <span className={`asset-amount ${index > 0 ? 'mt-4' : ''}`} key={`prize-to-claim-${index}`}>
+                                                    <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
+                                                    <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
+                                                    {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
+                                                </span>
+                                            );
+                                        })}
+                                        <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                            {I18n.t('mySavings.claim')}
+                                        </Button>
+                                    </div>
+                                </Card>
+                            </div>
+                        ) : null}
+
                         {deposits && deposits.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
-                                <Card withoutPadding className='py-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <DepositTable deposits={deposits} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
                                 </Card>
                             </>
                         ) : null}
                         <h2 className='mt-5'>{I18n.t('mySavings.assets')}</h2>
-                        <Card className='glow-bg'>
+                        <Card withoutPadding className='glow-bg py-3 py-sm-4 py-xl-4 px-3 px-sm-4 px-xl-5'>
                             {balances && balances.length > 0 ? (
                                 balances.map(renderAsset)
                             ) : (
@@ -182,7 +221,7 @@ const MySavings = () => {
                         {activities && activities.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
-                                <Card withoutPadding className='py-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5  glow-bg'>
                                     <TransactionsTable transactions={activities} />
                                 </Card>
                             </>
@@ -191,7 +230,7 @@ const MySavings = () => {
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
                     <div className='row'>
-                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                        {prizesToClaim && prizesToClaim.length > 0 && winSizes.width > 992 ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />

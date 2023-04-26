@@ -489,6 +489,17 @@
 
     .faq {
         padding-top: 150px;
+
+        .collapsible-btn {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @include media-breakpoint-down(md) {
+            .collapsible-title {
+                padding-right: 50px;
+            }
+        }
     }
 
     .footer {

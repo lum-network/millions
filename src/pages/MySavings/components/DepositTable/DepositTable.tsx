@@ -72,13 +72,15 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                     </div>
                 </div>
                 <ActionsContainer>
-                    <div className='col-6 col-md-2'>
+                    <div className='col-12 col-sm-6 col-md-2'>
                         <div className={`deposit-state rounded-pill text-nowrap ${statusClassName}`}>
                             {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                         </div>
                     </div>
-                    <div className='col-6 col-md-4'>
-                        <div className='d-flex justify-content-end align-items-center h-100'>{typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}</div>
+                    <div className='col-12 col-sm-6 col-md-4'>
+                        <div className='d-flex justify-content-start justify-content-sm-end align-items-center h-100 mt-3 mt-sm-0'>
+                            {typeof cta === 'string' ? <p className='text-muted mb-0'>{cta}</p> : cta}
+                        </div>
                     </div>
                 </ActionsContainer>
             </div>
@@ -91,8 +93,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                 <Collapsible
                     key={`collapsible-deposit-${index}`}
                     className='d-flex flex-column collapsible-deposits deposit-card'
-                    buttonBorder
-                    toggleWithButton
+                    buttonBorder={winSizes.width < 576 ? false : true}
+                    toggleWithButton={winSizes.width < 576 ? false : true}
                     header={
                         <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
                             <div className='col-12 col-md-6'>

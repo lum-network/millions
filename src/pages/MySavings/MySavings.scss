@@ -26,11 +26,6 @@
             letter-spacing: 0;
             text-align: left;
             color: white;
-
-            @include media-breakpoint-down(sm) {
-                @include font-size(5rem);
-                line-height: initial;
-            }
         }
 
         .coins-container {
@@ -76,6 +71,10 @@
         background-color: $color-primary-light;
         border-radius: 13px;
         cursor: default;
+        
+        @include media-breakpoint-down(sm) {
+            margin-bottom: 1rem;
+        }
 
         .denom-icon {
             width: 50px;

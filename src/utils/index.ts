@@ -6,6 +6,7 @@ import * as DenomsUtils from './denoms';
 import * as TimesUtils from './times';
 import * as WalletUtils from './wallet';
 import * as PoolsUtils from './pools';
+import * as FontsUtils from './fonts';
 import './time';
 
 export { default as I18n } from './i18n';
@@ -14,4 +15,4 @@ export { default as Firebase } from './firebase';
 export { default as LumClient } from './lumClient';
 export { default as WalletClient } from './walletClient';
 
-export { KeplrUtils, PoolsUtils, ToastUtils, StringsUtils, NumbersUtils, DenomsUtils, TimesUtils, WalletUtils };
+export { DenomsUtils, FontsUtils, KeplrUtils, NumbersUtils, PoolsUtils, StringsUtils, TimesUtils, ToastUtils, WalletUtils };

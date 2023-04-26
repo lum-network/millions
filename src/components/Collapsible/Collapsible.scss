@@ -18,23 +18,7 @@
         align-items: center;
 
         position: relative;
-        .with-button-border {
-            border: 1.8px solid $color-primary;
-            border-radius: 12px;
-            padding: 8px 18px;
-            font-size: 14px;
-            line-height: 17px;
-            color: $color-primary;
-            cursor: pointer;
-            width: unset;
-            position: absolute;
-            right: 0;
-            
-            @include media-breakpoint-down(md) {
-                bottom: 0;
-            }
-        }
-        
+
         @include media-breakpoint-down(md) {
             align-items: stretch;
             justify-content: flex-start;
@@ -56,11 +40,28 @@
         width: 40px;
         height: 40px;
 
+        position: absolute;
+        right: 0;
+
         img {
             width: 10px;
             transition: all 0.25s ease-out;
             transform-origin: center;
             transform: rotate(90deg);
+        }
+
+        &.with-button-border {
+            border: 1.8px solid $color-primary;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-size: 14px;
+            line-height: 17px;
+            color: $color-primary;
+            width: unset;
+        }
+
+        @include media-breakpoint-down(md) {
+            bottom: 0;
         }
 
         &.is-showing img {
