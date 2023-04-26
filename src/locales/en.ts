@@ -175,7 +175,7 @@ export default {
             totalPrizes: 'Total prizes won',
             totalPoolPrizes: "Total number of pool's prizes",
             bestPrizeWon: 'Best Prize won',
-        }
+        },
     },
     mySavings: {
         title: 'My Savings',

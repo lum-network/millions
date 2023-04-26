@@ -6,7 +6,7 @@ import numeral from 'numeral';
 import { Button, Card, CountDown } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import '../Pools.scss';
 
@@ -20,6 +20,7 @@ interface IProps {
 
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
+    const loadingPrizeToWin = useSelector((state: RootState) => state.loading.effects.pools.fetchPoolsRewards);
     const navigate = useNavigate();
 
     const price = prices?.[denom];
@@ -36,9 +37,9 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
                 <span className='name'>{denom}</span>
             </div>
             <div className='prize-container'>
-                <span className='prize-value mb-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</span>
+                <span className='prize-value mb-1'>${price && prize ? numeral(NumbersUtils.convertUnitNumber(prize) * price).format('0,0') : ' --'}</span>
                 <span className='prize'>
-                    {numeral(prize).format('0,0')} {denom}
+                    {numeral(NumbersUtils.convertUnitNumber(prize || 0)).format('0,0')} {denom}
                 </span>
             </div>
             <div className='information-container'>

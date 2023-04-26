@@ -6,6 +6,7 @@ import { DenomsUtils, LumClient } from 'utils';
 import { RootModel } from '.';
 import { LumTypes } from '@lum-network/sdk-javascript';
 import dayjs from 'dayjs';
+import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -41,6 +42,7 @@ export const pools = createModel<RootModel>()({
                     const pools: PoolModel[] = [];
 
                     for (const pool of res) {
+                        //FIXME: Check if we can remove this
                         const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -55,9 +57,28 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
+                    dispatch.pools.fetchPoolsRewards(null);
+
                     return pools;
                 }
             } catch {}
+        },
+        async fetchPoolsRewards(_, state) {
+            const [poolRewards] = await LumApi.getPoolsRewards();
+            const pools = state.pools.pools;
+
+            for (const poolReward of poolRewards) {
+                const pool = pools.find((p) => p.poolId.eq(poolReward.id));
+                const rewards = poolReward.rewards;
+
+                rewards.amount += Number(poolReward.availablePrizePool.amount);
+
+                if (pool) {
+                    pool.prizeToWin = rewards;
+                }
+            }
+
+            dispatch.pools.setPools(pools);
         },
         async getPoolPrizes(poolId: Long) {
             try {
