@@ -12,7 +12,7 @@ import './BestPrizeCard.scss';
 
 interface IProps {
     biggestPrize: BalanceModel | null;
-    poolId: string;
+    poolId?: string;
     countdownTo?: Date;
 }
 
@@ -34,7 +34,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
         <Card
             className='best-prize-card'
             withoutPadding
-            onClick={biggestPrize ? () => navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`) : undefined}
+            onClick={biggestPrize && poolId ? () => navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`) : undefined}
         >
             <div className='content'>
                 <div className='title-container'>
