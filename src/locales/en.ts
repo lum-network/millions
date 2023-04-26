@@ -320,7 +320,7 @@ export default {
                 title: 'Saving review & spread the word!',
                 subtitle: 'Share your Cosmos Millions deposit on Twitter and contribute to increase the collective prize pool!',
                 cardTitle: 'Your savings say thanks! ✌️',
-                cardSubtitle: 'You are always eligible for all the next draws coming! Share your winning on Twitter to see how high the total amount saved can go!',
+                cardSubtitle: 'You are always eligible for all the next draws coming! Share your deposit on Twitter to see how high the total amount saved can go!',
             },
         ],
         shareTwitter: 'Share on Twitter',

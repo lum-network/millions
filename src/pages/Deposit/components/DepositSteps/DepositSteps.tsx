@@ -76,6 +76,18 @@ const DepositStep1 = (
                         step: 'any',
                         lang: 'en',
                         ...form.getFieldProps('amount'),
+                        onChange: (e) => {
+                            const inputAmount = Number(e.target.value);
+                            const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances));
+
+                            if (Number.isNaN(inputAmount) || inputAmount < 0) {
+                                e.target.value = '0';
+                            } else if (inputAmount > maxAmount) {
+                                e.target.value = maxAmount.toString();
+                            }
+
+                            form.handleChange(e);
+                        },
                     }}
                     price={price}
                     error={form.touched.amount ? form.errors.amount : ''}
