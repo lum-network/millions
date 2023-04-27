@@ -7,6 +7,8 @@ import { NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { BalanceModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils } from 'utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'redux/store';
 
 import './BestPrizeCard.scss';
 
@@ -17,17 +19,21 @@ interface IProps {
 }
 
 const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
+    const prices = useSelector((state: RootState) => state.stats.prices);
+
     const { width } = useWindowSize();
     const [fontSize, setFontSize] = React.useState(0);
 
     const navigate = useNavigate();
+
+    const price = prices[DenomsUtils.getNormalDenom(biggestPrize?.denom ?? '')] || null;
 
     useEffect(() => {
         if (!biggestPrize) {
             return;
         }
 
-        setFontSize(FontsUtils.calculateFontSize(NumbersUtils.convertUnitNumber(biggestPrize?.amount).toFixed().length, width));
+        setFontSize(FontsUtils.calculateFontSize(NumbersUtils.convertUnitNumber(biggestPrize?.amount * (price ?? 1)).toFixed().length, width));
     }, [biggestPrize]);
 
     return (
@@ -46,7 +52,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
                             $
                         </span>
                         <div style={{ fontSize: `${fontSize}px` }}>
-                            <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize?.amount || 0)} />
+                            {biggestPrize && biggestPrize.amount && price ? <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize.amount * price)} /> : <div>Nothing</div>}
                         </div>
                     </div>
                 </div>
