@@ -3,8 +3,7 @@ import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, Lum
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
-import { NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
-import { getNormalDenom } from './denoms';
+import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { searchTxByTags } from '@lum-network/sdk-javascript/build/utils';
 
