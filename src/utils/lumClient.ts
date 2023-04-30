@@ -75,43 +75,6 @@ class LumClient {
         return prizes;
     };
 
-    getNextBestPrize = async (pools: PoolModel[], prices: { [key: string]: number }) => {
-        if (this.client === null) {
-            return null;
-        }
-
-        let bestPrize: LumTypes.Coin | null = null;
-
-        for (const pool of pools) {
-            if (pool.prizes && pool.prizes.length > 0) {
-                const bestPoolPrize = PoolsUtils.getBestPrize(pool.prizes, prices);
-
-                if (bestPoolPrize === null) {
-                    continue;
-                }
-
-                if (bestPrize === null) {
-                    bestPrize = bestPoolPrize;
-                } else {
-                    bestPrize = NumbersUtils.biggerCoin(bestPoolPrize, bestPrize, prices);
-                }
-            }
-        }
-
-        if (bestPrize === null) {
-            return null;
-        }
-
-        const amount = (
-            Number(LumUtils.convertUnit({ amount: bestPrize.amount, denom: LumConstants.MicroLumDenom }, LumConstants.LumDenom)) * (prices[getNormalDenom(bestPrize.denom)] || 1)
-        ).toFixed();
-
-        return {
-            amount,
-            denom: bestPrize.denom,
-        };
-    };
-
     getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
         if (this.client === null) {
             return null;

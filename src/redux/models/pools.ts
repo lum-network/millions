@@ -6,6 +6,7 @@ import { DenomsUtils, LumClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumApi } from 'api';
+import { getNormalDenom } from '../../utils/denoms';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -98,20 +99,18 @@ export const pools = createModel<RootModel>()({
                     return;
                 }
 
-                //FIXME: Filter by prizeToWin in Fiat, not in Token
-                const filterPools = pools.filter((p) => p.prizeToWin).sort((a, b) => b.prizeToWin!.amount - a.prizeToWin!.amount);
+                const prices = state.stats.prices;
 
-                if (filterPools.length === 0) {
+                const sortedPools = pools.sort(
+                    (a, b) =>
+                        (b.prizeToWin?.amount || 0) * prices[getNormalDenom(b.prizeToWin?.denom || 'uatom')] - (a.prizeToWin?.amount || 0) * prices[getNormalDenom(a.prizeToWin?.denom || 'uatom')],
+                );
+
+                if (sortedPools.length === 0) {
                     return;
                 }
 
-                dispatch.pools.setBestPoolPrize(filterPools[0]);
-
-                // const res = await LumClient.getNextBestPrize(payload, state.stats.prices);
-
-                // if (res) {
-                //     dispatch.pools.setBestPrize(res);
-                // }
+                dispatch.pools.setBestPoolPrize(sortedPools[0]);
             } catch {}
         },
     }),
