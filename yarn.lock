@@ -2216,10 +2216,10 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@lum-network/sdk-javascript@^0.7.16":
-  version "0.7.16"
-  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-0.7.16.tgz#9f53b3e566f923e01180b2a40422ec6c9a68ed43"
-  integrity sha512-a0w4ZRc88YXr5D2mZTfhzJF52dfAKUmsu9htGuxMkIr3uD8iJJPYjd/ZQwMQxyWK3CzoPnkC9l8weuCabyw3hQ==
+"@lum-network/sdk-javascript@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-0.8.0.tgz#39731126e7788229e71ad04b4daab8acfa0d996a"
+  integrity sha512-4zrR+Ue0ieOAy0VPz1ZYSOCK1+xTXR/tq0QnSHBWpaXRLKVescIDBpowyU+w/SXF0DKniTgZDFKZhCYvmq9S8A==
   dependencies:
     "@cosmjs/amino" "0.29.5"
     "@cosmjs/crypto" "0.29.5"
@@ -2236,7 +2236,7 @@
     "@types/uuid" "^9.0.0"
     crypto-browserify "^3.12.0"
     crypto-js "^4.1.1"
-    long "^5.2.1"
+    long "^4.0.0"
     uuid "^9.0.0"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
