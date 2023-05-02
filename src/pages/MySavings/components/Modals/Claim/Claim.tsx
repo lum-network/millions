@@ -144,9 +144,9 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setCurrentStep(2);
             setShareInfos({
                 hash: LumUtils.toHex(res.hash).toUpperCase(),
-                amount: NumbersUtils.formatTo6digit(prizes.reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0)),
+                amount: numeral(prizes.reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0)).format('0,0'),
                 denom: DenomsUtils.getNormalDenom(prizes[0].amount?.denom || '').toUpperCase(),
-                tvl: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')),
+                tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
                 compounded: compound,
             });
         }

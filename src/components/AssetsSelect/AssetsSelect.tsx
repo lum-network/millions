@@ -85,7 +85,7 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
         <div className={`custom-select ${readonly && 'readonly'} ${className}`}>
             {label && (
                 <label htmlFor='custom-select-input' className='form-label ms-2 fw-semibold'>
-                    {isLoading ? <Skeleton width={120} /> : label}
+                    {label}
                 </label>
             )}
             {readonly ? (

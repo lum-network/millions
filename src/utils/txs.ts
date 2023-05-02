@@ -94,24 +94,50 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
                                 }
                                 tx.amount = [txInfos.amount];
                             } else if (isMillionsWithdrawDeposit(txInfos)) {
-                                const logs = JSON.parse(rawTx.result.log || '');
+                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
+
                                 tx.amount = await findAmountInLogs(logs, 'withdraw_deposit', index);
                             } else if (isMillionsClaimPrize(txInfos)) {
-                                const logs = JSON.parse(rawTx.result.log || '');
+                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
 
                                 if (tx.amount.length > 0) {
                                     const msgAmount = await findAmountInLogs(logs, 'prize_claim', index);
-                                    const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
                                     const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
 
-                                    const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+                                    const existingDenomIndex = tx.amount.findIndex((amount) => amount.denom === msgAmount[0].denom);
 
-                                    tx.amount = [
-                                        {
-                                            amount,
-                                            denom: tx.amount[0].denom,
-                                        },
-                                    ];
+                                    if (existingDenomIndex > -1) {
+                                        const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
+                                        const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+                                        tx.amount[existingDenomIndex].amount = amount;
+                                    } else {
+                                        const existingTx = formattedTxs.find((tx) => tx.hash === hash && tx.height === height);
+
+                                        if (!existingTx) {
+                                            formattedTxs.push({
+                                                hash,
+                                                height,
+                                                messages: [msg.typeUrl],
+                                                amount: [
+                                                    {
+                                                        denom: await getDenomFromIbc(msgAmount[0].denom),
+                                                        amount: msgAmount[0].amount,
+                                                    },
+                                                ],
+                                            });
+                                            continue;
+                                        } else {
+                                            const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount);
+                                            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+
+                                            existingTx.amount = [
+                                                {
+                                                    denom: existingTx.amount[0].denom,
+                                                    amount,
+                                                },
+                                            ];
+                                        }
+                                    }
                                 } else {
                                     tx.amount = await findAmountInLogs(logs, 'prize_claim', index);
                                 }

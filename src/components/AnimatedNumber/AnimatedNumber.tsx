@@ -28,7 +28,7 @@ const Counter = ({ number, duration = 1500, delay = 500 }: IProps) => {
 
     return (
         <div className='counter'>
-            <animated.span style={countSpring}>{countSpring.count.interpolate((val) => Math.floor(val).toLocaleString())}</animated.span>
+            <animated.span style={countSpring}>{countSpring.count.to((val) => Math.floor(val).toLocaleString())}</animated.span>
         </div>
     );
 };

@@ -9,6 +9,7 @@ import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, Wal
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
+import { sortByBlockHeightDesc } from 'utils/txs';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -22,9 +23,20 @@ interface IbcTransferPayload {
 
 interface SetWalletDataPayload {
     balances?: LumTypes.Coin[];
-    activities?: TransactionModel[];
+    activities?: {
+        result: TransactionModel[];
+        currentPage: number;
+        pagesTotal: number;
+        fullyLoaded: boolean;
+    };
     deposits?: AggregatedDepositModel[];
     prizes?: Prize[];
+}
+
+interface GetActivitiesPayload {
+    address: string;
+    page?: number;
+    prevTxs?: TransactionModel[];
 }
 
 interface SetOtherWalletPayload {
@@ -65,7 +77,12 @@ export const wallet = createModel<RootModel>()({
                     innerWallet: payload,
                     address: payload.getAddress(),
                     balances: [],
-                    activities: [],
+                    activities: {
+                        result: [],
+                        currentPage: 1,
+                        pagesTotal: 1,
+                        fullyLoaded: false,
+                    },
                     deposits: [],
                     prizes: [],
                 },
@@ -96,6 +113,20 @@ export const wallet = createModel<RootModel>()({
                         balances: data.balances || [],
                     },
                 },
+            };
+        },
+        setActivitiesPage(state, payload: number): WalletState {
+            return {
+                ...state,
+                ...(state.lumWallet && {
+                    lumWallet: {
+                        ...state.lumWallet,
+                        activities: {
+                            ...state.lumWallet.activities,
+                            currentPage: payload,
+                        },
+                    },
+                }),
             };
         },
     },
@@ -280,7 +311,7 @@ export const wallet = createModel<RootModel>()({
         async reloadWalletInfos(address: string) {
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
-            await dispatch.wallet.getActivities(address);
+            await dispatch.wallet.getActivities({ address });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
             await dispatch.pools.fetchPools();
         },
@@ -299,12 +330,36 @@ export const wallet = createModel<RootModel>()({
                 console.log(e);
             }
         },
-        async getActivities(address: string) {
-            try {
-                const result = await LumClient.getWalletActivities(address);
+        async getActivities(payload: GetActivitiesPayload, state) {
+            if (state.wallet.lumWallet?.activities.fullyLoaded) {
+                return;
+            }
 
-                if (result) {
-                    dispatch.wallet.setLumWalletData({ activities: [...result.activities] });
+            try {
+                const res = await LumClient.getWalletActivities(payload.address, payload.page);
+
+                if (res) {
+                    const seenHashes: string[] = [];
+                    const txs = [...(state.wallet.lumWallet?.activities.result || []), ...res.activities];
+                    const result = [];
+
+                    for (const activity of txs) {
+                        if (!seenHashes.includes(activity.hash)) {
+                            result.push(activity);
+                            seenHashes.push(activity.hash);
+                        }
+                    }
+
+                    const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 30) : state.wallet.lumWallet?.activities.pagesTotal || 0;
+
+                    dispatch.wallet.setLumWalletData({
+                        activities: {
+                            result: sortByBlockHeightDesc(result),
+                            currentPage: res.currentPage,
+                            pagesTotal,
+                            fullyLoaded: res.currentPage === pagesTotal,
+                        },
+                    });
                 }
             } catch (e) {
                 console.log(e);

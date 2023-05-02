@@ -7,8 +7,7 @@ import { Button, Card, CountDown } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
-
-import '../Pools.scss';
+import Assets from 'assets';
 
 interface IProps {
     denom: string;
@@ -31,26 +30,34 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
                 navigate(`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`);
             }}
         >
-            <img width={88} height={88} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
-            <div className='name-container'>
-                <span className='name'>{denom}</span>
-            </div>
             <div className='prize-container'>
-                <span className='prize-value mb-1'>${price && prize ? numeral(NumbersUtils.convertUnitNumber(prize) * price).format('0,0') : ' --'}</span>
-                <span className='prize'>
-                    {numeral(NumbersUtils.convertUnitNumber(prize || 0)).format('0,0')} {denom}
-                </span>
+                <img width={64} height={64} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
+                <div className='d-flex flex-column ms-3'>
+                    <div className='prize'>{denom.toUpperCase()} Prize Pool</div>
+                    <div className='prize-value mt-1'>${price && prize ? numeral(NumbersUtils.convertUnitNumber(prize) * price).format('0,0') : ' --'}</div>
+                </div>
             </div>
             <div className='information-container'>
-                <div className='tvl-container'>
-                    <div className='tvl-label'>{I18n.t('pools.tvl')}</div>
+                <div className='apy-container pb-2'>
+                    <div className='apy-label'>
+                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' /> {I18n.t('pools.apy')}
+                    </div>
+                    <div className='apy'>20%</div>
+                </div>
+                <div className='separator' />
+                <div className='tvl-container py-2'>
+                    <div className='tvl-label'>
+                        <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' /> {I18n.t('pools.tvl')}
+                    </div>
                     <div className='tvl'>
                         {numeral(tvl).format('0,0')} {denom}
                     </div>
                 </div>
                 <div className='separator' />
-                <div className='countdown-container'>
-                    <div className='countdown-label'>{I18n.t('pools.drawEndAt')}</div>
+                <div className='countdown-container pt-2'>
+                    <div className='countdown-label'>
+                        <img src={Assets.images.clock} alt='clock' className='me-2' /> {I18n.t('pools.drawEndAt')}
+                    </div>
                     <div className='countdown'>
                         <CountDown to={drawEndAt} />
                     </div>

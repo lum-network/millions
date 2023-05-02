@@ -149,18 +149,20 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         {I18n.t('home.title')}
                     </NavLink>
                 </li>
-                <li className='nav-item mx-lg-5 mx-0 mx-lg-4 mt-4 mt-lg-0' {...dismissMenuProps}>
+                <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('pools.title')}
                     </NavLink>
                 </li>
-                <li className='nav-item mt-4 mt-lg-0' {...dismissMenuProps}>
-                    <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
-                        {I18n.t('mySavings.title')}
-                    </NavLink>
-                </li>
+                {address && (
+                    <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
+                        <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                            {I18n.t('mySavings.title')}
+                        </NavLink>
+                    </li>
+                )}
                 {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
-                <li className='nav-item ms-lg-5 ms-0 ms-lg-4 mt-4 mt-lg-0' {...dismissMenuProps}>
+                <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
                     <div className='d-flex flex-row'>
                         <Button outline className='flex-grow-1' onClick={!address ? connectWallet : copyAddress}>
                             {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
