@@ -4,12 +4,15 @@ import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
 import coinsStaked2 from './images/coins_stacked_2.svg';
+import coinsStackedPurple from './images/coins_stacked_purple.svg';
 import cosmonautCoin from './images/cosmonaut_coin.png';
 import claim from './images/claim.svg';
+import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
 import discord from './images/discord.svg';
 import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
+import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
 import info from './images/info.svg';
 import keplr from './images/keplr.svg';
@@ -52,14 +55,17 @@ const Assets = {
         bonded,
         checkmark,
         coin,
+        coinsStackedPurple,
         coinsStacked,
         coinsStaked2,
         cosmonautCoin,
         claim,
+        clock,
         deposit,
         discord,
         discordButton,
         discordPlain,
+        dollarIcon,
         downArrow,
         info,
         keplr,
