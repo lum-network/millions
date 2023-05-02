@@ -15,6 +15,7 @@ import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
 
 import './DepositSteps.scss';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 interface StepProps {
     currentPool: PoolModel;
@@ -42,6 +43,14 @@ interface Props {
     transferForm: FormikProps<{ amount: string }>;
     price?: number;
 }
+
+type TxInfos = {
+    hash: string;
+    amount: string;
+    denom: string;
+    tvl: string;
+    poolId: string;
+};
 
 const DepositStep1 = (
     props: StepProps & {
@@ -150,7 +159,7 @@ const DepositStep1 = (
 const DepositStep2 = (
     props: StepProps & {
         amount: string;
-        onFinishDeposit: (infos: { hash: string; amount: string; denom: string; tvl: string }) => void;
+        onFinishDeposit: (infos: TxInfos) => void;
         initialAmount?: string;
         onNextStep: () => void;
         onPrevStep: (amount: string) => void;
@@ -296,6 +305,7 @@ const DepositStep2 = (
                             amount: numeral(depositAmount).format('0,0'),
                             denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
                             tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber).format('0,0'),
+                            poolId: poolToDeposit.poolId.toString(),
                         });
                         onNextStep();
                     }
@@ -311,54 +321,68 @@ const DepositStep2 = (
     );
 };
 
-const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: { hash: string; amount: string; denom: string; tvl: string }; onTwitterShare: () => void }) => {
+const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: TxInfos; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
-        <div className='step-3 d-flex flex-column px-5 px-lg-0 px-xl-4 mt-5'>
-            <div className='row row-cols-3'>
-                <div className='col step-3-cta-container'>
-                    <button
-                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+        <div className='step-3 d-flex flex-column mt-5'>
+            <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
+                <div className='d-flex flex-row align-items-center'>
+                    <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
+                    <div className='d-flex flex-column ms-3'>
+                        <div className='deposit-amount text-start'>
+                            {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
+                        </div>
+                        <small className='deposit-infos text-start'>
+                            {I18n.t('pools.poolId', { poolId: txInfos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
+                        </small>
+                    </div>
+                </div>
+                <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
+            </div>
+            <div className='row row-cols-3 gx-4'>
+                <div className='col'>
+                    <Card
+                        flat
+                        withoutPadding
+                        className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
                         onClick={() => {
                             window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
                         }}
                     >
-                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' />
-                        </div>
+                        <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
                         {I18n.t('deposit.seeOnExplorer')}
-                    </button>
+                    </Card>
                 </div>
-                <div className='col step-3-cta-container'>
-                    <button
-                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                <div className='col'>
+                    <Card
+                        flat
+                        withoutPadding
+                        className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                         onClick={() => {
                             window.open(`${NavigationConstants.MINTSCAN}/txs/${txInfos.hash}`, '_blank');
                         }}
                     >
-                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={Assets.images.mintscanPurple} alt='Mintscan' />
-                        </div>
+                        <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
                         {I18n.t('deposit.seeOnMintscan')}
-                    </button>
+                    </Card>
                 </div>
-                <div className='col step-3-cta-container'>
-                    <button
-                        className='scale-hover d-flex flex-column align-items-center justify-content-center mx-auto'
+                <div className='col'>
+                    <Card
+                        flat
+                        withoutPadding
+                        className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                         onClick={() => {
                             navigate(NavigationConstants.MY_SAVINGS);
                         }}
                     >
-                        <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                            <img src={Assets.images.mySavings} alt='My savings' />
-                        </div>
+                        <img src={Assets.images.mySavings} alt='My savings' className='me-3' />
                         {I18n.t('deposit.goToMySavings')}
-                    </button>
+                    </Card>
                 </div>
             </div>
             <Button
-                className='deposit-cta mt-5'
+                className='deposit-cta align-self-center mt-5 mb-2'
                 onClick={() => {
                     window.open(
                         `${NavigationConstants.TWEET_URL}?text=${encodeURI(
@@ -379,12 +403,7 @@ const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: { hash: string; am
 const DepositSteps = (props: Props) => {
     const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
-    const [txInfos, setTxInfos] = useState<{
-        hash: string;
-        denom: string;
-        amount: string;
-        tvl: string;
-    } | null>(null);
+    const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
     const [initialAmount, setInitialAmount] = useState('0');
@@ -402,7 +421,7 @@ const DepositSteps = (props: Props) => {
     return (
         <>
             <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-                <div className='mb-3 mb-sm-5 mb-lg-0'>
+                <div className={`d-flex flex-${currentStep === 2 ? 'row mt-2' : 'column'} mb-3 mb-sm-5 mb-lg-0`}>
                     <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
                     <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
                 </div>

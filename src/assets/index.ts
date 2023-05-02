@@ -1,5 +1,6 @@
 import arrow from './images/arrow.svg';
 import bonded from './images/bonded.svg';
+import biggestPrizePoolPlaceholder from './images/biggest_prize_pool_placeholder.svg';
 import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
@@ -53,6 +54,7 @@ const Assets = {
     images: {
         arrow,
         bonded,
+        biggestPrizePoolPlaceholder,
         checkmark,
         coin,
         coinsStackedPurple,

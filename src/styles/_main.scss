@@ -40,10 +40,11 @@ html body {
 }
 
 .scale-hover {
-    transition: all linear 150ms;
+    cursor: pointer;
+    transition: scale linear 150ms !important;
 
     &:hover {
-        transform: scale(1.05);
+        scale: 1.05 !important;
     }
 }
 

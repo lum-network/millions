@@ -4,7 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import { Card, Modal, Steps } from 'components';
+import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
+
+import { Card, Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { DenomsUtils, I18n } from 'utils';
@@ -121,13 +123,15 @@ const Deposit = () => {
 
     return (
         <>
-            <div className='row row-cols-1 row-cols-lg-2 py-5 h-100 gy-5'>
+            <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center`}>
+                {!isLastStep && (
+                    <div className='col'>
+                        <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
+                        <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                    </div>
+                )}
                 <div className='col'>
-                    <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                </div>
-                <div className='col'>
-                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 ${isLastStep ? 'glow-bg' : ''}`}>
+                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 ${isLastStep ? 'last-step glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={() => setCurrentStep(currentStep + 1)}
@@ -146,6 +150,7 @@ const Deposit = () => {
                             lumWallet={lumWallet}
                             otherWallets={otherWallets}
                         />
+                        {isLastStep && <Lottie className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle' animationData={cosmonautWithRocket} />}
                     </Card>
                 </div>
             </div>
