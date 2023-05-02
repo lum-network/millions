@@ -82,7 +82,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
         <div className={`custom-select ${readonly && 'readonly'} ${className}`}>
             {label && (
                 <label htmlFor='custom-select-input' className='form-label ms-2 fw-semibold'>
-                    {isLoading ? <Skeleton width={120} /> : label}
+                    {label}
                 </label>
             )}
             {readonly ? (

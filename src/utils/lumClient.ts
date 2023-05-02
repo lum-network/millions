@@ -1,11 +1,10 @@
-import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
+import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
 // import { OSMO_POOL_PRIZES, ATOM_POOL_PRIZES } from 'constant/tmp';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
-import { searchTxByTags } from '@lum-network/sdk-javascript/build/utils';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -113,23 +112,54 @@ class LumClient {
         return { balances };
     };
 
-    getWalletActivities = async (address: string) => {
+    getWalletActivities = async (address: string, page = 1) => {
         if (this.client === null) {
             return null;
         }
 
-        const res = await this.client.searchTx([
-            searchTxByTags([
+        const LIMIT = 30;
+
+        const result: LumTypes.TxResponse[] = [];
+        let totalCount: number | null = null;
+
+        const queries = [
+            LumUtils.searchTxByTags([
                 { key: 'message.module', value: 'millions' },
                 { key: 'transfer.sender', value: address },
             ]),
-            searchTxByTags([
+            LumUtils.searchTxByTags([
                 { key: 'message.module', value: 'millions' },
                 { key: 'transfer.recipient', value: address },
             ]),
-        ]);
+        ];
 
-        return { activities: await formatTxs(res, true) };
+        await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' }))).then((res) => {
+            const senderQuery = res[0];
+            const recipientQuery = res[1];
+
+            if (page === 1 && senderQuery && recipientQuery && senderQuery.status === 'fulfilled' && recipientQuery.status === 'fulfilled') {
+                totalCount = (senderQuery.value?.totalCount || 0) + (recipientQuery.value?.totalCount || 0);
+            }
+
+            const seenHashes: Uint8Array[] = [];
+
+            for (const r of res) {
+                if (r.status === 'fulfilled' && r.value) {
+                    for (const tx of r.value.txs) {
+                        if (!seenHashes.includes(tx.hash)) {
+                            seenHashes.push(tx.hash);
+                            result.push(tx);
+                        }
+                    }
+                }
+            }
+        });
+
+        return {
+            activities: await formatTxs(result, true),
+            totalCount,
+            currentPage: page,
+        };
     };
 
     getWalletPrizes = async (address: string) => {

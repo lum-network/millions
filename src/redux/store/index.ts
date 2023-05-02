@@ -9,13 +9,16 @@ const store = init<RootModel, FullModel>({
     models,
     redux: {
         rootReducers: {
-            LOGOUT: () => {
+            LOGOUT: (state) => {
                 const backdrops = document.querySelectorAll('.modal-backdrop');
 
                 backdrops.forEach((backdrop) => backdrop.remove());
 
                 ToastUtils.showSuccessToast({ content: 'You have been logged out.' });
-                return undefined;
+                return {
+                    ...state,
+                    wallet: undefined,
+                };
             },
         },
     },

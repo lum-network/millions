@@ -2,12 +2,18 @@
 
 .best-prize-card {
     overflow: hidden;
-
+    height: 100%;
     .cosmonaut-on-the-moon {
         position: absolute;
-        bottom: -120px;
-        height: 400px;
-        width: 400px;
+        bottom: -150px;
+        height: 520px;
+        width: 520px;
+        
+        @include media-breakpoint-down(xxl) {
+            bottom: -120px;
+            height: 400px;
+            width: 400px;
+        }
 
         @include media-breakpoint-down(md) {
             bottom: -100px;
@@ -16,9 +22,7 @@
         }
 
         @include media-breakpoint-down(sm) {
-            bottom: -50px;
-            height: 200px;
-            width: 200px;
+            bottom: -60px;
         }
     }
 
@@ -46,8 +50,8 @@
         position: relative;
         padding: 38px 0 180px 0;
         display: flex;
+        height: 100%;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         background: $color-primary url("../../assets/images/confetti_blur.svg") repeat;
         border-bottom-left-radius: 13px;
@@ -74,8 +78,8 @@
 
         .best-prize-countdown {
             position: absolute;
-            bottom: 25px;
-            padding: 0 20px;
+            bottom: 50px;
+            padding: 0 56px;
 
             @include media-breakpoint-down(sm) {
                 padding-bottom: 130px;

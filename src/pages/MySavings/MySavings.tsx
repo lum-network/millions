@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import numeral from 'numeral';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 
@@ -8,10 +9,10 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
 import { NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
 import { DepositModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
-import Error404 from 'pages/404/404';
-import { RootState } from 'redux/store';
+import { Dispatch, RootState } from 'redux/store';
 
 import DepositTable from './components/DepositTable/DepositTable';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
@@ -20,13 +21,9 @@ import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
-import { useWindowSize } from 'hooks';
 
 const MySavings = () => {
-    const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
-    const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits } = useSelector((state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
         balances: state.wallet.lumWallet?.balances,
@@ -36,7 +33,12 @@ const MySavings = () => {
         prices: state.stats.prices,
         pools: state.pools.pools,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
+        isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
     }));
+    const dispatch = useDispatch<Dispatch>();
+
+    const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
+    const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -44,6 +46,20 @@ const MySavings = () => {
 
     const totalBalancePrice = balances ? numeral(WalletUtils.getTotalBalanceFromDeposits(deposits, prices)).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
+
+    useEffect(() => {
+        const page = activities?.currentPage;
+
+        if (lumWallet && page && page > 1) {
+            dispatch.wallet.getActivities({ address: lumWallet.address, page });
+        }
+    }, [activities?.currentPage]);
+
+    useEffect(() => {
+        if (isReloadingInfos) {
+            dispatch.wallet.setActivitiesPage(1);
+        }
+    }, [isReloadingInfos]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -123,7 +139,7 @@ const MySavings = () => {
     };
 
     if (!lumWallet) {
-        return <Error404 />;
+        return <Navigate to={NavigationConstants.HOME} replace />;
     }
 
     return (
@@ -218,11 +234,20 @@ const MySavings = () => {
                                 </div>
                             )}
                         </Card>
-                        {activities && activities.length > 0 ? (
+                        {activities && activities.result.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5  glow-bg'>
-                                    <TransactionsTable transactions={activities} />
+                                    <TransactionsTable
+                                        transactions={activities.result.slice((activities.currentPage - 1) * 30, (activities.currentPage - 1) * 30 + 30)}
+                                        pagination={{
+                                            page: activities.currentPage,
+                                            pagesTotal: activities.pagesTotal,
+                                            hasNextPage: activities.currentPage < activities.pagesTotal,
+                                            hasPreviousPage: activities.currentPage > 1,
+                                        }}
+                                        onPageChange={(page) => dispatch.wallet.setActivitiesPage(page)}
+                                    />
                                 </Card>
                             </>
                         ) : null}

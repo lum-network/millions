@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
@@ -114,32 +115,28 @@ const DepositStep1 = (
                         value: wallet.balances[0].denom,
                     }))}
                 />
-                {isLoading ? (
-                    <Skeleton height={104} className='mt-4' />
-                ) : (
-                    <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
-                        <div className='winning-chance d-flex flex-row justify-content-between'>
-                            <div>
-                                {I18n.t('deposit.chancesHint.winning.title')}
-                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
-                                    <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='winning-chance-tooltip' />
-                                </span>
-                            </div>
-                            <div>14%</div>
+                <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
+                    <div className='winning-chance d-flex flex-row justify-content-between'>
+                        <div>
+                            {I18n.t('deposit.chancesHint.winning.title')}
+                            <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
+                                <img src={Assets.images.info} alt='info' />
+                                <Tooltip id='winning-chance-tooltip' />
+                            </span>
                         </div>
-                        <div className='average-prize d-flex flex-row justify-content-between mt-4'>
-                            <div>
-                                {I18n.t('deposit.chancesHint.averagePrize.title')}
-                                <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
-                                    <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='average-prize-tooltip' />
-                                </span>
-                            </div>
-                            <div>14 {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</div>
+                        <div>14%</div>
+                    </div>
+                    <div className='average-prize d-flex flex-row justify-content-between mt-4'>
+                        <div>
+                            {I18n.t('deposit.chancesHint.averagePrize.title')}
+                            <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
+                                <img src={Assets.images.info} alt='info' />
+                                <Tooltip id='average-prize-tooltip' />
+                            </span>
                         </div>
-                    </Card>
-                )}
+                        <div>14 {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</div>
+                    </div>
+                </Card>
                 <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
                     <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
                     {I18n.t('deposit.transferBtn')}
@@ -296,9 +293,9 @@ const DepositStep2 = (
                     } else if (res && res.hash) {
                         onFinishDeposit({
                             hash: LumUtils.toHex(res.hash).toUpperCase(),
-                            amount: NumbersUtils.formatTo6digit(depositAmount),
+                            amount: numeral(depositAmount).format('0,0'),
                             denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
-                            tvl: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber),
+                            tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber).format('0,0'),
                         });
                         onNextStep();
                     }

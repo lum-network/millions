@@ -4,6 +4,7 @@ import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
 import coinsStaked2 from './images/coins_stacked_2.svg';
+import cosmonautCoin from './images/cosmonaut_coin.png';
 import claim from './images/claim.svg';
 import deposit from './images/deposit.svg';
 import discord from './images/discord.svg';
@@ -23,6 +24,7 @@ import mySavings from './images/my_place.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
 import trophy from './images/trophy.svg';
+import trophyPurple from './images/trophy_purple.svg';
 import twitterButton from './images/twitter_button.svg';
 import twitterPlain from './images/twitter_plain.svg';
 import twitterWhite from './images/twitter_white.svg';
@@ -52,6 +54,7 @@ const Assets = {
         coin,
         coinsStacked,
         coinsStaked2,
+        cosmonautCoin,
         claim,
         deposit,
         discord,
@@ -71,6 +74,7 @@ const Assets = {
         star,
         success,
         trophy,
+        trophyPurple,
         twitterButton,
         twitterPlain,
         twitterWhite,

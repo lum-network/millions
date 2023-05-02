@@ -54,7 +54,6 @@
                 font-size: 12px;
                 line-height: 14px;
                 text-align: center;
-                text-transform: uppercase;
             }
         }
 
@@ -120,6 +119,18 @@
                     text-align: right;
                 }
             }
+        }
+    }
+
+    .pool-card-container.pool-card-placeholder {
+        .prize-container {
+            p, h3 {
+                color: $color-black;
+            }
+        }
+
+        .prize-to-win {
+            color: $color-primary;
         }
     }
 }

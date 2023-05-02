@@ -21,7 +21,7 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
     if (to) {
         return (
             <Link
-                to={to}
+                to={disabled ? '#' : to}
                 state={locationState}
                 onClick={
                     !loading

@@ -50,7 +50,7 @@ const LeavePool = ({ deposit }: Props) => {
             setCurrentStep(0);
         };
 
-        const leavePoolModal = document.getElementById('#leavePoolModal');
+        const leavePoolModal = document.getElementById('leavePoolModal');
 
         if (leavePoolModal) {
             leavePoolModal.addEventListener('hidden.bs.modal', handler);

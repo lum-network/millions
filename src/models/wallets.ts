@@ -7,7 +7,12 @@ export interface LumWalletModel {
     innerWallet: LumWallet;
     address: string;
     balances: LumTypes.Coin[];
-    activities: TransactionModel[];
+    activities: {
+        result: TransactionModel[];
+        currentPage: number;
+        pagesTotal: number;
+        fullyLoaded: boolean;
+    };
     deposits: AggregatedDepositModel[];
     prizes: Prize[];
 }

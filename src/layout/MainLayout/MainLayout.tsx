@@ -74,11 +74,9 @@ const MainLayout = () => {
 
     useEffect(() => {
         const keplrKeystoreChangeHandler = () => {
-            console.log('keystore handler');
             if (wallet) {
                 ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
-                dispatch({ type: 'LOGOUT' });
-                dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
+                dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
                 dispatch.wallet.connectOtherWallets(null);
             }
         };

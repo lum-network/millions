@@ -152,8 +152,8 @@ export default {
     },
     home: {
         title: 'Home',
-        nextBestPrize: 'Next best prize',
-        lastBigWinners: 'Last big winners',
+        nextBestPrize: 'Biggest Prize Pool',
+        lastBigWinners: 'Luckiest winners',
         totalValueLocked: 'Total value locked',
         cta: 'SAVE & WIN',
     },
