@@ -250,12 +250,16 @@ const MySavings = () => {
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5  glow-bg'>
                                     <TransactionsTable
                                         transactions={activities.result.slice((activities.currentPage - 1) * 30, (activities.currentPage - 1) * 30 + 30)}
-                                        pagination={{
-                                            page: activities.currentPage,
-                                            pagesTotal: activities.pagesTotal,
-                                            hasNextPage: activities.currentPage < activities.pagesTotal,
-                                            hasPreviousPage: activities.currentPage > 1,
-                                        }}
+                                        pagination={
+                                            activities.pagesTotal > 1
+                                                ? {
+                                                      page: activities.currentPage,
+                                                      pagesTotal: activities.pagesTotal,
+                                                      hasNextPage: activities.currentPage < activities.pagesTotal,
+                                                      hasPreviousPage: activities.currentPage > 1,
+                                                  }
+                                                : undefined
+                                        }
                                         onPageChange={(page) => dispatch.wallet.setActivitiesPage(page)}
                                     />
                                 </Card>

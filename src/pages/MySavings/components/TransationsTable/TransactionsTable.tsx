@@ -18,7 +18,7 @@ const TransactionsTable = ({
     onPageChange,
 }: {
     transactions: TransactionModel[];
-    pagination: {
+    pagination?: {
         hasNextPage?: boolean;
         hasPreviousPage?: boolean;
         pagesTotal?: number;
