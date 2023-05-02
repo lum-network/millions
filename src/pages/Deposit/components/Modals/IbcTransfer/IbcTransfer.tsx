@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Assets from 'assets';
-import { Button, Modal } from 'components';
+import { Button, Card, Modal } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n } from 'utils';
 
@@ -9,7 +9,10 @@ const IbcTransfer = ({ modalRef, onConfirm }: { modalRef: React.RefObject<ModalH
     return (
         <Modal id='ibcTransferModal' ref={modalRef}>
             <img src={Assets.images.info} alt='info' width={42} height={42} />
-            <h3 className='my-4'>{I18n.t('deposit.ibcTransferModal.title')}</h3>
+            <h3 className='mt-4'>{I18n.t('deposit.ibcTransferModal.title')}</h3>
+            <Card flat withoutPadding className='deposit-warning my-4'>
+                {I18n.t('deposit.ibcTransferModal.subtitle')}
+            </Card>
             <div className='d-flex flex-row align-self-stretch justify-content-between'>
                 <Button outline className='w-100' data-bs-dismiss='modal'>
                     {I18n.t('common.cancel')}

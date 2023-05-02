@@ -32,3 +32,12 @@
         color: $color-black;
     }
 }
+
+#ibcTransferModal {
+    .deposit-warning {
+        padding: 2rem 2.5rem;
+        font-weight: 300;
+        font-size: 16px;
+        line-height: 19px;
+    }
+}
