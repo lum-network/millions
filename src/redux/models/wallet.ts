@@ -331,10 +331,6 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async getActivities(payload: GetActivitiesPayload, state) {
-            if (state.wallet.lumWallet?.activities.fullyLoaded) {
-                return;
-            }
-
             try {
                 const res = await LumClient.getWalletActivities(payload.address, payload.page);
 

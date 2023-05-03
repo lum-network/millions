@@ -74,13 +74,13 @@ const MySavings = () => {
         return (
             <Collapsible
                 id={`asset-${asset.denom}`}
-                className='asset-card p-3 py-4 p-sm-4 p-xl-5'
+                className='asset-card'
                 key={asset.denom}
                 toggleWithButton
                 disabled
                 header={
                     <>
-                        <div className='d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-center flex-grow-1'>
+                        <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-center flex-grow-1'>
                             <div className='d-flex flex-row align-items-center'>
                                 {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
                                 <div className='d-flex flex-column asset-amount'>
@@ -94,7 +94,7 @@ const MySavings = () => {
                                 {normalDenom !== LumConstants.LumDenom ? (
                                     <Button
                                         outline
-                                        className='me-0 me-sm-3 mb-3 mb-sm-0 flex-grow-1'
+                                        className='me-0 me-sm-4 mb-3 mb-sm-0 flex-grow-1'
                                         data-bs-target='#withdrawModal'
                                         data-bs-toggle='modal'
                                         onClick={async () => {
@@ -260,7 +260,13 @@ const MySavings = () => {
                                                   }
                                                 : undefined
                                         }
-                                        onPageChange={(page) => dispatch.wallet.setActivitiesPage(page)}
+                                        onPageChange={(page) => {
+                                            if (activities?.fullyLoaded) {
+                                                return;
+                                            }
+
+                                            dispatch.wallet.setActivitiesPage(page);
+                                        }}
                                     />
                                 </Card>
                             </>
@@ -289,7 +295,9 @@ const MySavings = () => {
                                                 <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
                                                 <h3 className='mt-2'>No prize won yet</h3>
                                                 <p className='text-center'>It’s time to deposit in pool to have chance to win</p>
-                                                <Button to={NavigationConstants.POOLS}>{I18n.t('mySavings.deposit')}</Button>
+                                                <Button data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                                    {I18n.t('mySavings.deposit')}
+                                                </Button>
                                             </div>
                                         )}
                                     </div>
