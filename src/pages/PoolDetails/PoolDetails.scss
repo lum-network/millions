@@ -6,32 +6,40 @@
             @include font-size(2rem);
         }
     }
-    
-    h2 {        
+
+    h2 {
         @include media-breakpoint-down(lg) {
             @include font-size(1.5rem);
         }
     }
 
-    h4 {        
+    h4 {
         @include media-breakpoint-down(lg) {
             @include font-size(0.75rem);
         }
     }
 
+    small {
+        font-size: 12px;
+        color: $color-primary;
+    }
+
     .pool-icon {
         width: 64px;
         height: 64px;
-        
+
         @include media-breakpoint-down(lg) {
             width: 40px;
             height: 40px;
         }
     }
-    .biggest-prize-container {}
+    .biggest-prize-container {
+    }
 
     .prize-draw-card {
         margin-top: 4rem;
+        padding: 32px 32px;
+
         .pool-illustration {
             position: absolute;
             right: 3rem;
@@ -59,7 +67,7 @@
         width: 252px;
         height: 252px;
         margin-bottom: -84px;
-        
+
         @include media-breakpoint-only(lg) {
             margin-bottom: -60px;
         }
@@ -69,5 +77,123 @@
             height: 190px;
             margin-bottom: -52px;
         }
+    }
+
+    .stat-bg-white {
+        background-color: $color-white;
+        border-radius: 8px;
+        padding: 14px 22px;
+    }
+
+    .prize-distribution-card {
+        padding: 22px 32px;
+        .prize-distribution-table {
+            .table thead tr th {
+                color: $color-primary;
+            }
+
+            .table tbody tr td {
+                color: $color-primary;
+                background: $color-white;
+                padding: 1.5rem 0;
+            }
+            .table tbody tr td:first-child,
+            .table tbody tr td:last-child {
+                padding: 1.5rem 1.5rem;
+            }
+        }
+    }
+
+    .winning-chances-card {
+        padding: 40px 32px;
+        .estimation-amount-btn {
+            background-color: transparent;
+            border-radius: 12px;
+            border: 2.5px solid $color-primary;
+            color: $color-primary;
+
+            &:not(:first-child) {
+                margin-left: 1rem;
+            }
+
+            &:hover {
+                background-color: $color-primary;
+                color: $color-white;
+            }
+        }
+
+        .chance-to-win {
+            font-size: 22px;
+        }
+
+        .estimation-input-container {
+            border: 2.5px solid rgba(86, 52, 222, 0.2);
+            border-radius: 15px;
+            input {
+                border: 0;
+                background: transparent;
+                font-size: 22px;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            .crypto-amount {
+                color: $color-dark-grey;
+                font-weight: 300;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .draws-history-card {
+        padding: 22px 32px;
+        .draws-history-table {
+            .table thead tr th {
+                color: $color-primary;
+            }
+
+            .table tbody tr td {
+                color: $color-primary;
+                background: $color-white;
+                padding: 1.5rem 0;
+
+                &.draw-date {
+                    color: $color-black;
+                    font-size: 14px;
+                }
+            }
+            .table tbody tr td:first-child,
+            .table tbody tr td:last-child {
+                padding: 1.5rem 1.5rem;
+            }
+        }
+    }
+
+    .cosmonaut-with-balloons {
+        position: absolute;
+        right: -30px;
+        top: calc(50% - 70px);
+        width: 200px;
+        height: 200px;
+    }
+
+    .cosmonaut-with-duck {
+        position: absolute;
+        left: -130px;
+        top: 120px;
+        width: 200px;
+        height: 200px;
+        transform: rotateY(180deg);
+    }
+
+    .index-container {
+        background-color: $color-primary-light;
+        color: $color-primary;
+        border-radius: 7px;
+        font-size: 14px;
+        width: 32px;
+        height: 32px;
     }
 }

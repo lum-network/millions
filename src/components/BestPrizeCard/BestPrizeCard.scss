@@ -6,9 +6,9 @@
     .cosmonaut-on-the-moon {
         position: absolute;
         bottom: -150px;
-        height: 520px;
-        width: 520px;
-        
+        height: 570px;
+        width: 570px;
+        transform: translateX(30px);
         @include media-breakpoint-down(xxl) {
             bottom: -120px;
             height: 400px;

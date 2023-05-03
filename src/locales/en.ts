@@ -177,6 +177,37 @@ export default {
             totalPoolPrizes: "Total number of pool's prizes",
             bestPrizeWon: 'Best Prize won',
         },
+        users: {
+            title: 'Number of Users',
+            beginning: 'Since the beginning',
+            currentDraw: 'Current draw'
+        },
+        prizeDistribution: {
+            title: 'Prize Distribution',
+            tableHeaders: [
+                'Prize Value',
+                'Number of prizes',
+                'Chance to win'
+            ]
+        },
+        winningChances: {
+            title: 'Winning Chances',
+            estimatedSavings: 'Estimated savings',
+            chanceToWin: 'Chance to win'
+        },
+        drawsHistory: {
+            title: 'Draws History',
+            noDraws: 'No draws yet',
+            noDrawsDescription: 'Draws will be available as soon as the first prize is won',
+            noDrawsCta: 'Deposit in Pool',
+            tableHeaders: [
+                'Pool ID',
+                'Draw ID',
+                'Date',
+                'Winners',
+                'Prize Value',
+            ]
+        }
     },
     mySavings: {
         title: 'My Savings',
@@ -234,7 +265,7 @@ export default {
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
                 {
-                    title: 'Spread the word!',
+                    title: 'Cosmonaut, your savings are\nblasting off like a rocketship 🚀',
                     subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!',
                 },
             ],

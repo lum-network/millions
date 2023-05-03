@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LumUtils } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
@@ -10,12 +11,12 @@ import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { NavigationConstants } from 'constant';
+import { useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './Claim.scss';
-import { useVisibilityState } from 'hooks';
 
 interface Props {
     prizes: Prize[];
@@ -23,48 +24,63 @@ interface Props {
     pools: PoolModel[];
 }
 
-type ShareInfos = { hash: string; amount: string; denom: string; tvl: string; compounded: boolean };
+type ShareInfos = { hash: string; amount: string; denom: string; tvl: string; poolId: string; compounded: boolean };
 
 const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
-        <div className='text-center py-4'>
-            <div className='mb-5 mb-lg-0'>
+        <>
+            <div className='d-flex flex-row justify-content-between align-items-center mb-5 mb-lg-0'>
                 <div className='card-step-title'>{I18n.t('mySavings.claimModal.steps', { returnObjects: true })[2].title}</div>
-                <div className='card-step-subtitle'>{I18n.t('mySavings.claimModal.steps', { returnObjects: true })[2].subtitle}</div>
             </div>
             <div className='step-3 d-flex flex-column mt-5'>
-                <div className='row row-cols-3'>
-                    <div className='col step-3-cta-container'>
-                        <button
-                            className='scale-hover d-flex flex-column align-items-center justify-content-center'
+                <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
+                    <div className='d-flex flex-row align-items-center'>
+                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(infos.denom.toLowerCase())} alt={infos.denom} />
+                        <div className='d-flex flex-column ms-3'>
+                            <div className='deposit-amount text-start'>
+                                {infos.amount} {DenomsUtils.getNormalDenom(infos.denom).toUpperCase()}
+                            </div>
+                            <small className='deposit-infos text-start'>
+                                {I18n.t('pools.poolId', { poolId: infos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
+                            </small>
+                        </div>
+                    </div>
+                    <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
+                </div>
+                <div className='row row-cols-3 gx-4'>
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
                             onClick={() => {
                                 window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${infos.hash}`, '_blank');
                             }}
                         >
-                            <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                                <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' />
-                            </div>
+                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
                             {I18n.t('deposit.seeOnExplorer')}
-                        </button>
+                        </Card>
                     </div>
-                    <div className='col step-3-cta-container'>
-                        <button
-                            className='scale-hover d-flex flex-column align-items-center justify-content-center'
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
                                 window.open(`${NavigationConstants.MINTSCAN}/txs/${infos.hash}`, '_blank');
                             }}
                         >
-                            <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                                <img src={Assets.images.mintscanPurple} alt='Mintscan' />
-                            </div>
+                            <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
                             {I18n.t('deposit.seeOnMintscan')}
-                        </button>
+                        </Card>
                     </div>
-                    <div className='col step-3-cta-container'>
-                        <button
-                            className='scale-hover d-flex flex-column align-items-center justify-content-center'
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
                                 if (modalRef.current) {
                                     modalRef.current.hide();
@@ -72,15 +88,13 @@ const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; mo
                                 navigate(NavigationConstants.MY_SAVINGS);
                             }}
                         >
-                            <div className='icon-container d-flex align-items-center justify-content-center mb-4'>
-                                <img src={Assets.images.mySavings} alt='My savings' />
-                            </div>
+                            <img src={Assets.images.mySavings} alt='My savings' className='me-3' />
                             {I18n.t('deposit.goToMySavings')}
-                        </button>
+                        </Card>
                     </div>
                 </div>
                 <Button
-                    className='deposit-cta mt-5'
+                    className='deposit-cta align-self-center mt-5 mb-2'
                     onClick={() => {
                         window.open(
                             `${NavigationConstants.TWEET_URL}?text=${encodeURI(
@@ -99,7 +113,7 @@ const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; mo
                     {I18n.t('deposit.shareTwitter')}
                 </Button>
             </div>
-        </div>
+        </>
     );
 };
 
@@ -136,7 +150,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
         const res = await (compound ? dispatch.wallet.claimAndCompoundPrizes(prizes) : dispatch.wallet.claimPrizes(prizes));
 
         if (!res || (res && res.error)) {
-            setCurrentStep(currentStep - 1);
+            setCurrentStep(currentStep);
         } else {
             const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
 
@@ -148,6 +162,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                 denom: DenomsUtils.getNormalDenom(prizes[0].amount?.denom || '').toUpperCase(),
                 tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
                 compounded: compound,
+                poolId: pool?.poolId.toString() || '',
             });
         }
     };
@@ -174,17 +189,17 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     });
 
     return (
-        <Modal id='claimModal' ref={modalRef} modalWidth={1080}>
-            <div className='row row-cols-1 row-cols-lg-2'>
-                <div className='col text-start'>
-                    <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
-                    <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                </div>
-                <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
-                    <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
-                        {currentStep === 2 && shareInfos ? (
-                            <ShareClaim infos={shareInfos} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
-                        ) : (
+        <Modal id='claimModal' contentClassName={currentStep === 2 ? 'last-step' : ''} ref={modalRef} modalWidth={1080}>
+            {currentStep === 2 && shareInfos ? (
+                <ShareClaim infos={shareInfos} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
+            ) : (
+                <div className='row row-cols-1 row-cols-lg-2'>
+                    <div className='col text-start'>
+                        <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
+                        <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                    </div>
+                    <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
+                        <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
                             <div className={`${!claimOnly ? 'h-100' : ''} d-flex flex-column justify-content-between text-center py-sm-4`}>
                                 {claimOnly ? (
                                     <>
@@ -283,10 +298,10 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                     </>
                                 )}
                             </div>
-                        )}
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
-            </div>
+            )}
         </Modal>
     );
 };

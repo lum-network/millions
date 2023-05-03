@@ -114,7 +114,7 @@ const Winners = () => {
                         </div>
                     ))
                 ) : (
-                    <div className='col-10'>
+                    <div className='col-12'>
                         <Card className='no-winners d-flex flex-row align-items-center justify-content-between glow-bg'>
                             <Lottie animationData={cosmonautWithDuck} className='cosmonaut-duck' />
                             <div className='infos'>

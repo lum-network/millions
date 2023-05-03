@@ -4,6 +4,7 @@ import './Table.scss';
 
 interface Props {
     children: React.ReactNode;
+    headers?: string[];
     className?: string;
     responsive?: boolean;
     pagination?: {
@@ -15,7 +16,7 @@ interface Props {
     customPagination?: string;
     onPageChange?: (page: number) => void;
 }
-const Table = ({ children, className, pagination, onPageChange, customPagination, responsive = true }: Props) => {
+const Table = ({ children, customPagination, className, pagination, onPageChange, headers, responsive = true }: Props) => {
     const renderPagination = () => {
         if (!pagination || !onPageChange) {
             return null;
@@ -69,10 +70,23 @@ const Table = ({ children, className, pagination, onPageChange, customPagination
         );
     };
 
+    const limitLeft = headers ? headers.length / 2 : 0;
+
     return (
         <>
             <div className={`${responsive ? 'table-responsive' : ''} ${className}`}>
                 <table className='table table-borderless mb-0'>
+                    {headers && (
+                        <thead>
+                            <tr>
+                                {headers.map((value, index) => (
+                                    <th className={limitLeft <= index ? 'p-0 text-end' : 'p-0'} key={index}>
+                                        {value}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                    )}
                     <tbody>{children}</tbody>
                 </table>
             </div>

@@ -1,6 +1,11 @@
 @import 'src/styles/main';
 
 #claimModal {
+    
+    .modal-content.last-step {
+        background-color: $color-white;
+    }
+
     hr {
         box-sizing: border-box;
         border-radius: 15px;

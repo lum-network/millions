@@ -40,14 +40,14 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
             <div className='information-container'>
                 <div className='apy-container pb-2'>
                     <div className='apy-label'>
-                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' /> {I18n.t('pools.apy')}
+                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} /> {I18n.t('pools.apy')}
                     </div>
                     <div className='apy'>20%</div>
                 </div>
                 <div className='separator' />
                 <div className='tvl-container py-2'>
                     <div className='tvl-label'>
-                        <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' /> {I18n.t('pools.tvl')}
+                        <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' width={22} height={22} /> {I18n.t('pools.tvl')}
                     </div>
                     <div className='tvl'>
                         {numeral(tvl).format('0,0')} {denom}
@@ -56,7 +56,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
                 <div className='separator' />
                 <div className='countdown-container pt-2'>
                     <div className='countdown-label'>
-                        <img src={Assets.images.clock} alt='clock' className='me-2' /> {I18n.t('pools.drawEndAt')}
+                        <img src={Assets.images.clock} alt='clock' className='me-2' width={22} height={22} /> {I18n.t('pools.drawEndAt')}
                     </div>
                     <div className='countdown'>
                         <CountDown to={drawEndAt} />

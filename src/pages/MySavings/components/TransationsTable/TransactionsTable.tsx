@@ -51,7 +51,7 @@ const TransactionsTable = ({
 
         return (
             <tr key={`transaction-${transaction.hash}-${index}`}>
-                <td className='align-middle py-2 py-sm-3 px-3'>
+                <td className='align-middle'>
                     <div className='d-flex flex-row align-items-center'>
                         {icon && (
                             <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
@@ -70,7 +70,7 @@ const TransactionsTable = ({
                         </a>
                     </div>
                 </td>
-                <td className='align-bottom align-md-middle text-sm-end py-2 py-sm-3 px-3'>
+                <td className='align-bottom align-md-middle text-sm-end'>
                     <div className='d-flex flex-column justify-content-center tx-amount'>
                         <div className='amount text-nowrap'>
                             {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
