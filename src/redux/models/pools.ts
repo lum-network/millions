@@ -70,11 +70,11 @@ export const pools = createModel<RootModel>()({
 
             for (const poolReward of poolRewards) {
                 const pool = pools.find((p) => p.poolId.eq(poolReward.id));
-                const rewards = poolReward.rewards;
-
-                rewards.amount += Number(poolReward.availablePrizePool.amount);
 
                 if (pool) {
+                    const rewards = poolReward.rewards;
+
+                    rewards.amount += Number(poolReward.availablePrizePool.amount);
                     pool.prizeToWin = rewards;
                 }
             }
