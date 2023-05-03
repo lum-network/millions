@@ -205,9 +205,6 @@ const Landing = () => {
                                     <p className='text-flat-card'>With no risk and exciting rewards, bring your savings to the moon!</p>
                                 </Card>
                             </div>
-                            <div className='d-flex justify-content-center mt-4'>
-                                <Button onClick={onClickParticipate}>Stay tuned!</Button>
-                            </div>
                         </div>
                     </Card>
                 </div>

@@ -55,7 +55,7 @@ export default {
         openTheApp: 'Open the app',
         saving: {
             title: 'Win Big by<br />Saving Smart',
-            p1: 'Introducing Cosmos Millions, a decentralized finance protocol and open-source platform for prize savings.',
+            p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account with the highest returns ever made.',
             cta: 'Earn by saving',
             biggestPrizeToWin: 'Biggest prize to win',
@@ -108,7 +108,7 @@ export default {
                 },
                 {
                     title: 'What are delegated deposits?',
-                    answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes. For the launch, Cosmos Millions itself will delegate deposits to 50 users that registered early.',
+                    answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes.',
                 },
                 {
                     title: 'Is Cosmos Millions code audited?',

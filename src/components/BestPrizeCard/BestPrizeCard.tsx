@@ -54,7 +54,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
                 </div>
                 <div className='best-prize-container'>
                     <div className='d-flex'>
-                        <span className='me-2 me-sm-3 size-content-card'>$</span>
+                        <span className='size-content-card'>$</span>
                         <div className='size-content-card'>ATOM&nbsp;POOL</div>
                     </div>
                 </div>
