@@ -71,7 +71,7 @@
         background-color: $color-primary-light;
         border-radius: 13px;
         cursor: default;
-        
+
         @include media-breakpoint-down(sm) {
             margin-bottom: 1rem;
         }
@@ -159,6 +159,14 @@
         font-weight: 400;
         letter-spacing: 0;
         text-align: left;
+
+        .expiration-date {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 10.0711px;
+            line-height: 12px;
+            color: #fa7676;
+        }
 
         small {
             font-size: 16px;

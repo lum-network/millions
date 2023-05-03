@@ -1,10 +1,11 @@
+import React from 'react';
+
 import Assets from 'assets';
 import { Card } from 'components';
-import React from 'react';
 
 const PoolCardPlaceholder = () => {
     return (
-        <Card className='pool-card-container pool-card-placeholder'>
+        <Card className='pool-card-container pool-card-placeholder glow-bg'>
             <img width={74} height={74} src={Assets.images.cosmonautCoin} alt='cosmonaut coin' />
             <div className='name-container'>
                 <span className='name'>{'soon'}</span>

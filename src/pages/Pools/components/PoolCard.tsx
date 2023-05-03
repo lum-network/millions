@@ -25,7 +25,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
 
     return (
         <Card
-            className='pool-card-container'
+            className='pool-card-container glow-bg'
             onClick={() => {
                 navigate(`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`);
             }}

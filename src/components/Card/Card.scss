@@ -4,10 +4,8 @@
     background-color: $color-white;
     border-radius: 13px;
     position: relative;
-    scale: 1;
     opacity: 0;
     animation: cardShow ease-out 400ms forwards;
-
     @include media-breakpoint-down(md) {
         border-radius: 30px;
     }
@@ -17,15 +15,6 @@
         background-color: $color-primary-light;
         animation: none;
         opacity: 1;
-    }
-}
-
-.app-card.clickable {
-    cursor: pointer;
-    transition: scale linear 150ms !important;
-
-    &:hover {
-        scale: 1.05 !important;
     }
 }
 

@@ -12,7 +12,7 @@ interface IProps {
 
 const Card = ({ children, className, withoutPadding, flat, onClick }: IProps) => {
     return (
-        <div className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'clickable'}`} onClick={onClick}>
+        <div className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'scale-hover'}`} onClick={onClick}>
             {children}
         </div>
     );

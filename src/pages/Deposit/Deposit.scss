@@ -9,9 +9,35 @@
     box-shadow: 0 0 69px rgba(96, 150, 255, 0.1);
 }
 
+.last-step {
+    .card-step-title {
+        font-size: 32px;
+        text-align: start;
+    }
+
+    .card-step-subtitle {
+        margin-top: 0;
+        text-align: start;
+    }
+
+    .cosmonaut-rocket {
+        width: 205px;
+        height: 205px;
+    }
+}
+
 #quitModal,
 #ibcTransferModal {
     h3 {
         color: $color-black;
+    }
+}
+
+#ibcTransferModal {
+    .deposit-warning {
+        padding: 2rem 2.5rem;
+        font-weight: 300;
+        font-size: 16px;
+        line-height: 19px;
     }
 }

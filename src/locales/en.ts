@@ -320,21 +320,22 @@ export default {
             {
                 title: 'Saving review & spread the word!',
                 subtitle: 'Share your Cosmos Millions deposit on Twitter and contribute to increase the collective prize pool!',
-                cardTitle: 'Your savings say thanks! ✌️',
+                cardTitle: 'Your savings are now in good hands! 🥳',
                 cardSubtitle: 'You are always eligible for all the next draws coming! Share your deposit on Twitter to see how high the total amount saved can go!',
             },
         ],
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
             'My savings are going to the moon 🚀 I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
-        goToMySavings: 'Go to my savings',
-        seeOnMintscan: 'See transaction on Mintscan',
-        seeOnExplorer: 'See transaction on Lum Explorer',
+        goToMySavings: 'Go to\nmy savings',
+        seeOnMintscan: 'See transaction\non Mintscan',
+        seeOnExplorer: 'See transaction\non Lum Explorer',
         quitModal: {
             title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
         },
         ibcTransferModal: {
-            title: 'You are trying to deposit more tokens than your available balance on the Lum Network.\n\nIf you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.',
+            title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
+            subtitle: 'If you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.'
         },
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',

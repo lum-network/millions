@@ -230,7 +230,7 @@ export const wallet = createModel<RootModel>()({
             const keplrWindow = window as KeplrWindow;
             if (keplrWindow.getOfflineSignerAuto) {
                 for (const pool of state.pools.pools) {
-                    if (!pool.internalInfos) {
+                    if (!pool.internalInfos || pool.chainId.includes('lum')) {
                         continue;
                     }
 

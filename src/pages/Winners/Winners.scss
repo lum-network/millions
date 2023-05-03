@@ -12,4 +12,23 @@
         width: 162px;
         z-index: 3;
     }
+
+    .no-winners {
+        .infos {
+            padding-left: 250px;
+            p {
+                color: $color-black;
+                font-size: 19px;
+                line-height: 23px;
+            }
+        }
+        .cosmonaut-duck {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            transform: rotateY(180deg);
+            bottom: -55px;
+            left: 0;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import Assets from 'assets';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
@@ -48,12 +49,18 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
                 </div>
                 <div className='best-prize-container'>
                     <div className='d-flex'>
-                        <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3'>
-                            $
-                        </span>
-                        <div style={{ fontSize: `${fontSize}px` }}>
-                            {biggestPrize && biggestPrize.amount && price ? <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize.amount * price)} /> : <div>Nothing</div>}
-                        </div>
+                        {biggestPrize && biggestPrize.amount && price ? (
+                            <>
+                                <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3'>
+                                    $
+                                </span>
+                                <div style={{ fontSize: `${fontSize}px` }}>
+                                    <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize.amount * price)} />
+                                </div>
+                            </>
+                        ) : (
+                            <img src={Assets.images.biggestPrizePoolPlaceholder} className='mt-2 mt-sm-3 mt-md-4' />
+                        )}
                     </div>
                 </div>
                 {countdownTo && (
