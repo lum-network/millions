@@ -62,7 +62,7 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
     }, []);
 
     const onClickParticipate = () => {
-        window.open('https://jpd0pqf6mcx.typeform.com/to/AimExuyx', '_blank')?.focus();
+        window.open('https://jpd0pqf6mcx.typeform.com/to/EWhmt9J6', '_blank')?.focus();
     };
 
     const renderContent = () => {
@@ -97,7 +97,7 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
                     </a>
                 </li>
                 <li className='ms-3 ms-lg-4 d-none d-sm-block'>
-                    <Button onClick={onClickParticipate}>Participate now</Button>
+                    <Button onClick={onClickParticipate}>Stay tuned!</Button>
                 </li>
             </ul>
         );

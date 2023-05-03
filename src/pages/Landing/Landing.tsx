@@ -18,7 +18,7 @@ import { useWindowSize } from 'hooks';
 
 const Landing = () => {
     const onClickParticipate = () => {
-        window.open('https://jpd0pqf6mcx.typeform.com/to/AimExuyx', '_blank')?.focus();
+        window.open('https://jpd0pqf6mcx.typeform.com/to/EWhmt9J6', '_blank')?.focus();
     };
 
     const onClickDiscord = () => {
@@ -161,7 +161,7 @@ const Landing = () => {
                                 <p>{I18n.t('landing.saving.p2')}</p>
                             </div>
                             <Button className='cta' onClick={onClickParticipate}>
-                                Participate now
+                                Stay tuned!
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
@@ -183,22 +183,30 @@ const Landing = () => {
                 <div id='cosmos-game' className='cosmos-game-right col-12 col-lg-7'>
                     <Card>
                         <h2 className='mb-4 text-center'>
-                            $5 000 ATOM incentives for
+                            Time to Spice Up
                             <br />
-                            early registrations
+                            the Cosmos Game
                         </h2>
                         <div className='cosmos-game-description'>
-                            <p className='text-center'>To participate, you have to:</p>
-                            <div className='d-flex flex-column flex-sm-row'>
-                                <Card withoutPadding flat className='p-3 mb-4 mb-sm-0 h-100 me-0 me-sm-4'>
-                                    <p className='text-flat-card'>Register before the deadline (May 3rd 12:00 UTC)</p>
+                            <p className='text-center'>
+                                That&apos;s one small step for Cosmonauts,
+                                <br />
+                                one giant leap for Cosmos.
+                            </p>
+                            <div className='d-flex flex-column'>
+                                <Card withoutPadding flat className='p-3 mb-4'>
+                                    <p className='text-flat-card'>
+                                        Speed up your path to financial tranquility with our thrilling prize-linked savings accounts!
+                                        <br />
+                                        Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.
+                                    </p>
                                 </Card>
-                                <Card withoutPadding flat className='p-3 h-100'>
-                                    <p className='text-flat-card'>Deposit at least 1 ATOM in the ATOM pool</p>
+                                <Card withoutPadding flat className='p-3'>
+                                    <p className='text-flat-card'>With no risk and exciting rewards, bring your savings to the moon!</p>
                                 </Card>
                             </div>
                             <div className='d-flex justify-content-center mt-4'>
-                                <Button onClick={onClickParticipate}>Participate now</Button>
+                                <Button onClick={onClickParticipate}>Stay tuned!</Button>
                             </div>
                         </div>
                     </Card>

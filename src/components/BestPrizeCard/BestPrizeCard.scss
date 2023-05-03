@@ -44,7 +44,7 @@
 
     .content {
         position: relative;
-        padding: 38px 0 140px 0;
+        padding: 38px 0 221px 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -52,6 +52,10 @@
         background: $color-primary url("../../assets/images/confetti_blur.svg") repeat;
         border-bottom-left-radius: 13px;
         border-bottom-right-radius: 13px;
+
+        @include media-breakpoint-down(xl) {
+            padding: 38px 0 237px 0;
+        }
 
         @include media-breakpoint-down(md) {
             padding: 38px 0 130px 0;
@@ -70,6 +74,26 @@
             text-transform: uppercase;
             width: 100%;
             font-variant-numeric: tabular-nums;
+
+            .size-content-card {
+                font-size: 90px;
+
+                @include media-breakpoint-down(xxl) {
+                    font-size: 80px;
+                }
+
+                @include media-breakpoint-down(xl) {
+                    font-size: 70px;
+                }
+
+                @include media-breakpoint-down(md) {
+                    font-size: 60px;
+                }
+
+                @include media-breakpoint-down(sm) {
+                    font-size: 40px;
+                }
+            }
         }
 
         .best-prize-countdown {

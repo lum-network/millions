@@ -40,7 +40,7 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
             return;
         }
 
-        setFontSize(calculateFontSize(biggestPrize?.amount.length, width));
+        setFontSize(calculateFontSize('$ATOM POOL'.length, width));
     }, [biggestPrize]);
 
     return (
@@ -48,18 +48,14 @@ const BestPrizeCard = ({ biggestPrize, countdownTo }: IProps) => {
             <div className='content'>
                 <div className='title-container'>
                     <h3 className='d-flex flex-row'>
-                        Time left to register:&nbsp;
-                        <CountDown to={new Date(Date.UTC(2023, 4, 3, 12))} />
+                        COMING SOON
+                        {/*<CountDown to={new Date(Date.UTC(2023, 4, 3, 12))} />*/}
                     </h3>
                 </div>
                 <div className='best-prize-container'>
                     <div className='d-flex'>
-                        <span style={{ fontSize: `${fontSize / 2}px` }} className='mt-2 mt-sm-3 mt-md-4 me-2 me-sm-3'>
-                            $
-                        </span>
-                        <div style={{ fontSize: `${fontSize}px` }}>
-                            <AnimatedNumber number={Number(biggestPrize?.amount) ?? 0} />
-                        </div>
+                        <span className='me-2 me-sm-3 size-content-card'>$</span>
+                        <div className='size-content-card'>ATOM&nbsp;POOL</div>
                     </div>
                 </div>
                 {countdownTo && (
