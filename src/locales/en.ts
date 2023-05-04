@@ -161,14 +161,14 @@ export default {
         title: 'Pools',
         totalDeposit: 'Total Deposit',
         tvl: 'TVL:',
-        apy: 'Average APY:',
+        apy: 'Variable APY:',
         cta: 'Deposit in Pool',
         drawEndAt: 'Time left to join:',
         poolId: 'Pool #{{ poolId }}',
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
-        biggestPrize: 'Biggest Prize',
+        biggestPrize: 'Prize Pool',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         winners: {
@@ -178,9 +178,9 @@ export default {
             bestPrizeWon: 'Best Prize won',
         },
         users: {
-            title: 'Number of Users',
-            beginning: 'Since the beginning',
-            currentDraw: 'Current draw',
+            title: 'Users in Numbers',
+            deposit: 'Average Deposit',
+            currentDraw: 'Unique Depositors',
         },
         prizeDistribution: {
             title: 'Prize Distribution',
@@ -334,8 +334,8 @@ export default {
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
-                subtitle: 'Transfer your ATOM from {{ chainName }} to Lum Network',
-                cardSubtitle: 'Transfer your ATOM from\n{{ chainName }} to Lum Network',
+                subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
+                cardSubtitle: 'Transfer your {{ denom }} from\n{{ chainName }} to Lum Network',
             },
             {
                 title: 'Deposit into {{ denom }} pool',

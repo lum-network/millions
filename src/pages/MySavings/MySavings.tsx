@@ -291,7 +291,7 @@ const MySavings = () => {
                                                 </Button>
                                             </>
                                         ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center'>
+                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
                                                 <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
                                                 <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
                                                 <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>

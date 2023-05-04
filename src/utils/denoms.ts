@@ -18,6 +18,12 @@ export const getDenomFromIbc = async (denom: string) => {
         return computedDenom;
     }
 
+    const inConstant = DenomsConstants.IBC_MINIMAL_MAP[denom];
+
+    if (inConstant) {
+        return inConstant;
+    }
+
     await LumClient.getDenomTrace(denom).then((res) => {
         if (res && res.denomTrace) {
             computedDenom = res.denomTrace.baseDenom;

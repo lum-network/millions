@@ -4,6 +4,7 @@ import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
+import { getDenomFromIbc } from './denoms';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -49,6 +50,16 @@ class LumClient {
         const pools = await this.client.queryClient.millions.pools();
 
         return pools;
+    };
+
+    getPoolDraws = async (poolId: Long) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const poolDraws = await this.client.queryClient.millions.poolDraws(poolId);
+
+        return poolDraws;
     };
 
     getPoolPrizes = async (poolId: Long) => {
@@ -150,14 +161,26 @@ class LumClient {
         };
     };
 
-    getWalletPrizes = async (address: string) => {
+    getWalletPrizes = async (address: string): Promise<{ prizes: Prize[] } | null> => {
         if (this.client === null) {
             return null;
         }
 
+        const prizes: Prize[] = [];
         const res = await this.client.queryClient.millions.accountPrizes(address);
 
-        return { prizes: res };
+        for (const prize of res) {
+            const amount = prize.amount ? { amount: prize.amount.amount, denom: await getDenomFromIbc(prize.amount.denom) } : undefined;
+
+            prizes.push({
+                ...prize,
+                amount,
+            });
+        }
+
+        return {
+            prizes,
+        };
     };
 
     getDenomTrace = async (ibcDenom: string) => {

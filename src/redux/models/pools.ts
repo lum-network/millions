@@ -44,6 +44,8 @@ export const pools = createModel<RootModel>()({
                     for (const pool of res) {
                         //FIXME: Check if we can remove this
                         const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
+                        const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
                             .toDate();
@@ -52,6 +54,7 @@ export const pools = createModel<RootModel>()({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
                             prizes,
+                            draws,
                             nextDrawAt,
                             prizeToWin: null,
                         });
@@ -85,6 +88,15 @@ export const pools = createModel<RootModel>()({
         async getPoolPrizes(poolId: Long) {
             try {
                 const res = await LumClient.getPoolPrizes(poolId);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
+        },
+        async getPoolDraws(poolId: Long) {
+            try {
+                const res = await LumClient.getPoolDraws(poolId);
 
                 if (res) {
                     return res;

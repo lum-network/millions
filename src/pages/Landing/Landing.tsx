@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-
-import { I18n } from 'utils';
-import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
-import { LandingConstants, NavigationConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
+import { useSelector } from 'react-redux';
+
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
@@ -12,18 +10,24 @@ import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
 import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
-import numeral from 'numeral';
 import Assets from 'assets';
+import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
+import { LandingConstants, NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
+import numeral from 'numeral';
+import { I18n } from 'utils';
 
-import './Landing.scss';
 import PoolCard from './components/PoolCard';
 import TestimonialCard from './components/TestimonialCard';
-import { useWindowSize } from 'hooks';
+
+import './Landing.scss';
+import { RootState } from 'redux/store';
 
 const Landing = () => {
     const onClickNewPool = () => {
         window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
     };
+    const bestPoolPrize = useSelector((state: RootState) => state.pools?.bestPoolPrize);
 
     const timeline = useRef<gsap.core.Timeline>();
     const { width } = useWindowSize();
@@ -165,7 +169,7 @@ const Landing = () => {
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
-                            <BestPrizeCard biggestPrize={{ amount: 675789000000, denom: 'lum' }} />
+                            <BestPrizeCard biggestPrize={bestPoolPrize?.prizeToWin || null} />
                         </div>
                     </Card>
                 </div>
