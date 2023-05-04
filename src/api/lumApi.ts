@@ -20,7 +20,7 @@ class LumApi extends HttpClient {
     getPoolsRewards = async () =>
         this.request<PoolRewardsModel[]>(
             {
-                url: '/millions/pools/rewards',
+                url: '/millions/pools/outstanding-prize',
                 method: 'GET',
             },
             PoolRewardsModel,

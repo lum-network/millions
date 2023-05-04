@@ -62,8 +62,8 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
-                    //await dispatch.pools.fetchPoolsRewards(null);
-                    await dispatch.pools.getPoolsPrizePool(null);
+                    await dispatch.pools.fetchPoolsRewards(null);
+                    // await dispatch.pools.getPoolsPrizePool(null);
 
                     return pools;
                 }
@@ -77,7 +77,7 @@ export const pools = createModel<RootModel>()({
                 const pool = pools.find((p) => p.poolId.eq(poolReward.id));
 
                 if (pool) {
-                    const rewards = poolReward.rewards;
+                    const rewards = poolReward.outstandingPrizePool;
 
                     rewards.amount += Number(poolReward.availablePrizePool.amount);
                     pool.prizeToWin = rewards;

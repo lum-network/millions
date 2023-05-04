@@ -6,7 +6,7 @@ import numeral from 'numeral';
 import { Button, Card, CountDown } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import Assets from 'assets';
 
 interface IProps {
@@ -34,7 +34,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
                 <img width={64} height={64} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
                 <div className='d-flex flex-column align-items-start ms-3'>
                     <div className='prize'>{denom.toUpperCase()} Prize Pool</div>
-                    <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>
+                    <div className='prize-value mt-1'>${price && prize ? numeral(NumbersUtils.convertUnitNumber(prize) * price).format('0,0') : ' --'}</div>
                 </div>
             </div>
             <div className='information-container'>

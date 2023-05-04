@@ -10,7 +10,10 @@ export class PoolRewardsModel {
     @Type(() => BalanceModel)
     availablePrizePool: BalanceModel = new BalanceModel();
 
-    @Expose()
+    @Expose({ name: 'outstanding_prize_pool' })
     @Type(() => BalanceModel)
-    rewards: BalanceModel = new BalanceModel();
+    outstandingPrizePool: BalanceModel = new BalanceModel();
+
+    @Expose({ name: 'sponsorship_amount' })
+    sponsorshipAmount!: string;
 }
