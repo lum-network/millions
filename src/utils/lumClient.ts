@@ -213,7 +213,7 @@ class LumClient {
         });
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '300000');
+        const fee = WalletUtils.buildTxFee('25000', '500000');
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
@@ -252,7 +252,7 @@ class LumClient {
         }
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '300000');
+        const fee = WalletUtils.buildTxFee('25000', '500000');
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
@@ -282,7 +282,7 @@ class LumClient {
         const message = LumMessages.BuildMsgWithdrawDeposit(poolId, depositId, wallet.getAddress(), wallet.getAddress());
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '300000');
+        const fee = WalletUtils.buildTxFee('25000', '500000');
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
