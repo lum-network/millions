@@ -174,7 +174,7 @@ export default {
         winners: {
             title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
-            totalPoolPrizes: "Total number of pool's prizes",
+            totalPoolPrizes: "Total pool's prizes",
             bestPrizeWon: 'Best Prize won',
         },
         users: {
@@ -214,6 +214,10 @@ export default {
         noAssets: {
             title: 'No assets yet',
             description: 'It’s time to deposit assets in your wallet\nto participate to the next prize',
+        },
+        noPrizes: {
+            title: 'No prize won yet',
+            subtitle: 'It’s time to deposit in pools!',
         },
         governance: 'Governance',
         governanceCard: {

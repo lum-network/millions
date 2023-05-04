@@ -90,7 +90,7 @@ const MySavings = () => {
                                     <small className='p-0'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</small>
                                 </div>
                             </div>
-                            <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-md-0'>
+                            <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-lg-0'>
                                 {normalDenom !== LumConstants.LumDenom ? (
                                     <Button
                                         outline
@@ -293,9 +293,9 @@ const MySavings = () => {
                                         ) : (
                                             <div className='d-flex flex-column align-items-center justify-content-center'>
                                                 <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
-                                                <h3 className='mt-2'>No prize won yet</h3>
-                                                <p className='text-center'>It’s time to deposit in pool to have chance to win</p>
-                                                <Button data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
+                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
+                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
                                                     {I18n.t('mySavings.deposit')}
                                                 </Button>
                                             </div>
