@@ -159,8 +159,8 @@ const PoolDetails = () => {
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
                         <h2>{I18n.t('poolDetails.biggestPrize')}</h2>
-                        <div className='display-6'>{numeral(11000 * (prices[denom] || 1)).format('$0,0[.]00')}</div>
-                        11000 {denom.toUpperCase()}
+                        <div className='display-6'>{numeral(NumbersUtils.convertUnitNumber(pool.prizeToWin?.amount || 1) * (prices[denom] || 1)).format('$0,0[.]00')}</div>
+                        {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(pool.prizeToWin?.amount || 1))} {denom.toUpperCase()}
                     </div>
                     <div className='next-draw-container'>
                         <h2>{I18n.t('poolDetails.nextDraw')}</h2>
@@ -175,7 +175,7 @@ const PoolDetails = () => {
                             height: '1px',
                         }}
                     />
-                    {pool.internalInfos?.illustration && <img src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
+                    {pool.internalInfos?.illustration && <img alt='' src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
                 </Card>
                 {userDeposits && (
                     <>

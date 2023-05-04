@@ -180,34 +180,24 @@ export default {
         users: {
             title: 'Number of Users',
             beginning: 'Since the beginning',
-            currentDraw: 'Current draw'
+            currentDraw: 'Current draw',
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: [
-                'Prize Value',
-                'Number of prizes',
-                'Chance to win'
-            ]
+            tableHeaders: ['Prize Value', 'Number of prizes', 'Chance to win'],
         },
         winningChances: {
             title: 'Winning Chances',
             estimatedSavings: 'Estimated savings',
-            chanceToWin: 'Chance to win'
+            chanceToWin: 'Chance to win',
         },
         drawsHistory: {
             title: 'Draws History',
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: [
-                'Pool ID',
-                'Draw ID',
-                'Date',
-                'Winners',
-                'Prize Value',
-            ]
-        }
+            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Winners', 'Prize Value'],
+        },
     },
     mySavings: {
         title: 'My Savings',
@@ -366,7 +356,7 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'If you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.'
+            subtitle: 'If you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.',
         },
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',
