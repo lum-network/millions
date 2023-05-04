@@ -58,6 +58,14 @@
         }
     }
 
+    @include media-breakpoint-up(xxl) {
+        .best-prize-card {
+            .cosmonaut-on-the-moon {
+                width: 440px;
+                height: 440px;
+            }
+        }
+    }
 
     .cosmos-game-left {
         height: 480px;

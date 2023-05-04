@@ -60,7 +60,7 @@ const Home = () => {
                 </div>
             </div>
             <div className='start-50 translate-middle-x save-and-win-btn-container'>
-                <Button className='save-btn glow-bg' to={NavigationConstants.POOLS}>
+                <Button className='save-btn' to={NavigationConstants.POOLS}>
                     <img src={Assets.images.yellowStar} alt='Star' />
                     {I18n.t('home.cta')}
                     <img src={Assets.images.yellowStar} alt='Star' />

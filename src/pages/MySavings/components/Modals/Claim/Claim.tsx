@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumUtils } from '@lum-network/sdk-javascript';
+import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import dayjs from 'dayjs';
@@ -24,7 +24,7 @@ interface Props {
     pools: PoolModel[];
 }
 
-type ShareInfos = { hash: string; amount: string; denom: string; tvl: string; poolId: string; compounded: boolean };
+type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
 
 const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
@@ -35,20 +35,22 @@ const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; mo
                 <div className='card-step-title'>{I18n.t('mySavings.claimModal.steps', { returnObjects: true })[2].title}</div>
             </div>
             <div className='step-3 d-flex flex-column mt-5'>
-                <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
-                    <div className='d-flex flex-row align-items-center'>
-                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(infos.denom.toLowerCase())} alt={infos.denom} />
-                        <div className='d-flex flex-column ms-3'>
-                            <div className='deposit-amount text-start'>
-                                {infos.amount} {DenomsUtils.getNormalDenom(infos.denom).toUpperCase()}
+                {infos.amount.map((am, index) => (
+                    <div key={`claim-prize-${index}`} className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
+                        <div className='d-flex flex-row align-items-center'>
+                            <img height={50} width={50} src={DenomsUtils.getIconFromDenom(am.denom.toLowerCase())} alt={am.denom} />
+                            <div className='d-flex flex-column ms-3'>
+                                <div className='deposit-amount text-start'>
+                                    {am.amount} {DenomsUtils.getNormalDenom(am.denom).toUpperCase()}
+                                </div>
+                                <small className='deposit-infos text-start'>
+                                    {I18n.t('pools.poolId', { poolId: infos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
+                                </small>
                             </div>
-                            <small className='deposit-infos text-start'>
-                                {I18n.t('pools.poolId', { poolId: infos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
-                            </small>
                         </div>
+                        <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                     </div>
-                    <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
-                </div>
+                ))}
                 <div className='row row-cols-3 gx-4'>
                     <div className='col'>
                         <Card
@@ -99,9 +101,9 @@ const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; mo
                         window.open(
                             `${NavigationConstants.TWEET_URL}?text=${encodeURI(
                                 I18n.t(infos.compounded ? 'deposit.shareTwitterContent' : 'mySavings.claimModal.shareTwitterContent', {
-                                    amount: infos.amount,
-                                    denom: infos.denom,
-                                    tvl: infos.tvl + ' ' + infos.denom,
+                                    amount: infos.amount[0].amount,
+                                    denom: infos.amount[0].denom,
+                                    tvl: infos.tvl + ' ' + infos.amount[0].denom,
                                 }),
                             )}`,
                             '_blank',
@@ -153,13 +155,25 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setCurrentStep(currentStep);
         } else {
             const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
+            const amount: LumTypes.Coin[] = [];
+
+            for (const prize of prizes) {
+                const denomExistIndex = amount.findIndex((am) => am.denom === DenomsUtils.getNormalDenom(prize.amount?.denom || ''));
+                if (denomExistIndex === -1) {
+                    amount.push({
+                        amount: numeral(
+                            prizes.filter((p) => p.amount?.denom === prize.amount?.denom).reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0),
+                        ).format('0,0'),
+                        denom: DenomsUtils.getNormalDenom(prize.amount?.denom || ''),
+                    });
+                }
+            }
 
             setClaimOnly(false);
             setCurrentStep(2);
             setShareInfos({
                 hash: LumUtils.toHex(res.hash).toUpperCase(),
-                amount: numeral(prizes.reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0)).format('0,0'),
-                denom: DenomsUtils.getNormalDenom(prizes[0].amount?.denom || '').toUpperCase(),
+                amount,
                 tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
                 compounded: compound,
                 poolId: pool?.poolId.toString() || '',
@@ -186,7 +200,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                 claimModal.removeEventListener('hidden.bs.modal', handler);
             }
         };
-    });
+    }, []);
 
     return (
         <Modal id='claimModal' contentClassName={currentStep === 2 ? 'last-step' : ''} ref={modalRef} modalWidth={1080}>

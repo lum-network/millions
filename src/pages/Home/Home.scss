@@ -51,9 +51,16 @@
         left: 50%;
         bottom: 60px;
 
+        .save-btn {
+            border: 4px solid #371A45;
+        }
+        
         @media screen and (min-height: 900.02px) and (min-width: 1400.02px) {
             position: relative;
             bottom: unset;
+            .save-btn {
+                border: 0;
+            }
         }
 
         @include media-breakpoint-down(sm) {
