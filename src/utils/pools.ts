@@ -1,9 +1,10 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { biggerCoin } from './numbers';
-import { AggregatedDepositModel, DepositModel } from 'models';
+import { biggerCoin, convertUnitNumber } from './numbers';
+import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
-import { getDenomFromIbc } from './denoms';
+import { getDenomFromIbc, getNormalDenom } from './denoms';
+import { ApiConstants } from 'constant';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
@@ -29,6 +30,24 @@ export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number })
     }
 
     return bestPrize;
+};
+
+export const getWinningChances = (inputAmount: number, pool: PoolModel, prices: { [index: string]: number } | number) => {
+    const amount = inputAmount / (typeof prices === 'number' ? prices : prices[getNormalDenom(pool.nativeDenom)] || 1);
+    const tvl = convertUnitNumber(pool.tvlAmount);
+    const prizeStrat = pool.prizeStrategy;
+    let avgPrizesDrawn = 0;
+    let estimated = 0;
+
+    if (prizeStrat) {
+        for (const prizeBatch of prizeStrat.prizeBatches) {
+            avgPrizesDrawn += (Number(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION) * prizeBatch.quantity.toNumber();
+        }
+
+        estimated = (avgPrizesDrawn * amount) / (amount + tvl);
+    }
+
+    return estimated;
 };
 
 export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[]) => {

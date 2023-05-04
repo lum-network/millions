@@ -46,3 +46,18 @@ export const biggerCoin = (coin1: LumTypes.Coin, coin2: LumTypes.Coin, prices: {
 
     return coin1Amount * prices[coin1.denom] || 1 > coin2Amount * prices[coin1.denom] || 1 ? coin1 : coin2;
 };
+
+export const float2ratio = (x: number) => {
+    const baseRatio = 100;
+    const x1 = x * baseRatio;
+
+    if (x === 0) {
+        return '1 in ';
+    }
+
+    if (x1 >= baseRatio) {
+        return '1 in 1';
+    }
+
+    return '1 in ' + numeral(100 / (x * 100)).format('0[.]00');
+};

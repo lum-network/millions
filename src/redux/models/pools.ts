@@ -2,11 +2,12 @@ import Long from 'long';
 import { createModel } from '@rematch/core';
 import { PoolsConstants } from 'constant';
 import { PoolModel } from 'models';
-import { DenomsUtils, LumClient } from 'utils';
+import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumApi } from 'api';
 import { getNormalDenom } from '../../utils/denoms';
+import { LumConstants } from '@lum-network/sdk-javascript';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -61,7 +62,8 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
-                    dispatch.pools.fetchPoolsRewards(null);
+                    //await dispatch.pools.fetchPoolsRewards(null);
+                    await dispatch.pools.getPoolsPrizePool(null);
 
                     return pools;
                 }
@@ -93,6 +95,43 @@ export const pools = createModel<RootModel>()({
                     return res;
                 }
             } catch {}
+        },
+        async getPoolsPrizePool(_, state) {
+            try {
+                const pools = [...state.pools.pools];
+
+                for (const pool of pools) {
+                    const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
+
+                    if (pool.nativeDenom === LumConstants.MicroLumDenom) {
+                        await WalletClient.connect(process.env.REACT_APP_RPC_LUM || '');
+                    } else {
+                        if (!pool.internalInfos) {
+                            continue;
+                        }
+
+                        await WalletClient.connect(pool.internalInfos?.rpc);
+                    }
+
+                    const bankBalances = await WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress);
+                    const stakingBalance = await WalletClient.getIcaAccountStakingBalance(pool.icaDepositAddress);
+
+                    const prizePool =
+                        availablePrizePool +
+                        NumbersUtils.convertUnitNumber(bankBalances && bankBalances.length > 0 ? bankBalances[0].amount : '0') +
+                        NumbersUtils.convertUnitNumber(
+                            stakingBalance?.delegationResponses && stakingBalance?.delegationResponses.length > 0 ? stakingBalance.delegationResponses[0].balance?.amount || '0' : '0',
+                        );
+
+                    pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
+
+                    WalletClient.disconnect();
+                }
+
+                dispatch.pools.setPools(pools);
+            } catch (e) {
+                console.error((e as Error).message);
+            }
         },
         async getPoolDraws(poolId: Long) {
             try {

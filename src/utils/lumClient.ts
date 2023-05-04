@@ -47,9 +47,9 @@ class LumClient {
             return null;
         }
 
-        const pools = await this.client.queryClient.millions.pools();
+        const res = await this.client.queryClient.millions.pools();
 
-        return pools;
+        return res.pools;
     };
 
     getPoolDraws = async (poolId: Long) => {
@@ -57,9 +57,17 @@ class LumClient {
             return null;
         }
 
-        const poolDraws = await this.client.queryClient.millions.poolDraws(poolId);
+        const res = await this.client.queryClient.millions.poolDraws(poolId);
 
-        return poolDraws;
+        const draws = res.draws;
+
+        draws.sort((a, b) => {
+            const aHeight = a.createdAtHeight.toNumber();
+            const bHeight = b.createdAtHeight.toNumber();
+
+            return bHeight - aHeight;
+        });
+        return draws;
     };
 
     getPoolPrizes = async (poolId: Long) => {
@@ -67,9 +75,9 @@ class LumClient {
             return null;
         }
 
-        const prizes = await this.client.queryClient.millions.poolPrizes(poolId);
+        const res = await this.client.queryClient.millions.poolPrizes(poolId);
 
-        return prizes;
+        return res.prizes;
     };
 
     getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
@@ -77,15 +85,15 @@ class LumClient {
             return null;
         }
 
-        const deposits = await this.client.queryClient.millions.accountDeposits(address);
+        const resDeposits = await this.client.queryClient.millions.accountDeposits(address);
 
-        const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
+        const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(resDeposits.deposits);
 
-        const withdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
+        const resWithdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
 
         const withdrawalsToDeposit: Partial<DepositModel>[] = [];
 
-        for (const withdrawal of withdrawals) {
+        for (const withdrawal of resWithdrawals.withdrawals) {
             withdrawalsToDeposit.push({
                 poolId: withdrawal.poolId,
                 amount: withdrawal.amount,
@@ -169,7 +177,7 @@ class LumClient {
         const prizes: Prize[] = [];
         const res = await this.client.queryClient.millions.accountPrizes(address);
 
-        for (const prize of res) {
+        for (const prize of res.prizes) {
             const amount = prize.amount ? { amount: prize.amount.amount, denom: await getDenomFromIbc(prize.amount.denom) } : undefined;
 
             prizes.push({

@@ -9,7 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
 
-import { DenomsUtils, I18n, NumbersUtils, ToastUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, ToastUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
@@ -133,7 +133,7 @@ const DepositStep1 = (
                                 <Tooltip id='winning-chance-tooltip' />
                             </span>
                         </div>
-                        <div>14%</div>
+                        <div>{numeral(PoolsUtils.getWinningChances(Number(form.values.amount), currentPool, price || 1) * 100).format('0[.]00')}%</div>
                     </div>
                     <div className='average-prize d-flex flex-row justify-content-between mt-4'>
                         <div>
@@ -143,7 +143,10 @@ const DepositStep1 = (
                                 <Tooltip id='average-prize-tooltip' />
                             </span>
                         </div>
-                        <div>14 {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</div>
+                        <div>
+                            {(NumbersUtils.convertUnitNumber(currentPool.tvlAmount) / currentPool.depositorsCount.toNumber()).toFixed(0)}{' '}
+                            {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
+                        </div>
                     </div>
                 </Card>
                 <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>

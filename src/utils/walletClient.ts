@@ -5,11 +5,17 @@ import dayjs from 'dayjs';
 import { I18n } from 'utils';
 import Long from 'long';
 import { showErrorToast } from './toast';
+import { LumClient } from '@lum-network/sdk-javascript';
+
+const isConnectedWithSigner = (client: LumClient | SigningStargateClient, withSigner: boolean): client is SigningStargateClient => {
+    return withSigner;
+};
 
 class WalletClient {
     chainId: string | null = null;
 
-    private walletClient: SigningStargateClient | null = null;
+    private walletClient: LumClient | SigningStargateClient | null = null;
+    private connectedWithSigner = false;
     private static instance: WalletClient;
 
     static get Instance() {
@@ -22,10 +28,18 @@ class WalletClient {
 
     // Utils
 
-    connect = async (rpc: string, offlineSigner: OfflineSigner) => {
+    connect = async (rpc: string, offlineSigner?: OfflineSigner) => {
         try {
-            const client = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
+            let client: LumClient | SigningStargateClient;
+
+            if (offlineSigner) {
+                client = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
+            } else {
+                client = await LumClient.connect(rpc);
+            }
+
             this.walletClient = client;
+            this.connectedWithSigner = !!offlineSigner;
             this.chainId = await client.getChainId();
         } catch {
             showErrorToast({ content: I18n.t('errors.client.rpc') });
@@ -54,10 +68,28 @@ class WalletClient {
         };
     };
 
+    getIcaAccountBankBalance = async (address: string) => {
+        if (!this.walletClient || (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner))) {
+            return null;
+        }
+
+        const balances = await this.walletClient.queryClient.bank.allBalances(address);
+        return balances;
+    };
+
+    getIcaAccountStakingBalance = async (address: string) => {
+        if (!this.walletClient || (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner))) {
+            return null;
+        }
+
+        const balance = await this.walletClient.queryClient.staking.delegatorDelegations(address);
+        return balance;
+    };
+
     // Operations
 
     ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string) => {
-        if (this.walletClient) {
+        if (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner)) {
             const res = await this.walletClient.sendIbcTokens(
                 fromWallet,
                 toAddress,

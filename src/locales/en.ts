@@ -330,7 +330,7 @@ export default {
         feesWarning: 'You will need LUM to pay transaction fees',
         depositWarning:
             'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
-        depositLabel: 'Amount of {{ denom }} to deposit in the Pool',
+        depositLabel: 'Amount to deposit',
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',

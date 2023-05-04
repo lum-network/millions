@@ -13,24 +13,9 @@ import { BigWinnerCard, Button, Card, CountDown, Lottie, SmallerDecimal, Table }
 import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
 
 import './PoolDetails.scss';
-
-function float2rat(x: number) {
-    const baseRatio = 100;
-    const x1 = x * baseRatio;
-
-    if (x === 0) {
-        return '1 in ';
-    }
-
-    if (x1 >= baseRatio) {
-        return '1 in 1';
-    }
-
-    return '1 in ' + numeral(100 / (x * 100)).format('0[.]00');
-}
 
 const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
@@ -50,19 +35,8 @@ const PoolDetails = () => {
 
     useEffect(() => {
         if (pool) {
-            const amount = Number(estimationAmount) / (prices[denom || ''] || 1);
-            const tvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
-            const prizeStrat = pool.prizeStrategy;
-            let avgPrizesDrawn = 0;
-
-            if (prizeStrat) {
-                for (const prizeBatch of prizeStrat.prizeBatches) {
-                    avgPrizesDrawn += (Number(prizeBatch.drawProbability) / 1_000_000_000_000_000_000) * prizeBatch.quantity.toNumber();
-                }
-
-                const estimated = (avgPrizesDrawn * amount) / (amount + tvl);
-                setEstimatedChances(estimated);
-            }
+            const chances = PoolsUtils.getWinningChances(Number(estimationAmount), pool, prices);
+            setEstimatedChances(chances);
         }
     }, [estimationAmount]);
 
@@ -74,7 +48,7 @@ const PoolDetails = () => {
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
         chances: prizeBatch.poolPercent.toNumber() / 100,
-        value: (NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber(),
+        value: ((pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber(),
     }));
 
     return (
@@ -111,8 +85,8 @@ const PoolDetails = () => {
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
                         <h2>{I18n.t('poolDetails.biggestPrize')}</h2>
-                        <div className='display-6'>{numeral(NumbersUtils.convertUnitNumber(pool.prizeToWin?.amount || 1) * (prices[denom] || 1)).format('$0,0[.]00')}</div>
-                        {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(pool.prizeToWin?.amount || 1))} {denom.toUpperCase()}
+                        <div className='display-6'>{numeral((pool.prizeToWin?.amount || 1) * (prices[denom] || 1)).format('$0,0[.]00')}</div>
+                        {NumbersUtils.formatTo6digit(pool.prizeToWin?.amount || 1)} {denom.toUpperCase()}
                     </div>
                     <div className='next-draw-container'>
                         <h2>{I18n.t('poolDetails.nextDraw')}</h2>
@@ -203,7 +177,7 @@ const PoolDetails = () => {
                                 </div>
                                 <div className='mt-5'>
                                     <small>{I18n.t('poolDetails.winningChances.chanceToWin')}</small>
-                                    <div className='chance-to-win mt-2 stat-bg-white'>{float2rat(estimatedChances)}</div>
+                                    <div className='chance-to-win mt-2 stat-bg-white'>{NumbersUtils.float2ratio(estimatedChances)}</div>
                                 </div>
                             </Card>
                         </div>
@@ -216,7 +190,7 @@ const PoolDetails = () => {
                             <div className='w-100 me-3'>
                                 <small>{I18n.t('poolDetails.users.deposit')}</small>
                                 <div className='stat-bg-white h4 mb-0 mt-2'>
-                                    {pool ? NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber() : 0} {denom.toUpperCase()}
+                                    {pool ? (NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()).toFixed() : 0} {denom.toUpperCase()}
                                 </div>
                             </div>
                             <div className='w-100 mt-4 mt-lg-0'>
@@ -259,7 +233,7 @@ const PoolDetails = () => {
                     <div className='row'>
                         <div className='col-12'>
                             <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>{I18n.t('poolDetails.drawsHistory.title')}</h2>
-                            <Card flat withoutPadding className='draws-history-card d-flex flex-column flex-lg-row justify-content-between align-items-lg-center'>
+                            <Card flat withoutPadding className='draws-history-card'>
                                 <Table
                                     className='draws-history-table w-100'
                                     headers={I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true })}
@@ -273,6 +247,7 @@ const PoolDetails = () => {
                                               }
                                             : undefined
                                     }
+                                    customPagination='draws-history-pagination'
                                     onPageChange={(page) => setDrawsHistoryPage(page)}
                                 >
                                     {pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {

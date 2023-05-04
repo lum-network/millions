@@ -94,14 +94,16 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     };
 
     const copyAddress = () => {
-        navigator.clipboard.writeText('<empty clipboard>').then(
-            () => {
-                ToastUtils.showSuccessToast({ content: 'Copied address to clipboard !' });
-            },
-            () => {
-                ToastUtils.showErrorToast({ content: 'Failed to copy address to clipboard, try again later' });
-            },
-        );
+        if (address) {
+            navigator.clipboard.writeText(address).then(
+                () => {
+                    ToastUtils.showSuccessToast({ content: 'Copied address to clipboard !' });
+                },
+                () => {
+                    ToastUtils.showErrorToast({ content: 'Failed to copy address to clipboard, try again later' });
+                },
+            );
+        }
     };
 
     const renderContent = (inBurgerMenu: boolean) => {
