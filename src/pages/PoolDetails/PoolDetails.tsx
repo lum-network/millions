@@ -9,7 +9,7 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, SmallerDecimal, Table } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Lottie, Table } from 'components';
 import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { RootState } from 'redux/store';
@@ -175,7 +175,7 @@ const PoolDetails = () => {
                             height: '1px',
                         }}
                     />
-                    {pool.internalInfos?.illustration && <img src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
+                    {pool.internalInfos?.illustration && <img alt='' src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
                 </Card>
                 {userDeposits && (
                     <>
