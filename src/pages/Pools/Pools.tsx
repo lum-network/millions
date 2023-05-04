@@ -8,6 +8,8 @@ import PoolCardPlaceholder from './components/PoolCardPlaceholder';
 
 import './Pools.scss';
 
+const placeholderNames = ['Mad Scientist ?', 'Lucky Star ?'];
+
 const Pools = () => {
     const pools = useSelector((state: RootState) => state.pools.pools);
 
@@ -34,7 +36,7 @@ const Pools = () => {
                 ))}
                 {poolsPlaceholders.map((_, index) => (
                     <div className='col-12 col-sm-6 col-lg-4' key={`pool-placeholder-${index}`}>
-                        <PoolCardPlaceholder />
+                        <PoolCardPlaceholder name={placeholderNames[index] || 'New Pool'} />
                     </div>
                 ))}
             </div>

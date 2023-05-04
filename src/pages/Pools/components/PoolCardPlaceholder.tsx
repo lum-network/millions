@@ -3,7 +3,7 @@ import React from 'react';
 import Assets from 'assets';
 import { Card } from 'components';
 
-const PoolCardPlaceholder = () => {
+const PoolCardPlaceholder = ({ name }: { name: string }) => {
     return (
         <Card className='pool-card-container pool-card-placeholder glow-bg'>
             <img width={74} height={74} src={Assets.images.cosmonautCoin} alt='cosmonaut coin' />
@@ -12,7 +12,7 @@ const PoolCardPlaceholder = () => {
             </div>
             <div className='prize-container'>
                 <p>To be announced</p>
-                <h3>Mad Scientist ?</h3>
+                <h3>{name}</h3>
             </div>
             <div className='w-100'>
                 <Card flat withoutPadding className='prize-to-win'>
