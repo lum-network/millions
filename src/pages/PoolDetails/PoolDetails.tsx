@@ -29,7 +29,7 @@ function float2rat(x: number) {
         return '1 in 1';
     }
 
-    return '1 in ' + 100 / (x * 100);
+    return '1 in ' + numeral(100 / (x * 100)).format('0[.]00');
 }
 
 const PoolDetails = () => {
