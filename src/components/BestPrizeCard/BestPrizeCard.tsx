@@ -34,8 +34,8 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
             return;
         }
 
-        setFontSize(FontsUtils.calculateFontSize(NumbersUtils.convertUnitNumber(biggestPrize?.amount * (price ?? 1)).toFixed().length, width));
-    }, [biggestPrize]);
+        setFontSize(FontsUtils.calculateFontSize((biggestPrize?.amount * (price ?? 1)).toFixed().length, width));
+    }, [biggestPrize, width]);
 
     return (
         <Card
@@ -55,7 +55,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
                                     $
                                 </span>
                                 <div style={{ fontSize: `${fontSize}px` }}>
-                                    <AnimatedNumber number={NumbersUtils.convertUnitNumber(biggestPrize.amount * price)} />
+                                    <AnimatedNumber number={biggestPrize.amount * price} />
                                 </div>
                             </>
                         ) : (

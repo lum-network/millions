@@ -5,9 +5,9 @@ import { PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
-import { LumApi } from 'api';
 import { getNormalDenom } from '../../utils/denoms';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import { CLIENT_PRECISION } from '../../constant/api';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -62,30 +62,11 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
-                    await dispatch.pools.fetchPoolsRewards(null);
-                    // await dispatch.pools.getPoolsPrizePool(null);
+                    await dispatch.pools.getPoolsPrizePool(null);
 
                     return pools;
                 }
             } catch {}
-        },
-        async fetchPoolsRewards(_, state) {
-            const [poolRewards] = await LumApi.getPoolsRewards();
-            const pools = state.pools.pools;
-
-            for (const poolReward of poolRewards) {
-                const pool = pools.find((p) => p.poolId.eq(poolReward.id));
-
-                if (pool) {
-                    const rewards = poolReward.outstandingPrizePool;
-
-                    rewards.amount += Number(poolReward.availablePrizePool.amount);
-                    pool.prizeToWin = rewards;
-                }
-            }
-
-            dispatch.pools.setPools(pools);
-            dispatch.pools.getNextBestPrize(null);
         },
         async getPoolPrizes(poolId: Long) {
             try {
@@ -114,13 +95,18 @@ export const pools = createModel<RootModel>()({
                     }
 
                     const bankBalances = await WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress);
-                    const stakingBalance = await WalletClient.getIcaAccountStakingBalance(pool.icaDepositAddress);
+                    const stakingRewards = await WalletClient.getIcaAccountStakingRewards(pool.icaDepositAddress);
 
                     const prizePool =
                         availablePrizePool +
                         NumbersUtils.convertUnitNumber(bankBalances && bankBalances.length > 0 ? bankBalances[0].amount : '0') +
                         NumbersUtils.convertUnitNumber(
-                            stakingBalance?.delegationResponses && stakingBalance?.delegationResponses.length > 0 ? stakingBalance.delegationResponses[0].balance?.amount || '0' : '0',
+                            stakingRewards
+                                ? stakingRewards.total
+                                      .filter((reward) => reward.denom === pool.nativeDenom)
+                                      .reduce((a, b) => a + parseInt(b.amount, 10) / CLIENT_PRECISION, 0)
+                                      .toString()
+                                : '0',
                         );
 
                     pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
@@ -129,6 +115,7 @@ export const pools = createModel<RootModel>()({
                 }
 
                 dispatch.pools.setPools(pools);
+                dispatch.pools.getNextBestPrize(null);
             } catch (e) {
                 console.error((e as Error).message);
             }

@@ -6,4 +6,3 @@ export * from './wallets';
 export * from './pools';
 export * from './deposit';
 export * from './transaction';
-export * from './poolRewards';

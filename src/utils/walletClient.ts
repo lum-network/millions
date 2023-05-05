@@ -73,17 +73,15 @@ class WalletClient {
             return null;
         }
 
-        const balances = await this.walletClient.queryClient.bank.allBalances(address);
-        return balances;
+        return this.walletClient.queryClient.bank.allBalances(address);
     };
 
-    getIcaAccountStakingBalance = async (address: string) => {
+    getIcaAccountStakingRewards = async (address: string) => {
         if (!this.walletClient || (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner))) {
             return null;
         }
 
-        const balance = await this.walletClient.queryClient.staking.delegatorDelegations(address);
-        return balance;
+        return this.walletClient.queryClient.distribution.delegationTotalRewards(address);
     };
 
     // Operations
