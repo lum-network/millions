@@ -1,5 +1,5 @@
 export const LANDING = '/';
-export const HOME = '/home';
+export const HOME = '/dashboard';
 export const POOLS = '/pools';
 export const POOL_DETAILS = '/pools/details';
 export const MY_SAVINGS = '/my-savings';

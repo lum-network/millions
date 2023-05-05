@@ -151,8 +151,8 @@ export default {
         logoutBtn: 'Log out',
     },
     home: {
-        title: 'Home',
-        nextBestPrize: 'Biggest Prize Pool',
+        title: 'Dashboard',
+        nextBestPrize: 'Next draw',
         lastBigWinners: 'Luckiest winners',
         totalValueLocked: 'Total value locked',
         cta: 'SAVE & WIN',
