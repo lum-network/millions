@@ -17,7 +17,9 @@ class LumApi extends HttpClient {
         return this.instance;
     }
 
-    fetchBiggestPrizes = async () => this.request<PrizeModel[]>({ url: '/millions/prizes/biggest?limit=5', method: 'GET' }, PrizeModel);
+    fetchBiggestPrizes = async () => this.request<PrizeModel[]>({ url: '/millions/prizes/biggest?limit=4', method: 'GET' }, PrizeModel);
+
+    fetchPrizes = async (page = 0) => this.request<PrizeModel[]>({ url: `/millions/prizes?limit=5&page=${page}`, method: 'GET' }, PrizeModel);
 }
 
 export default LumApi.getInstance();

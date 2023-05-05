@@ -36,6 +36,13 @@ const Table = ({ children, customPagination, className, pagination, onPageChange
                             {'<'}
                         </a>
                     </li>
+                    {/*{hasPreviousPage && page > 1 && (*/}
+                    {/*    <li className='page-item'>*/}
+                    {/*        <a onClick={() => onPageChange(0)} className='page-link pointer'>*/}
+                    {/*            0 ...*/}
+                    {/*        </a>*/}
+                    {/*    </li>*/}
+                    {/*)}*/}
                     {hasPreviousPage && (
                         <li className='page-item'>
                             <a onClick={() => onPageChange(page - 1)} className='page-link pointer'>

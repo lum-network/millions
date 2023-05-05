@@ -14,7 +14,7 @@ const BigWinnerCard = ({ denom, address, prize, className }: { denom: string; ad
         <Button to={NavigationConstants.WINNERS} outline className={`big-winner-card ${className}`}>
             <span className='prize text-nowrap'>
                 <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3' alt={denom} />
-                {numeral(NumbersUtils.convertUnitNumber(prize)).format('0,0[.]0a')} {denom}
+                {numeral(NumbersUtils.convertUnitNumber(prize)).format('0,0[.]0a')} {DenomsUtils.getNormalDenom(denom)}
             </span>
             <div className='address'>{StringsUtils.trunc(address)}</div>
             <img src={Assets.images.arrow} alt='arrow' />
