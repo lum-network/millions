@@ -196,9 +196,7 @@ class LumClient {
             return null;
         }
 
-        const denomTrace = await this.client.queryClient.ibc.transfer.denomTrace(ibcDenom);
-
-        return denomTrace;
+        return this.client.queryClient.ibc.transfer.denomTrace(ibcDenom);
     };
 
     depositToPool = async (wallet: LumWallet, pool: PoolModel, amount: string) => {

@@ -7,7 +7,7 @@ import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { BalanceModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, FontsUtils, I18n } from 'utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
 
