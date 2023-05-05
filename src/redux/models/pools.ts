@@ -1,13 +1,11 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
-import { PoolsConstants } from 'constant';
+import { PoolsConstants, ApiConstants } from 'constant';
 import { PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
-import { getNormalDenom } from '../../utils/denoms';
 import { LumConstants } from '@lum-network/sdk-javascript';
-import { CLIENT_PRECISION } from '../../constant/api';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -104,7 +102,7 @@ export const pools = createModel<RootModel>()({
                             stakingRewards
                                 ? stakingRewards.total
                                       .filter((reward) => reward.denom === pool.nativeDenom)
-                                      .reduce((a, b) => a + parseInt(b.amount, 10) / CLIENT_PRECISION, 0)
+                                      .reduce((a, b) => a + parseInt(b.amount, 10) / ApiConstants.CLIENT_PRECISION, 0)
                                       .toString()
                                 : '0',
                         );
@@ -141,7 +139,8 @@ export const pools = createModel<RootModel>()({
 
                 const sortedPools = pools.sort(
                     (a, b) =>
-                        (b.prizeToWin?.amount || 0) * prices[getNormalDenom(b.prizeToWin?.denom || 'uatom')] - (a.prizeToWin?.amount || 0) * prices[getNormalDenom(a.prizeToWin?.denom || 'uatom')],
+                        (b.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.prizeToWin?.denom || 'uatom')] -
+                        (a.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.prizeToWin?.denom || 'uatom')],
                 );
 
                 if (sortedPools.length === 0) {

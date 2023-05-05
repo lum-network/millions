@@ -16,6 +16,7 @@ const Home = () => {
     const bestPoolPrize = useSelector((state: RootState) => state.pools?.bestPoolPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
+    const biggestPrizes = useSelector((state: RootState) => state.prizes.biggestPrizes);
 
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
@@ -37,22 +38,24 @@ const Home = () => {
                             </Card>
                         </div>
                         <div className='col-12 col-lg-6 col-xxl-12'>
-                            <Card>
-                                <Lottie
-                                    className='cosmonaut-with-balloons'
-                                    animationData={cosmonautWithBalloons}
-                                    segments={[
-                                        [0, 30],
-                                        [30, 128],
-                                    ]}
-                                />
-                                <h3>{I18n.t('home.lastBigWinners')}</h3>
-                                <div className='big-winners-container pt-4'>
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={14564} denom='evmos' className='flex-grow-1' />
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={23456543} denom='lum' className='flex-grow-1' />
-                                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={143} denom='atom' className='flex-grow-1' />
-                                </div>
-                            </Card>
+                            {biggestPrizes.length && (
+                                <Card>
+                                    <Lottie
+                                        className='cosmonaut-with-balloons'
+                                        animationData={cosmonautWithBalloons}
+                                        segments={[
+                                            [0, 30],
+                                            [30, 128],
+                                        ]}
+                                    />
+                                    <h3>{I18n.t('home.lastBigWinners')}</h3>
+                                    <div className='big-winners-container pt-4'>
+                                        {biggestPrizes.slice(0, 3).map((prize, index) => (
+                                            <BigWinnerCard key={index} address={prize.winnerAddress} prize={prize.amount.amount} denom={prize.amount.denom} className='flex-grow-1' />
+                                        ))}
+                                    </div>
+                                </Card>
+                            )}
                         </div>
                     </div>
                 </div>
