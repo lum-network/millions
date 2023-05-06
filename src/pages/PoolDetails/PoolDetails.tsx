@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Assets from 'assets';
@@ -12,7 +12,7 @@ import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 import { BigWinnerCard, Button, Card, CountDown, Lottie, SmallerDecimal, Table } from 'components';
 import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
-import { RootState } from 'redux/store';
+import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
 
 import './PoolDetails.scss';
@@ -21,17 +21,24 @@ const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
     const navigate = useNavigate();
 
-    const { lumWallet, prices, pools, pool } = useSelector((state: RootState) => ({
+    const dispatch = useDispatch<Dispatch>();
+
+    const { lumWallet, prices, pools, pool, biggestPrizes } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
+        biggestPrizes: state.prizes.prizes,
     }));
 
     const [estimationAmount, setEstimationAmount] = useState('');
     const [estimatedChances, setEstimatedChances] = useState(0);
     const [drawsHistoryPage, setDrawsHistoryPage] = useState(1);
+
+    useEffect(() => {
+        dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
+    }, [poolId, denom]);
 
     useEffect(() => {
         if (pool) {
@@ -223,12 +230,16 @@ const PoolDetails = () => {
                     </div>
                     <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
                 </div>
-                <h2 className='mb-0 mt-5'>{I18n.t('luckiestWinners.title')}</h2>
-                <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3'>
-                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={14564} denom={denom} className='flex-grow-1' />
-                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={23456543} denom={denom} className='mx-0 mx-lg-4 flex-grow-1' />
-                    <BigWinnerCard address='lum13wqpfyc4rl5rqawg6f9xur6gdvgxfhm2ysl35f' prize={143} denom={denom} className='flex-grow-1' />
-                </div>
+                {biggestPrizes.length && (
+                    <>
+                        <h2 className='mb-0 mt-5'>{I18n.t('luckiestWinners.title')}</h2>
+                        <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3'>
+                            {biggestPrizes.slice(0, 3).map((prize, index) => (
+                                <BigWinnerCard key={index} denom={prize.amount.denom} address={prize.winnerAddress} prize={prize.amount.amount} />
+                            ))}
+                        </div>
+                    </>
+                )}
                 {pool.draws && pool.draws.length > 0 && (
                     <div className='row'>
                         <div className='col-12'>

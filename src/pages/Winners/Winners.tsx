@@ -25,7 +25,7 @@ const Winners = () => {
     const [page, setPage] = useState(0);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes(page).finally(() => null);
+        dispatch.prizes.fetchPrizes({ page: page }).finally(() => null);
     }, [page]);
 
     return (

@@ -29,6 +29,13 @@ export const prizes = createModel<RootModel>()({
                 metadata,
             };
         },
+        resetPrizes: (state: PrizesState): PrizesState => {
+            return {
+                ...state,
+                prizes: [],
+                metadata: undefined,
+            };
+        },
     },
     effects: (dispatch) => ({
         fetchBiggestPrizes: async () => {
@@ -36,10 +43,18 @@ export const prizes = createModel<RootModel>()({
 
             dispatch.prizes.setBiggestPrizes(biggestPrizes);
         },
-        fetchPrizes: async (page = 0) => {
-            const [prizes, metadata] = await LumApi.fetchPrizes(page);
+        fetchPrizes: async ({ page = 0, denom }: { page: number; denom?: string }) => {
+            dispatch.prizes.resetPrizes();
 
-            dispatch.prizes.setPrizes(prizes, metadata);
+            if (denom) {
+                const [prizes, metadata] = await LumApi.fetchBiggestPrizesByDenom(page, denom);
+
+                dispatch.prizes.setPrizes(prizes, metadata);
+            } else {
+                const [prizes, metadata] = await LumApi.fetchPrizes(page);
+
+                dispatch.prizes.setPrizes(prizes, metadata);
+            }
         },
     }),
 });
