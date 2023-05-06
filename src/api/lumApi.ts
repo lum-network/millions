@@ -1,6 +1,6 @@
 import { HttpClient } from 'utils';
 import { ApiConstants } from 'constant';
-import { PrizeModel } from 'models';
+import { PrizeModel, PrizeStatsModel } from 'models';
 
 class LumApi extends HttpClient {
     private static instance?: LumApi;
@@ -22,6 +22,8 @@ class LumApi extends HttpClient {
     fetchPrizes = async (page = 0) => this.request<PrizeModel[]>({ url: `/millions/prizes?limit=5&page=${page}`, method: 'GET' }, PrizeModel);
 
     fetchBiggestPrizesByDenom = async (page = 0, denom: string) => this.request<PrizeModel[]>({ url: `/millions/prizes/biggest/${denom}?limit=5&page=${page}`, method: 'GET' }, PrizeModel);
+
+    getPrizesStats = async (denom: string) => this.request<PrizeStatsModel>({ url: `/millions/prizes/stats/${denom}`, method: 'GET' }, PrizeStatsModel);
 }
 
 export default LumApi.getInstance();

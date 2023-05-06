@@ -1,4 +1,4 @@
-import { MetadataModel, PrizeModel } from 'models';
+import { MetadataModel, PrizeModel, PrizeStatsModel } from 'models';
 import { RootModel } from './index';
 import { createModel } from '@rematch/core';
 import { LumApi } from 'api';
@@ -7,6 +7,7 @@ interface PrizesState {
     biggestPrizes: PrizeModel[];
     prizes: PrizeModel[];
     metadata?: MetadataModel;
+    stats: PrizeStatsModel | null;
 }
 
 export const prizes = createModel<RootModel>()({
@@ -14,6 +15,7 @@ export const prizes = createModel<RootModel>()({
     state: {
         biggestPrizes: [],
         prizes: [],
+        stats: null,
     } as PrizesState,
     reducers: {
         setBiggestPrizes: (state: PrizesState, biggestPrizes: PrizeModel[]): PrizesState => {
@@ -36,6 +38,18 @@ export const prizes = createModel<RootModel>()({
                 metadata: undefined,
             };
         },
+        setStats: (state: PrizesState, stats: PrizeStatsModel): PrizesState => {
+            return {
+                ...state,
+                stats,
+            };
+        },
+        resetStats: (state: PrizesState): PrizesState => {
+            return {
+                ...state,
+                stats: null,
+            };
+        },
     },
     effects: (dispatch) => ({
         fetchBiggestPrizes: async () => {
@@ -55,6 +69,13 @@ export const prizes = createModel<RootModel>()({
 
                 dispatch.prizes.setPrizes(prizes, metadata);
             }
+        },
+        getStats: async (denom: string) => {
+            dispatch.prizes.resetStats();
+
+            const [stats] = await LumApi.getPrizesStats(denom);
+
+            dispatch.prizes.setStats(stats);
         },
     }),
 });

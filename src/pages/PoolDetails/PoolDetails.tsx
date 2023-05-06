@@ -23,13 +23,14 @@ const PoolDetails = () => {
 
     const dispatch = useDispatch<Dispatch>();
 
-    const { lumWallet, prices, pools, pool, biggestPrizes } = useSelector((state: RootState) => ({
+    const { lumWallet, prices, pools, pool, biggestPrizes, prizesStats } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
         biggestPrizes: state.prizes.prizes,
+        prizesStats: state.prizes.stats,
     }));
 
     const [estimationAmount, setEstimationAmount] = useState('');
@@ -38,6 +39,7 @@ const PoolDetails = () => {
 
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
+        dispatch.prizes.getStats(denom || '');
     }, [poolId, denom]);
 
     useEffect(() => {
@@ -211,26 +213,28 @@ const PoolDetails = () => {
                             <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
                             {I18n.t('poolDetails.winners.title')}
                         </h2>
-                        <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
-                            <div className='w-100'>
-                                <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(540000).format('$0,0')}</div>
-                            </div>
-                            <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
-                                <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>254</div>
-                            </div>
-                            <div className='w-100'>
-                                <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>
-                                    {numeral(84000).format('0,0').toUpperCase()} {denom.toUpperCase()}
+                        {!!prizesStats && (
+                            <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
+                                <div className='w-100'>
+                                    <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
+                                    <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
                                 </div>
-                            </div>
-                        </Card>
+                                <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
+                                    <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
+                                    <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
+                                </div>
+                                <div className='w-100'>
+                                    <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
+                                    <div className='stat-bg-white h4 mb-0 mt-2'>
+                                        {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount)).format('0,0').toUpperCase()} {denom.toUpperCase()}
+                                    </div>
+                                </div>
+                            </Card>
+                        )}
                     </div>
                     <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
                 </div>
-                {biggestPrizes.length && (
+                {!!biggestPrizes.length && (
                     <>
                         <h2 className='mb-0 mt-5'>{I18n.t('luckiestWinners.title')}</h2>
                         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3'>
