@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'components';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import numeral from 'numeral';
 
 interface IProps {
@@ -26,9 +26,9 @@ const PoolCard = ({ denom, tvl, prize }: IProps) => {
             <div className='tvl-container d-flex flex-column align-items-center'>
                 <span className='tvl-legend mb-3'>{I18n.t('landing.pools.deposited')}</span>
                 <span className='tvl mb-1'>
-                    {numeral(tvl).format('0,0')} {denom}
+                    {numeral(NumbersUtils.convertUnitNumber(tvl)).format('0,0')} {denom}
                 </span>
-                <span className='tvl-value'>≃${price ? numeral(tvl * price).format('0,0') : ' --'}</span>
+                <span className='tvl-value'>≃${price ? numeral(NumbersUtils.convertUnitNumber(tvl) * price).format('0,0') : ' --'}</span>
             </div>
             <Card withoutPadding flat className='prize-card'>
                 <span>{I18n.t('landing.pools.prizeToWin')}</span>

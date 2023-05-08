@@ -6,6 +6,7 @@ import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import { Pool } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -42,8 +43,10 @@ export const pools = createModel<RootModel>()({
 
                     for (const pool of res) {
                         //FIXME: Check if we can remove this
-                        const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
+                        // const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
                         const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+
+                        const apy = await dispatch.pools.getPoolApy(pool);
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -52,7 +55,7 @@ export const pools = createModel<RootModel>()({
                         pools.push({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
-                            prizes,
+                            // prizes,
                             draws,
                             nextDrawAt,
                             prizeToWin: null,
@@ -118,6 +121,9 @@ export const pools = createModel<RootModel>()({
             } catch (e) {
                 console.error((e as Error).message);
             }
+        },
+        async getPoolApy(pool: Pool) {
+            //TODO: Implement this
         },
         async getPoolDraws(poolId: Long) {
             try {
