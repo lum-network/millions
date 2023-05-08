@@ -60,7 +60,6 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
-                    await dispatch.pools.getPoolsPrizePool(null);
 
                     return pools;
                 }
@@ -92,12 +91,14 @@ export const pools = createModel<RootModel>()({
                         await WalletClient.connect(pool.internalInfos?.rpc);
                     }
 
-                    const bankBalances = await WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress);
-                    const stakingRewards = await WalletClient.getIcaAccountStakingRewards(pool.icaDepositAddress);
+                    const [bankBalance, stakingRewards] = await Promise.all([
+                        WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
+                        WalletClient.getIcaAccountStakingRewards(pool.icaDepositAddress),
+                    ]);
 
                     const prizePool =
                         availablePrizePool +
-                        NumbersUtils.convertUnitNumber(bankBalances && bankBalances.length > 0 ? bankBalances[0].amount : '0') +
+                        NumbersUtils.convertUnitNumber(bankBalance ? parseInt(bankBalance.amount, 10) : 0) +
                         NumbersUtils.convertUnitNumber(
                             stakingRewards
                                 ? stakingRewards.total

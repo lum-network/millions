@@ -68,12 +68,12 @@ class WalletClient {
         };
     };
 
-    getIcaAccountBankBalance = async (address: string) => {
+    getIcaAccountBankBalance = async (address: string, denom: string) => {
         if (!this.walletClient || (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner))) {
             return null;
         }
 
-        return this.walletClient.queryClient.bank.allBalances(address);
+        return this.walletClient.queryClient.bank.balance(address, denom);
     };
 
     getIcaAccountStakingRewards = async (address: string) => {

@@ -314,6 +314,7 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.getActivities({ address });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
             await dispatch.pools.fetchPools();
+            await dispatch.pools.getPoolsPrizePool(null);
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
