@@ -2,10 +2,9 @@ import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import { Window as KeplrWindow } from '@keplr-wallet/types';
-import dayjs from 'dayjs';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
@@ -379,7 +378,14 @@ export const wallet = createModel<RootModel>()({
 
                 if (res) {
                     dispatch.wallet.setLumWalletData({
-                        prizes: res.prizes.filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING).sort((prizeA, prizeB) => dayjs(prizeA.createdAt).diff(prizeB.createdAt)),
+                        prizes: res.prizes
+                            .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
+                            .sort((a, b) => {
+                                const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
+                                const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
+
+                                return bAmount - aAmount;
+                            }),
                     });
                 }
             } catch (e) {

@@ -202,7 +202,7 @@ export default {
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
-        totalBalance: 'Total balance',
+        totalBalance: 'Total deposits',
         claim: 'Claim',
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',

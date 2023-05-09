@@ -3,18 +3,21 @@ import dayjs from 'dayjs';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 import { Button, Collapsible, SmallerDecimal } from 'components';
-import { AggregatedDepositModel, DepositModel } from 'models';
+import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
+import numeral from 'numeral';
 
 interface IProps {
     deposits: AggregatedDepositModel[];
+    pools: PoolModel[];
+    prices: { [key: string]: number };
     onLeavePool: (deposit: DepositModel) => void;
 }
 
-const DepositTable = ({ deposits, onLeavePool }: IProps) => {
+const DepositTable = ({ deposits, pools, prices, onLeavePool }: IProps) => {
     const winSizes = useWindowSize();
 
     const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
@@ -43,9 +46,21 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
         }
 
         if (deposit.isWithdrawing) {
-            cta = dayjs(deposit.unbondingEndAt).toNow(true) + ' remaining';
+            const pool = pools.find((p) => deposit.poolId && p.poolId.eq(deposit.poolId));
+
+            const expiration = deposit.unbondingEndAt
+                ? dayjs(deposit.unbondingEndAt).toNow(true)
+                : pool && deposit.createdAt
+                ? dayjs(deposit.createdAt)
+                      .add(pool.internalInfos ? pool.internalInfos.unbondingTime : 21, 'day')
+                      .toNow(true)
+                : '';
+
+            cta = expiration + ' remaining';
             statusClassName = '';
         }
+
+        const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
 
         const ActionsContainer = ({ children }: { children: JSX.Element[] }) => {
             if (winSizes.width < 768) {
@@ -66,7 +81,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                                 {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                             </h3>
                             <p className='mb-0'>
-                                {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} - {I18n.t('deposit.depositId', { depositId: deposit.depositId?.toString() || '' })}
+                                {numeral(usdPrice).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} -{' '}
+                                {I18n.t('deposit.depositId', { depositId: deposit.depositId?.toString() || '' })}
                             </p>
                         </div>
                     </div>
@@ -89,6 +105,8 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
 
     const renderRow = (deposit: AggregatedDepositModel, index: number) => {
         if (deposit.deposits.length > 1) {
+            const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
+
             return (
                 <Collapsible
                     key={`collapsible-deposit-${index}`}
@@ -106,7 +124,7 @@ const DepositTable = ({ deposits, onLeavePool }: IProps) => {
                                             {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                         </h3>
                                         <p className='mb-0'>
-                                            {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} - {I18n.t('deposit.deposits', { count: deposits.length })}
+                                            {numeral(usdPrice).format('$0,0[.]00')} - {I18n.t('deposit.deposits', { count: deposit.deposits.length })}
                                         </p>
                                     </div>
                                 </div>

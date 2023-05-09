@@ -227,7 +227,7 @@ const MySavings = () => {
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
                                 <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
-                                    <DepositTable deposits={deposits} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
+                                    <DepositTable deposits={deposits} pools={pools} prices={prices} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
                                 </Card>
                             </>
                         ) : null}

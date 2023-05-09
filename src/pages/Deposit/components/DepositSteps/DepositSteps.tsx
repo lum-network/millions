@@ -20,7 +20,8 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-networ
 interface StepProps {
     currentPool: PoolModel;
     balances: LumTypes.Coin[];
-    price?: number;
+    price: number;
+    pools: PoolModel[];
 }
 
 interface Props {
@@ -41,7 +42,7 @@ interface Props {
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
-    price?: number;
+    price: number;
 }
 
 type TxInfos = {
@@ -59,7 +60,7 @@ const DepositStep1 = (
         onDeposit: (amount: string) => void;
     },
 ) => {
-    const { currentPool, balances, price, form, nonEmptyWallets, onDeposit } = props;
+    const { currentPool, balances, price, pools, form, nonEmptyWallets, onDeposit } = props;
 
     const navigate = useNavigate();
 
@@ -104,26 +105,28 @@ const DepositStep1 = (
                 />
             </div>
             <div className='mt-5'>
-                <AssetsSelect
-                    isLoading={isLoading}
-                    balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
-                        if (balances.length > 0) {
-                            result.push({
-                                amount: balances[0].amount,
-                                denom: balances[0].denom,
-                            });
-                        }
-                        return result;
-                    }, [])}
-                    value={currentPool.nativeDenom}
-                    onChange={(value) => {
-                        navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
-                    }}
-                    options={nonEmptyWallets.map((wallet) => ({
-                        label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
-                        value: wallet.balances[0].denom,
-                    }))}
-                />
+                {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
+                    <AssetsSelect
+                        isLoading={isLoading}
+                        balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
+                            if (balances.length > 0) {
+                                result.push({
+                                    amount: balances[0].amount,
+                                    denom: balances[0].denom,
+                                });
+                            }
+                            return result;
+                        }, [])}
+                        value={currentPool.nativeDenom}
+                        onChange={(value) => {
+                            navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
+                        }}
+                        options={nonEmptyWallets.map((wallet) => ({
+                            label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
+                            value: wallet.balances[0].denom,
+                        }))}
+                    />
+                )}
                 <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
                     <div className='winning-chance d-flex flex-row justify-content-between'>
                         <div>
@@ -166,7 +169,6 @@ const DepositStep2 = (
         initialAmount?: string;
         onNextStep: () => void;
         onPrevStep: (amount: string) => void;
-        pools: PoolModel[];
     },
 ) => {
     const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onPrevStep, onFinishDeposit } = props;
@@ -185,11 +187,11 @@ const DepositStep2 = (
     const [error, setError] = useState('');
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
-    useEffect(() => {
-        const depositAmountNumber = Number(depositAmount);
+    const validateInput = (value: string) => {
+        const depositAmountNumber = Number(value);
         const minDeposit = Number(NumbersUtils.convertUnitNumber(poolToDeposit.minDepositAmount));
 
-        if (Number.isNaN(depositAmount)) {
+        if (Number.isNaN(depositAmountNumber)) {
             setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
         } else {
             if (depositAmountNumber < minDeposit) {
@@ -198,7 +200,7 @@ const DepositStep2 = (
                 setError('');
             }
         }
-    }, [depositAmount]);
+    };
 
     useEffect(() => {
         if (initialAmount) {
@@ -249,6 +251,7 @@ const DepositStep2 = (
                         value: Number(depositAmount) < 0 ? '0' : depositAmount,
                         onChange: (e) => {
                             setDepositAmount(e.target.value);
+                            validateInput(e.target.value);
                         },
                         max: balances.length > 0 ? balances[0].amount : '0',
                         step: 'any',
@@ -324,7 +327,7 @@ const DepositStep2 = (
     );
 };
 
-const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: TxInfos; onTwitterShare: () => void }) => {
+const DepositStep3 = ({ txInfos, price, onTwitterShare }: { txInfos: TxInfos; price: number; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
@@ -337,7 +340,7 @@ const DepositStep3 = ({ txInfos, onTwitterShare }: { txInfos: TxInfos; onTwitter
                             {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
                         </div>
                         <small className='deposit-infos text-start'>
-                            {I18n.t('pools.poolId', { poolId: txInfos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
+                            {numeral(Number(txInfos.amount) * price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
                         </small>
                     </div>
                 </div>
@@ -418,7 +421,7 @@ const DepositSteps = (props: Props) => {
 
     useEffect(() => {
         const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-        setInitialAmount(existsInLumBalances ? existsInLumBalances.amount : '0');
+        setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
     }, [lumWallet]);
 
     return (
@@ -434,6 +437,7 @@ const DepositSteps = (props: Props) => {
                         form={transferForm}
                         onDeposit={(amount) => setAmount(amount)}
                         price={price}
+                        pools={pools}
                         balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
                         nonEmptyWallets={nonEmptyWallets}
                     />
@@ -451,7 +455,7 @@ const DepositSteps = (props: Props) => {
                         onPrevStep={onPrevStep}
                     />
                 )}
-                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} onTwitterShare={onTwitterShare} />}
+                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />}
             </div>
         </>
     );

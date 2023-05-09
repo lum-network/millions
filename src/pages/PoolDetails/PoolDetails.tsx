@@ -115,7 +115,7 @@ const PoolDetails = () => {
                 {userDeposits && (
                     <>
                         <h2 className='mb-2 mb-lg-4 mt-5'>{I18n.t('poolDetails.myDeposits', { denom: denom.toUpperCase() })}</h2>
-                        <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center justify-content-between p-4'>
+                        <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center justify-content-between my-deposits-card'>
                             <div className='d-flex flex-row align-items-center mb-4 mb-lg-0'>
                                 <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} width='50' height='50' className='d-none d-sm-block me-4' />
                                 <div>
