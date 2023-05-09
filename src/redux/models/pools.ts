@@ -121,16 +121,12 @@ export const pools = createModel<RootModel>()({
                         LumClient.getFeesStakers(),
                     ]);
 
-                    console.log(feesStakers);
-
                     const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '0');
                     const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
-                    const NativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    // console.log('denom: ', pool.nativeDenom, 'stakingRatio', stakingRatio, 'bonding', bonding, 'supply', supply);
-
-                    //TODO: Calculate Variable APY
+                    const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
+                    pool.apy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
 
                     WalletClient.disconnect();
                 }

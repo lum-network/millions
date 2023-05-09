@@ -16,8 +16,6 @@ export const app = createModel<RootModel>()({
 
             await dispatch.stats.fetchStats();
             await dispatch.pools.fetchPools();
-            await dispatch.pools.getPoolsAdditionalInfo(null);
-            await dispatch.prizes.fetchBiggestPrizes();
 
             if (payload.withWallets) {
                 await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
