@@ -53,7 +53,7 @@ const MySavings = () => {
     useEffect(() => {
         const page = activities?.currentPage;
 
-        if (lumWallet && page && page > 1) {
+        if (lumWallet && page && page > 1 && !activities.fullyLoaded) {
             dispatch.wallet.getActivities({ address: lumWallet.address, page });
         }
     }, [activities?.currentPage]);
@@ -273,10 +273,6 @@ const MySavings = () => {
                                                 : undefined
                                         }
                                         onPageChange={(page) => {
-                                            if (activities?.fullyLoaded) {
-                                                return;
-                                            }
-
                                             dispatch.wallet.setActivitiesPage(page);
                                         }}
                                     />
