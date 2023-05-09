@@ -36,6 +36,7 @@ const PoolDetails = () => {
     const [estimationAmount, setEstimationAmount] = useState('100');
     const [estimatedChances, setEstimatedChances] = useState(0);
     const [drawsHistoryPage, setDrawsHistoryPage] = useState(1);
+    const [drawInProgress, setDrawInProgress] = useState(false);
 
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
@@ -99,8 +100,8 @@ const PoolDetails = () => {
                     </div>
                     <div className='next-draw-container'>
                         <h2>{I18n.t('poolDetails.nextDraw')}</h2>
-                        <div className='display-6'>
-                            <CountDown to={pool.nextDrawAt || new Date()} />
+                        <div className={`display-6 ${drawInProgress ? 'draw-in-progress' : ''}`}>
+                            {drawInProgress ? 'Draw in progress' : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
                         </div>
                     </div>
                     <div
@@ -150,7 +151,14 @@ const PoolDetails = () => {
                                     ))}
                                 </Table>
                             </Card>
-                            <Lottie className='cosmonaut-with-duck' animationData={cosmonautWithDuck} />
+                            <Lottie
+                                className='cosmonaut-with-duck'
+                                animationData={cosmonautWithDuck}
+                                segments={[
+                                    [0, 30],
+                                    [30, 128],
+                                ]}
+                            />
                         </div>
                     )}
                     <div className='col'>
@@ -236,7 +244,14 @@ const PoolDetails = () => {
                             </>
                         )}
                     </div>
-                    <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
+                    <Lottie
+                        className='cosmonaut-with-balloons'
+                        animationData={cosmonautWithBalloons}
+                        segments={[
+                            [0, 30],
+                            [30, 128],
+                        ]}
+                    />
                 </div>
                 {!!biggestPrizes.length && (
                     <>
@@ -291,7 +306,22 @@ const PoolDetails = () => {
                         </div>
                     </div>
                 )}
-                <Lottie className='cosmonaut-dab mx-auto' animationData={cosmonautDab} />
+                <Lottie
+                    className='cosmonaut-dab mx-auto'
+                    animationData={cosmonautDab}
+                    actions={[
+                        {
+                            visibility: [0, 0.05],
+                            type: 'stop',
+                            frames: [0],
+                        },
+                        {
+                            visibility: [0.05, 0.2],
+                            type: 'seek',
+                            frames: [0, 30],
+                        },
+                    ]}
+                />
             </Card>
         </div>
     );

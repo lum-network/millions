@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
@@ -21,6 +21,8 @@ interface IProps {
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
     const navigate = useNavigate();
+
+    const [drawInProgress, setDrawInProgress] = useState(false);
 
     const price = prices?.[denom];
 
@@ -60,8 +62,8 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                     <div className='countdown-label'>
                         <img src={Assets.images.clock} alt='clock' className='me-2' width={22} height={22} /> {I18n.t('pools.drawEndAt')}
                     </div>
-                    <div className='countdown'>
-                        <CountDown to={drawEndAt} />
+                    <div className={`countdown ${drawInProgress ? 'draw' : ''}`}>
+                        {drawInProgress ? 'Draw in progress' : <CountDown to={drawEndAt} onCountdownEnd={() => setDrawInProgress(true)} />}
                     </div>
                 </div>
             </div>

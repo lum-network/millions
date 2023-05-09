@@ -300,7 +300,14 @@ const MySavings = () => {
                                             </>
                                         ) : (
                                             <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />
+                                                <Lottie
+                                                    className='cosmonaut-with-balloons'
+                                                    animationData={cosmonautWithBalloons}
+                                                    segments={[
+                                                        [0, 30],
+                                                        [30, 128],
+                                                    ]}
+                                                />
                                                 <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
                                                 <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
                                                 <Button to={NavigationConstants.POOLS} className='mt-4'>

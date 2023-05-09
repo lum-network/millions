@@ -48,6 +48,10 @@
             height: 235px;
         }
 
+        .draw-in-progress {
+            font-size: 18px;
+        }
+
         @include media-breakpoint-down(lg) {
             margin-top: 2rem;
         }
@@ -180,17 +184,17 @@
             .page-item.active .page-link {
                 color: $color-primary !important;
             }
-        
+
             .page-item.active:not(.without-border) .page-link {
                 border-color: $color-primary !important;
             }
-        
+
             .page-item .page-link {
                 border-color: transparent !important;
                 background-color: transparent !important;
                 color: #5634DE4D !important;
             }
-            
+
             .page-item.disabled .page-link {
                 color: #5634DE4D !important;
             }

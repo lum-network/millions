@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Assets from 'assets';
@@ -24,6 +24,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
 
     const { width } = useWindowSize();
     const [fontSize, setFontSize] = React.useState(0);
+    const [drawInProgress, setDrawInProgress] = useState(false);
 
     const navigate = useNavigate();
 
@@ -70,7 +71,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                         </div>
                         <div className='mt-4 mt-sm-0'>
-                            <CountDown homePage to={countdownTo} />
+                            <CountDown homePage to={countdownTo} onCountdownEnd={() => setDrawInProgress(true)} />
                         </div>
                     </div>
                 )}
