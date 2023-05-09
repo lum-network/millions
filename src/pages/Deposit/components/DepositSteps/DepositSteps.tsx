@@ -77,7 +77,7 @@ const DepositStep1 = (
                         denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                     })}
                     onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances);
+                        const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees);
                         form.setFieldValue('amount', amount);
                     }}
                     inputProps={{
@@ -90,7 +90,7 @@ const DepositStep1 = (
                         ...form.getFieldProps('amount'),
                         onChange: (e) => {
                             const inputAmount = Number(e.target.value);
-                            const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances));
+                            const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees));
 
                             if (Number.isNaN(inputAmount) || inputAmount < 0) {
                                 e.target.value = '0';
@@ -315,6 +315,7 @@ const DepositStep2 = (
                         onNextStep();
                     }
                 }}
+                disabled={isLoading}
                 loading={isLoading}
                 className='deposit-cta w-100 mt-4'
             >
@@ -426,11 +427,11 @@ const DepositSteps = (props: Props) => {
     return (
         <>
             <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-                <div className={`d-flex flex-${currentStep === 2 ? 'row mt-2' : 'column'} mb-3 mb-sm-5 mb-lg-0`}>
+                <div className={`d-flex flex-${currentStep === steps.length - 1 ? 'row mt-2' : 'column'} mb-3 mb-sm-5 mb-lg-0`}>
                     <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
                     <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
                 </div>
-                {currentStep === 0 && (
+                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
                     <DepositStep1
                         currentPool={currentPool}
                         form={transferForm}
@@ -441,7 +442,7 @@ const DepositSteps = (props: Props) => {
                         nonEmptyWallets={nonEmptyWallets}
                     />
                 )}
-                {currentStep === 1 && (
+                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
                     <DepositStep2
                         balances={lumWallet?.balances || []}
                         initialAmount={initialAmount}
@@ -454,7 +455,7 @@ const DepositSteps = (props: Props) => {
                         onPrevStep={onPrevStep}
                     />
                 )}
-                {currentStep === 2 && txInfos && <DepositStep3 txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />}
+                {currentStep === steps.length - 1 && txInfos && <DepositStep3 txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />}
             </div>
         </>
     );

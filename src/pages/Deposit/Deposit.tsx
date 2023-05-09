@@ -3,6 +3,7 @@ import { Navigate, useParams, unstable_useBlocker as useBlocker, useBeforeUnload
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { LumConstants } from '@lum-network/sdk-javascript';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
@@ -32,7 +33,7 @@ const Deposit = () => {
     }));
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
-    const [currentStep, setCurrentStep] = useState(existsInLumBalances ? 1 : 0);
+    const [currentStep, setCurrentStep] = useState(existsInLumBalances && denom !== LumConstants.LumDenom ? 1 : 0);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('');
     const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('');
@@ -116,13 +117,17 @@ const Deposit = () => {
         chainName: pool.internalInfos?.chainName || 'Native Chain',
     });
 
-    const isLastStep = currentStep === steps.length - 1;
-
     const otherWallet = otherWallets[denom || ''];
 
     if (!denom || !lumWallet || (denom !== 'lum' && !otherWallet)) {
         return <Navigate to={NavigationConstants.HOME} />;
     }
+
+    if (denom === LumConstants.LumDenom) {
+        steps.splice(0, 1);
+    }
+
+    const isLastStep = currentStep === steps.length - 1;
 
     return (
         <>

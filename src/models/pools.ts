@@ -9,6 +9,7 @@ export interface PoolInternalInfosModel {
     ibcSourceChannel: string;
     ibcDenom: string;
     unbondingTime: number;
+    fees: number;
     illustration?: string;
 }
 

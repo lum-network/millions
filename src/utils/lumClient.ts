@@ -253,7 +253,7 @@ class LumClient {
             messages.push(
                 LumMessages.BuildMsgMillionsDeposit(deposit.pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
                     amount: deposit.amount,
-                    denom: deposit.pool.nativeDenom,
+                    denom: deposit.pool.denom,
                 }),
             );
         }
