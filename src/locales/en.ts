@@ -281,6 +281,10 @@ export default {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
         },
+        newPrize: {
+            title: 'Congrats! 🎉',
+            description: "Cosmonaut, you've won a prize! Claim it before time runs out!",
+        },
         leavePoolModal: {
             title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',
             steps: [

@@ -175,6 +175,18 @@ const MySavings = () => {
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
                 </Card>
             ) : null}
+            {prizesToClaim && prizesToClaim.length > 0 ? (
+                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4 new-prize-card'>
+                    <img src={Assets.images.trophyGreen} width='45' />
+                    <div className='d-flex flex-row align-items-baseline'>
+                        <h3 className='ms-3 me-5 mb-0'>{I18n.t('mySavings.newPrize.title')}</h3>
+                        <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
+                    </div>
+                    <Button className='claim-btn ms-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                        Claim
+                    </Button>
+                </Card>
+            ) : null}
             <div className='row'>
                 <div className='col-12 col-lg-8 col-xxl-9'>
                     <div>
