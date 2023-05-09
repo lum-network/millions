@@ -153,9 +153,7 @@ const DepositStep1 = (
                     </div>
                 </Card>
                 <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
-                    <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
                     {I18n.t('deposit.transferBtn')}
-                    <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
                 </Button>
             </div>
         </form>
