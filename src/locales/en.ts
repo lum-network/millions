@@ -364,7 +364,11 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'If you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.',
+            subtitle: 'You already transfered <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            prevAmountLabel: 'Current amount of {{ denom }} deposited',
+            nextAmountLabel: 'Amount of {{ denom }} to deposit',
+            cta: 'Add {{ nextAmount }} {{ denom }}',
+            cancel: 'No thanks',
         },
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',

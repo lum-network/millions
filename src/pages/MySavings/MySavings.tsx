@@ -183,7 +183,7 @@ const MySavings = () => {
                         <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
                     </div>
                     <Button className='claim-btn ms-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
-                        Claim
+                        {I18n.t('mySavings.claim')}
                     </Button>
                 </Card>
             ) : null}

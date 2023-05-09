@@ -38,7 +38,7 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
-    onPrevStep: (amount: string) => void;
+    onPrevStep: (prevAmount: string, nextAmount: string) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
@@ -166,7 +166,7 @@ const DepositStep2 = (
         onFinishDeposit: (infos: TxInfos) => void;
         initialAmount?: string;
         onNextStep: () => void;
-        onPrevStep: (amount: string) => void;
+        onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
     const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onPrevStep, onFinishDeposit } = props;
@@ -296,7 +296,7 @@ const DepositStep2 = (
                     const depositAmountNumber = Number(depositAmount);
 
                     if (depositAmountNumber > maxAmount) {
-                        onPrevStep((depositAmountNumber - maxAmount).toFixed(6));
+                        onPrevStep(depositAmount, (depositAmountNumber - maxAmount).toFixed(6));
                         return;
                     }
                     const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });

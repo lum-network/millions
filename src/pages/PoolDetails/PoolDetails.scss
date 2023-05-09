@@ -120,10 +120,12 @@
                 margin-left: 1rem;
             }
 
-            &:hover {
+            &:hover,
+            &.active {
                 background-color: $color-primary;
                 color: $color-white;
             }
+
         }
 
         .chance-to-win {

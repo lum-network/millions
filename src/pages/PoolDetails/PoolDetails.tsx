@@ -33,7 +33,7 @@ const PoolDetails = () => {
         prizesStats: state.prizes.stats,
     }));
 
-    const [estimationAmount, setEstimationAmount] = useState('');
+    const [estimationAmount, setEstimationAmount] = useState('100');
     const [estimatedChances, setEstimatedChances] = useState(0);
     const [drawsHistoryPage, setDrawsHistoryPage] = useState(1);
 
@@ -174,7 +174,9 @@ const PoolDetails = () => {
                                                     <button
                                                         type='button'
                                                         key={`estimation-for-${amount}`}
-                                                        className='d-flex align-items-center justify-content-center py-1 w-100 estimation-amount-btn'
+                                                        className={`d-flex align-items-center justify-content-center py-1 w-100 estimation-amount-btn ${
+                                                            estimationAmount === amount.toFixed() ? 'active' : ''
+                                                        }`}
                                                         onClick={() => setEstimationAmount(amount.toFixed())}
                                                     >
                                                         {numeral(amount).format('$0,0')}
