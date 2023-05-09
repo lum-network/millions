@@ -205,6 +205,23 @@
         height: 165px;
     }
 
+    .new-prize-card {
+        background-color: $color-success-light;
+
+        .claim-btn {
+            background-color: $color-success;
+            border-color: $color-success;
+        }
+
+        h3 {
+            color: $color-success;
+        }
+
+        p {
+            color: $color-black;
+        }
+    }
+ 
     #withdrawModal {
         .withdraw-title {
             font-size: 24px;

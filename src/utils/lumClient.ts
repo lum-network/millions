@@ -100,6 +100,7 @@ class LumClient {
                 depositId: withdrawal.withdrawalId,
                 depositorAddress: withdrawal.depositorAddress,
                 isWithdrawing: true,
+                createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
             });
         }

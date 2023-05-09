@@ -202,7 +202,7 @@ export default {
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
-        totalBalance: 'Total balance',
+        totalBalance: 'Total deposits',
         claim: 'Claim',
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',
@@ -281,6 +281,10 @@ export default {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
         },
+        newPrize: {
+            title: 'Congrats! 🎉',
+            description: "Cosmonaut, you've won a prize! Claim it before time runs out!",
+        },
         leavePoolModal: {
             title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',
             steps: [
@@ -327,7 +331,7 @@ export default {
                 hint: 'Average prize hint',
             },
         },
-        feesWarning: 'You will need LUM to pay transaction fees',
+        feesWarning: 'You need LUM for transaction fees',
         depositWarning:
             'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',

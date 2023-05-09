@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap, Power1 } from 'gsap';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
@@ -15,14 +16,14 @@ import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
 import { LandingConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import numeral from 'numeral';
+import { RootState } from 'redux/store';
+import { I18n } from 'utils';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
 import TestimonialCard from './components/TestimonialCard';
 
 import './Landing.scss';
-import { RootState } from 'redux/store';
-import PoolCardPlaceholder from '../Pools/components/PoolCardPlaceholder';
 
 const placeholderNames = ['Mad Scientist ?', 'Lucky Star ?'];
 
@@ -38,11 +39,24 @@ const Landing = () => {
     const timeline = useRef<gsap.core.Timeline>();
     const { width } = useWindowSize();
 
+    const location = useLocation();
+
     const poolsPlaceholders = [];
 
     if (pools.length < 3) {
         poolsPlaceholders.push(...new Array(3 - pools.length).fill({}));
     }
+
+    useEffect(() => {
+        if (location.hash) {
+            const element = document.getElementById(location.hash.replace('#', ''));
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                });
+            }
+        }
+    }, []);
 
     useEffect(() => {
         // GSAP Section Scroll Animations
@@ -445,7 +459,7 @@ const Landing = () => {
                         </Card>
                     </div>
                 </div>
-                <div className='faq col-12 order-2'>
+                <div id='faq' className='faq col-12 order-2'>
                     <div className='d-flex justify-content-between align-items-center'>
                         <h1 className='mb-4'>{I18n.t('landing.faqSection.title')}</h1>
                     </div>

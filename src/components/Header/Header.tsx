@@ -121,7 +121,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='nav-item' {...dismissMenuProps}>
-                        <a href={NavigationConstants.FAQ} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a href={NavigationConstants.FAQ} className='navlink opacity-100'>
                             {I18n.t('landing.faq')}
                         </a>
                     </li>
