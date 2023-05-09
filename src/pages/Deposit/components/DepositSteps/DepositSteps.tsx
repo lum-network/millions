@@ -340,7 +340,7 @@ const DepositStep3 = ({ txInfos, price, onTwitterShare }: { txInfos: TxInfos; pr
                             {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
                         </div>
                         <small className='deposit-infos text-start'>
-                            {numeral(Number(txInfos.amount) * price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
+                            {numeral(txInfos.amount).multiply(price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
                         </small>
                     </div>
                 </div>
