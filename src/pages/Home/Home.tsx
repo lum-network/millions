@@ -38,7 +38,7 @@ const Home = () => {
                             </Card>
                         </div>
                         <div className='col-12 col-lg-6 col-xxl-12'>
-                            {biggestPrizes.length && (
+                            {!!biggestPrizes.length && (
                                 <Card>
                                     <Lottie
                                         className='cosmonaut-with-balloons'

@@ -211,27 +211,29 @@ const PoolDetails = () => {
                         </Card>
                     </div>
                     <div className='col-12 col-xl-7'>
-                        <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>
-                            <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                            {I18n.t('poolDetails.winners.title')}
-                        </h2>
                         {!!prizesStats && (
-                            <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
-                                <div className='w-100'>
-                                    <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                    <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
-                                </div>
-                                <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
-                                    <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
-                                    <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
-                                </div>
-                                <div className='w-100'>
-                                    <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
-                                    <div className='stat-bg-white h4 mb-0 mt-2'>
-                                        {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount)).format('0,0').toUpperCase()} {denom.toUpperCase()}
+                            <>
+                                <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    {I18n.t('poolDetails.winners.title')}
+                                </h2>
+                                <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
+                                    <div className='w-100'>
+                                        <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
+                                        <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
                                     </div>
-                                </div>
-                            </Card>
+                                    <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
+                                        <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
+                                        <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
+                                    </div>
+                                    <div className='w-100'>
+                                        <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
+                                        <div className='stat-bg-white h4 mb-0 mt-2'>
+                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount)).format('0,0').toUpperCase()} {denom.toUpperCase()}
+                                        </div>
+                                    </div>
+                                </Card>
+                            </>
                         )}
                     </div>
                     <Lottie className='cosmonaut-with-balloons' animationData={cosmonautWithBalloons} />

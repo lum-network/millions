@@ -17,23 +17,35 @@ import { LandingConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import numeral from 'numeral';
 import { RootState } from 'redux/store';
-import { I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
 import TestimonialCard from './components/TestimonialCard';
 
 import './Landing.scss';
 
+const placeholderNames = ['Mad Scientist ?', 'Lucky Star ?'];
+
 const Landing = () => {
     const onClickNewPool = () => {
         window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
     };
-    const bestPoolPrize = useSelector((state: RootState) => state.pools?.bestPoolPrize);
+    const bestPoolPrize = useSelector((state: RootState) => state.pools.bestPoolPrize);
+    const pools = useSelector((state: RootState) => state.pools.pools);
+    const prices = useSelector((state: RootState) => state.stats.prices);
+    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
     const timeline = useRef<gsap.core.Timeline>();
     const { width } = useWindowSize();
 
     const location = useLocation();
+
+    const poolsPlaceholders = [];
+
+    if (pools.length < 3) {
+        poolsPlaceholders.push(...new Array(3 - pools.length).fill({}));
+    }
+
     useEffect(() => {
         if (location.hash) {
             const element = document.getElementById(location.hash.replace('#', ''));
@@ -342,10 +354,7 @@ const Landing = () => {
                                 <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
-                                    {/*<span className='tvl-value'>*/}
-                                    {/*    <AnimatedNumber prefix='$' number={300004567} />*/}
-                                    {/*</span>*/}
-                                    <span className='tvl-value'>{numeral(300004567).format('$0,0').replaceAll(',', '\u00a0')}</span>
+                                    <span className='tvl-value'>{numeral(tvl).format('$0,0').replaceAll(',', '\u00a0')}</span>
                                 </div>
                             </div>
                         </div>
@@ -356,9 +365,12 @@ const Landing = () => {
                         </div>
                     </div>
                     <div className='pools-cards-container cards-list'>
-                        <PoolCard denom={'atom'} tvl={30000} prize={58} />
-                        <PoolCard denom={'osmo'} tvl={30000} prize={58} />
-                        <PoolCard denom={'lum'} tvl={56898865} prize={5000000} />
+                        {pools.slice(0, 3).map((pool, index) => (
+                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.prizeToWin?.amount || 0} />
+                        ))}
+                        {/*{poolsPlaceholders.map((_, index) => (*/}
+                        {/*    <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />*/}
+                        {/*))}*/}
                     </div>
                     <div className='d-flex flex-column align-items-center mt-5'>
                         <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
