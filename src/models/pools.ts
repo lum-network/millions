@@ -18,4 +18,5 @@ export interface PoolModel extends Pool {
     draws?: Draw[];
     nextDrawAt?: Date;
     prizeToWin: BalanceModel | null;
+    apy: number;
 }

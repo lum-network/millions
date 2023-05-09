@@ -1,12 +1,11 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
-import { PoolsConstants, ApiConstants } from 'constant';
+import { ApiConstants, PoolsConstants } from 'constant';
 import { PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
-import { Pool } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -46,8 +45,6 @@ export const pools = createModel<RootModel>()({
                         // const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
                         const draws = await dispatch.pools.getPoolDraws(pool.poolId);
 
-                        const apy = await dispatch.pools.getPoolApy(pool);
-
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
                             .toDate();
@@ -56,6 +53,7 @@ export const pools = createModel<RootModel>()({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
                             // prizes,
+                            apy: 0,
                             draws,
                             nextDrawAt,
                             prizeToWin: null,
@@ -77,11 +75,12 @@ export const pools = createModel<RootModel>()({
                 }
             } catch {}
         },
-        async getPoolsPrizePool(_, state) {
+        async getPoolsAdditionalInfo(_, state) {
             try {
                 const pools = [...state.pools.pools];
 
                 for (const pool of pools) {
+                    // Calculate Prize to win
                     const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
 
                     if (pool.nativeDenom === LumConstants.MicroLumDenom) {
@@ -113,6 +112,26 @@ export const pools = createModel<RootModel>()({
 
                     pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
+                    // Calculate APY
+                    const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
+                        WalletClient.getBonding(),
+                        WalletClient.getSupply(pool.nativeDenom),
+                        WalletClient.getCommunityTaxRate(),
+                        WalletClient.getInflation(),
+                        LumClient.getFeesStakers(),
+                    ]);
+
+                    console.log(feesStakers);
+
+                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '0');
+                    const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
+                    const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
+
+                    const NativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
+                    // console.log('denom: ', pool.nativeDenom, 'stakingRatio', stakingRatio, 'bonding', bonding, 'supply', supply);
+
+                    //TODO: Calculate Variable APY
+
                     WalletClient.disconnect();
                 }
 
@@ -121,9 +140,6 @@ export const pools = createModel<RootModel>()({
             } catch (e) {
                 console.error((e as Error).message);
             }
-        },
-        async getPoolApy(pool: Pool) {
-            //TODO: Implement this
         },
         async getPoolDraws(poolId: Long) {
             try {

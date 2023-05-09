@@ -200,6 +200,14 @@ class LumClient {
         return this.client.queryClient.ibc.transfer.denomTrace(ibcDenom);
     };
 
+    getFeesStakers = async () => {
+        if (this.client === null) {
+            return null;
+        }
+
+        return Number((await this.client.queryClient.millions.params()).feesStakers);
+    };
+
     depositToPool = async (wallet: LumWallet, pool: PoolModel, amount: string) => {
         if (this.client === null) {
             return null;

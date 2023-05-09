@@ -15,9 +15,10 @@ interface IProps {
     poolId: string;
     prize?: number;
     drawEndAt: Date;
+    apy: number;
 }
 
-const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
     const navigate = useNavigate();
 
@@ -40,9 +41,10 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt }: IProps) => {
             <div className='information-container'>
                 <div className='apy-container pb-2'>
                     <div className='apy-label'>
-                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} /> {I18n.t('pools.apy')}
+                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} />
+                        {I18n.t('pools.apy')}
                     </div>
-                    <div className='apy'>20%</div>
+                    <div className='apy'>{numeral(apy).format('0.00')}%</div>
                 </div>
                 <div className='separator' />
                 <div className='tvl-container py-2'>

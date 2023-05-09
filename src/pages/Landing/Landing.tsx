@@ -17,7 +17,6 @@ import { LandingConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import numeral from 'numeral';
 import { RootState } from 'redux/store';
-import { I18n } from 'utils';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
@@ -369,9 +368,9 @@ const Landing = () => {
                         {pools.slice(0, 3).map((pool, index) => (
                             <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.prizeToWin?.amount || 0} />
                         ))}
-                        {poolsPlaceholders.map((_, index) => (
-                            <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />
-                        ))}
+                        {/*{poolsPlaceholders.map((_, index) => (*/}
+                        {/*    <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />*/}
+                        {/*))}*/}
                     </div>
                     <div className='d-flex flex-column align-items-center mt-5'>
                         <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>

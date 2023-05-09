@@ -31,6 +31,7 @@ const Pools = () => {
                             poolId={pool.poolId.toString()}
                             tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}
                             prize={pool.prizeToWin?.amount}
+                            apy={pool.apy}
                         />
                     </div>
                 ))}
