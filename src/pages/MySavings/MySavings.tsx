@@ -53,7 +53,7 @@ const MySavings = () => {
     useEffect(() => {
         const page = activities?.currentPage;
 
-        if (lumWallet && page && page > 1) {
+        if (lumWallet && page && page > 1 && !activities.fullyLoaded) {
             dispatch.wallet.getActivities({ address: lumWallet.address, page });
         }
     }, [activities?.currentPage]);
@@ -183,7 +183,7 @@ const MySavings = () => {
                         <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
                     </div>
                     <Button className='claim-btn ms-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
-                        Claim
+                        {I18n.t('mySavings.claim')}
                     </Button>
                 </Card>
             ) : null}
@@ -273,10 +273,6 @@ const MySavings = () => {
                                                 : undefined
                                         }
                                         onPageChange={(page) => {
-                                            if (activities?.fullyLoaded) {
-                                                return;
-                                            }
-
                                             dispatch.wallet.setActivitiesPage(page);
                                         }}
                                     />

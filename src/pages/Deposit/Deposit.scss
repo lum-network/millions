@@ -40,4 +40,36 @@
         font-size: 16px;
         line-height: 19px;
     }
+
+    .amount-label {
+        font-weight: 300;
+        font-size: 12px;
+        line-height: 16px;
+        margin-bottom: 0.5rem;
+    }
+
+    .amount-container {
+        border: 2px solid #5634de4d;
+        border-radius: 15px;
+    }
+
+    .arrow-container {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background-color: $color-primary;
+        img {
+            filter: brightness(0) invert(1);
+        }
+    }
+
+    .crypto-price {
+        color: $color-primary;
+    }
+
+    .fiat-price {
+        font-size: 14px;
+        font-weight: 300;
+        color: $color-dark-grey;
+    }
 }

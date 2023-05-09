@@ -323,12 +323,12 @@ export default {
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
             winning: {
-                title: 'Winning chances',
-                hint: '',
+                title: 'Winning chance',
+                hint: 'This is an estimation of your chance of winning at least one prize per draw in this pool.',
             },
             averagePrize: {
                 title: 'Average prize',
-                hint: 'Average prize hint',
+                hint: 'This is an estimation of the return from prizes.\nIt is based on a number of elements such as the TVL and the prize distribution',
             },
         },
         feesWarning: 'You need LUM for transaction fees',
@@ -364,7 +364,11 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'If you want to deposit more, you need to transfer more tokens to Lum Network first to complete your deposit.',
+            subtitle: 'You already transfered <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            prevAmountLabel: 'Current amount of {{ denom }} deposited',
+            nextAmountLabel: 'Amount of {{ denom }} to deposit',
+            cta: 'Add {{ nextAmount }} {{ denom }}',
+            cancel: 'No thanks',
         },
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',

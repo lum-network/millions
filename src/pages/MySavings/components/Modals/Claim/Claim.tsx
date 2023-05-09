@@ -26,7 +26,7 @@ interface Props {
 
 type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
 
-const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
+const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareInfos; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
@@ -44,7 +44,10 @@ const ShareClaim = ({ infos, modalRef, onTwitterShare }: { infos: ShareInfos; mo
                                     {am.amount} {DenomsUtils.getNormalDenom(am.denom).toUpperCase()}
                                 </div>
                                 <small className='deposit-infos text-start'>
-                                    {I18n.t('pools.poolId', { poolId: infos.poolId })} {/* - {I18n.t('deposit.depositId', { depositId: 1 })} */}
+                                    {numeral(am.amount)
+                                        .multiply(prices[DenomsUtils.getNormalDenom(am.denom)] || 0)
+                                        .format('$0,0[.]00')}{' '}
+                                    - {I18n.t('pools.poolId', { poolId: infos.poolId })}
                                 </small>
                             </div>
                         </div>
@@ -129,7 +132,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     const dispatch = useDispatch<Dispatch>();
 
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.claimAndCompoundPrizes);
+    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.claimAndCompoundPrizes || state.loading.effects.wallet.claimPrizes);
     const steps = I18n.t('mySavings.claimModal.steps', {
         returnObjects: true,
     });
@@ -205,7 +208,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     return (
         <Modal id='claimModal' contentClassName={currentStep === 2 ? 'last-step' : ''} ref={modalRef} modalWidth={1080}>
             {currentStep === 2 && shareInfos ? (
-                <ShareClaim infos={shareInfos} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
+                <ShareClaim infos={shareInfos} prices={prices} modalRef={modalRef} onTwitterShare={() => setShareState('sharing')} />
             ) : (
                 <div className='row row-cols-1 row-cols-lg-2'>
                     <div className='col text-start'>
@@ -225,10 +228,10 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                             {I18n.t('mySavings.claimOnlyModal.info')}
                                         </Card>
                                         <div className='d-flex flex-column align-items-stretch'>
-                                            <Button type='button' outline onClick={() => onClaim(false)} className='w-100 me-3'>
+                                            <Button type='button' outline onClick={() => onClaim(false)} loading={isLoading} disabled={isLoading} className='w-100 me-3'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimBtn')}
                                             </Button>
-                                            <Button type='button' onClick={() => onClaim(true)} className='w-100 mt-4'>
+                                            <Button type='button' onClick={() => onClaim(true)} loading={isLoading} disabled={isLoading} className='w-100 mt-4'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimAndCompoundBtn')}
                                             </Button>
                                         </div>
@@ -304,7 +307,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
                                                 </Button>
                                                 <hr />
-                                                <Button type='button' onClick={() => setClaimOnly(true)} outline className='w-100'>
+                                                <Button type='button' onClick={() => setClaimOnly(true)} outline loading={isLoading} disabled={isLoading} className='w-100'>
                                                     {I18n.t('mySavings.claimModal.claimMyPrizes')}
                                                 </Button>
                                             </div>
