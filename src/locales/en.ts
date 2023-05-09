@@ -323,12 +323,12 @@ export default {
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
             winning: {
-                title: 'Winning chances',
-                hint: '',
+                title: 'Winning chance',
+                hint: 'This is an estimation of your chance of winning at least one prize per draw in this pool.',
             },
             averagePrize: {
                 title: 'Average prize',
-                hint: 'Average prize hint',
+                hint: 'This is an estimation of the return from prizes.\nIt is based on a number of elements such as the TVL and the prize distribution',
             },
         },
         feesWarning: 'You need LUM for transaction fees',

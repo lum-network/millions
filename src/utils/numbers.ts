@@ -59,5 +59,6 @@ export const float2ratio = (x: number) => {
         return '1 in 1';
     }
 
-    return '1 in ' + numeral(100 / (x * 100)).format('0[.]00');
+    const ratio = 100 / (x * 100);
+    return '1 in ' + numeral(ratio).format(ratio > 10 ? '0,0' : '0[.]00');
 };

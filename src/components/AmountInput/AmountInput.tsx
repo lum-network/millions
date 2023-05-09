@@ -28,7 +28,7 @@ const AmountInput = (props: Props) => {
         if (price && inputProps?.value && !Number.isNaN(valueToNumber)) {
             setUsdValue(valueToNumber * price);
         } else {
-            setUsdValue(null);
+            setUsdValue(100);
         }
     }, [inputProps?.value, price]);
 

@@ -86,6 +86,7 @@ const DepositStep1 = (
                         max: balances.length > 0 ? balances[0].amount : '0',
                         step: 'any',
                         lang: 'en',
+                        placeholder: (100 / price).toFixed(6),
                         ...form.getFieldProps('amount'),
                         onChange: (e) => {
                             const inputAmount = Number(e.target.value);
@@ -136,7 +137,7 @@ const DepositStep1 = (
                                 <Tooltip id='winning-chance-tooltip' />
                             </span>
                         </div>
-                        <div>{numeral(PoolsUtils.getWinningChances(Number(form.values.amount), currentPool, price || 1) * 100).format('0[.]00')}%</div>
+                        <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool, price || 0) * 100)}</div>
                     </div>
                     <div className='average-prize d-flex flex-row justify-content-between mt-4'>
                         <div>
