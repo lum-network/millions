@@ -24,11 +24,18 @@ const AmountInput = (props: Props) => {
     const [usdValue, setUsdValue] = useState<number | null>(null);
 
     useEffect(() => {
-        const valueToNumber = Number(inputProps?.value);
-        if (price && inputProps?.value && !Number.isNaN(valueToNumber)) {
-            setUsdValue(valueToNumber * price);
+        if (inputProps?.value === '') {
+            if (inputProps?.placeholder) {
+                setUsdValue(100);
+            } else {
+                setUsdValue(0);
+            }
         } else {
-            setUsdValue(100);
+            const valueToNumber = Number(inputProps?.value);
+
+            if (price && !Number.isNaN(valueToNumber)) {
+                setUsdValue(valueToNumber * price);
+            }
         }
     }, [inputProps?.value, price]);
 
