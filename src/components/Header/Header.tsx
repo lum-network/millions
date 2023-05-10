@@ -7,7 +7,6 @@ import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { I18n } from 'utils';
 import { NavigationConstants } from 'constant';
-import { Tooltip } from 'react-tooltip';
 
 import Assets from 'assets';
 
@@ -74,12 +73,9 @@ const Header = ({}: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: R
                     </a>
                 </li>
                 <li className='mx-3 mx-lg-4 d-none d-md-block'>
-                    <span data-tooltip-id='average-prize-tooltip' data-tooltip-html='Coming soon' className='ms-2'>
-                        <a className='navlink' style={{ cursor: 'pointer', opacity: 0.5 }}>
-                            {I18n.t('landing.documentation')}
-                        </a>
-                        <Tooltip id='average-prize-tooltip' className='tooltip-light width-400' variant='light' />
-                    </span>
+                    <a className='navlink opacity-100' href={NavigationConstants.DOCUMENTATION} target={'_blank'} rel={'noreferrer'}>
+                        {I18n.t('landing.documentation')}
+                    </a>
                 </li>
                 <li className='d-none d-md-block'>
                     <a href='#faq' className='navlink opacity-100'>

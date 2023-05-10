@@ -4,7 +4,7 @@ export const POOLS = '/pools';
 export const MY_SAVINGS = '/my-savings';
 
 export const LUM_EXPLORER = 'https://explorer.lum.network';
-export const DOCUMENTATION = 'https://docs.lum.network';
+export const DOCUMENTATION = 'https://docs.cosmosmillions.com';
 export const FAQ = '';
 export const DISCORD = 'https://discord.gg/KwyVvnBcXF';
 export const TWITTER = 'https://twitter.com/CosmosMillions';
