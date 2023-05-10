@@ -95,7 +95,7 @@ const DepositStep1 = (
                             if (Number.isNaN(inputAmount) || inputAmount < 0) {
                                 e.target.value = '0';
                             } else if (inputAmount > maxAmount) {
-                                e.target.value = maxAmount.toString();
+                                e.target.value = maxAmount > 0 ? maxAmount.toString() : '0';
                             }
 
                             form.handleChange(e);

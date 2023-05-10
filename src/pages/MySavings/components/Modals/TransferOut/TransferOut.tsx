@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import Skeleton from 'react-loading-skeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -161,17 +160,13 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                                 value: balance.denom,
                                             }))}
                                     />
-                                    {isLoading ? (
-                                        <Skeleton height={42} className='mt-4' />
-                                    ) : (
-                                        <Card flat withoutPadding className='fees-warning mt-4'>
-                                            <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
-                                                <img src={Assets.images.info} alt='info' />
-                                                <Tooltip id='fees-tooltip' delay={2000} />
-                                            </span>
-                                            {I18n.t('deposit.feesWarning')}
-                                        </Card>
-                                    )}
+                                    <Card flat withoutPadding className='fees-warning mt-4'>
+                                        <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
+                                            <img src={Assets.images.info} alt='info' />
+                                            <Tooltip id='fees-tooltip' delay={2000} />
+                                        </span>
+                                        {I18n.t('deposit.feesWarning')}
+                                    </Card>
                                     <Button type='submit' className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
                                         {I18n.t('mySavings.transferOutModal.cta')}
                                     </Button>
