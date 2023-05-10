@@ -218,7 +218,7 @@ const MySavings = () => {
                                 ]}
                             />
                         </Card>
-                        {prizesToClaim && prizesToClaim.length > 0 && winSizes.width <= 992 ? (
+                        {winSizes.width <= 992 ? (
                             <div className='mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
@@ -226,10 +226,30 @@ const MySavings = () => {
                                 </h2>
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
-                                        {prizesToClaim.map(renderPrizeToClaim)}
-                                        <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
-                                            {I18n.t('mySavings.claim')}
-                                        </Button>
+                                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                                            <>
+                                                {prizesToClaim.map(renderPrizeToClaim)}
+                                                <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                                    {I18n.t('mySavings.claim')}
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
+                                                <Lottie
+                                                    className='cosmonaut-with-balloons'
+                                                    animationData={cosmonautWithBalloons}
+                                                    segments={[
+                                                        [0, 30],
+                                                        [30, 128],
+                                                    ]}
+                                                />
+                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
+                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
+                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
+                                                    {I18n.t('mySavings.deposit')}
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </Card>
                             </div>
@@ -283,7 +303,7 @@ const MySavings = () => {
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
                     <div className='row'>
-                        {!prizesToClaim || (prizesToClaim && prizesToClaim.length === 0) || winSizes.width > 992 ? (
+                        {winSizes.width > 992 ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />

@@ -36,14 +36,14 @@ const Table = ({ children, customPagination, className, pagination, onPageChange
                             {'<'}
                         </a>
                     </li>
-                    {/*{hasPreviousPage && page > 1 && (*/}
-                    {/*    <li className='page-item'>*/}
-                    {/*        <a onClick={() => onPageChange(0)} className='page-link pointer'>*/}
-                    {/*            0 ...*/}
-                    {/*        </a>*/}
-                    {/*    </li>*/}
-                    {/*)}*/}
-                    {hasPreviousPage && (
+                    {hasPreviousPage && page > 1 && (
+                        <li className='page-item'>
+                            <a onClick={() => onPageChange(1)} className='page-link pointer'>
+                                1 ...
+                            </a>
+                        </li>
+                    )}
+                    {hasPreviousPage && page > 2 && (
                         <li className='page-item'>
                             <a onClick={() => onPageChange(page - 1)} className='page-link pointer'>
                                 {page - 1}
@@ -60,10 +60,10 @@ const Table = ({ children, customPagination, className, pagination, onPageChange
                             </a>
                         </li>
                     )}
-                    {hasNextPage && page < pagesTotal - 2 && (
+                    {hasNextPage && page < pagesTotal - 1 && (
                         <li className='page-item'>
-                            <a onClick={() => onPageChange(pagesTotal - 1)} className='page-link pointer'>
-                                ... {pagesTotal - 1}
+                            <a onClick={() => onPageChange(pagesTotal)} className='page-link pointer'>
+                                ... {pagesTotal}
                             </a>
                         </li>
                     )}
@@ -87,7 +87,7 @@ const Table = ({ children, customPagination, className, pagination, onPageChange
                         <thead>
                             <tr>
                                 {headers.map((value, index) => (
-                                    <th className={limitLeft <= index ? 'p-0 text-end' : 'p-0'} key={index}>
+                                    <th className={limitLeft <= index ? 'p-0 text-nowrap text-end' : 'p-0 text-nowrap'} key={index}>
                                         {value}
                                     </th>
                                 ))}

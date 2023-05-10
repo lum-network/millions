@@ -72,25 +72,34 @@ const PoolDetails = () => {
                 >
                     <div className='btn-close' />
                 </button>
-                <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center'>
-                    <div className='d-flex flex-row align-items-center'>
+                <div className='d-flex flex-column flex-xl-row justify-content-between align-items-xl-center'>
+                    <div className='d-flex flex-row align-items-center me-0 me-xxl-5'>
                         <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='pool-icon' />
-                        <h1 className='mb-0 ms-4'>
+                        <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
                             {denom.toUpperCase()} Pool {pools.filter((pool) => pool.nativeDenom === 'u' + denom).length > 1 ? `#${pool.poolId.toString()}` : ''}
                         </h1>
                     </div>
-                    <div className='d-flex flex-row my-4 my-lg-0'>
-                        <img alt='coin staked' src={Assets.images.coinsStaked2} />
-                        <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
-                            <h4 className='mb-0 text-nowrap'>{I18n.t('home.totalValueLocked')}</h4>
-                            <div className='total-value-locked text-nowrap'>
-                                {numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount)).format('0,0[.]00')} {denom.toUpperCase()}
+                    <div className='d-flex flex-column flex-lg-row justify-content-between flex-grow-1 ms-0 ms-xl-5 mt-4 mt-xl-0'>
+                        <div className='d-flex flex-row'>
+                            <img alt='coin staked' src={Assets.images.coinsStaked2} />
+                            <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
+                                <h4 className='mb-0 text-nowrap'>{I18n.t('poolDetails.variableAPY')}</h4>
+                                <div className='total-value-locked text-nowrap'>{numeral(pool.apy).format('0,0[.]00')}%</div>
                             </div>
                         </div>
+                        <div className='d-flex flex-row my-4 my-lg-0'>
+                            <img alt='coin staked' src={Assets.images.coinsStaked2} />
+                            <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
+                                <h4 className='mb-0 text-nowrap'>{I18n.t('home.totalValueLocked')}</h4>
+                                <div className='total-value-locked text-nowrap'>
+                                    {numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount)).format('0,0[.]00')} {denom.toUpperCase()}
+                                </div>
+                            </div>
+                        </div>
+                        <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`} className='deposit-btn'>
+                            {I18n.t('mySavings.deposit')}
+                        </Button>
                     </div>
-                    <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`} className='deposit-btn'>
-                        {I18n.t('mySavings.deposit')}
-                    </Button>
                 </div>
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
@@ -115,7 +124,7 @@ const PoolDetails = () => {
                 </Card>
                 {userDeposits && (
                     <>
-                        <h2 className='mb-2 mb-lg-4 mt-5'>{I18n.t('poolDetails.myDeposits', { denom: denom.toUpperCase() })}</h2>
+                        <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.myDeposits', { denom: denom.toUpperCase() })}</h2>
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center justify-content-between my-deposits-card'>
                             <div className='d-flex flex-row align-items-center mb-4 mb-lg-0'>
                                 <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} width='50' height='50' className='d-none d-sm-block me-4' />
@@ -131,10 +140,10 @@ const PoolDetails = () => {
                         </Card>
                     </>
                 )}
-                <div className='row row-cols-2'>
+                <div className='row row-cols-1 row-cols-xl-2'>
                     {prizes && (
                         <div className='col position-relative'>
-                            <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
+                            <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
                             <Card flat withoutPadding className='prize-distribution-card'>
                                 <Table headers={I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true })} className='prize-distribution-table'>
                                     {prizes.map((prize, index) => (
@@ -163,26 +172,28 @@ const PoolDetails = () => {
                     )}
                     <div className='col'>
                         <div className='h-100'>
-                            <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>{I18n.t('poolDetails.winningChances.title')}</h2>
+                            <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.winningChances.title')}</h2>
                             <Card flat withoutPadding className='winning-chances-card d-flex flex-column justify-content-between h-auto'>
                                 <div>
                                     <small>{I18n.t('poolDetails.winningChances.estimatedSavings')}</small>
                                     <div className='d-flex flex-column mt-2'>
-                                        <div className='estimation-input-container d-flex flex-row justify-content-between align-items-center py-2 px-4'>
-                                            $<input type='number' className='w-100 me-3' min='0' value={estimationAmount} onChange={(e) => setEstimationAmount(e.target.value)} />
+                                        <div className='estimation-input-container d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center py-2 px-4'>
+                                            <div className='d-flex flex-row align-items-center me-0 me-sm-3'>
+                                                $<input type='number' className='w-100' min='0' value={estimationAmount} onChange={(e) => setEstimationAmount(e.target.value)} />
+                                            </div>
                                             {estimationAmount && (
                                                 <div className='crypto-amount text-nowrap'>
                                                     {numeral(Number(estimationAmount) / (prices[denom] || 1)).format('0,0[.]00')} {denom.toUpperCase()}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center mt-3'>
-                                            {[10, 100, 1000, 10000].map((amount) => {
+                                        <div className='d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3'>
+                                            {[10, 100, 1000, 10000].map((amount, index) => {
                                                 return (
                                                     <button
                                                         type='button'
                                                         key={`estimation-for-${amount}`}
-                                                        className={`d-flex align-items-center justify-content-center py-1 w-100 estimation-amount-btn ${
+                                                        className={`d-flex align-items-center justify-content-center py-1 w-100 estimation-amount-btn ${index > 0 ? 'ms-0 ms-sm-3 mt-3 mt-sm-0' : ''} ${
                                                             estimationAmount === amount.toFixed() ? 'active' : ''
                                                         }`}
                                                         onClick={() => setEstimationAmount(amount.toFixed())}
@@ -194,7 +205,7 @@ const PoolDetails = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='mt-5'>
+                                <div className='mt-3 mt-xl-5'>
                                     <small>{I18n.t('poolDetails.winningChances.chanceToWin')}</small>
                                     <div className='chance-to-win mt-2 stat-bg-white'>{NumbersUtils.float2ratio(estimatedChances)}</div>
                                 </div>
@@ -204,7 +215,7 @@ const PoolDetails = () => {
                 </div>
                 <div className='row position-relative'>
                     <div className='col-12 col-xl-4'>
-                        <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>{I18n.t('poolDetails.users.title')}</h2>
+                        <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.users.title')}</h2>
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center p-4'>
                             <div className='w-100 me-3'>
                                 <small>{I18n.t('poolDetails.users.deposit')}</small>
@@ -221,7 +232,7 @@ const PoolDetails = () => {
                     <div className='col-12 col-xl-7'>
                         {!!prizesStats && (
                             <>
-                                <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>
+                                <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
                                     {I18n.t('poolDetails.winners.title')}
                                 </h2>
@@ -255,7 +266,7 @@ const PoolDetails = () => {
                 </div>
                 {!!biggestPrizes.length && (
                     <>
-                        <h2 className='mb-0 mt-5'>{I18n.t('luckiestWinners.title')}</h2>
+                        <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('luckiestWinners.title')}</h2>
                         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3'>
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard key={index} denom={prize.amount.denom} address={prize.winnerAddress} prize={prize.amount.amount} />
@@ -266,7 +277,7 @@ const PoolDetails = () => {
                 {pool.draws && pool.draws.length > 0 && (
                     <div className='row'>
                         <div className='col-12'>
-                            <h2 className='mb-0 mt-5 mb-2 mb-lg-4'>{I18n.t('poolDetails.drawsHistory.title')}</h2>
+                            <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.drawsHistory.title')}</h2>
                             <Card flat withoutPadding className='draws-history-card'>
                                 <Table
                                     className='draws-history-table w-100'

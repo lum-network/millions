@@ -171,6 +171,7 @@ export default {
         biggestPrize: 'Prize Pool',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
+        variableAPY: 'Variable APY',
         winners: {
             title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
