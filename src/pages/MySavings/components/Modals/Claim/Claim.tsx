@@ -15,6 +15,7 @@ import { useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { confettis } from 'utils/confetti';
 
 import './Claim.scss';
 
@@ -181,6 +182,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                 compounded: compound,
                 poolId: pool?.poolId.toString() || '',
             });
+            confettis(10000);
         }
     };
 

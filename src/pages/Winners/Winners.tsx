@@ -58,7 +58,14 @@ const Winners = () => {
                     </h1>
                     <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-2 mt-lg-4 glow-bg'>
                         <LatestWinnersTable prizes={latestPrizes} metadata={metadataPrizes} onPageChange={setPage} />
-                        <Lottie className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle' animationData={cosmonautWithRocket} />
+                        <Lottie
+                            className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
+                            animationData={cosmonautWithRocket}
+                            segments={[
+                                [0, 30],
+                                [30, 128],
+                            ]}
+                        />
                     </Card>
                 </>
             )}

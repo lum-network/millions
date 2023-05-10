@@ -17,6 +17,7 @@ import DepositSteps from './components/DepositSteps/DepositSteps';
 import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
 import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
+import { confettis } from 'utils/confetti';
 
 import './Deposit.scss';
 
@@ -129,6 +130,10 @@ const Deposit = () => {
 
     const isLastStep = currentStep === steps.length - 1;
 
+    if (isLastStep) {
+        confettis(10000);
+    }
+
     return (
         <>
             <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center`}>
@@ -160,7 +165,16 @@ const Deposit = () => {
                             lumWallet={lumWallet}
                             otherWallets={otherWallets}
                         />
-                        {isLastStep && <Lottie className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle' animationData={cosmonautWithRocket} />}
+                        {isLastStep && (
+                            <Lottie
+                                className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
+                                animationData={cosmonautWithRocket}
+                                segments={[
+                                    [0, 30],
+                                    [30, 128],
+                                ]}
+                            />
+                        )}
                     </Card>
                 </div>
             </div>

@@ -16,6 +16,7 @@ import { useWindowSize } from 'hooks';
 import { DepositModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
+import { confettis } from 'utils/confetti';
 
 import DepositTable from './components/DepositTable/DepositTable';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';
@@ -63,6 +64,12 @@ const MySavings = () => {
             dispatch.wallet.setActivitiesPage(1);
         }
     }, [isReloadingInfos]);
+
+    useEffect(() => {
+        if (prizesToClaim && prizesToClaim.length) {
+            confettis(5000);
+        }
+    }, [prizesToClaim]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);

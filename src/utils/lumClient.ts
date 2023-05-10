@@ -5,6 +5,7 @@ import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
+import { ApiConstants } from 'constant';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -205,7 +206,7 @@ class LumClient {
             return null;
         }
 
-        return Number((await this.client.queryClient.millions.params()).feesStakers);
+        return Number((await this.client.queryClient.millions.params()).feesStakers) / ApiConstants.CLIENT_PRECISION;
     };
 
     depositToPool = async (wallet: LumWallet, pool: PoolModel, amount: string) => {
