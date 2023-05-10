@@ -53,14 +53,13 @@ const MainLayout = () => {
 
     useEffect(() => {
         if (visibilityState === 'visible') {
-            if (wallet && location.pathname !== NavigationConstants.POOLS) {
-                // DISABLE Auto refresh for now
+            if (wallet) {
+                dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
 
-                //dispatch.wallet.reloadWalletInfos(wallet.address);
                 setBalanceFetchInterval(
                     setInterval(() => {
-                        //dispatch.wallet.reloadWalletInfos(wallet.address);
-                    }, 30000),
+                        dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
+                    }, 1000 * 60 * 3),
                 );
             }
         }
@@ -70,7 +69,7 @@ const MainLayout = () => {
                 clearInterval(balanceFetchInterval);
             }
         }
-    }, [visibilityState]);
+    }, [visibilityState, location.pathname]);
 
     useEffect(() => {
         const keplrKeystoreChangeHandler = () => {
