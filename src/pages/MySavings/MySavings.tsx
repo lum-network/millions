@@ -177,14 +177,14 @@ const MySavings = () => {
         <div className='my-savings-container mt-3 mt-lg-5'>
             {deposits && deposits.find((deposit) => deposit.errorState) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
-                    <img src={Assets.images.info} width='45' />
+                    <img alt='info' src={Assets.images.info} width='45' />
                     <h3 className='mx-3 mb-0'>{I18n.t('mySavings.depositError.title')}</h3>
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
                 </Card>
             ) : null}
             {prizesToClaim && prizesToClaim.length > 0 ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4 new-prize-card'>
-                    <img src={Assets.images.trophyGreen} width='45' />
+                    <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
                     <div className='d-flex flex-row align-items-baseline'>
                         <h3 className='ms-3 me-5 mb-0'>{I18n.t('mySavings.newPrize.title')}</h3>
                         <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
