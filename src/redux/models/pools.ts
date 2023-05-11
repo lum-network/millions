@@ -10,6 +10,7 @@ import { LumConstants } from '@lum-network/sdk-javascript';
 interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
+    mutexAdditionalInfos: boolean;
 }
 
 export const pools = createModel<RootModel>()({
@@ -17,6 +18,7 @@ export const pools = createModel<RootModel>()({
     state: {
         pools: [],
         bestPoolPrize: null,
+        mutexAdditionalInfos: false,
     } as PoolsState,
     reducers: {
         setPools: (state: PoolsState, pools: PoolModel[]): PoolsState => {
@@ -29,6 +31,12 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 bestPoolPrize,
+            };
+        },
+        setMutexAdditionalInfos: (state: PoolsState, mutexAdditionalInfos: boolean): PoolsState => {
+            return {
+                ...state,
+                mutexAdditionalInfos,
             };
         },
     },
@@ -76,6 +84,12 @@ export const pools = createModel<RootModel>()({
             } catch {}
         },
         async getPoolsAdditionalInfo(_, state) {
+            if (state.pools.mutexAdditionalInfos) {
+                return;
+            }
+
+            await dispatch.pools.setMutexAdditionalInfos(true);
+
             try {
                 const pools = [...state.pools.pools];
 
@@ -134,8 +148,12 @@ export const pools = createModel<RootModel>()({
                 dispatch.pools.setPools(pools);
                 dispatch.pools.getNextBestPrize(null);
             } catch (e) {
+                await dispatch.pools.setMutexAdditionalInfos(false);
+
                 console.error((e as Error).message);
             }
+
+            await dispatch.pools.setMutexAdditionalInfos(false);
         },
         async getPoolDraws(poolId: Long) {
             try {

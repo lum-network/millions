@@ -323,11 +323,11 @@ export const wallet = createModel<RootModel>()({
             console.log('-------------------- RELOAD --------------------');
             await dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
+            await dispatch.pools.fetchPools();
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities({ address });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
-            await dispatch.pools.fetchPools();
             await dispatch.pools.getPoolsAdditionalInfo(null);
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
