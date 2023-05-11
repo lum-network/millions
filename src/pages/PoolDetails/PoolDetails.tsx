@@ -15,6 +15,7 @@ import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
+import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
@@ -35,6 +36,8 @@ const PoolDetails = () => {
         biggestPrizes: state.prizes.prizes,
         prizesStats: state.prizes.stats,
     }));
+    const loadingFetchPools = useSelector((state: RootState) => state.loading.effects.pools.fetchPools);
+    const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
 
     const [estimationAmount, setEstimationAmount] = useState('100');
     const [estimatedChances, setEstimatedChances] = useState(0);
@@ -90,7 +93,11 @@ const PoolDetails = () => {
                             <img alt='coin staked' src={Assets.images.coinsStaked2} />
                             <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
                                 <h4 className='mb-0 text-nowrap'>{I18n.t('poolDetails.variableAPY')}</h4>
-                                <div className='total-value-locked text-nowrap'>{numeral(pool.apy).format('0,0[.]00')}%</div>
+                                {loadingFetchPools || loadingAdditionalInfo ? (
+                                    <Skeleton height={20} width={70} />
+                                ) : (
+                                    <div className='total-value-locked text-nowrap'>{pool.apy ? numeral(pool.apy).format('0,0[.]00') : '--'}%</div>
+                                )}
                             </div>
                         </div>
                         <div className='d-flex flex-row my-4 my-lg-0'>
@@ -110,8 +117,18 @@ const PoolDetails = () => {
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
                         <h2>{I18n.t('poolDetails.biggestPrize')}</h2>
-                        <div className='display-6'>{numeral((pool.prizeToWin?.amount || 1) * (prices[denom] || 1)).format('$0,0[.]00')}</div>
-                        {numeral(pool.prizeToWin?.amount || 1).format('0,0[.]000000')} {denom.toUpperCase()}
+                        {loadingFetchPools || loadingAdditionalInfo ? (
+                            <Skeleton height={45} width={180} />
+                        ) : (
+                            <div className='display-6'>{pool.prizeToWin && prices ? numeral(pool.prizeToWin.amount * (prices[denom] || 1)).format('$0,0[.]00') : '--'}</div>
+                        )}
+                        {loadingFetchPools || loadingAdditionalInfo ? (
+                            <Skeleton height={20} width={150} />
+                        ) : (
+                            <>
+                                {pool.prizeToWin ? numeral(pool.prizeToWin.amount).format('0,0[.]000000') : '--'} {denom.toUpperCase()}
+                            </>
+                        )}
                     </div>
                     <div className='next-draw-container'>
                         <h2>{I18n.t('poolDetails.nextDraw')}</h2>

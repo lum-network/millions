@@ -46,9 +46,18 @@
             height: 235px;
         }
 
-        .draw-in-progress {
-            font-size: 18px;
+        .biggest-prize-container {
+            width: 300px
         }
+
+        .next-draw-container {
+            width: 200px;
+
+            .draw-in-progress {
+                font-size: 18px;
+            }
+        }
+
 
         @include media-breakpoint-down(lg) {
             margin-top: 2rem;
