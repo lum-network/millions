@@ -7,6 +7,7 @@ import { Button, Card, CountDown } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 import { DenomsUtils, I18n } from 'utils';
+import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
 interface IProps {
@@ -20,6 +21,9 @@ interface IProps {
 
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
+    const loadingFetchPools = useSelector((state: RootState) => state.loading.effects.pools.fetchPools);
+    const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
+
     const navigate = useNavigate();
 
     const [drawInProgress, setDrawInProgress] = useState(false);
@@ -37,7 +41,11 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                 <img width={64} height={64} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
                 <div className='d-flex flex-column align-items-start ms-3'>
                     <div className='prize'>{denom.toUpperCase()} Prize Pool</div>
-                    <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>
+                    {loadingAdditionalInfo || loadingFetchPools ? (
+                        <Skeleton height={41} width={200} />
+                    ) : (
+                        <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>
+                    )}
                 </div>
             </div>
             <div className='information-container'>
@@ -46,7 +54,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                         <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} />
                         {I18n.t('pools.apy')}
                     </div>
-                    <div className='apy'>{numeral(apy).format('0.00')}%</div>
+                    {loadingAdditionalInfo || loadingFetchPools ? <Skeleton height={18} width={70} /> : <div className='apy'>{apy ? numeral(apy).format('0.00') : '--'}%</div>}
                 </div>
                 <div className='separator' />
                 <div className='tvl-container py-2'>
