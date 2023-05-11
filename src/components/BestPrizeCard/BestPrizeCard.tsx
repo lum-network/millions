@@ -71,7 +71,14 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                         </div>
                         <div className='mt-4 mt-sm-0'>
-                            <CountDown homePage to={countdownTo} onCountdownEnd={() => setDrawInProgress(true)} />
+                            {drawInProgress ? (
+                                <div className='draw-in-progress-container'>
+                                    <img src={Assets.images.deposit} alt='deposit' height={16} width={16} />
+                                    <span className='ms-2'>Draw in progress</span>
+                                </div>
+                            ) : (
+                                <CountDown homePage to={countdownTo} onCountdownEnd={() => setDrawInProgress(true)} />
+                            )}
                         </div>
                     </div>
                 )}
