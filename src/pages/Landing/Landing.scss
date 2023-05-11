@@ -467,7 +467,7 @@
         .cta {
             width: 230px;
 
-            @include media-breakpoint-down(lg) {
+            @include media-breakpoint-down(md) {
                 width: 100%;
             }
         }

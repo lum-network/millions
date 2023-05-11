@@ -218,8 +218,11 @@ const Landing = () => {
                             <Card withoutPadding flat className='p-3 mb-4'>
                                 <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p2')}</p>
                             </Card>
-                            <Card withoutPadding flat className='p-3'>
+                            <Card withoutPadding flat className='p-3 mb-4'>
                                 <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p3')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3'>
+                                <p className='text-flat-card'>{I18n.t('landing.cosmosGame.p4')}</p>
                             </Card>
                         </div>
                     </Card>
@@ -391,12 +394,23 @@ const Landing = () => {
                 </div>
                 <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
                 <div className='future-left col-12 col-xl-7 order-1 order-xl-0'>
-                    <h1 className='mb-4'>{I18n.t('landing.future.title')}</h1>
-                    <p>{I18n.t('landing.future.p1')}</p>
-                    <p>{I18n.t('landing.future.p2')}</p>
-                    <Button to={NavigationConstants.HOME} className='cta'>
-                        {I18n.t('landing.future.cta')}
-                    </Button>
+                    <Card className='d-flex align-items-center flex-column'>
+                        <h2 className='mb-4 text-center'>{I18n.t('landing.future.title')}</h2>
+                        <div className='cosmos-game-description'>
+                            <Card withoutPadding flat className='p-3 mb-4'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p1')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3 mb-4'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p2')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p3')}</p>
+                            </Card>
+                        </div>
+                        <Button to={NavigationConstants.HOME} className='cta mt-4'>
+                            {I18n.t('landing.future.cta')}
+                        </Button>
+                    </Card>
                 </div>
                 <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
                     <Lottie

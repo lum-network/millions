@@ -64,8 +64,9 @@ export default {
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
             p1: "That's one small step for Cosmonauts,\none giant leap for Cosmos.",
-            p2: 'Speed up your path to financial tranquility with our thrilling prize-linked savings accounts! Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.',
-            p3: 'With no risk and exciting rewards, bring your savings to the moon!',
+            p2: 'Discover a new thrilling utility for your assets with Cosmos Millions’ prize-linked savings accounts.',
+            p3: 'Deposit your assets into our protocol, and join in regular, randomized draws for a chance to win community-contributed prizes.',
+            p4: 'Experience a secure and innovative saving method without compromising on excitement!',
         },
         winners: {
             title: 'One Winner, No Losers!',
@@ -85,9 +86,10 @@ export default {
         },
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
-            p1: 'The utilization of Cosmos technology (Cosmos-SDK, Tendermint BFT, IBC, ICA) for Prize Linked Savings overthrows the savings methods in history. The use of sovereign and interoperable network of blockchains allows easy access with minimal fees, making it a standout in the blockchain industry and another confirmation of the limitless potential of the Interchain of Blockchains.',
-            p2: 'With an open-source and audited protocol ensuring that prizes are distributed fairly, saving money has never been so rewarding!',
-            cta: 'Want to retire in style?',
+            p1: 'Leveraging the Interchain Stack (Cosmos-SDK, Tendermint BFT, IBC, ICA, ICQ), our prize-linked savings enhance traditional savings methods.',
+            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Interchain of Blockchains.',
+            p3: 'Our open-source, audited protocol ensures fair prize distribution, making saving a more positive and rewarding experience for all users!',
+            cta: 'Start saving now!',
         },
         community: {
             title: 'Join the Cosmos\nMillions Community',
