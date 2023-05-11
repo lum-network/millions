@@ -33,8 +33,6 @@
             height: 40px;
         }
     }
-    .biggest-prize-container {
-    }
 
     .prize-draw-card {
         margin-top: 4rem;
@@ -114,19 +112,6 @@
 
     .winning-chances-card {
         padding: 40px 32px;
-        .estimation-amount-btn {
-            background-color: transparent;
-            border-radius: 12px;
-            border: 2.5px solid $color-primary;
-            color: $color-primary;
-
-            &:hover,
-            &.active {
-                background-color: $color-primary;
-                color: $color-white;
-            }
-
-        }
 
         .chance-to-win {
             font-size: 22px;
@@ -160,19 +145,23 @@
                 color: $color-primary;
             }
 
-            .table tbody tr td {
-                color: $color-primary;
-                background: $color-white;
-                padding: 1.5rem 0;
+            .table tbody tr {
+                cursor: pointer;
+                td {
+                    color: $color-primary;
+                    background: $color-white;
+                    padding: 1.5rem 0;
 
-                &.draw-date {
-                    color: $color-black;
-                    font-size: 14px;
+                    &.draw-date {
+                        color: $color-black;
+                        font-size: 14px;
+                    }
                 }
-            }
-            .table tbody tr td:first-child,
-            .table tbody tr td:last-child {
-                padding: 1.5rem 1.5rem;
+
+                td:first-child,
+                td:last-child {
+                    padding: 1.5rem 1.5rem;
+                }
             }
         }
 
@@ -188,12 +177,25 @@
             .page-item .page-link {
                 border-color: transparent !important;
                 background-color: transparent !important;
-                color: #5634DE4D !important;
+                color: #5634de4d !important;
             }
 
             .page-item.disabled .page-link {
-                color: #5634DE4D !important;
+                color: #5634de4d !important;
             }
+        }
+    }
+
+    .selectable-btn {
+        background-color: transparent;
+        border-radius: 12px;
+        border: 2.5px solid $color-primary;
+        color: $color-primary;
+
+        &:hover,
+        &.active {
+            background-color: $color-primary;
+            color: $color-white;
         }
     }
 

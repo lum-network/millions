@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
 
 import Assets from 'assets';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, SmallerDecimal, Table } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, SmallerDecimal, Table } from 'components';
 import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
+
+import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
 import './PoolDetails.scss';
 
@@ -37,6 +40,9 @@ const PoolDetails = () => {
     const [estimatedChances, setEstimatedChances] = useState(0);
     const [drawsHistoryPage, setDrawsHistoryPage] = useState(1);
     const [drawInProgress, setDrawInProgress] = useState(false);
+    const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
+
+    const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
@@ -193,7 +199,7 @@ const PoolDetails = () => {
                                                     <button
                                                         type='button'
                                                         key={`estimation-for-${amount}`}
-                                                        className={`d-flex align-items-center justify-content-center py-1 w-100 estimation-amount-btn ${index > 0 ? 'ms-0 ms-sm-3 mt-3 mt-sm-0' : ''} ${
+                                                        className={`d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ${index > 0 ? 'ms-0 ms-sm-3 mt-3 mt-sm-0' : ''} ${
                                                             estimationAmount === amount.toFixed() ? 'active' : ''
                                                         }`}
                                                         onClick={() => setEstimationAmount(amount.toFixed())}
@@ -282,6 +288,7 @@ const PoolDetails = () => {
                                 <Table
                                     className='draws-history-table w-100'
                                     headers={I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true })}
+                                    responsive={false}
                                     pagination={
                                         pool.draws.length > 5
                                             ? {
@@ -297,7 +304,14 @@ const PoolDetails = () => {
                                 >
                                     {pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {
                                         return (
-                                            <tr key={`draw-${index}`}>
+                                            <tr
+                                                key={`draw-${index}`}
+                                                onClick={() => {
+                                                    setSelectedDraw(draw);
+                                                    modalRef.current?.show();
+                                                }}
+                                                className='scale-hover'
+                                            >
                                                 <td>
                                                     <div className='d-flex align-items-center justify-content-center me-3 index-container'>#{draw.poolId.toString()}</div>
                                                 </td>
@@ -334,6 +348,7 @@ const PoolDetails = () => {
                     ]}
                 />
             </Card>
+            <DrawDetailsModal draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
         </div>
     );
 };

@@ -1,0 +1,73 @@
+@import 'src/styles/main';
+
+#drawDetailsModal {
+    h4 {
+        color: $color-black;
+    }
+
+    .date {
+        font-size: 12px;
+        font-weight: 300;
+        color: $color-muted;
+    }
+
+    .redelegated-prizes-card {
+        .prize-remaining-amount {
+            color: $color-primary;
+        }
+    }
+
+    .draw-winners-table-container {
+        .draw-winners-table {
+            .table tbody tr td {
+                padding: 25px 32px;
+
+                .tx-icon-container {
+                    width: 32px;
+                    height: 32px;
+
+                    background: #ffffff;
+                    border-radius: 7px;
+
+                    img {
+                        width: 14px;
+                        height: 14px;
+                        object-fit: contain;
+                    }
+                }
+
+                .winner-address {
+                    color: $color-black;
+                    font-size: 14px;
+                    font-weight: 400;
+                }
+
+                .tx-amount {
+                    .amount {
+                        color: $color-primary;
+                    }
+
+                    .usd-price {
+                        color: $color-black;
+                    }
+                }
+
+                .usd-price {
+                    font-size: 12px;
+                    color: $color-black;
+                    font-weight: 200;
+                }
+            }
+        }
+
+        .pagination {
+            .page-item .page-link {
+                background-color: $color-background !important;
+                border-color: $color-background !important;
+            }
+            .page-item.active:not(.without-border) .page-link {
+                border-color: $color-black !important;
+            }
+        }
+    }
+}

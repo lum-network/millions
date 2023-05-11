@@ -199,6 +199,11 @@ export default {
             noDrawsCta: 'Deposit in Pool',
             tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Winners', 'Prize Value'],
         },
+        drawDetails: {
+            winnersBtn: 'Winners',
+            redelegatedPrizeBtn: 'Redelegated Prize',
+            tryBtn: 'Try your chances',
+        },
     },
     mySavings: {
         title: 'My Savings',

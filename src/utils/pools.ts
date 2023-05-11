@@ -35,6 +35,7 @@ export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number })
 export const getWinningChances = (inputAmount: number, pool: PoolModel, prices: { [index: string]: number } | number) => {
     const amount = inputAmount / (typeof prices === 'number' ? prices : prices[getNormalDenom(pool.nativeDenom)] || 1);
     const tvl = convertUnitNumber(pool.tvlAmount);
+    const sponsorTvl = convertUnitNumber(pool.sponsorshipAmount);
     const prizeStrat = pool.prizeStrategy;
     let avgPrizesDrawn = 0;
     let estimated = 0;
@@ -44,7 +45,7 @@ export const getWinningChances = (inputAmount: number, pool: PoolModel, prices: 
             avgPrizesDrawn += (Number(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION) * prizeBatch.quantity.toNumber();
         }
 
-        estimated = (avgPrizesDrawn * amount) / (amount + tvl);
+        estimated = (avgPrizesDrawn * amount) / (amount + tvl - sponsorTvl);
     }
 
     return estimated;
