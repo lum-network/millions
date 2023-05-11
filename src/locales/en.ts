@@ -97,43 +97,23 @@ export default {
             questions: [
                 {
                     title: 'What is Cosmos Millions?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    answer: 'Cosmos Millions is a prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
                 },
                 {
-                    title: 'Why it is free?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'How are the prizes generated?',
+                    answer: 'Cosmos Millions generates its prizes based on the interest earned from deposited savings.<br />Whenever users make a deposit into the platform, the tokens are gathered into a pool and sent to their native blockchain. Then, the tokens are delegated to validators, and they start earning interest. This interest (staking rewards) is then used to generate prizes for the users on a larger scale than what each user could get individually.<br /><br />To ensure the safety and security of the deposited funds, Cosmos Millions delegates to some of the most reliable validators in the Interchain. You can leave a Cosmos Millions pool at any time and your tokens will be sent back to your wallet.',
                 },
                 {
-                    title: 'How do the prizes are generated?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'When is the ATOM pool launch?',
+                    answer: 'The ATOM pool launch is set for mid-May, with the official date to be announced shortly!',
                 },
                 {
-                    title: 'What if I don’t win?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'Is there a minimum deposit?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'Why is there a lockup on my deposits?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'How long do I have to claim my prizes? ',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    title: 'What are delegated deposits?',
+                    answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes.',
                 },
                 {
                     title: 'Is Cosmos Millions code audited?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'What’s the Cosmos Ecosystem?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
-                },
-                {
-                    title: 'What’s the Lum Network blockchain?',
-                    answer: 'Le tramway jaune avance lentement dans le brouillard laiteux et surchauffé de cette fin d’après midi d’été. Le trafic s’écoule sous la canicule, se disperse et se répand dans les mille recoins de Budapest.',
+                    answer: 'Yes! Cosmos Millions code is currently under review by a third-party company. ',
                 },
             ],
         },

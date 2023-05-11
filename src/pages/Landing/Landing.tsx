@@ -21,6 +21,7 @@ import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
 import TestimonialCard from './components/TestimonialCard';
+import PoolCardPlaceholder from './components/PoolCardPlaceholder';
 
 import './Landing.scss';
 
@@ -368,9 +369,9 @@ const Landing = () => {
                         {pools.slice(0, 3).map((pool, index) => (
                             <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.prizeToWin?.amount || 0} />
                         ))}
-                        {/*{poolsPlaceholders.map((_, index) => (*/}
-                        {/*    <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />*/}
-                        {/*))}*/}
+                        {poolsPlaceholders.map((_, index) => (
+                            <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />
+                        ))}
                     </div>
                     <div className='d-flex flex-column align-items-center mt-5'>
                         <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
