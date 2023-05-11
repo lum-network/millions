@@ -8,6 +8,7 @@ interface PrizesState {
     prizes: PrizeModel[];
     metadata?: MetadataModel;
     stats: PrizeStatsModel | null;
+    alreadySeenConfetti: boolean;
 }
 
 export const prizes = createModel<RootModel>()({
@@ -16,6 +17,7 @@ export const prizes = createModel<RootModel>()({
         biggestPrizes: [],
         prizes: [],
         stats: null,
+        alreadySeenConfetti: false,
     } as PrizesState,
     reducers: {
         setBiggestPrizes: (state: PrizesState, biggestPrizes: PrizeModel[]): PrizesState => {
@@ -50,6 +52,12 @@ export const prizes = createModel<RootModel>()({
                 stats: null,
             };
         },
+        setAlreadySeenConfetti: (state: PrizesState, alreadySeenConfetti: boolean): PrizesState => {
+            return {
+                ...state,
+                alreadySeenConfetti,
+            };
+        },
     },
     effects: (dispatch) => ({
         fetchBiggestPrizes: async () => {
@@ -57,6 +65,7 @@ export const prizes = createModel<RootModel>()({
 
             dispatch.prizes.setBiggestPrizes(biggestPrizes);
         },
+
         fetchPrizes: async ({ page = 0, denom }: { page: number; denom?: string }) => {
             dispatch.prizes.resetPrizes();
 
@@ -70,12 +79,17 @@ export const prizes = createModel<RootModel>()({
                 dispatch.prizes.setPrizes(prizes, metadata);
             }
         },
+
         getStats: async (denom: string) => {
             dispatch.prizes.resetStats();
 
             const [stats] = await LumApi.getPrizesStats(denom);
 
             dispatch.prizes.setStats(stats);
+        },
+
+        seenConfetti: () => {
+            dispatch.prizes.setAlreadySeenConfetti(true);
         },
     }),
 });

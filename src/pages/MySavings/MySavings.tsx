@@ -27,7 +27,7 @@ import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 import './MySavings.scss';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos } = useSelector((state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, alreadySeenConfetti } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
         balances: state.wallet.lumWallet?.balances,
@@ -38,6 +38,7 @@ const MySavings = () => {
         pools: state.pools.pools,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
         isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
+        alreadySeenConfetti: state.prizes.alreadySeenConfetti,
     }));
     const dispatch = useDispatch<Dispatch>();
 
@@ -66,7 +67,8 @@ const MySavings = () => {
     }, [isReloadingInfos]);
 
     useEffect(() => {
-        if (prizesToClaim && prizesToClaim.length) {
+        if (prizesToClaim && prizesToClaim.length && !alreadySeenConfetti) {
+            dispatch.prizes.seenConfetti();
             confettis(5000);
         }
     }, [prizesToClaim]);
