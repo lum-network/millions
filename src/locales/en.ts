@@ -63,7 +63,7 @@ export default {
         },
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
-            p1: "That's one small step for Cosmonauts, one giant leap for Cosmos.",
+            p1: "That's one small step for Cosmonauts,\none giant leap for Cosmos.",
             p2: 'Speed up your path to financial tranquility with our thrilling prize-linked savings accounts! Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.',
             p3: 'With no risk and exciting rewards, bring your savings to the moon!',
         },
