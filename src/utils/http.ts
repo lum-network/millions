@@ -13,7 +13,7 @@ abstract class HttpClient {
     private readonly subObject?: string;
 
     protected constructor(baseURL: string, subObject?: string) {
-        this.instance = axios.create({ baseURL });
+        this.instance = axios.create({ baseURL, timeout: 10000 });
         this.subObject = subObject;
 
         this.initializeResponseInterceptor();

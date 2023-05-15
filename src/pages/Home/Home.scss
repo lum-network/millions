@@ -4,6 +4,12 @@
     position: relative;
     padding-bottom: 80px;
 
+    .min-height-550 {
+        @include media-breakpoint-up(xxl) {
+            min-height: 550px;
+        }
+    }
+
     @media screen and (min-height: 900.02px) and (min-width: 1400.02px) {
         padding-bottom: 0;
     }
@@ -54,7 +60,7 @@
         .save-btn {
             border: 4px solid #371A45;
         }
-        
+
         @media screen and (min-height: 900.02px) and (min-width: 1400.02px) {
             position: relative;
             bottom: unset;

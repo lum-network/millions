@@ -17,9 +17,10 @@ interface IProps {
     biggestPrize: BalanceModel | null;
     poolId?: string;
     countdownTo?: Date;
+    className?: string;
 }
 
-const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
+const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats.prices);
 
     const { width } = useWindowSize();
@@ -40,7 +41,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo }: IProps) => {
 
     return (
         <Card
-            className='best-prize-card'
+            className={`best-prize-card ${className}`}
             withoutPadding
             onClick={biggestPrize && poolId ? () => navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`) : undefined}
         >
