@@ -26,6 +26,14 @@
     }
 }
 
+#depositFlow {
+    .deposit-step-card {
+        background-color: $color-white;
+        border-radius: 13px;
+        position: relative;
+    }
+}
+
 #quitModal,
 #ibcTransferModal {
     h3 {

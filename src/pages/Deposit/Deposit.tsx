@@ -1,15 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Navigate, useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import { gsap } from 'gsap';
+import { CustomEase } from 'gsap/CustomEase';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { Card, Lottie, Modal, Steps } from 'components';
+import { Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
-import { useVisibilityState } from 'hooks';
+import { usePrevious, useVisibilityState } from 'hooks';
 import { DenomsUtils, I18n } from 'utils';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -20,6 +22,8 @@ import Error404 from '../404/404';
 import { confettis } from 'utils/confetti';
 
 import './Deposit.scss';
+
+const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
 const Deposit = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
@@ -38,9 +42,19 @@ const Deposit = () => {
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('');
     const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('');
+
+    const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const [timeline] = useState<gsap.core.Timeline>(
+        gsap.timeline({
+            defaults: GSAP_DEFAULT_CONFIG,
+            smoothChildTiming: true,
+        }),
+    );
     const dispatch = useDispatch<Dispatch>();
+
+    const prevStep = usePrevious(currentStep);
 
     const transferForm = useFormik({
         initialValues: {
@@ -67,7 +81,7 @@ const Deposit = () => {
                 });
 
                 if (res && !res.error) {
-                    setCurrentStep(currentStep + 1);
+                    startTransition();
                 }
             }
         },
@@ -75,6 +89,367 @@ const Deposit = () => {
 
     const blocker = useBlocker(transferForm.dirty && currentStep < 2);
     const visibilityState = useVisibilityState();
+
+    const steps = I18n.t('deposit.steps', {
+        returnObjects: true,
+        denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
+        chainName: pool?.internalInfos?.chainName || 'Native Chain',
+    });
+
+    const cardTimeline = () => {
+        const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+
+        tl.from('#depositFlow .deposit-step-card', {
+            opacity: 0,
+            y: 100,
+        });
+
+        return tl;
+    };
+
+    const step1Timeline = () => {
+        const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+        const cardStepSubtitleST = new SplitText('#depositFlow .step-1 .card-step-subtitle', { type: 'lines' });
+
+        tl.from(
+            '#depositFlow .step-1 .card-step-title',
+            {
+                opacity: 0,
+                y: 50,
+            },
+            '<0.1',
+        )
+            .from(
+                cardStepSubtitleST.lines,
+                {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.1,
+                },
+                '<0.1',
+            )
+            .fromTo(
+                '#depositFlow .amount-input',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                },
+                '<0.1',
+            )
+            .fromTo(
+                '#depositFlow .winning-chance-card',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                },
+                '<0.1',
+            )
+            .fromTo(
+                '#depositFlow .deposit-cta .deposit-cta-bg',
+                {
+                    opacity: 0,
+                    scaleX: 0.01,
+                },
+                {
+                    opacity: 1,
+                    scaleX: 1,
+                    transformOrigin: 'center center',
+                    duration: 0.4,
+                },
+                '<0.1',
+            )
+            .fromTo(
+                '#depositFlow .deposit-cta .deposit-cta-text',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                },
+                '<0.2',
+            );
+
+        return tl;
+    };
+
+    const step2Timeline = () => {
+        const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+        const ctaST = new SplitText('#depositFlow .step-2 .deposit-cta .deposit-cta-text', { type: 'words' });
+        const cardStepSubtitleST = new SplitText('#depositFlow .step-2 .card-step-subtitle', { type: 'lines' });
+
+        tl.from(
+            '#depositFlow .step-2 .card-step-title',
+            {
+                opacity: 0,
+                y: 50,
+            },
+            '<0.1',
+        )
+            .from(
+                cardStepSubtitleST.lines,
+                {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.1,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .deposit-warning',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .step2-input-container',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .fees-warning',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .deposit-cta .deposit-cta-bg',
+                {
+                    opacity: 0,
+                    scaleX: 0.01,
+                    transformOrigin: 'center center',
+                    duration: 0.4,
+                },
+                '<0.1',
+            )
+            .from(
+                ctaST.words,
+                {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.1,
+                },
+                '<0.2',
+            )
+            .from('#depositFlow .step-2 .deposit-cta .star', {
+                scale: 0,
+                duration: 0.2,
+            });
+
+        return tl;
+    };
+
+    const shareStepTimeline = () => {
+        const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+        const splitText = new SplitText('#depositFlow .step-3 .card-step-title', { type: 'words,chars' });
+        const cardStepSubtitleST = new SplitText('#depositFlow .step-3 .card-step-subtitle', { type: 'lines' });
+        const ctaST = new SplitText('#depositFlow .step-3 .deposit-cta .deposit-cta-text', { type: 'words' });
+
+        tl.fromTo(
+            splitText.chars,
+            {
+                opacity: 0,
+                y: 50,
+            },
+            {
+                opacity: 1,
+                y: 0,
+                stagger: 0.01,
+            },
+        )
+            .call(() => confettis(5000), undefined, '<')
+            .from(
+                cardStepSubtitleST.lines,
+                {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.1,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-3 .deposit-card',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-3 .ctas-section',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-3 .deposit-cta .deposit-cta-bg',
+                {
+                    opacity: 0,
+                    scaleX: 0.01,
+                    transformOrigin: 'center center',
+                    duration: 0.4,
+                },
+                '<0.1',
+            )
+            .from(
+                ctaST.words,
+                {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.1,
+                },
+                '<0.2',
+            )
+            .from('#depositFlow .step-3 .deposit-cta .twitter', {
+                scale: 0,
+                duration: 0.2,
+            });
+
+        return tl;
+    };
+
+    const startTransition = () => {
+        const stepsArray = gsap.utils.toArray<HTMLElement>('#depositFlow .steps .step');
+        const completedStepElement = stepsArray.find((_, index) => index === currentStep);
+
+        if (completedStepElement) {
+            const title = completedStepElement.querySelector('.title');
+            const subtitle = completedStepElement.querySelector('.subtitle');
+            const indexContainer = completedStepElement.querySelector('.step-index-container');
+            const indexContainerBg = completedStepElement.querySelector('.step-index-container .checkmark-container');
+            const checkmarkIcon = completedStepElement.querySelector('.step-index-container img');
+
+            const checkTl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+
+            checkTl
+                .set(indexContainer, { backgroundColor: '#F4F4F4' })
+                .fromTo(
+                    indexContainerBg,
+                    {
+                        scale: 0.01,
+                    },
+                    {
+                        scale: 1,
+                        duration: 0.3,
+                    },
+                )
+                .fromTo(
+                    checkmarkIcon,
+                    {
+                        scale: 0,
+                    },
+                    {
+                        scale: 1,
+                        duration: 0.3,
+                    },
+                );
+
+            const textTl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+
+            textTl
+                .set(title, { opacity: 1 })
+                .set(subtitle, { opacity: 1 })
+                .to(title, {
+                    y: -50,
+                    opacity: 0,
+                })
+                .to(
+                    subtitle,
+                    {
+                        y: -50,
+                        opacity: 0,
+                    },
+                    '<',
+                )
+                .set(title, { color: '#34ad09' })
+                .set(subtitle, { color: '#34ad09' })
+                .fromTo(
+                    title,
+                    {
+                        y: 50,
+                        opacity: 0,
+                        immediateRender: false,
+                    },
+                    {
+                        y: 0,
+                        opacity: 1,
+                    },
+                )
+                .fromTo(
+                    subtitle,
+                    {
+                        y: 50,
+                        opacity: 0,
+                        immediateRender: false,
+                    },
+                    {
+                        y: 0,
+                        opacity: 0.3,
+                    },
+                    '<0.1',
+                );
+
+            if (completedStepElement.classList.contains('with-line')) {
+                textTl.fromTo(
+                    '#depositFlow .step.with-line',
+                    {
+                        '--primary-line-height': 0,
+                    },
+                    {
+                        '--primary-line-height': '100%',
+                        duration: 0.3,
+                    },
+                );
+            }
+        }
+
+        const cardTl = gsap.timeline(GSAP_DEFAULT_CONFIG);
+
+        if (currentStep + 1 < steps.length) {
+            cardTl
+                .set('#depositFlow .deposit-steps .card-content', {
+                    opacity: 0,
+                })
+                .add(
+                    gsap.fromTo(
+                        '#depositFlow .deposit-step-card',
+                        {
+                            opacity: 1,
+                            y: 0,
+                        },
+                        {
+                            opacity: 0,
+                            y: -150,
+                        },
+                    ),
+                )
+                .call(() => setCurrentStep(currentStep + 1))
+                .set('#depositFlow .deposit-steps .card-content', {
+                    opacity: 1,
+                })
+                .add(cardTimeline(), '<0.2');
+        } else {
+            cardTl.call(() => setCurrentStep(currentStep + 1)).add(cardTimeline(), '<0.2');
+        }
+    };
 
     useEffect(() => {
         if (blocker.state === 'blocked') {
@@ -108,15 +483,108 @@ const Deposit = () => {
         }
     }, [visibilityState, shareState]);
 
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            const splitText = new SplitText('#depositFlow .steps-title', { type: 'words,chars' });
+            timeline.fromTo(
+                splitText.chars,
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.01,
+                },
+            );
+
+            gsap.utils.toArray<HTMLElement>('#depositFlow .step').forEach((step, index) => {
+                const indexContainer = step.querySelector('.step-index-container');
+                const title = step.querySelector('.title');
+                const subtitle = step.querySelector('.subtitle');
+
+                if (timeline) {
+                    timeline
+                        .fromTo(
+                            indexContainer,
+                            {
+                                opacity: 0,
+                                scale: 0,
+                            },
+                            {
+                                opacity: 1,
+                                scale: 1,
+                                stagger: 0.1,
+                                duration: 0.2,
+                            },
+                            index > 0 ? '<0.1' : '>',
+                        )
+                        .fromTo(
+                            title,
+                            {
+                                autoAlpha: 0,
+                                y: 50,
+                            },
+                            {
+                                autoAlpha: step.classList.contains('active') || step.classList.contains('completed') ? 1 : 0.6,
+                                y: 0,
+                            },
+                            '<0.3',
+                        )
+                        .fromTo(
+                            subtitle,
+                            {
+                                autoAlpha: 0,
+                                y: 50,
+                            },
+                            {
+                                autoAlpha: step.classList.contains('active') ? 1 : step.classList.contains('completed') ? 0.3 : 0.6,
+                                y: 0,
+                            },
+                            '<0.1',
+                        );
+                    if (step.classList.contains('with-line')) {
+                        timeline.fromTo(
+                            '#depositFlow .step.with-line',
+                            {
+                                '--grey-line-height': 0,
+                            },
+                            {
+                                '--grey-line-height': '100%',
+                                duration: 0.3,
+                            },
+                            '<',
+                        );
+                    }
+                }
+            });
+
+            timeline.add(cardTimeline(), '<0.2');
+
+            if (currentStep === 0) {
+                if (denom === LumConstants.LumDenom) {
+                    timeline.add(step2Timeline());
+                } else {
+                    timeline.add(step1Timeline());
+                }
+            } else if (currentStep === 1) {
+                timeline.add(step2Timeline());
+            }
+        }, depositFlowContainerRef);
+
+        return () => ctx.revert();
+    }, []);
+
+    useEffect(() => {
+        if (currentStep > 0 && prevStep !== undefined) {
+            timeline.add(currentStep === steps.length ? shareStepTimeline() : step2Timeline(), '+=0.5');
+        }
+    }, [currentStep]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
-
-    const steps = I18n.t('deposit.steps', {
-        returnObjects: true,
-        denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
-        chainName: pool.internalInfos?.chainName || 'Native Chain',
-    });
 
     const otherWallet = otherWallets[denom || ''];
 
@@ -128,26 +596,45 @@ const Deposit = () => {
         steps.splice(0, 1);
     }
 
-    const isLastStep = currentStep === steps.length - 1;
+    const isLastStep = currentStep >= steps.length;
 
     if (isLastStep) {
         confettis(10000);
     }
 
     return (
-        <>
-            <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center`}>
+        <div id='depositFlow' ref={depositFlowContainerRef}>
+            <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
                 {!isLastStep && (
                     <div className='col'>
-                        <h1 className='steps-title'>{I18n.t('deposit.title')}</h1>
+                        <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                     </div>
                 )}
                 <div className='col'>
-                    <Card withoutPadding className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 ${isLastStep ? 'last-step glow-bg' : ''}`}>
+                    <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
-                            onNextStep={() => setCurrentStep(currentStep + 1)}
+                            onNextStep={startTransition}
+                            onFinishDeposit={(callback) => {
+                                const tl = gsap.timeline({
+                                    ...GSAP_DEFAULT_CONFIG,
+                                    onComplete: () => {
+                                        callback();
+                                        gsap.set('#depositFlow .deposit-flow-container', {
+                                            opacity: 1,
+                                            delay: 0.2,
+                                        });
+                                    },
+                                });
+
+                                tl.to('#depositFlow .deposit-flow-container', {
+                                    opacity: 0,
+                                    y: -50,
+                                }).set('#depositFlow .deposit-flow-container', {
+                                    y: 0,
+                                });
+                            }}
                             onPrevStep={(prev, next) => {
                                 transferForm.setFieldValue('amount', next);
                                 setIbcModalPrevAmount(prev);
@@ -175,7 +662,7 @@ const Deposit = () => {
                                 ]}
                             />
                         )}
-                    </Card>
+                    </div>
                 </div>
             </div>
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
@@ -209,7 +696,7 @@ const Deposit = () => {
                     }
                 }}
             />
-        </>
+        </div>
     );
 };
 

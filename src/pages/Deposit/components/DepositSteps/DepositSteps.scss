@@ -8,6 +8,8 @@
         }
     }
     .deposit-cta {
+        background-color: transparent;
+        border-color: transparent;
         font-style: normal;
         font-weight: 400;
         font-size: 24px;
@@ -79,6 +81,15 @@
     .label {
         font-size: 14px;
         font-weight: 300;
+    }
+
+    .sublabel {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 28px;
+        vertical-align: sub;
+        text-align: right;
+        color: $color-black;
     }
 
     .deposit-warning {
