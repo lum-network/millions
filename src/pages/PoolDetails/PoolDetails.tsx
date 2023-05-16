@@ -10,7 +10,7 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, SmallerDecimal, Table } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, SmallerDecimal, Table, Tooltip } from 'components';
 import { NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
@@ -164,7 +164,13 @@ const PoolDetails = () => {
                 <div className='row row-cols-1 row-cols-xl-2'>
                     {prizes && (
                         <div className='col position-relative'>
-                            <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
+                            <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
+                                <h2>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
+                                <span data-tooltip-id='prize-distribution-tooltip' data-tooltip-html={I18n.t('poolDetails.prizeDistribution.hint')} className='ms-2 mb-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='prize-distribution-tooltip' />
+                                </span>
+                            </div>
                             <Card flat withoutPadding className='prize-distribution-card'>
                                 <Table headers={I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true })} className='prize-distribution-table'>
                                     {prizes.map((prize, index) => (
@@ -190,7 +196,13 @@ const PoolDetails = () => {
                     )}
                     <div className='col'>
                         <div className='h-100'>
-                            <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.winningChances.title')}</h2>
+                            <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
+                                <h2>{I18n.t('poolDetails.winningChances.title')}</h2>
+                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2 mb-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='winning-chance-tooltip' />
+                                </span>
+                            </div>
                             <Card flat withoutPadding className='winning-chances-card d-flex flex-column justify-content-between h-auto'>
                                 <div>
                                     <small>{I18n.t('poolDetails.winningChances.estimatedSavings')}</small>

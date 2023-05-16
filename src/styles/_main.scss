@@ -48,6 +48,12 @@ html body {
     }
 }
 
+.react-tooltip {
+    max-width: 450px;
+    min-width: 300px;
+    width: 80%;
+}
+
 .cards-list {
     display: flex;
     flex-wrap: nowrap;
