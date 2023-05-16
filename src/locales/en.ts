@@ -186,7 +186,7 @@ export default {
             title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
             totalPoolPrizes: "Total pool's prizes",
-            bestPrizeWon: 'Best Prize won',
+            bestPrizeWon: 'Largest prize won',
         },
         users: {
             title: 'Users in Numbers',
