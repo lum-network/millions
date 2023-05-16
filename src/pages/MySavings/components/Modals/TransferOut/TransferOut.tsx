@@ -69,6 +69,8 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                     if (modalRef.current) {
                         modalRef.current.hide();
                     }
+                } else {
+                    setCurrentStep(currentStep);
                 }
             }
         },
