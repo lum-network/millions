@@ -172,7 +172,7 @@ const PoolDetails = () => {
                                             <td>
                                                 <div className='d-flex flex-row'>{numeral(prize.value).format('$0,0')}</div>
                                             </td>
-                                            <td>{prize.count}</td>
+                                            <td className='text-center'>{prize.count}</td>
                                             <td className='text-end'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</td>
                                         </tr>
                                     ))}

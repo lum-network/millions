@@ -24,7 +24,13 @@ const Home = () => {
         <div className='home-container mt-3 mt-lg-5'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
-                    <BestPrizeCard className='min-height-550' biggestPrize={bestPoolPrize?.prizeToWin || null} poolId={bestPoolPrize?.poolId.toString()} countdownTo={bestPoolPrize?.nextDrawAt} />
+                    <BestPrizeCard
+                        delay={150}
+                        className='min-height-550'
+                        biggestPrize={bestPoolPrize?.prizeToWin || null}
+                        poolId={bestPoolPrize?.poolId.toString()}
+                        countdownTo={bestPoolPrize?.nextDrawAt}
+                    />
                 </div>
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>

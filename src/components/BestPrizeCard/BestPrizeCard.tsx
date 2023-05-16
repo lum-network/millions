@@ -18,9 +18,10 @@ interface IProps {
     poolId?: string;
     countdownTo?: Date;
     className?: string;
+    delay?: number;
 }
 
-const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className }: IProps) => {
+const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats.prices);
 
     const { width } = useWindowSize();
@@ -57,7 +58,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className }: IProps)
                                     $
                                 </span>
                                 <div style={{ fontSize: `${fontSize}px` }}>
-                                    <AnimatedNumber number={biggestPrize.amount * price} />
+                                    <AnimatedNumber delay={delay} number={biggestPrize.amount * price} />
                                 </div>
                             </>
                         ) : (
