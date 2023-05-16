@@ -103,14 +103,14 @@ export default {
                 },
                 {
                     title: 'Is Cosmos Millions free to use?',
-                    answer: 'Yes anyone can deposit and participate for free.\n\nTransaction fees are very cheap - usually less than a USD cent - thanks to the underlying technology. When a prize is distributed, Cosmos Millions takes a 10% fee. This is fundamental to ensure long-term viability of the blockchain infrastructure used.'
+                    answer: 'Yes anyone can deposit and participate for free.\n\nTransaction fees are very cheap - usually less than a USD cent - thanks to the underlying technology. When a prize is distributed, Cosmos Millions takes a 10% fee. This is fundamental to ensure long-term viability of the blockchain infrastructure used.',
                 },
                 {
                     title: 'How are the prizes generated?',
                     answer: 'Cosmos Millions generates prizes based on the rewards earned from deposited savings. \n\nWhenever a user makes a deposit into the platform, the tokens are ultimately sent back to their native blockchain, where they start generating staking rewards. These rewards are then distribute as prizes to users.\n\nTo ensure the safety and security of the deposited funds, Cosmos Millions works with some of the most reliable validators in the Interchain.',
                 },
                 {
-                    title: 'What if I don\'t win?',
+                    title: "What if I don't win?",
                     answer: 'No win, but no loss either. Your deposits will make you a participant in all the upcoming draws, and therefore will make you eligible for all the upcoming prizes.',
                 },
                 {
@@ -119,15 +119,17 @@ export default {
                 },
                 {
                     title: 'Why is there an unbonding period on my deposit?',
-                    answer: 'Your deposit is bonded by Cosmos Millions on the native blockchain (e.g: Cosmos Hub for $ATOM) to generate interest. \n\n' +
+                    answer:
+                        'Your deposit is bonded by Cosmos Millions on the native blockchain (e.g: Cosmos Hub for $ATOM) to generate interest. \n\n' +
                         'On each blockchain of the Cosmos Ecosystem, there is an specific unbonding period to ensure the security and stability of the network. By locking up your tokens for a specified period of time, you are contributing to the security of the blockchain and reducing the risk of network attacks or manipulation. \n\n' +
                         'Additionally, the unbonding period incentivizes long-term participation and discourages short-term speculation, promoting a healthy and sustainable ecosystem. \n\n' +
                         'The unbonding period depends on the network - it is generally set between 14 and 28 days.',
                 },
                 {
                     title: 'How long do I have to claim my prizes?',
-                    answer: 'After winning a prize on Cosmos Millions, you can claim it by accessing the "My savings" section of the web application. \n\n' +
-                        'You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don\'t forget to come check the platform regularly to ensure that you don\'t miss the deadline for claiming your prize!'
+                    answer:
+                        'After winning a prize on Cosmos Millions, you can claim it by accessing the "My savings" section of the web application. \n\n' +
+                        "You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don't forget to come check the platform regularly to ensure that you don't miss the deadline for claiming your prize!",
                 },
                 {
                     title: 'Is Cosmos Millions audited?',
@@ -135,13 +137,14 @@ export default {
                 },
                 {
                     title: 'What is the Cosmos ecosystem?',
-                    answer: 'The Cosmos ecosystem is a decentralized and interoperable network of independent blockchains, applications, and services communicating through the Inter-Blockchain Communication (IBC) protocol.'
+                    answer: 'The Cosmos ecosystem is a decentralized and interoperable network of independent blockchains, applications, and services communicating through the Inter-Blockchain Communication (IBC) protocol.',
                 },
                 {
                     title: 'What is the Lum Network?',
-                    answer: 'The Lum Network is a secure and sustainable blockchain from the Cosmos Ecosystem launched in December 2021. It is powered by the $LUM token, its native crypto-asset.\n\n' +
-                        'Lum comes from the word “light” and expresses the value created by and for community members throughout their online and offline experiences.'
-                }
+                    answer:
+                        'The Lum Network is a secure and sustainable blockchain from the Cosmos Ecosystem launched in December 2021. It is powered by the $LUM token, its native crypto-asset.\n\n' +
+                        'Lum comes from the word “light” and expresses the value created by and for community members throughout their online and offline experiences.',
+                },
             ],
         },
     },
@@ -170,7 +173,7 @@ export default {
         tvl: 'TVL:',
         apy: 'Variable APY:',
         cta: 'Deposit in Pool',
-        drawEndAt: 'Time left to join:',
+        drawEndAt: 'Next draw in:',
         poolId: 'Pool #{{ poolId }}',
     },
     poolDetails: {

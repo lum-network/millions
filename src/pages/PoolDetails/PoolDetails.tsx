@@ -104,9 +104,7 @@ const PoolDetails = () => {
                             <img alt='coin staked' src={Assets.images.coinsStaked2} />
                             <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
                                 <h4 className='mb-0 text-nowrap'>{I18n.t('home.totalValueLocked')}</h4>
-                                <div className='total-value-locked text-nowrap'>
-                                    {numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount)).format('0,0[.]00')} {denom.toUpperCase()}
-                                </div>
+                                <div className='total-value-locked text-nowrap'>${numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[denom] || 1)).format('0,0')}</div>
                             </div>
                         </div>
                         <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`} className='deposit-btn'>
@@ -120,13 +118,13 @@ const PoolDetails = () => {
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (
-                            <div className='display-6'>{pool.prizeToWin && prices ? numeral(pool.prizeToWin.amount * (prices[denom] || 1)).format('$0,0[.]00') : '--'}</div>
+                            <div className='display-6'>{pool.prizeToWin && prices ? numeral(pool.prizeToWin.amount * (prices[denom] || 1)).format('$0,0') : '--'}</div>
                         )}
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={20} width={150} />
                         ) : (
                             <>
-                                {pool.prizeToWin ? numeral(pool.prizeToWin.amount).format('0,0[.]000000') : '--'} {denom.toUpperCase()}
+                                {pool.prizeToWin ? numeral(pool.prizeToWin.amount).format('0,0') : '--'} {denom.toUpperCase()}
                             </>
                         )}
                     </div>
@@ -172,10 +170,7 @@ const PoolDetails = () => {
                                     {prizes.map((prize, index) => (
                                         <tr key={index} className='stat-bg-white'>
                                             <td>
-                                                <div className='d-flex flex-row'>
-                                                    <div className='d-flex align-items-center justify-content-center me-3 index-container'>#{index + 1}</div>
-                                                    {numeral(prize.value).format('$0,0')}
-                                                </div>
+                                                <div className='d-flex flex-row'>{numeral(prize.value).format('$0,0')}</div>
                                             </td>
                                             <td>{prize.count}</td>
                                             <td className='text-end'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</td>
@@ -243,7 +238,7 @@ const PoolDetails = () => {
                             <div className='w-100 me-3'>
                                 <small>{I18n.t('poolDetails.users.deposit')}</small>
                                 <div className='stat-bg-white h4 mb-0 mt-2'>
-                                    {pool ? (NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()).toFixed() : 0} {denom.toUpperCase()}
+                                    ${pool ? numeral((NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()) * (prices[denom] || 1)).format('0,0') : 0}
                                 </div>
                             </div>
                             <div className='w-100 mt-4 mt-lg-0'>
@@ -271,7 +266,10 @@ const PoolDetails = () => {
                                     <div className='w-100'>
                                         <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white h4 mb-0 mt-2'>
-                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount)).format('0,0').toUpperCase()} {denom.toUpperCase()}
+                                            $
+                                            {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
+                                                .format('0,0')
+                                                .toUpperCase()}
                                         </div>
                                     </div>
                                 </Card>

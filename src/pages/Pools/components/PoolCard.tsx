@@ -61,9 +61,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                     <div className='tvl-label'>
                         <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' width={22} height={22} /> {I18n.t('pools.tvl')}
                     </div>
-                    <div className='tvl'>
-                        {numeral(tvl).format('0,0')} {denom}
-                    </div>
+                    <div className='tvl'>${numeral(tvl * price).format('0,0')}</div>
                 </div>
                 <div className='separator' />
                 <div className='countdown-container pt-2'>
