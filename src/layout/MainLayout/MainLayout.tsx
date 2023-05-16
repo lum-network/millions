@@ -16,7 +16,6 @@ import './MainLayout.scss';
 
 const MainLayout = () => {
     const [enableAutoConnect, setEnableAutoConnect] = useState(true);
-    const [balanceFetchInterval, setBalanceFetchInterval] = useState<NodeJS.Timeout | null>(null);
 
     const location = useLocation();
 
@@ -53,20 +52,8 @@ const MainLayout = () => {
 
     useEffect(() => {
         if (visibilityState === 'visible') {
-            if (wallet) {
+            if (wallet && (location.pathname === NavigationConstants.HOME || location.pathname === NavigationConstants.POOLS || location.pathname === NavigationConstants.MY_SAVINGS)) {
                 dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
-
-                setBalanceFetchInterval(
-                    setInterval(() => {
-                        dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
-                    }, 1000 * 60 * 3),
-                );
-            }
-        }
-
-        if (visibilityState === 'hidden') {
-            if (balanceFetchInterval) {
-                clearInterval(balanceFetchInterval);
             }
         }
     }, [visibilityState, location.pathname]);
@@ -77,22 +64,11 @@ const MainLayout = () => {
                 ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
                 dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
                 dispatch.wallet.connectOtherWallets(null);
+                dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
             }
         };
 
         window.addEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
-
-        if (wallet && !balanceFetchInterval) {
-            setBalanceFetchInterval(
-                setInterval(() => {
-                    //dispatch.wallet.reloadWalletInfos(wallet.address);
-                }, 30000),
-            );
-        }
-
-        if (!wallet && balanceFetchInterval) {
-            clearInterval(balanceFetchInterval);
-        }
 
         return () => {
             window.removeEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
