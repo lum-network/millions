@@ -9,12 +9,19 @@ import Button from '../Button/Button';
 
 import './BigWinnerCard.scss';
 
-const BigWinnerCard = ({ denom, address, prize, className }: { denom: string; address: string; prize: number; className?: string }) => {
+interface IProps {
+    denom: string;
+    address: string;
+    prize: number;
+    className?: string;
+    price: number;
+}
+
+const BigWinnerCard = ({ denom, address, prize, className, price }: IProps) => {
     return (
         <Button to={NavigationConstants.WINNERS} outline className={`big-winner-card ${className}`}>
             <span className='prize text-nowrap'>
-                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3' alt={denom} />
-                {numeral(NumbersUtils.convertUnitNumber(prize)).format('0,0[.]0a')} {DenomsUtils.getNormalDenom(denom)}
+                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3' alt={denom} />${numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}
             </span>
             <div className='address'>{StringsUtils.trunc(address)}</div>
             <img src={Assets.images.arrow} alt='arrow' />

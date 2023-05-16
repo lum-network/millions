@@ -51,7 +51,14 @@ const Home = () => {
                                     <h3>{I18n.t('home.lastBigWinners')}</h3>
                                     <div className='big-winners-container pt-4'>
                                         {biggestPrizes.slice(0, 3).map((prize, index) => (
-                                            <BigWinnerCard key={index} address={prize.winnerAddress} prize={prize.amount.amount} denom={prize.amount.denom} className='flex-grow-1' />
+                                            <BigWinnerCard
+                                                key={index}
+                                                price={prize.usdTokenValue}
+                                                address={prize.winnerAddress}
+                                                prize={prize.amount.amount}
+                                                denom={prize.amount.denom}
+                                                className='flex-grow-1'
+                                            />
                                         ))}
                                     </div>
                                 </Card>
