@@ -51,6 +51,11 @@ input[type='number'] {
                 &:focus {
                     outline: none;
                 }
+
+                &::placeholder {
+                    color: $color-black;
+                    opacity: 0.3;
+                }
             }
         }
 

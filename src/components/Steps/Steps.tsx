@@ -19,8 +19,9 @@ const Steps = ({ steps, currentStep, stepBackgroundColor, lastStepChecked }: Pro
                 return (
                     <div key={index} className={`step ${index + 1 < steps.length ? 'with-line pb-5' : ''} ${completed ? 'completed' : currentStep === index ? 'active' : ''}`}>
                         <div className='d-flex flex-row'>
-                            <div className='step-index-container' style={{ '--step-bg-color': stepBackgroundColor || '#F4F4F4' } as React.CSSProperties}>
-                                {completed ? <img src={Assets.images.checkmark} alt='checkmark' /> : index + 1}
+                            <div className='step-index-container position-relative' style={{ '--step-bg-color': stepBackgroundColor || '#F4F4F4' } as React.CSSProperties}>
+                                {completed ? <img src={Assets.images.checkmark} alt='checkmark' style={{ zIndex: 1 }} /> : index + 1}
+                                <div className='checkmark-container position-absolute rounded-circle' />
                             </div>
                             <p className='title mb-0'>{step.title}</p>
                         </div>

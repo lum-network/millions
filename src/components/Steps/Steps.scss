@@ -34,11 +34,19 @@
             color: $color-black;
             opacity: 0.6;
         }
-
+        
         .subtitle {
             color: $color-muted;
             opacity: 0.6;
             margin-left: calc(28px + 0.5rem);
+        }
+            
+        .checkmark-container {
+            border: 1px solid $color-success;
+            width: calc(100% + 2px);
+            height: calc(100% + 2px);
+            background-color: $color-success;
+            scale: 0;
         }
 
         &.active {
@@ -58,7 +66,6 @@
 
         &.completed {
             .step-index-container {
-                border: 1px solid $color-success;
                 color: $color-white;
                 background-color: $color-success;
             }
@@ -75,6 +82,8 @@
         }
 
         &.with-line {
+            --primary-line-height: 0;
+            --grey-line-height: 100%;
             &::after {
                 content: '';
                 z-index: 0;
@@ -83,6 +92,18 @@
                 bottom: 0;
                 left: 13px;
                 width: 2px;
+                height: var(--primary-line-height);
+                background-color: $color-primary;
+            }
+            &::before {
+                content: '';
+                z-index: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 13px;
+                width: 2px;
+                height: var(--grey-line-height);
                 background-color: $color-light-grey;
             }
         }

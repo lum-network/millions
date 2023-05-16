@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,13 +16,14 @@ import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
 
 import './DepositSteps.scss';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 interface StepProps {
     currentPool: PoolModel;
     balances: LumTypes.Coin[];
     price: number;
     pools: PoolModel[];
+    title: string;
+    subtitle: string;
 }
 
 interface Props {
@@ -39,6 +41,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
+    onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
     transferForm: FormikProps<{ amount: string }>;
@@ -60,104 +63,117 @@ const DepositStep1 = (
         onDeposit: (amount: string) => void;
     },
 ) => {
-    const { currentPool, balances, price, pools, form, nonEmptyWallets, onDeposit } = props;
+    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, onDeposit } = props;
 
     const navigate = useNavigate();
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.ibcTransfer);
 
     return (
-        <form onSubmit={form.handleSubmit} className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
-            <div className='w-100 mt-5'>
-                <AmountInput
-                    isLoading={isLoading}
-                    label={I18n.t('withdraw.amountInput.label')}
-                    sublabel={I18n.t('withdraw.amountInput.sublabel', {
-                        amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
-                        denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
-                    })}
-                    onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees);
-                        form.setFieldValue('amount', amount);
-                    }}
-                    inputProps={{
-                        type: 'number',
-                        min: 0,
-                        max: balances.length > 0 ? balances[0].amount : '0',
-                        step: 'any',
-                        lang: 'en',
-                        placeholder: (100 / price).toFixed(6),
-                        ...form.getFieldProps('amount'),
-                        onChange: (e) => {
-                            const inputAmount = Number(e.target.value);
-                            const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees));
-
-                            if (Number.isNaN(inputAmount) || inputAmount < 0) {
-                                e.target.value = '0';
-                            } else if (inputAmount > maxAmount) {
-                                e.target.value = maxAmount > 0 ? maxAmount.toString() : '0';
-                            }
-
-                            form.handleChange(e);
-                        },
-                    }}
-                    price={price}
-                    error={form.touched.amount ? form.errors.amount : ''}
-                />
+        <div className='step-1'>
+            <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
+                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
+                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
             </div>
-            <div className='mt-5'>
-                {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
-                    <AssetsSelect
+            <form onSubmit={form.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
+                <div className='w-100 mt-5'>
+                    <AmountInput
                         isLoading={isLoading}
-                        balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
-                            if (balances.length > 0) {
-                                result.push({
-                                    amount: balances[0].amount,
-                                    denom: balances[0].denom,
-                                });
-                            }
-                            return result;
-                        }, [])}
-                        value={currentPool.nativeDenom}
-                        onChange={(value) => {
-                            navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
+                        label={I18n.t('withdraw.amountInput.label')}
+                        sublabel={I18n.t('withdraw.amountInput.sublabel', {
+                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                            denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
+                        })}
+                        onMax={() => {
+                            const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees);
+                            form.setFieldValue('amount', amount);
                         }}
-                        options={nonEmptyWallets.map((wallet) => ({
-                            label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
-                            value: wallet.balances[0].denom,
-                        }))}
+                        inputProps={{
+                            type: 'number',
+                            min: 0,
+                            max: balances.length > 0 ? balances[0].amount : '0',
+                            step: 'any',
+                            lang: 'en',
+                            placeholder: (100 / price).toFixed(6),
+                            ...form.getFieldProps('amount'),
+                            onChange: (e) => {
+                                const inputAmount = Number(e.target.value);
+                                const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees));
+
+                                if (Number.isNaN(inputAmount) || inputAmount < 0) {
+                                    e.target.value = '0';
+                                } else if (inputAmount > maxAmount) {
+                                    e.target.value = maxAmount > 0 ? maxAmount.toString() : '0';
+                                }
+
+                                form.handleChange(e);
+                            },
+                        }}
+                        price={price}
+                        error={form.touched.amount ? form.errors.amount : ''}
                     />
-                )}
-                <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
-                    <div className='winning-chance d-flex flex-row justify-content-between'>
-                        <div>
-                            {I18n.t('deposit.chancesHint.winning.title')}
-                            <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
-                                <img src={Assets.images.info} alt='info' />
-                                <Tooltip id='winning-chance-tooltip' />
-                            </span>
+                </div>
+                <div className='mt-5'>
+                    {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
+                        <AssetsSelect
+                            isLoading={isLoading}
+                            balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
+                                if (balances.length > 0) {
+                                    result.push({
+                                        amount: balances[0].amount,
+                                        denom: balances[0].denom,
+                                    });
+                                }
+                                return result;
+                            }, [])}
+                            value={currentPool.nativeDenom}
+                            onChange={(value) => {
+                                navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
+                            }}
+                            options={nonEmptyWallets.map((wallet) => ({
+                                label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
+                                value: wallet.balances[0].denom,
+                            }))}
+                        />
+                    )}
+                    <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
+                        <div className='winning-chance d-flex flex-row justify-content-between'>
+                            <div>
+                                {I18n.t('deposit.chancesHint.winning.title')}
+                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='winning-chance-tooltip' />
+                                </span>
+                            </div>
+                            <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool, price || 0) * 100)}</div>
                         </div>
-                        <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool, price || 0) * 100)}</div>
-                    </div>
-                    <div className='average-prize d-flex flex-row justify-content-between mt-4'>
-                        <div>
-                            {I18n.t('deposit.chancesHint.averagePrize.title')}
-                            <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
-                                <img src={Assets.images.info} alt='info' />
-                                <Tooltip id='average-prize-tooltip' />
-                            </span>
+                        <div className='average-prize d-flex flex-row justify-content-between mt-4'>
+                            <div>
+                                {I18n.t('deposit.chancesHint.averagePrize.title')}
+                                <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='average-prize-tooltip' />
+                                </span>
+                            </div>
+                            <div>
+                                {(NumbersUtils.convertUnitNumber(currentPool.tvlAmount) / currentPool.depositorsCount.toNumber()).toFixed(0)}{' '}
+                                {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
+                            </div>
                         </div>
-                        <div>
-                            {(NumbersUtils.convertUnitNumber(currentPool.tvlAmount) / currentPool.depositorsCount.toNumber()).toFixed(0)}{' '}
-                            {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
-                        </div>
-                    </div>
-                </Card>
-                <Button type={isLoading ? 'button' : 'submit'} onClick={() => onDeposit(form.values.amount)} className='deposit-cta w-100 mt-4' disabled={isLoading} loading={isLoading}>
-                    {I18n.t('deposit.transferBtn')}
-                </Button>
-            </div>
-        </form>
+                    </Card>
+                    <Button
+                        type={isLoading ? 'button' : 'submit'}
+                        onClick={() => onDeposit(form.values.amount)}
+                        className='position-relative deposit-cta w-100 mt-4'
+                        disabled={isLoading}
+                        //loading={isLoading}
+                    >
+                        <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                        <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
+                    </Button>
+                </div>
+            </form>
+        </div>
     );
 };
 
@@ -166,11 +182,10 @@ const DepositStep2 = (
         amount: string;
         onFinishDeposit: (infos: TxInfos) => void;
         initialAmount?: string;
-        onNextStep: () => void;
         onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
-    const { pools, currentPool, price, balances, amount, initialAmount, onNextStep, onPrevStep, onFinishDeposit } = props;
+    const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, onPrevStep, onFinishDeposit } = props;
 
     const dispatch = useDispatch<Dispatch>();
     const navigate = useNavigate();
@@ -225,49 +240,62 @@ const DepositStep2 = (
 
     return (
         <div className='step-2'>
+            <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
+                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
+                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
+            </div>
             <Card flat withoutPadding className='deposit-warning mt-4'>
                 <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
             </Card>
-            <div className='d-flex flex-row justify-content-between mt-4'>
-                <label className='label text-start'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
-                {!isModifying && (
-                    <Button textOnly onClick={() => setIsModifying(true)}>
-                        Modify
-                    </Button>
+            <div className='step2-input-container'>
+                <div className='d-flex flex-row justify-content-between align-items-baseline mt-4'>
+                    <label className='label text-start'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
+                    {!isModifying ? (
+                        <Button textOnly onClick={() => setIsModifying(true)}>
+                            Edit
+                        </Button>
+                    ) : (
+                        <label className='sublabel'>
+                            {I18n.t('withdraw.amountInput.sublabel', {
+                                amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                                denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
+                            })}
+                        </label>
+                    )}
+                </div>
+                {isModifying ? (
+                    <AmountInput
+                        isLoading={isLoading}
+                        className='mt-2'
+                        onMax={() => {
+                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, 0.005);
+                            setDepositAmount(amount);
+                        }}
+                        inputProps={{
+                            type: 'number',
+                            min: 0,
+                            value: Number(depositAmount) < 0 ? '0' : depositAmount,
+                            onChange: (e) => {
+                                setDepositAmount(e.target.value);
+                                validateInput(e.target.value);
+                            },
+                            max: balances.length > 0 ? balances[0].amount : '0',
+                            step: 'any',
+                            lang: 'en',
+                        }}
+                        price={price}
+                        error={error}
+                    />
+                ) : (
+                    <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
+                        <div className='asset-info d-flex flex-row'>
+                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
+                            <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}</span>
+                        </div>
+                        <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
+                    </Card>
                 )}
             </div>
-            {isModifying ? (
-                <AmountInput
-                    isLoading={isLoading}
-                    className='mt-2'
-                    onMax={() => {
-                        const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, 0.005);
-                        setDepositAmount(amount);
-                    }}
-                    inputProps={{
-                        type: 'number',
-                        min: 0,
-                        value: Number(depositAmount) < 0 ? '0' : depositAmount,
-                        onChange: (e) => {
-                            setDepositAmount(e.target.value);
-                            validateInput(e.target.value);
-                        },
-                        max: balances.length > 0 ? balances[0].amount : '0',
-                        step: 'any',
-                        lang: 'en',
-                    }}
-                    price={price}
-                    error={error}
-                />
-            ) : (
-                <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
-                    <div className='asset-info d-flex flex-row'>
-                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
-                        <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}</span>
-                    </div>
-                    <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
-                </Card>
-            )}
             {pools.length > 1 && (
                 <PoolSelect
                     className='mt-4'
@@ -302,9 +330,7 @@ const DepositStep2 = (
                     }
                     const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
 
-                    if (res && res.error) {
-                        ToastUtils.showErrorToast({ content: res.error });
-                    } else if (res && res.hash) {
+                    if (res && !res.error && res.hash) {
                         onFinishDeposit({
                             hash: LumUtils.toHex(res.hash).toUpperCase(),
                             amount: numeral(depositAmount).format('0,0'),
@@ -312,102 +338,109 @@ const DepositStep2 = (
                             tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber).format('0,0'),
                             poolId: poolToDeposit.poolId.toString(),
                         });
-                        onNextStep();
                     }
                 }}
-                disabled={isLoading}
-                loading={isLoading}
-                className='deposit-cta w-100 mt-4'
+                disabled={!!error || isLoading}
+                //loading={isLoading}
+                className='deposit-cta w-100 position-relative mt-4'
             >
-                <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
-                {I18n.t('deposit.saveAndWinBtn')}
-                <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
+                <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                <img src={Assets.images.yellowStar} alt='Star' className='star me-3' style={{ zIndex: 0 }} />
+                <div className='deposit-cta-text'>{I18n.t('deposit.saveAndWinBtn')}</div>
+                <img src={Assets.images.yellowStar} alt='Star' className='star ms-3' style={{ zIndex: 0 }} />
             </Button>
         </div>
     );
 };
 
-const DepositStep3 = ({ txInfos, price, onTwitterShare }: { txInfos: TxInfos; price: number; onTwitterShare: () => void }) => {
+const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfos: TxInfos; title: string; subtitle: string; price: number; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
-        <div className='step-3 d-flex flex-column mt-5'>
-            <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
-                <div className='d-flex flex-row align-items-center'>
-                    <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
-                    <div className='d-flex flex-column ms-3'>
-                        <div className='deposit-amount text-start'>
-                            {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
+        <div className='step-3'>
+            <div className='d-flex flex-row mt-2 mb-3 mb-sm-5 mb-lg-0'>
+                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
+                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
+            </div>
+            <div className='d-flex flex-column mt-5'>
+                <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
+                    <div className='d-flex flex-row align-items-center'>
+                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
+                        <div className='d-flex flex-column ms-3'>
+                            <div className='deposit-amount text-start'>
+                                {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
+                            </div>
+                            <small className='deposit-infos text-start'>
+                                {numeral(txInfos.amount).multiply(price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
+                            </small>
                         </div>
-                        <small className='deposit-infos text-start'>
-                            {numeral(txInfos.amount).multiply(price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
-                        </small>
+                    </div>
+                    <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
+                </div>
+                <div className='row row-cols-3 gx-4 ctas-section'>
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
+                            onClick={() => {
+                                window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
+                            }}
+                        >
+                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
+                            {I18n.t('deposit.seeOnExplorer')}
+                        </Card>
+                    </div>
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
+                            onClick={() => {
+                                window.open(`${NavigationConstants.MINTSCAN}/txs/${txInfos.hash}`, '_blank');
+                            }}
+                        >
+                            <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
+                            {I18n.t('deposit.seeOnMintscan')}
+                        </Card>
+                    </div>
+                    <div className='col'>
+                        <Card
+                            flat
+                            withoutPadding
+                            className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
+                            onClick={() => {
+                                navigate(NavigationConstants.MY_SAVINGS);
+                            }}
+                        >
+                            <img src={Assets.images.mySavings} alt='My savings' className='me-3' />
+                            {I18n.t('deposit.goToMySavings')}
+                        </Card>
                     </div>
                 </div>
-                <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
+                <Button
+                    className='deposit-cta align-self-center position-relative mt-5 mb-2'
+                    onClick={() => {
+                        window.open(
+                            `${NavigationConstants.TWEET_URL}?text=${encodeURI(
+                                I18n.t('deposit.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
+                            )}`,
+                            '_blank',
+                        );
+                        onTwitterShare();
+                    }}
+                >
+                    <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                    <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3 twitter-icon' width={25} style={{ zIndex: 0 }} />
+                    <div className='deposit-cta-text'>{I18n.t('deposit.shareTwitter')}</div>
+                </Button>
             </div>
-            <div className='row row-cols-3 gx-4'>
-                <div className='col'>
-                    <Card
-                        flat
-                        withoutPadding
-                        className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                        onClick={() => {
-                            window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
-                        }}
-                    >
-                        <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                        {I18n.t('deposit.seeOnExplorer')}
-                    </Card>
-                </div>
-                <div className='col'>
-                    <Card
-                        flat
-                        withoutPadding
-                        className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
-                        onClick={() => {
-                            window.open(`${NavigationConstants.MINTSCAN}/txs/${txInfos.hash}`, '_blank');
-                        }}
-                    >
-                        <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
-                        {I18n.t('deposit.seeOnMintscan')}
-                    </Card>
-                </div>
-                <div className='col'>
-                    <Card
-                        flat
-                        withoutPadding
-                        className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
-                        onClick={() => {
-                            navigate(NavigationConstants.MY_SAVINGS);
-                        }}
-                    >
-                        <img src={Assets.images.mySavings} alt='My savings' className='me-3' />
-                        {I18n.t('deposit.goToMySavings')}
-                    </Card>
-                </div>
-            </div>
-            <Button
-                className='deposit-cta align-self-center mt-5 mb-2'
-                onClick={() => {
-                    window.open(
-                        `${NavigationConstants.TWEET_URL}?text=${encodeURI(
-                            I18n.t('deposit.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
-                        )}`,
-                        '_blank',
-                    );
-                    onTwitterShare();
-                }}
-            >
-                <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3' width={25} />
-                {I18n.t('deposit.shareTwitter')}
-            </Button>
         </div>
     );
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onTwitterShare, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
@@ -427,35 +460,41 @@ const DepositSteps = (props: Props) => {
     return (
         <>
             <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-                <div className={`d-flex flex-${currentStep === steps.length - 1 ? 'row mt-2' : 'column'} mb-3 mb-sm-5 mb-lg-0`}>
-                    <div className='card-step-title'>{steps[currentStep].cardTitle || steps[currentStep].title}</div>
-                    <div className='card-step-subtitle'>{steps[currentStep].cardSubtitle || steps[currentStep].subtitle}</div>
+                <div className='card-content'>
+                    {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
+                        <DepositStep1
+                            title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
+                            subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
+                            currentPool={currentPool}
+                            form={transferForm}
+                            onDeposit={(amount) => setAmount(amount)}
+                            price={price}
+                            pools={pools}
+                            balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                            nonEmptyWallets={nonEmptyWallets}
+                        />
+                    )}
+                    {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
+                        <DepositStep2
+                            title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
+                            subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
+                            balances={lumWallet?.balances || []}
+                            initialAmount={initialAmount}
+                            amount={amount}
+                            onFinishDeposit={(infos) => {
+                                onFinishDeposit(onNextStep);
+                                setTxInfos(infos);
+                            }}
+                            currentPool={currentPool}
+                            pools={pools}
+                            price={price}
+                            onPrevStep={onPrevStep}
+                        />
+                    )}
+                    {currentStep === steps.length && txInfos && (
+                        <DepositStep3 title={I18n.t('deposit.shareStep.title')} subtitle={I18n.t('deposit.shareStep.subtitle')} txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />
+                    )}
                 </div>
-                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
-                    <DepositStep1
-                        currentPool={currentPool}
-                        form={transferForm}
-                        onDeposit={(amount) => setAmount(amount)}
-                        price={price}
-                        pools={pools}
-                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
-                        nonEmptyWallets={nonEmptyWallets}
-                    />
-                )}
-                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
-                    <DepositStep2
-                        balances={lumWallet?.balances || []}
-                        initialAmount={initialAmount}
-                        amount={amount}
-                        onFinishDeposit={(infos) => setTxInfos(infos)}
-                        currentPool={currentPool}
-                        pools={pools}
-                        price={price}
-                        onNextStep={onNextStep}
-                        onPrevStep={onPrevStep}
-                    />
-                )}
-                {currentStep === steps.length - 1 && txInfos && <DepositStep3 txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />}
             </div>
         </>
     );

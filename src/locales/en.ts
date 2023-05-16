@@ -306,7 +306,7 @@ export default {
                     subtitle: 'Redeem your savings\nor transfer your available tokens',
                     cardTitle: 'Leave pool',
                     cardSubtitle:
-                        'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+                        'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
                 },
                 {
                     title: 'Select the savings to redeem',
@@ -330,7 +330,7 @@ export default {
         },
     },
     deposit: {
-        title: 'Few steps away\nfrom your deposit',
+        title: 'Few steps away<br/>from your deposit',
         transferBtn: 'Transfer',
         saveAndWinBtn: 'Save & Win',
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
@@ -346,26 +346,24 @@ export default {
         },
         feesWarning: 'You need LUM for transaction fees',
         depositWarning:
-            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://app.gitbook.com/o/-LnNbIeUqcdIsBmCQ4GC/s/K2G4kUJpovlRV8hwWDGn/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',
         steps: [
             {
                 title: 'Transfer {{ denom }} to Lum Network',
                 subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
-                cardSubtitle: 'Transfer your {{ denom }} from\n{{ chainName }} to Lum Network',
+                cardSubtitle: 'Transfer your {{ denom }} from<br />{{ chainName }} to Lum Network',
             },
             {
                 title: 'Deposit into {{ denom }} pool',
                 subtitle: 'Start your saving streak!',
-                cardSubtitle: 'You are about to make your\nsavings beautiful!',
-            },
-            {
-                title: 'Saving review & spread the word!',
-                subtitle: 'Share your Cosmos Millions deposit on Twitter and contribute to increase the collective prize pool!',
-                cardTitle: 'Your savings are now in good hands! 🥳',
-                cardSubtitle: 'You are always eligible for all the next draws coming! Share your deposit on Twitter to see how high the total amount saved can go!',
+                cardSubtitle: 'You are about to make your<br />savings beautiful!',
             },
         ],
+        shareStep: {
+            title: 'Your savings are now in good hands! 🥳',
+            subtitle: 'You are always eligible for all the next draws coming! Share your deposit on Twitter to see how high the total amount saved can go!',
+        },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
             'My savings are going to the moon 🚀 I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
