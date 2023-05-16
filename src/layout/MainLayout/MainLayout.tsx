@@ -52,7 +52,7 @@ const MainLayout = () => {
 
     useEffect(() => {
         if (visibilityState === 'visible') {
-            if (wallet) {
+            if (wallet && (location.pathname === NavigationConstants.HOME || location.pathname === NavigationConstants.POOLS || location.pathname === NavigationConstants.MY_SAVINGS)) {
                 dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
             }
         }
