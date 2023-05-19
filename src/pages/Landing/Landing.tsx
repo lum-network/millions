@@ -185,7 +185,7 @@ const Landing = () => {
                         <h2 className='mb-4 text-center'>
                             Time to Spice Up
                             <br />
-                            the Cosmos Game
+                            the Cosmos Game!
                         </h2>
                         <div className='cosmos-game-description'>
                             <p className='text-center'>

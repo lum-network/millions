@@ -56,12 +56,12 @@ export default {
         saving: {
             title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
-            p2: 'The prize-linked savings account with the highest returns ever made.',
+            p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
             biggestPrizeToWin: 'Biggest prize to win',
         },
         cosmosGame: {
-            title: 'Time to Spice Up\nthe Cosmos Game!',
+            title: 'Time to Spice Up\nthe Cosmos Game',
             p1: "That's one small step for Cosmonauts, one giant leap for Cosmos.",
             p2: 'Speed up your path to financial tranquility with our thrilling prize-linked savings accounts! Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.',
             p3: 'With no risk and exciting rewards, bring your savings to the moon!',
@@ -69,7 +69,7 @@ export default {
         winners: {
             title: 'How it Works',
             p1: 'Deposit\nyour assets',
-            p2: 'You’re eligible to all the next\nprizes automatically ',
+            p2: 'You are eligible to all the next\nprizes automatically ',
             p3: 'You win! Compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for the next draw!',
             or: 'OR',
@@ -92,7 +92,7 @@ export default {
             title: 'Join the Cosmos\nMillions Community',
         },
         faqSection: {
-            title: 'You have Questions? \nWe have the Answers',
+            title: 'FAQ',
             questions: [
                 {
                     title: 'What is Cosmos Millions?',
@@ -100,19 +100,23 @@ export default {
                 },
                 {
                     title: 'How are the prizes generated?',
-                    answer: 'Cosmos Millions generates its prizes based on the interest earned from deposited savings.<br />Whenever users make a deposit into the platform, the tokens are gathered into a pool and sent to their native blockchain. Then, the tokens are delegated to validators, and they start earning interest. This interest (staking rewards) is then used to generate prizes for the users on a larger scale than what each user could get individually.<br /><br />To ensure the safety and security of the deposited funds, Cosmos Millions delegates to some of the most reliable validators in the Interchain. You can leave a Cosmos Millions pool at any time and your tokens will be sent back to your wallet.',
+                    answer: 'Prizes on Cosmos Millions are generated from the staking rewards earned on user deposits.\nWhen a user makes a deposit, their tokens are sent back to their native blockchain where they are staked, generating rewards.\n' +
+                        '\n' +
+                        'These staking rewards are then collected and distributed as prizes on the Cosmos Millions protocol. In other words, the prizes are the result of the collective staking activity of all the deposited tokens.',
                 },
                 {
-                    title: 'When is the ATOM pool launch?',
-                    answer: 'The ATOM pool launch is set for mid-May, with the official date to be announced shortly!',
+                    title: 'When will the ATOM pool be launched?',
+                    answer: 'The ATOM pool launch is set for May 29th!',
                 },
                 {
                     title: 'What are delegated deposits?',
                     answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes.',
                 },
                 {
-                    title: 'Is Cosmos Millions code audited?',
-                    answer: 'Yes! Cosmos Millions code is currently under review by a third-party company. ',
+                    title: 'Are my deposits safe?',
+                    answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
+                        '\n' +
+                        'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. <a href="https://docs.cosmosmillions.com/cosmos-millions/security-and-audit">See Security & Audit</a>',
                 },
             ],
         },
