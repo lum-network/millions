@@ -20,7 +20,6 @@ import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
-import TestimonialCard from './components/TestimonialCard';
 import PoolCardPlaceholder from './components/PoolCardPlaceholder';
 
 import './Landing.scss';
@@ -31,7 +30,6 @@ const Landing = () => {
     const onClickNewPool = () => {
         window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
     };
-    const bestPoolPrize = useSelector((state: RootState) => state.pools.bestPoolPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
     const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
