@@ -19,9 +19,10 @@ interface IProps {
     countdownTo?: Date;
     className?: string;
     delay?: number;
+    title?: string;
 }
 
-const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay }: IProps) => {
+const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, title }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats.prices);
 
     const { width } = useWindowSize();
@@ -48,7 +49,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay }: 
         >
             <div className='content'>
                 <div className='title-container'>
-                    <h3 className=''>{I18n.t('home.nextBestPrize')}</h3>
+                    <h3 className=''>{title || I18n.t('home.nextBestPrize')}</h3>
                 </div>
                 <div className='best-prize-container'>
                     <div className='d-flex'>

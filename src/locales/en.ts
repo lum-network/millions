@@ -56,8 +56,8 @@ export default {
         openTheApp: 'Open the app',
         saving: {
             title: 'Win Big by<br />Saving Smart',
-            p1: 'Introducing Cosmos Millions, a decentralized finance protocol and open-source platform for prize savings.',
-            p2: 'The prize-linked savings account with the highest returns ever made.',
+            p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
+            p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
             biggestPrizeToWin: 'Biggest prize to win',
         },
@@ -69,11 +69,11 @@ export default {
             p4: 'Experience a secure and innovative saving method without compromising on excitement!',
         },
         winners: {
-            title: 'One Winner, No Losers!',
+            title: 'How it Works',
             p1: 'Deposit\nyour assets',
-            p2: 'You’re eligible to all the next\nprizes automatically ',
+            p2: 'You are eligible to all the next\nprizes automatically ',
             p3: 'You win! Compound your prize to boost your chances of earning more next time!',
-            p4: 'No win this time, but no loss either! Get ready for another chance next week!',
+            p4: 'No win this time, but no loss either! Get ready for the next draw!',
             or: 'OR',
         },
         pools: {
@@ -95,19 +95,35 @@ export default {
             title: 'Join the Cosmos\nMillions Community',
         },
         faqSection: {
-            title: 'You have Questions? \nWe have the Answers',
+            title: 'FAQ',
             questions: [
                 {
                     title: 'What is Cosmos Millions?',
                     answer: 'Cosmos Millions is a prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
                 },
                 {
+                    title: 'What is a Prize-Linked Savings Account?',
+                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is then distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
+                },
+                {
                     title: 'Is Cosmos Millions free to use?',
-                    answer: 'Yes anyone can deposit and participate for free.\n\nTransaction fees are very cheap - usually less than a USD cent - thanks to the underlying technology. When a prize is distributed, Cosmos Millions takes a 10% fee. This is fundamental to ensure long-term viability of the blockchain infrastructure used.',
+                    answer: 'Yes anyone can deposit and participate for free.\nTransaction fees are very cheap - usually less than a USD cent - thanks to the underlying technology. When a prize is distributed, Cosmos Millions takes a 10% fee. This is fundamental to ensure long-term viability of the blockchain infrastructure used.',
+                },
+                {
+                    title: 'How can I participate?',
+                    answer: 'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                        'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
+                        'Check the <a href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
                 {
                     title: 'How are the prizes generated?',
-                    answer: 'Cosmos Millions generates prizes based on the rewards earned from deposited savings. \n\nWhenever a user makes a deposit into the platform, the tokens are ultimately sent back to their native blockchain, where they start generating staking rewards. These rewards are then distribute as prizes to users.\n\nTo ensure the safety and security of the deposited funds, Cosmos Millions works with some of the most reliable validators in the Interchain.',
+                    answer: 'Cosmos Millions generates prizes based on the rewards earned from deposited savings. Whenever a user makes a deposit into the platform, the tokens are ultimately sent back to their native blockchain, where they start generating staking rewards. These rewards are then distribute as prizes to users. To ensure the safety and security of the deposited funds, Cosmos Millions works with some of the most reliable validators in the Interchain.',
+                },
+                {
+                    title: 'Are my deposits safe?',
+                    answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
+                        '\n' +
+                        'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. See Security & Audit',
                 },
                 {
                     title: "What if I don't win?",
@@ -127,13 +143,7 @@ export default {
                 },
                 {
                     title: 'How long do I have to claim my prizes?',
-                    answer:
-                        'After winning a prize on Cosmos Millions, you can claim it by accessing the "My savings" section of the web application. \n\n' +
-                        "You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don't forget to come check the platform regularly to ensure that you don't miss the deadline for claiming your prize!",
-                },
-                {
-                    title: 'Is Cosmos Millions audited?',
-                    answer: 'Cosmos Millions code is currently being audited by a third-party company.',
+                    answer: "After winning a prize on Cosmos Millions, you can claim it by accessing the \"My savings\" section of the web application. You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don't forget to come check the platform regularly to ensure that you don't miss the deadline for claiming your prize!",
                 },
                 {
                     title: 'What is the Cosmos ecosystem?',

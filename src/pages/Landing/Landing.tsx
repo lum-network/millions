@@ -195,7 +195,7 @@ const Landing = () => {
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
-                            <BestPrizeCard biggestPrize={bestPoolPrize?.prizeToWin || null} />
+                            <BestPrizeCard title={'ATOM pool TVL'} biggestPrize={pools && pools.length ? { amount: NumbersUtils.convertUnitNumber(pools[0].tvlAmount), denom: 'uatom' } : null} />
                         </div>
                     </Card>
                 </div>
@@ -385,13 +385,13 @@ const Landing = () => {
                         </Button>
                     </div>
                 </div>
-                <div className='col-12 testimonials'>
-                    <div className='testimonials-container cards-list'>
-                        {LandingConstants.TESTIMONIALS.map((testimonial, index) => (
-                            <TestimonialCard key={index} testimonial={testimonial} />
-                        ))}
-                    </div>
-                </div>
+                {/*<div className='col-12 testimonials'>*/}
+                {/*    <div className='testimonials-container cards-list'>*/}
+                {/*        {LandingConstants.TESTIMONIALS.map((testimonial, index) => (*/}
+                {/*            <TestimonialCard key={index} testimonial={testimonial} />*/}
+                {/*        ))}*/}
+                {/*    </div>*/}
+                {/*</div>*/}
                 <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
                 <div className='future-left col-12 col-xl-7 order-1 order-xl-0'>
                     <Card className='d-flex align-items-center flex-column'>
