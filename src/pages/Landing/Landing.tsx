@@ -188,7 +188,7 @@ const Landing = () => {
                                 <p>{I18n.t('landing.saving.p1')}</p>
                                 <p>{I18n.t('landing.saving.p2')}</p>
                             </div>
-                            <Button className='cta' to={NavigationConstants.HOME}>
+                            <Button className='cta' to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
                                 {I18n.t('landing.saving.cta')}
                             </Button>
                         </div>
@@ -378,7 +378,7 @@ const Landing = () => {
                         <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
                             {I18n.t('landing.pools.newPool')}
                         </Button>
-                        <Button className='cta' to={NavigationConstants.POOLS}>
+                        <Button className='cta' to={NavigationConstants.POOLS} locationState={{ autoConnect: true }}>
                             {I18n.t('landing.pools.cta')}
                         </Button>
                     </div>
@@ -405,7 +405,7 @@ const Landing = () => {
                                 <p className='text-flat-card'>{I18n.t('landing.future.p3')}</p>
                             </Card>
                         </div>
-                        <Button to={NavigationConstants.HOME} className='cta mt-4'>
+                        <Button to={NavigationConstants.HOME} className='cta mt-4' locationState={{ autoConnect: true }}>
                             {I18n.t('landing.future.cta')}
                         </Button>
                     </Card>
