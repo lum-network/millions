@@ -19,6 +19,7 @@ import './Header.scss';
 
 const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
+    const prizes = useSelector((state: RootState) => state.wallet.lumWallet?.prizes);
     const timeline = useRef<gsap.core.Timeline>();
     const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
@@ -157,10 +158,13 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                     </NavLink>
                 </li>
                 {address && (
-                    <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
+                    <li className='nav-item position-relative ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
                         <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                             {I18n.t('mySavings.title')}
                         </NavLink>
+                        {prizes && prizes.length > 3 && (
+                            <div className='position-absolute top-0 end-0 rounded-circle' style={{ width: 15, height: 15, backgroundColor: '#FA7676', transform: 'translate(8px, -2px)' }} />
+                        )}
                     </li>
                 )}
                 {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}

@@ -218,11 +218,12 @@ export default {
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Winners', 'Prize Value'],
+            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Prizes', 'Prize Value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',
-            redelegatedPrizeBtn: 'Redelegated Prize',
+            redelegatedPrizeBtn: 'Not won',
+            nextPool: 'Any prize amount not won during a draw will be rolled over and added to the pool for subsequent draws.',
             tryBtn: 'Try your chances',
         },
     },
@@ -248,9 +249,9 @@ export default {
         },
         governance: 'Governance',
         governanceCard: {
-            title: 'Get LUM to participate to Cosmos Millions Protocol',
+            title: "Get LUM to participate to Cosmos Millions' governance",
             description:
-                "As a LUM holder in the Lum Network, you play a role in shaping the protocol's future. Your ability to propose and vote on changes to the protocol empowers you to influence the community and guide the network towards a positive future.",
+                "As a LUM holder, you play a role in shaping the Cosmos Millions protocol's future. Your ability to propose and vote on changes empowers you to steer the protocol in the best possible direction.",
             cta: 'Join our Discord',
         },
         transferOutModal: {
@@ -331,7 +332,7 @@ export default {
                 title: 'Once the unbonding period begins you will:',
                 draws: 'Not be selected for all future draws',
                 cancel: 'Not be able to cancel the unbonding',
-                waiting: 'Need to wait 21 days for the amount to be liquid',
+                waiting: 'Need to wait {{ unbondingTime }} days for the amount to be liquid',
             },
             cta: 'Leave pool',
         },
@@ -360,7 +361,7 @@ export default {
         },
         feesWarning: 'You need LUM for transaction fees',
         depositWarning:
-            'Deposit will lock your assets for 21 days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take 21 days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+            'Deposit will lock your assets for {{ unbondingTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take {{ unbondingTime }} days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',
         steps: [
             {
@@ -385,13 +386,15 @@ export default {
         seeOnMintscan: 'See transaction\non Mintscan',
         seeOnExplorer: 'See transaction\non Lum Explorer',
         quitModal: {
-            title: 'If you leave this page, you will lose your progress. You will not lose any of your assets associated with this page.',
+            title: 'You are leaving this page. You will not lose any asset but your progress will not be saved',
+            continue: 'Leave page',
+            cancel: 'Stay here',
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
             subtitle: 'You already transfered <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
-            prevAmountLabel: 'Current amount of {{ denom }} deposited',
-            nextAmountLabel: 'Amount of {{ denom }} to deposit',
+            prevAmountLabel: 'Amount requested',
+            nextAmountLabel: 'Missing amount',
             cta: 'Add {{ nextAmount }} {{ denom }}',
             cancel: 'No thanks',
         },

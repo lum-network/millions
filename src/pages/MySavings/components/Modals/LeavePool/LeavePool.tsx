@@ -17,6 +17,7 @@ const LeavePool = ({ deposit }: Props) => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
 
+    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId.eq(deposit?.poolId) : undefined)));
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.leavePool);
 
     const steps = I18n.t('mySavings.leavePoolModal.steps', {
@@ -87,7 +88,7 @@ const LeavePool = ({ deposit }: Props) => {
                                         {I18n.t('mySavings.leavePoolModal.warnings.cancel')}
                                     </Card>
                                     <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3'>
-                                        {I18n.t('mySavings.leavePoolModal.warnings.waiting')}
+                                        {I18n.t('mySavings.leavePoolModal.warnings.waiting', { unbondingTime: pool?.internalInfos?.unbondingTime || 21 })}
                                     </Card>
                                 </div>
                                 <div className='w-100 mt-4'>

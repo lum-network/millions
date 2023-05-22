@@ -22,7 +22,7 @@ const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<Mod
                         blocker.proceed?.();
                     }}
                 >
-                    {I18n.t('common.continue')}
+                    {I18n.t('deposit.quitModal.continue')}
                 </Button>
                 <Button
                     className='w-100 ms-4'
@@ -33,7 +33,7 @@ const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<Mod
                         blocker.reset?.();
                     }}
                 >
-                    {I18n.t('common.cancel')}
+                    {I18n.t('deposit.quitModal.cancel')}
                 </Button>
             </div>
         </Modal>

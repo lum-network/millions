@@ -10,7 +10,7 @@ import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
 
-import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, ToastUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
@@ -245,7 +245,7 @@ const DepositStep2 = (
                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
             </div>
             <Card flat withoutPadding className='deposit-warning mt-4'>
-                <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning') }} />
+                <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning', { unbondingTime: currentPool?.internalInfos?.unbondingTime || 21 }) }} />
             </Card>
             <div className='step2-input-container'>
                 <div className='d-flex flex-row justify-content-between align-items-baseline mt-4'>
@@ -257,7 +257,7 @@ const DepositStep2 = (
                     ) : (
                         <label className='sublabel'>
                             {I18n.t('withdraw.amountInput.sublabel', {
-                                amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                                amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === poolToDeposit.nativeDenom)?.amount || '0')),
                                 denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                             })}
                         </label>
@@ -268,7 +268,7 @@ const DepositStep2 = (
                         isLoading={isLoading}
                         className='mt-2'
                         onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, 0.005);
+                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, poolToDeposit.nativeDenom === LumConstants.MicroLumDenom ? 1 : 0);
                             setDepositAmount(amount);
                         }}
                         inputProps={{

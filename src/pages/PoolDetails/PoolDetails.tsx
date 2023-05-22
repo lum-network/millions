@@ -64,6 +64,7 @@ const PoolDetails = () => {
     }
 
     const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? deposit.poolId?.equals(poolId) : deposit.amount?.denom === 'u' + denom));
+    const avgDeposit = (NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()) * prices[denom] || 0;
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
         chances: prizeBatch.poolPercent.toNumber() / 100,
@@ -249,9 +250,7 @@ const PoolDetails = () => {
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center p-4'>
                             <div className='w-100 me-3'>
                                 <small>{I18n.t('poolDetails.users.deposit')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>
-                                    ${pool ? numeral((NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()) * (prices[denom] || 1)).format('0,0') : 0}
-                                </div>
+                                <div className='stat-bg-white h4 mb-0 mt-2'>${pool ? numeral(avgDeposit).format('0,0') : 0}</div>
                             </div>
                             <div className='w-100 mt-4 mt-lg-0'>
                                 <small>{I18n.t('poolDetails.users.currentDraw')}</small>

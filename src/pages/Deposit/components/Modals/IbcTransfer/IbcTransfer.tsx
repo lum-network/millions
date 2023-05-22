@@ -61,7 +61,13 @@ const IbcTransfer = ({ modalRef, denom, price, prevAmount, nextAmount, isLoading
             </div>
             <Card flat withoutPadding className='deposit-warning my-4'>
                 <div
-                    dangerouslySetInnerHTML={{ __html: I18n.t('deposit.ibcTransferModal.subtitle', { denom: denom.toUpperCase(), prevAmount: formattedPrevAmount, nextAmount: formattedNextAmount }) }}
+                    dangerouslySetInnerHTML={{
+                        __html: I18n.t('deposit.ibcTransferModal.subtitle', {
+                            denom: denom.toUpperCase(),
+                            prevAmount: numeral(prevAmount).subtract(nextAmount).format('0,0[.]000000'),
+                            nextAmount: formattedNextAmount,
+                        }),
+                    }}
                 />
             </Card>
             <div className='d-flex flex-row align-self-stretch justify-content-between'>

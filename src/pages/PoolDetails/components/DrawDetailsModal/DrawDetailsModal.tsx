@@ -93,27 +93,30 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                 ))}
                             </Table>
                         ) : (
-                            <Card flat className='redelegated-prizes-card'>
-                                <div className='d-flex flex-row justify-content-between'>
-                                    <div className='d-flex flex-column text-start'>
-                                        <div className='display-6 prize-remaining-amount'>
-                                            {numeral(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}
+                            <>
+                                <p className='next-pool-info my-3'>{I18n.t('poolDetails.drawDetails.nextPool')}</p>
+                                <Card flat className='redelegated-prizes-card'>
+                                    <div className='d-flex flex-row justify-content-between'>
+                                        <div className='d-flex flex-column text-start'>
+                                            <div className='display-6 prize-remaining-amount'>
+                                                {numeral(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}
+                                            </div>
+                                            <div>
+                                                {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount))} {poolDenom.toUpperCase()}
+                                            </div>
                                         </div>
-                                        <div>
-                                            {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount))} {poolDenom.toUpperCase()}
-                                        </div>
+                                        <Button
+                                            data-bs-dismiss='modal'
+                                            data-bs-target='#drawDetailsModal'
+                                            onClick={() => {
+                                                setTimeout(() => navigate(`${NavigationConstants.POOLS}/${poolDenom}/${draw.poolId.toString()}`));
+                                            }}
+                                        >
+                                            {I18n.t('poolDetails.drawDetails.tryBtn')}
+                                        </Button>
                                     </div>
-                                    <Button
-                                        data-bs-dismiss='modal'
-                                        data-bs-target='#drawDetailsModal'
-                                        onClick={() => {
-                                            setTimeout(() => navigate(`${NavigationConstants.POOLS}/${poolDenom}/${draw.poolId.toString()}`));
-                                        }}
-                                    >
-                                        {I18n.t('poolDetails.drawDetails.tryBtn')}
-                                    </Button>
-                                </div>
-                            </Card>
+                                </Card>
+                            </>
                         )}
                     </div>
                 </div>

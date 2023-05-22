@@ -40,8 +40,8 @@ const Deposit = () => {
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(existsInLumBalances && denom !== LumConstants.LumDenom ? 1 : 0);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
-    const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('');
-    const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('');
+    const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
+    const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('0');
 
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
