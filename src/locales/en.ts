@@ -252,7 +252,7 @@ export default {
             title: "Get LUM to participate to Cosmos Millions' governance",
             description:
                 "As a LUM holder, you play a role in shaping the Cosmos Millions protocol's future. Your ability to propose and vote on changes empowers you to steer the protocol in the best possible direction.",
-            cta: 'Join our Discord',
+            cta: 'Buy $LUM on Osmosis',
         },
         transferOutModal: {
             title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',

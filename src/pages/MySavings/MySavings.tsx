@@ -353,8 +353,7 @@ const MySavings = () => {
                             <Card className='glow-bg'>
                                 <h3>{I18n.t('mySavings.governanceCard.title')}</h3>
                                 <p className='mt-4 mb-5'>{I18n.t('mySavings.governanceCard.description')}</p>
-                                <Button className='my-savings-cta' onClick={() => window.open(NavigationConstants.DISCORD, '_blank')}>
-                                    <img src={Assets.images.discord} alt='Discord' className='me-2' />
+                                <Button className='my-savings-cta' onClick={() => window.open(NavigationConstants.BUY_LUM, '_blank')}>
                                     {I18n.t('mySavings.governanceCard.cta')}
                                 </Button>
                             </Card>
