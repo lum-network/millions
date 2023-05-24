@@ -8,7 +8,6 @@ import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, Wal
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
-import { sortByBlockHeightDesc } from 'utils/txs';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -26,7 +25,7 @@ interface SetWalletDataPayload {
         result: TransactionModel[];
         currentPage: number;
         pagesTotal: number;
-        fullyLoaded: boolean;
+        pagesLoaded: number;
     };
     deposits?: AggregatedDepositModel[];
     prizes?: Prize[];
@@ -36,6 +35,7 @@ interface GetActivitiesPayload {
     address: string;
     page?: number;
     prevTxs?: TransactionModel[];
+    reset?: boolean;
 }
 
 interface SetOtherWalletPayload {
@@ -82,7 +82,7 @@ export const wallet = createModel<RootModel>()({
                         result: [],
                         currentPage: 1,
                         pagesTotal: 1,
-                        fullyLoaded: false,
+                        pagesLoaded: 1,
                     },
                     deposits: [],
                     prizes: [],
@@ -325,7 +325,7 @@ export const wallet = createModel<RootModel>()({
 
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
-            await dispatch.wallet.getActivities({ address });
+            await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
             await dispatch.pools.fetchPools();
             await dispatch.pools.getPoolsAdditionalInfo(null);
@@ -348,27 +348,19 @@ export const wallet = createModel<RootModel>()({
         async getActivities(payload: GetActivitiesPayload, state) {
             try {
                 const res = await LumClient.getWalletActivities(payload.address, payload.page);
+                const currPagesLoaded = state.wallet.lumWallet?.activities.pagesLoaded || 1;
 
                 if (res) {
-                    const seenHashes: string[] = [];
-                    const txs = [...(state.wallet.lumWallet?.activities.result || []), ...res.activities];
-                    const result = [];
-
-                    for (const activity of txs) {
-                        if (!seenHashes.includes(activity.hash)) {
-                            result.push(activity);
-                            seenHashes.push(activity.hash);
-                        }
-                    }
+                    const txs = [...(payload.reset ? [] : state.wallet.lumWallet?.activities.result || []), ...res.activities];
 
                     const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 30) : state.wallet.lumWallet?.activities.pagesTotal || 0;
 
                     dispatch.wallet.setLumWalletData({
                         activities: {
-                            result: sortByBlockHeightDesc(result),
+                            result: txs,
                             currentPage: res.currentPage,
                             pagesTotal,
-                            fullyLoaded: res.currentPage === pagesTotal,
+                            pagesLoaded: payload.reset ? 1 : res.currentPage > currPagesLoaded ? res.currentPage : currPagesLoaded,
                         },
                     });
                 }

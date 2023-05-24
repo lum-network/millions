@@ -11,7 +11,7 @@ export interface LumWalletModel {
         result: TransactionModel[];
         currentPage: number;
         pagesTotal: number;
-        fullyLoaded: boolean;
+        pagesLoaded: number;
     };
     deposits: AggregatedDepositModel[];
     prizes: Prize[];

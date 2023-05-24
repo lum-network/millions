@@ -136,29 +136,21 @@ class LumClient {
                 { key: 'message.module', value: 'millions' },
                 { key: 'transfer.sender', value: address },
             ]),
-            LumUtils.searchTxByTags([
-                { key: 'message.module', value: 'millions' },
-                { key: 'transfer.recipient', value: address },
-            ]),
         ];
 
         await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' }))).then((res) => {
-            const senderQuery = res[0];
-            const recipientQuery = res[1];
-
-            if (page === 1 && senderQuery && recipientQuery && senderQuery.status === 'fulfilled' && recipientQuery.status === 'fulfilled') {
-                totalCount = (senderQuery.value?.totalCount || 0) + (recipientQuery.value?.totalCount || 0);
+            if (page === 1) {
+                for (const r of res) {
+                    if (r.status === 'fulfilled' && r.value) {
+                        (totalCount as number) += r.value.totalCount;
+                    }
+                }
             }
-
-            const seenHashes: Uint8Array[] = [];
 
             for (const r of res) {
                 if (r.status === 'fulfilled' && r.value) {
                     for (const tx of r.value.txs) {
-                        if (!seenHashes.includes(tx.hash)) {
-                            seenHashes.push(tx.hash);
-                            result.push(tx);
-                        }
+                        result.push(tx);
                     }
                 }
             }
