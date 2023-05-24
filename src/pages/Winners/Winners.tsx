@@ -43,10 +43,10 @@ const Winners = () => {
                         <Card className='no-winners d-flex flex-row align-items-center justify-content-between glow-bg'>
                             <Lottie animationData={cosmonautWithDuck} className='cosmonaut-duck' />
                             <div className='infos'>
-                                <h2>You could be here!</h2>
-                                <p className='mb-0'>{"Participating in this drawing has a higher\nchance of winning, so don't delay!"}</p>
+                                <h2>{I18n.t('luckiestWinners.noWinnersYet.title')}</h2>
+                                <p className='mb-0'>{I18n.t('luckiestWinners.noWinnersYet.description')}</p>
                             </div>
-                            <Button to={NavigationConstants.POOLS}>Deposit in Pool</Button>
+                            <Button to={NavigationConstants.POOLS}>{I18n.t('luckiestWinners.noWinnersYet.cta')}</Button>
                         </Card>
                     </div>
                 )}

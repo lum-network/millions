@@ -329,6 +329,7 @@ const Deposit = () => {
     const startTransition = () => {
         const stepsArray = gsap.utils.toArray<HTMLElement>('#depositFlow .steps .step');
         const completedStepElement = stepsArray.find((_, index) => index === currentStep);
+        const nextStepElement = stepsArray.find((_, index) => index === currentStep + 1);
 
         if (completedStepElement) {
             const title = completedStepElement.querySelector('.title');
@@ -409,7 +410,7 @@ const Deposit = () => {
 
             if (completedStepElement.classList.contains('with-line')) {
                 textTl.fromTo(
-                    '#depositFlow .step.with-line',
+                    completedStepElement,
                     {
                         '--primary-line-height': 0,
                     },
@@ -417,7 +418,40 @@ const Deposit = () => {
                         '--primary-line-height': '100%',
                         duration: 0.3,
                     },
+                    '<0.1',
                 );
+
+                if (nextStepElement) {
+                    textTl
+                        .call(() => setCurrentStep(currentStep + 1), undefined, '<0.1')
+                        .fromTo(
+                            nextStepElement,
+                            {
+                                '--border-progress': 0,
+                                immediateRender: false,
+                            },
+                            {
+                                '--border-progress': '100%',
+                                stagger: 0.1,
+                                duration: 0.2,
+                            },
+                            '<0.1',
+                        )
+                        .fromTo(
+                            nextStepElement.querySelector('index-text'),
+                            {
+                                opacity: 0,
+                                scale: 0,
+                            },
+                            {
+                                opacity: 1,
+                                scale: 1,
+                                stagger: 0.1,
+                                duration: 0.2,
+                            },
+                            '<0.1',
+                        );
+                }
             }
         }
 
@@ -441,7 +475,6 @@ const Deposit = () => {
                         },
                     ),
                 )
-                .call(() => setCurrentStep(currentStep + 1))
                 .set('#depositFlow .deposit-steps .card-content', {
                     opacity: 1,
                 })
@@ -500,14 +533,28 @@ const Deposit = () => {
             );
 
             gsap.utils.toArray<HTMLElement>('#depositFlow .step').forEach((step, index) => {
-                const indexContainer = step.querySelector('.step-index-container');
+                const indexBorder = step.querySelector('.index-default-border');
+                const indexText = step.querySelector('.index-text');
                 const title = step.querySelector('.title');
                 const subtitle = step.querySelector('.subtitle');
 
                 if (timeline) {
                     timeline
                         .fromTo(
-                            indexContainer,
+                            step,
+                            {
+                                '--border-progress': 0,
+                            },
+                            {
+                                '--border-progress': '100%',
+                                stagger: 0.1,
+                                duration: 0.2,
+                            },
+                            index > 0 ? '<0.1' : '>',
+                        )
+                        .set(indexBorder, { opacity: 1 })
+                        .fromTo(
+                            indexText,
                             {
                                 opacity: 0,
                                 scale: 0,
@@ -545,17 +592,31 @@ const Deposit = () => {
                             '<0.1',
                         );
                     if (step.classList.contains('with-line')) {
-                        timeline.fromTo(
-                            '#depositFlow .step.with-line',
-                            {
-                                '--grey-line-height': 0,
-                            },
-                            {
-                                '--grey-line-height': '100%',
-                                duration: 0.3,
-                            },
-                            '<',
-                        );
+                        if (step.classList.contains('completed')) {
+                            timeline.fromTo(
+                                step,
+                                {
+                                    '--primary-line-height': 0,
+                                },
+                                {
+                                    '--primary-line-height': '100%',
+                                    duration: 0.3,
+                                },
+                                '<',
+                            );
+                        } else {
+                            timeline.fromTo(
+                                step,
+                                {
+                                    '--grey-line-height': 0,
+                                },
+                                {
+                                    '--grey-line-height': '100%',
+                                    duration: 0.3,
+                                },
+                                '<',
+                            );
+                        }
                     }
                 }
             });

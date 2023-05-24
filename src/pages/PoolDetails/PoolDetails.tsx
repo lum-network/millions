@@ -301,7 +301,14 @@ const PoolDetails = () => {
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('luckiestWinners.title')}</h2>
                         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3'>
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
-                                <BigWinnerCard price={prize.usdTokenValue} key={index} denom={prize.amount.denom} address={prize.winnerAddress} prize={prize.amount.amount} />
+                                <BigWinnerCard
+                                    className={index > 0 ? 'ms-lg-3' : ''}
+                                    price={prize.usdTokenValue}
+                                    key={index}
+                                    denom={prize.amount.denom}
+                                    address={prize.winnerAddress}
+                                    prize={prize.amount.amount}
+                                />
                             ))}
                         </div>
                     </>

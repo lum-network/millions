@@ -280,14 +280,14 @@ export default {
             steps: [
                 {
                     title: 'Wonderful! Take a look at what you have won!',
-                    subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws! OR Click on “Claim my prizes” to simply get your prizes',
+                    subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws!\nOR Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
                     title: 'Confirm your claim in Keplr',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
                 {
-                    title: 'Cosmonaut, your savings are\nblasting off like a rocketship 🚀',
+                    title: 'Spread the word!',
                     subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!',
                 },
             ],
@@ -299,7 +299,7 @@ export default {
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
-            subtitle: "Are you sure you don't want to compound your prizes ?",
+            subtitle: "Are you sure you don't want to compound your prizes?",
             info: 'Participants who compound increase\ndrastically their next winning chances!',
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
@@ -405,5 +405,10 @@ export default {
     luckiestWinners: {
         title: 'Luckiest Winners',
         latestWinners: 'Latest Winners',
+        noWinnersYet: {
+            title: 'You could be here!',
+            description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
+            cta: 'Deposit in Pool',
+        }
     },
 };

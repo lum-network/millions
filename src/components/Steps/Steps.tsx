@@ -16,12 +16,20 @@ const Steps = ({ steps, currentStep, stepBackgroundColor, lastStepChecked }: Pro
         <div className='steps'>
             {steps.map((step, index) => {
                 const completed = currentStep > index || (currentStep === steps.length - 1 && lastStepChecked);
+                const active = currentStep === index;
+
                 return (
-                    <div key={index} className={`step ${index + 1 < steps.length ? 'with-line pb-5' : ''} ${completed ? 'completed' : currentStep === index ? 'active' : ''}`}>
+                    <div key={index} className={`step ${index + 1 < steps.length ? 'with-line pb-5' : ''} ${completed ? 'completed' : active ? 'active' : ''}`}>
                         <div className='d-flex flex-row'>
-                            <div className='step-index-container position-relative' style={{ '--step-bg-color': stepBackgroundColor || '#F4F4F4' } as React.CSSProperties}>
-                                {completed ? <img src={Assets.images.checkmark} alt='checkmark' style={{ zIndex: 1 }} /> : index + 1}
-                                <div className='checkmark-container position-absolute rounded-circle' />
+                            <div className='overflow-visible step-index-container'>
+                                <div className='position-absolute top-0 start-0 index-default-border' />
+                                {!completed && <div className='position-absolute top-0 start-0 index-border' />}
+                                <div className='index-container position-relative' style={{ '--step-bg-color': stepBackgroundColor || '#F4F4F4' } as React.CSSProperties}>
+                                    <div className='index-text'>{index + 1}</div>
+                                    <div style={{ zIndex: 1 }} className='checkmark-container d-flex align-items-center justify-content-center position-absolute rounded-circle'>
+                                        <img src={Assets.images.checkmark} alt='checkmark' />
+                                    </div>
+                                </div>
                             </div>
                             <p className='title mb-0'>{step.title}</p>
                         </div>
