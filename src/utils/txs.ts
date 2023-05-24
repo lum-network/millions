@@ -1,4 +1,5 @@
 import { LumConstants, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import { Any } from '@lum-network/sdk-javascript/build/codec/google/protobuf/any';
 import { TransactionModel } from 'models';
 import Long from 'long';
 import { getDenomFromIbc } from './denoms';
@@ -22,7 +23,7 @@ export const isMillionsDepositTx = (
         depositorAddress?: string;
         winnerAddress?: string;
         isSponsor?: boolean;
-        poolId?: Long.Long;
+        poolId?: Long;
     } | null,
 ): info is MillionsTxInfos => {
     return !!(info && info.amount && info.depositorAddress && info.isSponsor !== undefined && info.poolId);
@@ -43,18 +44,63 @@ export const findAmountInLogs = async (logs: any, event: string, index: number) 
         return [];
     }
 
-    const claimEvent = logs[index]?.events.find((ev: any) => ev.type === event);
+    const e = logs[index]?.events.find((ev: any) => ev.type === event);
 
-    if (!claimEvent) {
+    if (!e) {
         return [];
     } else {
-        const amount = claimEvent.attributes.find((attr: any) => attr.key === 'amount');
+        const amount = e.attributes.find((attr: any) => attr.key === 'amount');
         if (!amount) {
             return [];
         } else {
             const denom = amount.value.match(amount.value.includes('ibc') ? /(ibc\/.+)/g : /\D+/g)[0];
             return [{ denom: await getDenomFromIbc(denom), amount: amount.value.replace(denom, '') }];
         }
+    }
+};
+
+export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, logs: any, event: string, formattedTxs: TransactionModel[]) => {
+    if (tx.amount.length > 0) {
+        const msgAmount = await findAmountInLogs(logs, event, index);
+        const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
+
+        const existingDenomIndex = tx.amount.findIndex((amount) => amount.denom === msgAmount[0].denom);
+
+        if (existingDenomIndex > -1) {
+            const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
+            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+            tx.amount[existingDenomIndex].amount = amount;
+        } else {
+            const existingTx = formattedTxs.find((formattedTx) => formattedTx.hash === tx.hash && formattedTx.height === tx.height);
+
+            tx.messages.splice(0, 1);
+
+            if (!existingTx) {
+                formattedTxs.push({
+                    hash: tx.hash,
+                    height: tx.height,
+                    messages: [msg.typeUrl],
+                    amount: [
+                        {
+                            denom: await getDenomFromIbc(msgAmount[0].denom),
+                            amount: msgAmount[0].amount,
+                        },
+                    ],
+                });
+            } else {
+                const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount);
+                const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+
+                existingTx.amount = [
+                    {
+                        denom: existingTx.amount[0].denom,
+                        amount,
+                    },
+                ];
+            }
+        }
+    } else {
+        tx.amount = await findAmountInLogs(logs, event, index);
     }
 };
 
@@ -89,10 +135,9 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
 
                         if (msg.typeUrl.includes('millions')) {
                             if (isMillionsDepositTx(txInfos)) {
-                                if (txInfos.amount.denom.startsWith('ibc/')) {
-                                    txInfos.amount.denom = await getDenomFromIbc(txInfos.amount.denom);
-                                }
-                                tx.amount = [txInfos.amount];
+                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
+
+                                await parseLogs(tx, msg, index, logs, 'deposit', formattedTxs);
                             } else if (isMillionsWithdrawDeposit(txInfos)) {
                                 const logs = LumUtils.parseRawLogs(rawTx.result.log);
 
@@ -100,47 +145,7 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
                             } else if (isMillionsClaimPrize(txInfos)) {
                                 const logs = LumUtils.parseRawLogs(rawTx.result.log);
 
-                                if (tx.amount.length > 0) {
-                                    const msgAmount = await findAmountInLogs(logs, 'prize_claim', index);
-                                    const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
-
-                                    const existingDenomIndex = tx.amount.findIndex((amount) => amount.denom === msgAmount[0].denom);
-
-                                    if (existingDenomIndex > -1) {
-                                        const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
-                                        const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
-                                        tx.amount[existingDenomIndex].amount = amount;
-                                    } else {
-                                        const existingTx = formattedTxs.find((tx) => tx.hash === hash && tx.height === height);
-
-                                        if (!existingTx) {
-                                            formattedTxs.push({
-                                                hash,
-                                                height,
-                                                messages: [msg.typeUrl],
-                                                amount: [
-                                                    {
-                                                        denom: await getDenomFromIbc(msgAmount[0].denom),
-                                                        amount: msgAmount[0].amount,
-                                                    },
-                                                ],
-                                            });
-                                            continue;
-                                        } else {
-                                            const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount);
-                                            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
-
-                                            existingTx.amount = [
-                                                {
-                                                    denom: existingTx.amount[0].denom,
-                                                    amount,
-                                                },
-                                            ];
-                                        }
-                                    }
-                                } else {
-                                    tx.amount = await findAmountInLogs(logs, 'prize_claim', index);
-                                }
+                                await parseLogs(tx, msg, index, logs, 'prize_claim', formattedTxs);
                             }
                         }
                     }

@@ -33,7 +33,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
     return (
         <>
             <div className='d-flex flex-row justify-content-between align-items-center mb-5 mb-lg-0'>
-                <div className='card-step-title'>{I18n.t('mySavings.claimModal.steps', { returnObjects: true })[2].title}</div>
+                <div className='card-step-title'>{I18n.t('mySavings.claimModal.shareTitle')}</div>
             </div>
             <div className='step-3 d-flex flex-column mt-5'>
                 {infos.amount.map((am, index) => (

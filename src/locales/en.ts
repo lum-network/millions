@@ -286,14 +286,11 @@ export default {
                     title: 'Confirm your claim in Keplr',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
-                {
-                    title: 'Spread the word!',
-                    subtitle: 'Share your Cosmos Millions prize on Twitter and contribute to increase the collective prize pool!',
-                },
             ],
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
+            shareTitle: 'Spread the word!',
             shareTwitterContent:
                 'My savings are going to the moon 🚀 I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
         },
