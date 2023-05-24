@@ -334,16 +334,14 @@ const Deposit = () => {
         if (completedStepElement) {
             const title = completedStepElement.querySelector('.title');
             const subtitle = completedStepElement.querySelector('.subtitle');
-            const indexContainer = completedStepElement.querySelector('.step-index-container');
-            const indexContainerBg = completedStepElement.querySelector('.step-index-container .checkmark-container');
+            const checkmarkContainer = completedStepElement.querySelector('.step-index-container .checkmark-container');
             const checkmarkIcon = completedStepElement.querySelector('.step-index-container img');
 
             const checkTl = gsap.timeline(GSAP_DEFAULT_CONFIG);
 
             checkTl
-                .set(indexContainer, { backgroundColor: '#F4F4F4' })
                 .fromTo(
-                    indexContainerBg,
+                    checkmarkContainer,
                     {
                         scale: 0.01,
                     },
@@ -537,10 +535,34 @@ const Deposit = () => {
                 const indexText = step.querySelector('.index-text');
                 const title = step.querySelector('.title');
                 const subtitle = step.querySelector('.subtitle');
+                const checkmarkContainer = step.querySelector('.step-index-container .checkmark-container');
+                const checkmarkIcon = step.querySelector('.step-index-container img');
 
                 if (timeline) {
-                    timeline
-                        .fromTo(
+                    if (step.classList.contains('completed')) {
+                        timeline
+                            .fromTo(
+                                checkmarkContainer,
+                                {
+                                    scale: 0.01,
+                                },
+                                {
+                                    scale: 1,
+                                    duration: 0.3,
+                                },
+                            )
+                            .fromTo(
+                                checkmarkIcon,
+                                {
+                                    scale: 0,
+                                },
+                                {
+                                    scale: 1,
+                                    duration: 0.3,
+                                },
+                            );
+                    } else {
+                        timeline.fromTo(
                             step,
                             {
                                 '--border-progress': 0,
@@ -551,7 +573,10 @@ const Deposit = () => {
                                 duration: 0.2,
                             },
                             index > 0 ? '<0.1' : '>',
-                        )
+                        );
+                    }
+
+                    timeline
                         .set(indexBorder, { opacity: 1 })
                         .fromTo(
                             indexText,
