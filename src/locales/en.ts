@@ -223,7 +223,7 @@ export default {
         drawDetails: {
             winnersBtn: 'Winners',
             redelegatedPrizeBtn: 'Not won',
-            nextPool: 'Any prize amount not won during a draw will be rolled over and added to the pool for subsequent draws.',
+            nextPool: 'Any prize amount not won during a draw will be rolled over and added to the prize pool for subsequent draws.',
             tryBtn: 'Try your chances',
         },
     },
@@ -392,7 +392,7 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'You already transfered <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            subtitle: 'You already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
             prevAmountLabel: 'Amount requested',
             nextAmountLabel: 'Missing amount',
             cta: 'Add {{ nextAmount }} {{ denom }}',

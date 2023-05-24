@@ -454,7 +454,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully transfered ${amount.amount} ${normalDenom.toUpperCase()} to ${type === 'withdraw' ? 'native chain' : 'Lum Network'}`,
+                    content: `Successfully transferred ${amount.amount} ${normalDenom.toUpperCase()} to ${type === 'withdraw' ? 'native chain' : 'Lum Network'}`,
                 });
 
                 await dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
