@@ -66,7 +66,7 @@ const TransactionsTable = ({
                             </span>
                         ) : null}
                         <a className='tx-height ms-3' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
-                            {transaction.height}
+                            {StringsUtils.trunc(transaction.hash)}
                         </a>
                     </div>
                 </td>

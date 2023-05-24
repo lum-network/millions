@@ -1,4 +1,4 @@
-import { LumClient as Client, LumConstants, LumMessages, LumTypes, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
+import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
@@ -128,36 +128,21 @@ class LumClient {
 
         const LIMIT = 30;
 
-        const result: LumTypes.TxResponse[] = [];
         let totalCount: number | null = null;
 
-        const queries = [
-            LumUtils.searchTxByTags([
-                { key: 'message.module', value: 'millions' },
-                { key: 'transfer.sender', value: address },
-            ]),
-        ];
+        const query = LumUtils.searchTxByTags([
+            { key: 'message.module', value: 'millions' },
+            { key: 'transfer.sender', value: address },
+        ]);
 
-        await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' }))).then((res) => {
-            if (page === 1) {
-                for (const r of res) {
-                    if (r.status === 'fulfilled' && r.value) {
-                        (totalCount as number) += r.value.totalCount;
-                    }
-                }
-            }
+        const res = await this.client.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' });
 
-            for (const r of res) {
-                if (r.status === 'fulfilled' && r.value) {
-                    for (const tx of r.value.txs) {
-                        result.push(tx);
-                    }
-                }
-            }
-        });
+        if (page === 1) {
+            totalCount = res.totalCount;
+        }
 
         return {
-            activities: await formatTxs(result, true),
+            activities: await formatTxs(res.txs, true),
             totalCount,
             currentPage: page,
         };
