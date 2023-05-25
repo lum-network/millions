@@ -1,5 +1,6 @@
 import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
@@ -58,9 +59,23 @@ class LumClient {
             return null;
         }
 
-        const res = await this.client.queryClient.millions.poolDraws(poolId);
+        const draws: Draw[] = [];
+        let res = await this.client.queryClient.millions.poolDraws(poolId);
+        let page: Uint8Array | undefined = res.pagination?.nextKey;
 
-        const draws = res.draws;
+        const total = res.pagination?.total.toNumber() || 100;
+
+        draws.push(...res.draws);
+
+        if (total > 100 && res.draws.length === 100) {
+            for (let i = 0; i < total; i += 100) {
+                res = await this.client.queryClient.millions.poolDraws(poolId, page);
+                page = res.pagination?.nextKey;
+
+                draws.push(...res.draws);
+                if (!page || (page && !page.length)) break;
+            }
+        }
 
         draws.sort((a, b) => {
             const aHeight = a.createdAtHeight.toNumber();
@@ -68,6 +83,11 @@ class LumClient {
 
             return bHeight - aHeight;
         });
+
+        if (draws.length > 100) {
+            draws.splice(100, draws.length - 100);
+        }
+
         return draws;
     };
 
