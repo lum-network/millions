@@ -172,9 +172,9 @@ export default {
     },
     home: {
         title: 'Dashboard',
-        nextBestPrize: 'Next draw',
-        lastBigWinners: 'Luckiest winners',
-        totalValueLocked: 'Total value locked',
+        nextBestPrize: 'Next Draw',
+        lastBigWinners: 'Luckiest Winners',
+        totalValueLocked: 'Total Value Locked',
         cta: 'SAVE & WIN',
     },
     pools: {
