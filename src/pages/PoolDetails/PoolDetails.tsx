@@ -20,11 +20,12 @@ import Skeleton from 'react-loading-skeleton';
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
 import './PoolDetails.scss';
+import { useWindowSize } from 'hooks';
 
 const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
     const navigate = useNavigate();
-
+    const winSizes = useWindowSize();
     const dispatch = useDispatch<Dispatch>();
 
     const { lumWallet, prices, pools, pool, biggestPrizes, prizesStats } = useSelector((state: RootState) => ({
@@ -70,6 +71,8 @@ const PoolDetails = () => {
         chances: prizeBatch.poolPercent.toNumber() / 100,
         value: ((pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber(),
     }));
+
+    const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
 
     return (
         <div className='pool-details-container mt-5'>
@@ -186,7 +189,7 @@ const PoolDetails = () => {
                                 </Table>
                             </Card>
                             <Lottie
-                                className='cosmonaut-with-duck'
+                                className='d-none d-sm-block cosmonaut-with-duck'
                                 animationData={cosmonautWithDuck}
                                 segments={[
                                     [0, 30],
@@ -250,11 +253,11 @@ const PoolDetails = () => {
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center p-4'>
                             <div className='w-100 me-3'>
                                 <small>{I18n.t('poolDetails.users.deposit')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>${pool ? numeral(avgDeposit).format('0,0') : 0}</div>
+                                <div className='stat-bg-white mb-0 mt-2'>${pool ? numeral(avgDeposit).format('0,0') : 0}</div>
                             </div>
                             <div className='w-100 mt-4 mt-lg-0'>
                                 <small>{I18n.t('poolDetails.users.currentDraw')}</small>
-                                <div className='stat-bg-white h4 mb-0 mt-2'>{pool?.depositorsCount.toString() || 0}</div>
+                                <div className='stat-bg-white mb-0 mt-2'>{pool?.depositorsCount.toString() || 0}</div>
                             </div>
                         </Card>
                     </div>
@@ -268,15 +271,15 @@ const PoolDetails = () => {
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
                                     <div className='w-100'>
                                         <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                        <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
+                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
                                     </div>
                                     <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
                                         <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
-                                        <div className='stat-bg-white h4 mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
+                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
                                     </div>
                                     <div className='w-100'>
                                         <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
-                                        <div className='stat-bg-white h4 mb-0 mt-2'>
+                                        <div className='stat-bg-white mb-0 mt-2'>
                                             $
                                             {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
                                                 .format('0,0')
@@ -288,7 +291,7 @@ const PoolDetails = () => {
                         )}
                     </div>
                     <Lottie
-                        className='cosmonaut-with-balloons'
+                        className='d-none d-sm-block cosmonaut-with-balloons'
                         animationData={cosmonautWithBalloons}
                         segments={[
                             [0, 30],
@@ -320,8 +323,8 @@ const PoolDetails = () => {
                             <Card flat withoutPadding className='draws-history-card'>
                                 <Table
                                     className='draws-history-table w-100'
-                                    headers={I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true })}
-                                    responsive={false}
+                                    headers={drawHistoryHeaders}
+                                    responsive={winSizes.width > 576 ? false : true}
                                     pagination={
                                         pool.draws.length > 5
                                             ? {
@@ -345,15 +348,19 @@ const PoolDetails = () => {
                                                 }}
                                                 className='scale-hover'
                                             >
-                                                <td>
-                                                    <div className='d-flex align-items-center justify-content-center me-3 index-container'>#{draw.poolId.toString()}</div>
+                                                <td data-label={drawHistoryHeaders[0]}>
+                                                    <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.poolId.toString()}</div>
                                                 </td>
-                                                <td>
-                                                    <div className='d-flex align-items-center justify-content-center me-3 index-container'>#{draw.drawId.toString()}</div>
+                                                <td data-label={drawHistoryHeaders[1]}>
+                                                    <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.drawId.toString()}</div>
                                                 </td>
-                                                <td className='draw-date'>{dayjs(draw.createdAt).format('DD MMM YYYY - hh:mmA')}</td>
-                                                <td className='text-end'>{draw.totalWinCount.toString()}</td>
-                                                <td className='text-end'>
+                                                <td data-label={drawHistoryHeaders[2]}>
+                                                    <div className='draw-date mt-2'>{dayjs(draw.createdAt).format('DD MMM YYYY - hh:mmA')}</div>
+                                                </td>
+                                                <td data-label={drawHistoryHeaders[3]} className='text-end'>
+                                                    {draw.totalWinCount.toString()}
+                                                </td>
+                                                <td data-label={drawHistoryHeaders[4]} className='text-end'>
                                                     <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
                                                 </td>
                                             </tr>

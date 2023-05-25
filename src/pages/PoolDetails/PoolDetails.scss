@@ -47,7 +47,7 @@
         }
 
         .biggest-prize-container {
-            width: 300px
+            width: 300px;
         }
 
         .next-draw-container {
@@ -57,7 +57,6 @@
                 font-size: 18px;
             }
         }
-
 
         @include media-breakpoint-down(lg) {
             margin-top: 2rem;
@@ -92,6 +91,7 @@
 
     .stat-bg-white {
         background-color: $color-white;
+        color: $color-primary;
         border-radius: 8px;
         padding: 14px 22px;
     }
@@ -161,7 +161,7 @@
                     background: $color-white;
                     padding: 1.5rem 0;
 
-                    &.draw-date {
+                    .draw-date {
                         color: $color-black;
                         font-size: 14px;
                     }
@@ -170,6 +170,51 @@
                 td:first-child,
                 td:last-child {
                     padding: 1.5rem 1.5rem;
+                }
+            }
+
+            @include media-breakpoint-down(md) {
+                .table {
+                    border-spacing: 0;
+                }
+
+                .table thead {
+                    display: none;
+                }
+
+                .table tr,
+                .table tr td {
+                    display: block;
+                }
+
+                .table tbody tr:not(:first-child) {
+                    margin-top: 24px;
+                }
+
+                .table tbody tr:last-child {
+                    margin-bottom: 24px;
+                }
+
+                .table tbody tr td {
+                    padding: 1.5rem 1.5rem;
+                    text-align: right;
+                    vertical-align: baseline;
+                    &:first-child {
+                        border-top-right-radius: 15px;
+                        border-bottom-left-radius: 0;
+                        border-bottom-right-radius: 0;
+                    }
+                    &:last-child {
+                        border-top-right-radius: 0;
+                        border-bottom-left-radius: 15px;
+                        border-bottom-right-radius: 15px;
+                    }
+                }
+
+                .table td:before {
+                    content: attr(data-label);
+                    float: left;
+                    font-size: 18px;
                 }
             }
         }
@@ -192,6 +237,10 @@
             .page-item.disabled .page-link {
                 color: #5634de4d !important;
             }
+        }
+
+        @include media-breakpoint-down(md) {
+            padding: 24px;
         }
     }
 

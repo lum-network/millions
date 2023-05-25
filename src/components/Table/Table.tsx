@@ -29,7 +29,7 @@ const Table = ({ children, customPagination, className, pagination, onPageChange
         }
 
         return (
-            <div className={`pe-3 d-flex justify-content-end ${customPagination}`}>
+            <div className={`d-flex justify-content-end ${customPagination}`}>
                 <ul className='pagination'>
                     <li className={`page-item ${hasPreviousPage ? 'active without-border' : 'disabled'}`}>
                         <a onClick={() => onPageChange(page - 1)} className='page-link pointer'>

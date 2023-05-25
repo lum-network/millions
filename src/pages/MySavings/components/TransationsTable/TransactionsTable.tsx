@@ -7,7 +7,7 @@ import Assets from 'assets';
 import { SmallerDecimal, Table, Tooltip } from 'components';
 import { TransactionModel } from 'models';
 import { RootState } from 'redux/store';
-import { DenomsUtils, NumbersUtils, StringsUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 
 import './TransactionsTable.scss';
 import { NavigationConstants } from 'constant';
@@ -27,6 +27,7 @@ const TransactionsTable = ({
     onPageChange: (page: number) => void;
 }) => {
     const prices = useSelector((state: RootState) => state.stats.prices);
+    const headers = I18n.t('mySavings.txListHeaders', { returnObjects: true });
 
     const renderRow = (transaction: TransactionModel, index: number) => {
         const price = prices?.[DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || '')];
@@ -51,26 +52,34 @@ const TransactionsTable = ({
 
         return (
             <tr key={`transaction-${transaction.hash}-${index}`}>
-                <td className='align-middle'>
-                    <div className='d-flex flex-row align-items-center'>
-                        {icon && (
-                            <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                <img src={icon} alt='tx icon' />
-                            </div>
-                        )}
-                        <h4 className='mb-0 align-middle'>{type}</h4>
-                        {transaction.messages.length > 1 ? (
-                            <span data-tooltip-id={`claim-tooltip-${transaction.hash}`} data-tooltip-html={`${transaction.messages.length} prizes claimed`}>
-                                <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
-                                <Tooltip id={`claim-tooltip-${transaction.hash}`} />
-                            </span>
-                        ) : null}
-                        <a className='tx-height ms-3' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
+                <td data-label={headers[0]} className='align-middle'>
+                    <div
+                        className={[
+                            'd-flex flex-column flex-md-row flex-lg-column flex-xl-row',
+                            'align-items-end align-items-md-baseline align-items-lg-end align-items-xl-baseline',
+                            'justify-content-md-start justify-content-lg-end justify-content-xl-start',
+                        ].join(' ')}
+                    >
+                        <div className='d-flex flex-row align-items-baseline'>
+                            {icon && (
+                                <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
+                                    <img src={icon} alt='tx icon' />
+                                </div>
+                            )}
+                            <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>
+                            {transaction.messages.length > 1 ? (
+                                <span data-tooltip-id={`claim-tooltip-${transaction.hash}`} data-tooltip-html={`${transaction.messages.length} prizes claimed`}>
+                                    <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
+                                    <Tooltip id={`claim-tooltip-${transaction.hash}`} />
+                                </span>
+                            ) : null}
+                        </div>
+                        <a className='tx-height ms-0 ms-sm-3 mt-3 mt-md-0 mt-lg-3 mt-xl-0' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
                             {StringsUtils.trunc(transaction.hash)}
                         </a>
                     </div>
                 </td>
-                <td className='align-bottom align-md-middle text-sm-end'>
+                <td data-label={headers[1]} className='align-bottom align-md-middle text-sm-end'>
                     <div className='d-flex flex-column justify-content-center tx-amount'>
                         <div className='amount text-nowrap'>
                             {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}

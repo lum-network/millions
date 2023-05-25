@@ -24,7 +24,7 @@ const Pools = () => {
             <h1 className='mb-0'>{I18n.t('pools.title')}</h1>
             <div className='row g-xxl-5 g-4 py-2 py-lg-4'>
                 {pools.map((pool, index) => (
-                    <div className='col-12 col-sm-6 col-lg-4' key={`pool-${index}`}>
+                    <div className='col-12 col-md-6 col-lg-4' key={`pool-${index}`}>
                         <PoolCard
                             drawEndAt={pool.nextDrawAt || new Date()}
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
@@ -36,7 +36,7 @@ const Pools = () => {
                     </div>
                 ))}
                 {poolsPlaceholders.map((_, index) => (
-                    <div className='col-12 col-sm-6 col-lg-4' key={`pool-placeholder-${index}`}>
+                    <div className='col-12 col-md-6 col-lg-4' key={`pool-placeholder-${index}`}>
                         <PoolCardPlaceholder name={placeholderNames[index] || 'New Pool'} />
                     </div>
                 ))}

@@ -185,13 +185,15 @@ const MySavings = () => {
                 </Card>
             ) : null}
             {prizesToClaim && prizesToClaim.length > 0 ? (
-                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4 new-prize-card'>
-                    <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
-                    <div className='d-flex flex-row align-items-baseline'>
-                        <h3 className='ms-3 me-5 mb-0'>{I18n.t('mySavings.newPrize.title')}</h3>
-                        <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
+                <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
+                    <div className='d-flex flex-column flex-md-row align-items-md-center'>
+                        <div className='d-flex flex-row align-items-center'>
+                            <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
+                            <h3 className='ms-3 me-5 mb-0 text-nowrap'>{I18n.t('mySavings.newPrize.title')}</h3>
+                        </div>
+                        <p className='my-3 my-md-0'>{I18n.t('mySavings.newPrize.description')}</p>
                     </div>
-                    <Button className='claim-btn ms-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                    <Button className='claim-btn ms-md-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
                         {I18n.t('mySavings.claim')}
                     </Button>
                 </Card>
