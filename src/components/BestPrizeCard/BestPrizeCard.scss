@@ -16,18 +16,18 @@
 
         @include media-breakpoint-down(xxl) {
             bottom: -120px;
-            height: 400px;
-            width: 400px;
+            height: 380px;
+            width: 380px;
         }
 
         @include media-breakpoint-down(md) {
             bottom: -100px;
-            height: 300px;
-            width: 300px;
+            height: 260px;
+            width: 260px;
         }
 
         @include media-breakpoint-down(sm) {
-            bottom: -60px;
+            bottom: -80px;
         }
     }
 
@@ -86,8 +86,12 @@
             bottom: 50px;
             padding: 0 56px;
 
+            @include media-breakpoint-down(md) {
+                padding-bottom: 70px;
+            }
+
             @include media-breakpoint-down(sm) {
-                padding-bottom: 130px;
+                padding-bottom: 90px;
             }
 
             .draw-in-progress-container {
