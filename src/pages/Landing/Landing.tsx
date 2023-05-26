@@ -195,14 +195,13 @@ const Landing = () => {
                             </p>
                             <div className='d-flex flex-column'>
                                 <Card withoutPadding flat className='p-3 mb-4'>
-                                    <p className='text-flat-card'>
-                                        Speed up your path to financial tranquility with our thrilling prize-linked savings accounts!
-                                        <br />
-                                        Save your assets in our protocol and random winners will receive prizes from the entire community at each draw.
-                                    </p>
+                                    <p className='text-flat-card'>Discover a new thrilling utility for your assets with Cosmos Millions’ prize-linked savings accounts</p>
+                                </Card>
+                                <Card withoutPadding flat className='p-3 mb-4'>
+                                    <p className='text-flat-card'>Deposit your assets into our protocol, and join in regular, randomized draws for a chance to win community-contributed prizes</p>
                                 </Card>
                                 <Card withoutPadding flat className='p-3'>
-                                    <p className='text-flat-card'>With no risk and exciting rewards, bring your savings to the moon!</p>
+                                    <p className='text-flat-card'>Experience a secure and innovative saving method without compromising on excitement! </p>
                                 </Card>
                             </div>
                         </div>
