@@ -116,7 +116,7 @@ export default {
                     title: 'Are my deposits safe?',
                     answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
                         '\n' +
-                        'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. <a href="https://docs.cosmosmillions.com/cosmos-millions/security-and-audit">See Security & Audit</a>',
+                        'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/security-and-audit">See Security & Audit</a>',
                 },
             ],
         },
