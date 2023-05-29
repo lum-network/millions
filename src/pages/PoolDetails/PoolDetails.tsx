@@ -73,6 +73,7 @@ const PoolDetails = () => {
     }));
 
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
+    const prizeDistributionHeaders = I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true });
 
     return (
         <div className='pool-details-container mt-5'>
@@ -176,14 +177,14 @@ const PoolDetails = () => {
                                 </span>
                             </div>
                             <Card flat withoutPadding className='prize-distribution-card'>
-                                <Table headers={I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true })} className='prize-distribution-table'>
+                                <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
                                     {prizes.map((prize, index) => (
                                         <tr key={index} className='stat-bg-white'>
-                                            <td>
-                                                <div className='d-flex flex-row'>{numeral(prize.value).format('$0,0')}</div>
+                                            <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value).format('$0,0')}</td>
+                                            <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
+                                            <td className='text-end' data-label={prizeDistributionHeaders[2]}>
+                                                1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
                                             </td>
-                                            <td className='text-center'>{prize.count}</td>
-                                            <td className='text-end'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</td>
                                         </tr>
                                     ))}
                                 </Table>

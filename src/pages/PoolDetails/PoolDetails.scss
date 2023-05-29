@@ -117,6 +117,10 @@
                 padding: 1.5rem 1.5rem;
             }
         }
+
+        @include media-breakpoint-down(md) {
+            padding: 24px;
+        }
     }
 
     .winning-chances-card {
@@ -150,10 +154,6 @@
     .draws-history-card {
         padding: 22px 32px;
         .draws-history-table {
-            .table thead tr th {
-                color: $color-primary;
-            }
-
             .table tbody tr {
                 cursor: pointer;
                 td {
@@ -170,51 +170,6 @@
                 td:first-child,
                 td:last-child {
                     padding: 1.5rem 1.5rem;
-                }
-            }
-
-            @include media-breakpoint-down(md) {
-                .table {
-                    border-spacing: 0;
-                }
-
-                .table thead {
-                    display: none;
-                }
-
-                .table tr,
-                .table tr td {
-                    display: block;
-                }
-
-                .table tbody tr:not(:first-child) {
-                    margin-top: 24px;
-                }
-
-                .table tbody tr:last-child {
-                    margin-bottom: 24px;
-                }
-
-                .table tbody tr td {
-                    padding: 1.5rem 1.5rem;
-                    text-align: right;
-                    vertical-align: baseline;
-                    &:first-child {
-                        border-top-right-radius: 15px;
-                        border-bottom-left-radius: 0;
-                        border-bottom-right-radius: 0;
-                    }
-                    &:last-child {
-                        border-top-right-radius: 0;
-                        border-bottom-left-radius: 15px;
-                        border-bottom-right-radius: 15px;
-                    }
-                }
-
-                .table td:before {
-                    content: attr(data-label);
-                    float: left;
-                    font-size: 18px;
                 }
             }
         }
@@ -282,5 +237,84 @@
         font-size: 14px;
         width: max-content;
         height: 32px;
+    }
+
+    .table thead tr th {
+        color: $color-primary;
+    }
+
+    @include media-breakpoint-down(md) {
+        .table {
+            border-spacing: 0;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tr,
+        .table tr td {
+            display: block;
+        }
+
+        .table tbody tr:not(:first-child) {
+            margin-top: 24px;
+        }
+
+        .table tbody tr:last-child {
+            margin-bottom: 24px;
+        }
+
+        .table tbody tr td {
+            padding: 1.5rem 1.5rem;
+            text-align: right;
+            vertical-align: middle;
+            &:first-child {
+                border-top-right-radius: 15px;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+            &:last-child {
+                border-top-right-radius: 0;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+        }
+
+        .table td:before {
+            content: attr(data-label);
+            float: left;
+            text-align: start;
+            margin-right: 5rem;
+            font-size: 18px;
+        }
+
+        .draws-history-card {
+            .draws-history-table {
+                .table tbody tr td {
+                    padding: 1.5rem 1.5rem;
+                }
+            }
+        }
+
+        .prize-distribution-card {
+            .prize-distribution-table {
+                .table tbody tr td {
+                    padding: 1.5rem 1.5rem;
+                }
+
+                .table tbody tr:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            .stat-bg-white {
+                padding: 0;
+
+                td {
+                    padding: 1.5rem 1.5rem;
+                }
+            }
+        }
     }
 }
