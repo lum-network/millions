@@ -17,7 +17,7 @@ interface IProps {
 const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
     const renderRow = (prize: PrizeModel) => {
         return (
-            <tr key={`winner-${prize.poolId}-${prize.drawId}-${prize.prizeId}`}>
+            <tr className='d-block d-lg-table-row' key={`winner-${prize.poolId}-${prize.drawId}-${prize.prizeId}`}>
                 <td className='align-middle py-3 px-4 winner-infos'>
                     <span className='me-3'>
                         <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt={prize.amount.denom} width='38' height='38' />

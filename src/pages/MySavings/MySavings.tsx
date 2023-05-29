@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import numeral from 'numeral';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
@@ -177,7 +178,7 @@ const MySavings = () => {
 
     return (
         <div className='my-savings-container mt-3 mt-lg-5'>
-            {deposits && deposits.find((deposit) => deposit.errorState) ? (
+            {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
                     <h3 className='mx-3 mb-0'>{I18n.t('mySavings.depositError.title')}</h3>
@@ -185,13 +186,15 @@ const MySavings = () => {
                 </Card>
             ) : null}
             {prizesToClaim && prizesToClaim.length > 0 ? (
-                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4 new-prize-card'>
-                    <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
-                    <div className='d-flex flex-row align-items-baseline'>
-                        <h3 className='ms-3 me-5 mb-0'>{I18n.t('mySavings.newPrize.title')}</h3>
-                        <p className='mb-0'>{I18n.t('mySavings.newPrize.description')}</p>
+                <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
+                    <div className='d-flex flex-column flex-md-row align-items-md-center'>
+                        <div className='d-flex flex-row align-items-center'>
+                            <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
+                            <h3 className='ms-3 me-5 mb-0 text-nowrap'>{I18n.t('mySavings.newPrize.title')}</h3>
+                        </div>
+                        <p className='my-3 my-md-0'>{I18n.t('mySavings.newPrize.description')}</p>
                     </div>
-                    <Button className='claim-btn ms-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                    <Button className='claim-btn ms-md-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
                         {I18n.t('mySavings.claim')}
                     </Button>
                 </Card>
@@ -268,7 +271,13 @@ const MySavings = () => {
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.deposits')}</h2>
                                 <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
-                                    <DepositTable deposits={deposits} pools={pools} prices={prices} onLeavePool={(deposit) => setDepositToLeave(deposit)} />
+                                    <DepositTable
+                                        deposits={deposits}
+                                        pools={pools}
+                                        prices={prices}
+                                        onLeavePool={(deposit) => setDepositToLeave(deposit)}
+                                        onDepositRetry={(deposit) => dispatch.wallet.retryDeposit({ poolId: deposit.poolId, depositId: deposit.depositId })}
+                                    />
                                 </Card>
                             </>
                         ) : null}

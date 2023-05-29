@@ -236,6 +236,7 @@ export default {
         deposit: 'Deposit in Pool',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
+        txListHeaders: ['Type', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         transferWaitingCta: 'Usually ~1 minute',

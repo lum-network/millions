@@ -15,9 +15,10 @@ interface IProps {
     pools: PoolModel[];
     prices: { [key: string]: number };
     onLeavePool: (deposit: DepositModel) => void;
+    onDepositRetry: (deposit: DepositModel) => void;
 }
 
-const DepositTable = ({ deposits, pools, prices, onLeavePool }: IProps) => {
+const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: IProps) => {
     const winSizes = useWindowSize();
 
     const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
@@ -36,7 +37,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool }: IProps) => {
 
             case DepositState.DEPOSIT_STATE_FAILURE:
                 statusClassName = 'failure';
-                cta = <Button>{I18n.t('common.retry')}</Button>;
+                cta = <Button onClick={() => onDepositRetry(deposit as DepositModel)}>{I18n.t('common.retry')}</Button>;
                 break;
 
             case DepositState.DEPOSIT_STATE_IBC_TRANSFER:

@@ -28,7 +28,7 @@ const LuckiestWinnerCard = ({ prize }: IProps) => {
                     window.open(`${NavigationConstants.LUM_EXPLORER}/account/${prize.winnerAddress}`, '_blank')?.focus();
                 }}
                 outline
-                className='luckiest-winner-address-btn px-4 py-3 mt-3'
+                className='luckiest-winner-address-btn mt-3'
                 title={prize.winnerAddress}
             >
                 <div className='address me-3'>{StringsUtils.trunc(prize.winnerAddress)}</div>
