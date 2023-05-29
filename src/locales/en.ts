@@ -106,7 +106,7 @@ export default {
                 },
                 {
                     title: 'When will the ATOM pool be launched?',
-                    answer: 'The ATOM pool launch is set for May 29th!',
+                    answer: 'The ATOM pool launch is set for June 5th!',
                 },
                 {
                     title: 'What are delegated deposits?',
