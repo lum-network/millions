@@ -64,7 +64,6 @@ const MainLayout = () => {
                 ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
                 dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
                 dispatch.wallet.connectOtherWallets(null);
-                dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: true });
             }
         };
 
