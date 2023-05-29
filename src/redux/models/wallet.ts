@@ -49,6 +49,11 @@ interface DepositToPoolPayload {
     pool: PoolModel;
 }
 
+interface RetryDepositPayload {
+    poolId: Long;
+    depositId: Long;
+}
+
 interface LeavePoolPayload {
     poolId: Long;
     denom: string;
@@ -457,7 +462,7 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully transferred ${amount.amount} ${normalDenom.toUpperCase()} to ${type === 'withdraw' ? 'native chain' : 'Lum Network'}`,
                 });
 
-                await dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
 
                 return result;
             } catch (e) {
@@ -485,10 +490,37 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully deposited ${payload.amount} ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()}`,
                 });
 
-                await dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to deposit to ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()} pool` });
+                return null;
+            }
+        },
+        async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { lumWallet } = state.wallet;
+
+            const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId.toNumber()} to pool #${payload.poolId.toNumber()}` });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error('No wallet connected');
+                }
+
+                const result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || `Failed to retry deposit #${payload.depositId.toNumber()}`);
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: `Successfully retried deposit #${payload.depositId.toNumber()} to pool #${payload.depositId.toNumber()}`,
+                });
+
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address });
+                return result;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId.toNumber()}` });
                 return null;
             }
         },
@@ -512,7 +544,7 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully left ${payload.denom.toUpperCase()} #${payload.poolId.toString()}`,
                 });
 
-                await dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to leave pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}` });
@@ -539,7 +571,7 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully claimed prizes`,
                 });
 
-                await dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to claim prizes` });
@@ -595,7 +627,7 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully compounded prizes`,
                 });
 
-                await dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to compound prizes` });
