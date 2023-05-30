@@ -489,7 +489,7 @@ const Deposit = () => {
 
     const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string, force = false) => {
         const now = Date.now();
-        const nextDrawAt = now + 100000;
+        const nextDrawAt = poolToDeposit.nextDrawAt?.getTime() || now;
         const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, lumWallet?.balances || []));
         const depositAmountNumber = Number(depositAmount);
 
@@ -508,7 +508,7 @@ const Deposit = () => {
             return null;
         }
 
-        if (!force && depositDeltaModalRef.current && nextDrawAt && depositDelta && ((nextDrawAt || 0) - now) / 1000 < depositDelta) {
+        if (!force && depositDeltaModalRef.current && nextDrawAt && depositDelta && (nextDrawAt - now) / 1000 < depositDelta) {
             depositDeltaModalRef.current.show();
             return null;
         }
