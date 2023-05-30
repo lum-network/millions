@@ -1,20 +1,24 @@
 import React, { useEffect, useRef } from 'react';
-
-import { I18n } from 'utils';
-import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
-import { LandingConstants, NavigationConstants } from 'constant';
 import { gsap, Power1 } from 'gsap';
+
+import Assets from 'assets';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithBalloons2 from 'assets/lotties/cosmonaut_with_balloons_2.json';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 import cosmonautZen from 'assets/lotties/cosmonaut_zen.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
-import Assets from 'assets';
+import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
+import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
+
+import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
+import { LandingConstants, NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
+import { I18n } from 'utils';
+
+import PoolCard from './components/PoolCard';
 
 import './Landing.scss';
-import PoolCard from './components/PoolCard';
-import { useWindowSize } from 'hooks';
 
 const Landing = () => {
     const onClickParticipate = () => {
@@ -347,9 +351,90 @@ const Landing = () => {
                         <PoolCard denom={'Pool #3 Soon'} tvl={0} prize={123659} />
                     </div>
                 </div>
-                <div id='faq' className='faq col-12'>
-                    <div className='d-flex justify-content-between align-items-center'>
-                        <h1 className='mb-4'>{I18n.t('landing.faqSection.title')}</h1>
+                <div className='col-12 mt-xl-5 pt-xl-5 mt-0 pt-0' />
+                <div className='future-left col-12 col-xl-7 order-1 order-xl-0'>
+                    <Card className='d-flex align-items-center flex-column'>
+                        <h2 className='mb-4 text-center'>{I18n.t('landing.future.title')}</h2>
+                        <div className='cosmos-game-description'>
+                            <Card withoutPadding flat className='p-3 mb-4'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p1')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3 mb-4'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p2')}</p>
+                            </Card>
+                            <Card withoutPadding flat className='p-3'>
+                                <p className='text-flat-card'>{I18n.t('landing.future.p3')}</p>
+                            </Card>
+                        </div>
+                    </Card>
+                </div>
+                <div className='position-relative future-right col-12 col-xl-5 order-0 order-xl-1 d-flex justify-content-center align-self-center'>
+                    <Lottie
+                        className='cosmonaut-in-pool'
+                        animationData={cosmonautInPool}
+                        actions={[
+                            {
+                                visibility: [0, 0.2],
+                                type: 'stop',
+                                frames: [0],
+                            },
+                            {
+                                visibility: [0.2, 0.4],
+                                type: 'seek',
+                                frames: [0, 30],
+                            },
+                            {
+                                visibility: [0.4, 1.0],
+                                type: 'loop',
+                                frames: [30, 128],
+                            },
+                        ]}
+                    />
+                </div>
+                <div className='community col-12 d-flex align-items-center flex-column order-2'>
+                    <div className='col-xxl-7 col-xl-8 col-lg-9 col-md-10 col-12'>
+                        <Card className='d-flex justify-content-between align-items-center flex-column flex-lg-row community-card'>
+                            <Lottie
+                                className='cosmonaut-rocket'
+                                animationData={cosmonautWithRocket}
+                                actions={[
+                                    {
+                                        visibility: [0, 0.2],
+                                        type: 'stop',
+                                        frames: [0],
+                                    },
+                                    {
+                                        visibility: [0.2, 0.4],
+                                        type: 'seek',
+                                        frames: [0, 15],
+                                    },
+                                    {
+                                        visibility: [0.4, 1.0],
+                                        type: 'loop',
+                                        frames: [15, 257],
+                                    },
+                                ]}
+                            />
+                            <div>
+                                <h2 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h2>
+                            </div>
+                            <div className='d-flex mt-4 mt-lg-0'>
+                                <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
+                                    <img src={Assets.images.twitterPlain} alt='Twitter' />
+                                </a>
+                                <a className='scale-hover' href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer'>
+                                    <img src={Assets.images.discordPlain} alt='discord' />
+                                </a>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+                <div id='faq' className='faq col-12 order-2'>
+                    <div className='d-flex justify-content-between align-items-center mb-4'>
+                        <h1 className='mb-0'>{I18n.t('landing.faqSection.title')}</h1>
+                        <a className='app-btn app-btn-outline' target='_blank' rel='noreferrer' href={`${NavigationConstants.DOCUMENTATION}/welcome/faq`}>
+                            Read the FAQ
+                        </a>
                     </div>
                     <Card>
                         {faqQuestions.map((question, index) => (
@@ -363,7 +448,7 @@ const Landing = () => {
                         ))}
                     </Card>
                 </div>
-                <div className='col-12 footer'>
+                <div className='col-12 footer order-2'>
                     <Lottie
                         className='cosmonaut-dab'
                         animationData={cosmonautDab}

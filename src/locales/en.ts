@@ -84,8 +84,9 @@ export default {
         },
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
-            p1: 'The utilization of Cosmos technology (Cosmos-SDK, Tendermint BFT, IBC, ICA) for Prize Linked Savings overthrows the savings methods in history. The use of sovereign and interoperable network of blockchains allows easy access with minimal fees, making it a standout in the blockchain industry and another confirmation of the limitless potential of the Interchain of Blockchains.',
-            p2: 'With an open-source and audited protocol ensuring that prizes are distributed fairly, saving money has never been so rewarding!',
+            p1: 'Leveraging the Interchain Stack (Cosmos-SDK, Tendermint BFT, IBC, ICA, ICQ), our prize-linked savings accounts enhance traditional savings methods.',
+            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Interchain of Blockchains.',
+            p3: 'Our open-source, audited protocol ensures fair prize distribution, making saving a more positive and rewarding experience for all users!',
             cta: 'Want to retire in style?',
         },
         community: {
@@ -99,24 +100,107 @@ export default {
                     answer: 'Cosmos Millions is a prize-linked savings account protocol that offers the opportunity to win prizes while saving money.',
                 },
                 {
+                    title: 'What is a Prize-linked Savings Account?',
+                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is then distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
+                },
+                {
+                    title: 'Is Cosmos Millions free to use?',
+                    answer:
+                        'Yes. Anyone can deposit and participate for free. Cosmos Millions is an open and accessible platform for all.' +
+                        '\n\n' +
+                        'To keep things running, the Cosmos Millions protocol automatically collects 10% fees over prizes once they are distributed. Fees goes toward Lum stakers, see <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/protocol-fees">Protocol Fees</a> documentation for more information.' +
+                        '\n\n' +
+                        'This is fundamental to ensure long-term viability of the blockchain infrastructure used to support the Cosmos Millions protocol.' +
+                        '\n\n' +
+                        'Using Cosmos Millions requires to pay (blockchain) transaction fees that are usually extremely cheap, less than a USD cent, thanks to the blockchain technology being used.',
+                },
+                {
+                    title: 'How can I participate?',
+                    answer:
+                        'To participate to Cosmos Millions, you first need:' +
+                        '\n' +
+                        '&nbsp&nbsp&nbsp• A Keplr Wallet' +
+                        '\n' +
+                        '&nbsp&nbsp&nbsp• Cosmos Ecosystem tokens to save' +
+                        '\n\n' +
+                        'Then you can deposit your savings into Cosmos Millions to start participating.' +
+                        '\n' +
+                        'Check the 🚀 <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">Getting Started</a> section and follow the onboarding to participate.',
+                },
+                {
                     title: 'How are the prizes generated?',
-                    answer: 'Prizes on Cosmos Millions are generated from the staking rewards earned on user deposits.\nWhen a user makes a deposit, their tokens are sent back to their native blockchain where they are staked, generating rewards.\n' +
+                    answer:
+                        'Prizes on Cosmos Millions are generated from the staking rewards earned on user deposits.\nWhen a user makes a deposit, their tokens are sent back to their native blockchain where they are staked, generating rewards.\n' +
                         '\n' +
                         'These staking rewards are then collected and distributed as prizes on the Cosmos Millions protocol. In other words, the prizes are the result of the collective staking activity of all the deposited tokens.',
                 },
                 {
-                    title: 'When will the ATOM pool be launched?',
-                    answer: 'The ATOM pool launch is set for June 5th!',
-                },
-                {
-                    title: 'What are delegated deposits?',
-                    answer: 'Delegated deposits allow users to participate in a pool while allocating any prize they receive to another wallet. It gives the beneficiary wallet a higher chance to be picked as the winner of the prizes.',
-                },
-                {
                     title: 'Are my deposits safe?',
-                    answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
+                    answer:
+                        'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
                         '\n' +
                         'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/security-and-audit">See Security & Audit</a>',
+                },
+                {
+                    title: 'How will the $100,000 from ATOM Accelerator DAO grant be used?',
+                    answer:
+                        'The <a target="_blank" rel="noreferrer" href="https://www.atomaccelerator.com/">ATOM Accelerator DAO</a> granted us $100,000 worth of ATOMs on May 11, 2023.' +
+                        '\n\n' +
+                        'The full amount will be leveraged as liquidity for the ATOM pool, ensuring exciting prizes for our early depositors.',
+                },
+                {
+                    title: "What if I don't win?",
+                    answer: 'No win, but no loss either. Your deposits remain intact and continually make you eligible for upcoming draws. Also, you have complete control over your funds. You can withdraw your deposit at any time.',
+                },
+                {
+                    title: 'How long do I have to claim my prizes?',
+                    answer:
+                        'When you win a prize on Cosmos Millions, you have a 30-days window from the draw date to claim your prize.' +
+                        '\n\n' +
+                        'Head to the My savings section of our web application to claim your prizes.' +
+                        '\n' +
+                        "To never miss a prize, we recommend activating prize notifications using our bot on Discord. This way, you'll always know when it's time to claim!" +
+                        '\n\n' +
+                        "If you don't claim your prize within the 30-days time frame, the prize will be clawed back by the protocol and will end up into the next draws' prize pools." +
+                        '\n\n' +
+                        'Remember, regular check-ins on the platform ensure you never miss out on any prizes!',
+                },
+                {
+                    title: 'Is there a minimum deposit?',
+                    answer:
+                        'Yes, each pool does require a minimum deposit amount.' +
+                        '\n\n' +
+                        'However, this amount is typically quite small. Its purpose is to prevent unnecessary spam transactions to ensure the smooth operation of the system.',
+                },
+                {
+                    title: 'Why is there an unbonding period on my deposit?',
+                    answer:
+                        'Your deposit is sent by Cosmos Millions on the native blockchain (e.g: Cosmos Hub for $ATOM) to generate staking rewards.' +
+                        '\n\n' +
+                        'On each blockchain of the Cosmos Ecosystem, there is a specific unbonding period to ensure the security and stability of the network. By locking up your tokens for a specified period of time, you are contributing to the security of the blockchain and reducing the risk of network attacks or manipulation.' +
+                        '\n\n' +
+                        'Additionally, the unbonding period incentivizes long-term participation and discourages short-term speculation, promoting a healthy and sustainable ecosystem.' +
+                        '\n\n' +
+                        'The unbonding period depends on the network - it is generally set between 14 and 28 days.',
+                },
+                {
+                    title: 'How will the $5,000 ATOM launch incentives be distributed?',
+                    answer:
+                        'To give an incentive for people that register early, $5,000 ATOM worth of delegated deposits will be randomly distributed to 50 users ($100 each). The requirements to be part of the 50 chosen ones are to:' +
+                        '\n\n' +
+                        '&nbsp&nbsp&nbsp• register before <strong>May 3rd 12:00 UTC</strong>' +
+                        '\n\n' +
+                        '&nbsp&nbsp&nbsp• deposit at least 1 ATOM in the ATOM pool between the pool opening and the first draw.' +
+                        '\n\n' +
+                        'You will be entitled to the prizes corresponding to this extra $100 participation for the next 3 months. At the end of the 3 months, you will keep the tokens you deposited and the incentive tokens will go back to the protocol.',
+                },
+                {
+                    title: 'What is the Cosmos Ecosystem?',
+                    answer: 'The Cosmos ecosystem is a decentralized and interoperable network of independent blockchains, applications, and services communicating through the Inter-Blockchain Communication (IBC) protocol.',
+                },
+                {
+                    title: 'What is the Lum Network?',
+                    answer: 'The Lum Network is a secure and sustainable blockchain from the Cosmos Ecosystem launched in December 2021. It is powered by the $LUM token, its native crypto-asset. Lum comes from the word “light” and expresses the value created by and for community members throughout their online and offline experiences.',
                 },
             ],
         },
