@@ -41,7 +41,9 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
             <div className='prize-container'>
                 <img width={64} height={64} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
                 <div className='d-flex flex-column align-items-start ms-3'>
-                    <div className='prize'>{denom.toUpperCase()} Prize Pool</div>
+                    <div className='prize'>
+                        {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
+                    </div>
                     {loadingAdditionalInfo || loadingFetchPools ? (
                         <Skeleton height={41} width={200} />
                     ) : (
@@ -70,7 +72,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                         <img src={Assets.images.clock} alt='clock' className='me-2' width={22} height={22} /> {I18n.t('pools.drawEndAt')}
                     </div>
                     <div className={`countdown ${drawInProgress ? 'draw' : ''}`}>
-                        {drawInProgress ? 'Draw in progress' : <CountDown to={drawEndAt} onCountdownEnd={() => setDrawInProgress(true)} />}
+                        {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={drawEndAt} onCountdownEnd={() => setDrawInProgress(true)} />}
                     </div>
                 </div>
             </div>

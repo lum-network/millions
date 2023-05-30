@@ -166,7 +166,7 @@ const MySavings = () => {
                         <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
                         {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
                     </span>
-                    {prize.expiresAt ? <p className='expiration-date mb-0'>Expires {dayjs(prize.expiresAt).fromNow()}</p> : null}
+                    {prize.expiresAt ? <p className='expiration-date mb-0'>{I18n.t('mySavings.prizeExpiration', { expiration: dayjs(prize.expiresAt).fromNow() })}</p> : null}
                 </div>
             </div>
         );

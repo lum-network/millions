@@ -98,10 +98,10 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         if (address) {
             navigator.clipboard.writeText(address).then(
                 () => {
-                    ToastUtils.showSuccessToast({ content: 'Copied address to clipboard !' });
+                    ToastUtils.showSuccessToast({ content: I18n.t('common.copiedAddress') });
                 },
                 () => {
-                    ToastUtils.showErrorToast({ content: 'Failed to copy address to clipboard, try again later' });
+                    ToastUtils.showErrorToast({ content: I18n.t('errors.copyAddress') });
                 },
             );
         }

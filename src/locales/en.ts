@@ -21,6 +21,18 @@ export default {
         continue: 'Continue',
         cancel: 'Cancel',
         retry: 'Retry',
+        edit: 'Edit',
+        copiedAddress: 'Copied address to clipboard !',
+        draw: 'Draw',
+        deposit: 'Deposit',
+        pool: 'Pool',
+        prizePool: 'Prize Pool',
+        drawInProgress: 'Draw in progress',
+        loading: 'Loading...',
+    },
+    collapsible: {
+        closeDetails: 'Close&nbsp;details',
+        openDetails: 'Open&nbsp;details',
     },
     errors: {
         generic: {
@@ -33,21 +45,47 @@ export default {
             network: 'Failed to connect to the network',
             networkAdd: 'Failed to add network to Keplr',
             wallet: 'Failed to connect to Keplr wallet',
+            offlineSigner: 'Offline signer not found',
         },
         client: {
             rpc: 'Error with RPC connection to other chain. IBC transactions may not work.',
             lum: 'Error with RPC connection to Lum Network.',
+            chainId: '{{ denom }} chain-id not found.',
+            unavailableRpc: '{{ denom }} rpc is unavailable.',
+            noWalletConnected: 'No wallet connected',
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
             lessThanMinDeposit: 'Amount must be greather than minimum deposit of {{ minDeposit }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
+            generic: 'Failed to deposit to {{ denom }} pool',
         },
         '404': {
             title: 'Error 404',
             description: 'This page does not exist.',
         },
+        copyAddress: 'Failed to copy address to clipboard, try again later',
+        ibcTransfer: 'Failed to transfer, please try again later.',
+        leavePool: 'Failed to leave {{ denom }} pool #{{ poolId }}',
+        claimPrize: 'Failed to claim prizes',
+        claimAndCompound: 'Failed to compound prizes',
+    },
+    success: {
+        wallet: 'Successfully connected',
+        ibcTransfer: 'Successfully transferred {{ amount }} {{ denom }} to {{ chain }}',
+        deposit: 'Successfully deposited {{ amount }} {{ denom }}',
+        leavePool: 'Successfully left {{ denom }} pool {{ poolId }}',
+        claimPrize: 'Successfully claimed prizes',
+        claimAndCompound: 'Successfully compounded prizes',
+        logOut: 'You have been logged out.'
+    },
+    pending: {
+        ibcTransfer: 'Transferring...',
+        deposit: 'Depositing to {{ denom }} pool...',
+        leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
+        claimPrize: 'Claiming prizes...',
+        claimAndCompound: 'Compounding prizes...'
     },
     landing: {
         howItWorks: 'How it works',
@@ -188,7 +226,7 @@ export default {
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
-        biggestPrize: 'Prize Pool',
+        prizePool: 'Prize Pool',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Variable APY',
@@ -236,6 +274,11 @@ export default {
         deposit: 'Deposit in Pool',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
+        transactionTypes: {
+            leavePool: 'Leave Pool',
+            claimPrize: 'Claim Prize',
+            deposit: 'Deposit',
+        },
         txListHeaders: ['Type', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
@@ -307,10 +350,12 @@ export default {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
         },
+        depositUnbondingRemaining: ' remaining',
         newPrize: {
             title: 'Congrats! 🎉',
             description: "Cosmonaut, you've won a prize! Claim it before time runs out!",
         },
+        prizeExpiration: 'Expires {{ expiration }}',
         leavePoolModal: {
             title: 'Finally ready\nto hang up your spacesuit, Cosmonaut?',
             steps: [
@@ -375,7 +420,7 @@ export default {
         ],
         shareStep: {
             title: 'Your savings are now in good hands! 🥳',
-            subtitle: 'You are always eligible for all the next draws coming! Share your deposit on Twitter to see how high the total amount saved can go!',
+            subtitle: 'You are always eligible for all the next draws coming!<br/>Share your deposit on Twitter to see how high the total amount saved can go!',
         },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:

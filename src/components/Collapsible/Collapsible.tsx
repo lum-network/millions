@@ -4,6 +4,7 @@ import { Collapse } from 'bootstrap';
 import Assets from 'assets';
 
 import './Collapsible.scss';
+import { I18n } from 'utils';
 
 interface Props {
     header: string | JSX.Element;
@@ -63,7 +64,12 @@ const Collapsible = (props: Props) => {
                         onClick={toggleWithButton ? () => onToggle(!isShowing) : undefined}
                         className={`collapsible-btn ${isShowing && 'is-showing'} d-flex align-items-center justify-content-center ${buttonBorder ? 'with-button-border' : 'ms-4'}`}
                     >
-                        {buttonBorder && (isShowing ? <span className='me-3'>Close&nbsp;details</span> : <span className='me-3'>Open&nbsp;details</span>)}
+                        {buttonBorder &&
+                            (isShowing ? (
+                                <span className='me-3' dangerouslySetInnerHTML={{ __html: I18n.t('collapsible.closeDetails') }} />
+                            ) : (
+                                <span className='me-3' dangerouslySetInnerHTML={{ __html: I18n.t('collapsible.openDetails') }} />
+                            ))}
                         <img src={Assets.images.arrow} alt='arrow' />
                     </div>
                 )}

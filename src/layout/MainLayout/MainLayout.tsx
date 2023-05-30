@@ -83,7 +83,7 @@ const MainLayout = () => {
                         {appLoading ? (
                             <div className='d-flex justify-content-center align-items-center h-75'>
                                 <div className='spinner-border' style={{ width: '3rem', height: '3rem', color: '#5634DE' }} role='status'>
-                                    <span className='visually-hidden'>Loading...</span>
+                                    <span className='visually-hidden'>{I18n.t('common.loading')}</span>
                                 </div>
                             </div>
                         ) : (

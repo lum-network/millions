@@ -252,7 +252,7 @@ const DepositStep2 = (
                     <label className='label text-start'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase() })}</label>
                     {!isModifying ? (
                         <Button textOnly onClick={() => setIsModifying(true)}>
-                            Edit
+                            {I18n.t('common.edit')}
                         </Button>
                     ) : (
                         <label className='sublabel'>

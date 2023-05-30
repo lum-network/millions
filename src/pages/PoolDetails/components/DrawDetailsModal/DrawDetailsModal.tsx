@@ -24,16 +24,18 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                 <div className='d-flex flex-column align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
                         <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon' />
-                        <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>{poolDenom.toUpperCase()} Pool</h1>
+                        <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
+                            {poolDenom.toUpperCase()} {I18n.t('common.pool')}
+                        </h1>
                     </div>
                     <div className='my-4'>
                         <div className='d-flex flex-row justify-content-evenly'>
                             <div className='d-flex flex-row align-items-baseline'>
-                                <h4>Pool</h4>
+                                <h4>{I18n.t('common.pool')}</h4>
                                 <div className='d-flex align-items-center justify-content-center ms-2 index-container'>#{draw.poolId.toString()}</div>
                             </div>
                             <div className='d-flex flex-row align-items-baseline ms-4'>
-                                <h4>Draw</h4>
+                                <h4>{I18n.t('common.draw')}</h4>
                                 <div className='d-flex align-items-center justify-content-center ms-2 index-container'>#{draw.drawId.toString()}</div>
                             </div>
                         </div>

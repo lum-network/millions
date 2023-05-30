@@ -37,15 +37,15 @@ const TransactionsTable = ({
 
         switch (transaction.messages[0]) {
             case LumMessages.MsgMillionsDepositUrl:
-                type = 'Deposit';
+                type = I18n.t('mySavings.transactionTypes.deposit');
                 icon = Assets.images.deposit;
                 break;
             case LumMessages.MsgWithdrawDepositUrl:
-                type = 'Leave Pool';
+                type = I18n.t('mySavings.transactionTypes.leavePool');
                 icon = Assets.images.leavePool;
                 break;
             case LumMessages.MsgClaimPrizeUrl:
-                type = 'Claim Prize';
+                type = I18n.t('mySavings.transactionTypes.claimPrize');
                 icon = Assets.images.trophyPurple;
                 break;
         }

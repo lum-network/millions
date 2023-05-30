@@ -77,7 +77,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                             {drawInProgress ? (
                                 <div className='draw-in-progress-container'>
                                     <img src={Assets.images.deposit} alt='deposit' height={16} width={16} />
-                                    <span className='ms-2'>Draw in progress</span>
+                                    <span className='ms-2'>{I18n.t('common.drawInProgress')}</span>
                                 </div>
                             ) : (
                                 <CountDown homePage to={countdownTo} onCountdownEnd={() => setDrawInProgress(true)} />

@@ -222,7 +222,7 @@ export const wallet = createModel<RootModel>()({
                 try {
                     await keplrWindow.keplr.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
                     if (!keplrWindow.getOfflineSignerAuto) {
-                        throw 'Cannot fetch offline signer';
+                        throw new Error(I18n.t('errors.keplr.offlineSigner'));
                     }
                     const lumOfflineSigner = await keplrWindow.getOfflineSignerAuto(chainId);
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
@@ -230,7 +230,7 @@ export const wallet = createModel<RootModel>()({
                         dispatch.wallet.signInLum(lumWallet);
 
                         await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
-                        if (!silent) ToastUtils.showSuccessToast({ content: 'Successfully connected' });
+                        if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
                     }
                 } catch (e) {
                     if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
@@ -325,8 +325,7 @@ export const wallet = createModel<RootModel>()({
                 return;
             }
 
-            console.log('-------------------- RELOAD --------------------');
-            await dispatch.wallet.setAutoReloadTimestamp(Date.now());
+            dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
@@ -420,11 +419,11 @@ export const wallet = createModel<RootModel>()({
                 denom: amount.denom,
             };
 
-            const toastId = ToastUtils.showLoadingToast({ content: 'Transferring...' });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.ibcTransfer') });
 
             try {
                 if (!chainId) {
-                    throw new Error(`${normalDenom.toUpperCase()} chain-id not found`);
+                    throw new Error(I18n.t('errors.client.chainId', { denom: normalDenom.toUpperCase() }));
                 }
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -433,7 +432,7 @@ export const wallet = createModel<RootModel>()({
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
                 if (!rpc) {
-                    throw new Error(`${normalDenom.toUpperCase()} rpc is unavailble.`);
+                    throw new Error(I18n.t('errors.client.unavailableRpc', { denom: normalDenom.toUpperCase() }));
                 }
 
                 await WalletClient.connect(rpc, offlineSigner);
@@ -443,7 +442,7 @@ export const wallet = createModel<RootModel>()({
                 WalletClient.disconnect();
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || 'Failed to transfer, please try again later.');
+                    throw new Error(result?.error || undefined);
                 }
 
                 while (true) {
@@ -459,41 +458,43 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully transferred ${amount.amount} ${normalDenom.toUpperCase()} to ${type === 'withdraw' ? 'native chain' : 'Lum Network'}`,
+                    content: I18n.t('success.ibcTransfer', { amount: amount.amount, denom: normalDenom.toUpperCase(), chain: type === 'withdraw' ? 'native chain' : 'Lum Network' }),
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
 
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || 'Failed to transfer, please try again later.' });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.ibcTransfer') });
                 return null;
             }
         },
         async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Depositing to ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()} pool...` });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.deposit', { denom: DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase() }) });
 
             try {
                 if (!lumWallet) {
-                    throw new Error('No wallet connected');
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
                 const result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || `Failed to deposit`);
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully deposited ${payload.amount} ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()}`,
+                    content: I18n.t('success.deposit', { amount: payload.amount, denom: DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase() }),
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to deposit to ${DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase()} pool` });
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase() }),
+                });
                 return null;
             }
         },
@@ -527,54 +528,56 @@ export const wallet = createModel<RootModel>()({
         async leavePool(payload: LeavePoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Leaving pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}...` });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }) });
 
             try {
                 if (!lumWallet) {
-                    throw new Error('No wallet connected');
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
                 const result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || '');
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully left ${payload.denom.toUpperCase()} #${payload.poolId.toString()}`,
+                    content: I18n.t('success.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }),
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to leave pool ${payload.denom.toUpperCase()} #${payload.poolId.toString()}` });
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }),
+                });
                 return null;
             }
         },
         async claimPrizes(payload: Prize[], state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Claiming prizes...` });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.claimPrize') });
 
             try {
                 if (!lumWallet) {
-                    throw new Error('No wallet connected');
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
                 const result = await LumClient.claimPrizes(lumWallet.innerWallet, payload);
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || '');
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully claimed prizes`,
+                    content: I18n.t('success.claimPrize'),
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to claim prizes` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimPrize') });
                 return null;
             }
         },
@@ -610,27 +613,27 @@ export const wallet = createModel<RootModel>()({
 
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Compounding prizes...` });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.claimAndCompound') });
 
             try {
                 if (!lumWallet) {
-                    throw new Error('No wallet connected');
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
                 const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || '');
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully compounded prizes`,
+                    content: I18n.t('success.claimAndCompound'),
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to compound prizes` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimAndCompound') });
                 return null;
             }
         },

@@ -57,7 +57,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                       .toNow(true)
                 : '';
 
-            cta = expiration + ' remaining';
+            cta = expiration + I18n.t('mySavings.depositUnbondingRemaining');
             statusClassName = '';
         }
 

@@ -1,7 +1,7 @@
 import { RematchDispatch, RematchRootState, init } from '@rematch/core';
 import models, { RootModel } from '../models';
 import loadingPlugin, { ExtraModelsFromLoading } from '@rematch/loading';
-import { ToastUtils } from 'utils';
+import { I18n, ToastUtils } from 'utils';
 
 type FullModel = ExtraModelsFromLoading<RootModel>;
 
@@ -14,7 +14,7 @@ const store = init<RootModel, FullModel>({
 
                 backdrops.forEach((backdrop) => backdrop.remove());
 
-                ToastUtils.showSuccessToast({ content: 'You have been logged out.' });
+                ToastUtils.showSuccessToast({ content: I18n.t('success.logOut') });
                 return {
                     ...state,
                     wallet: undefined,

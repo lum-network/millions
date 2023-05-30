@@ -90,7 +90,7 @@ const PoolDetails = () => {
                     <div className='d-flex flex-row align-items-center me-0 me-xxl-5'>
                         <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='pool-icon' />
                         <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
-                            {denom.toUpperCase()} Pool {pools.filter((pool) => pool.nativeDenom === 'u' + denom).length > 1 ? `#${pool.poolId.toString()}` : ''}
+                            {denom.toUpperCase()} {I18n.t('common.pool')} {pools.filter((pool) => pool.nativeDenom === 'u' + denom).length > 1 ? `#${pool.poolId.toString()}` : ''}
                         </h1>
                     </div>
                     <div className='d-flex flex-column flex-lg-row justify-content-between flex-grow-1 ms-0 ms-xl-5 mt-4 mt-xl-0'>
@@ -119,7 +119,7 @@ const PoolDetails = () => {
                 </div>
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
-                        <h2>{I18n.t('poolDetails.biggestPrize')}</h2>
+                        <h2>{I18n.t('poolDetails.prizePool')}</h2>
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (
@@ -136,7 +136,7 @@ const PoolDetails = () => {
                     <div className='next-draw-container'>
                         <h2>{I18n.t('poolDetails.nextDraw')}</h2>
                         <div className={`display-6 ${drawInProgress ? 'draw-in-progress' : ''}`}>
-                            {drawInProgress ? 'Draw in progress' : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
+                            {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
                         </div>
                     </div>
                     <div
@@ -155,7 +155,10 @@ const PoolDetails = () => {
                             <div className='d-flex flex-row align-items-center mb-4 mb-lg-0'>
                                 <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} width='50' height='50' className='d-none d-sm-block me-4' />
                                 <div>
-                                    <h3 className='mb-0'>Deposit{userDeposits.deposits.length > 1 ? 's' : ` #${userDeposits.depositId?.toString()}`}</h3>
+                                    <h3 className='mb-0'>
+                                        {I18n.t('common.deposit')}
+                                        {userDeposits.deposits.length > 1 ? 's' : ` #${userDeposits.depositId?.toString()}`}
+                                    </h3>
                                     {NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}{' '}
                                     {denom.toUpperCase()}
                                 </div>
