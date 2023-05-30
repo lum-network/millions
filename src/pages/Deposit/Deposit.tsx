@@ -12,14 +12,16 @@ import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import { Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
-import { DenomsUtils, I18n } from 'utils';
+import { PoolModel } from 'models';
+import { DenomsUtils, I18n, WalletUtils } from 'utils';
+import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
 import DepositSteps from './components/DepositSteps/DepositSteps';
 import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
 import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
+import DepositDeltaModal from './components/Modals/DepositDelta/DepositDelta';
 import Error404 from '../404/404';
-import { confettis } from 'utils/confetti';
 
 import './Deposit.scss';
 
@@ -28,12 +30,13 @@ const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.8
 const Deposit = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const { otherWallets, lumWallet, prices, pools, pool, isTransferring } = useSelector((state: RootState) => ({
+    const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
+        depositDelta: state.pools.depositDelta,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
 
@@ -42,16 +45,18 @@ const Deposit = () => {
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
     const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('0');
-
-    const depositFlowContainerRef = useRef(null);
-    const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
-    const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const [timeline] = useState<gsap.core.Timeline>(
         gsap.timeline({
             defaults: GSAP_DEFAULT_CONFIG,
             smoothChildTiming: true,
         }),
     );
+
+    const depositFlowContainerRef = useRef(null);
+    const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const depositDeltaModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
     const dispatch = useDispatch<Dispatch>();
 
     const prevStep = usePrevious(currentStep);
@@ -482,6 +487,35 @@ const Deposit = () => {
         }
     };
 
+    const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string, force = false) => {
+        const now = Date.now();
+        const nextDrawAt = now + 100000;
+        const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, lumWallet?.balances || []));
+        const depositAmountNumber = Number(depositAmount);
+
+        if (depositAmountNumber > maxAmount) {
+            const prev = depositAmount;
+            const next = (depositAmountNumber - maxAmount).toFixed(6);
+
+            transferForm.setFieldValue('amount', next);
+            setIbcModalPrevAmount(prev);
+            setIbcModalDepositAmount(next);
+
+            if (ibcModalRef.current) {
+                ibcModalRef.current.show();
+            }
+
+            return null;
+        }
+
+        if (!force && depositDeltaModalRef.current && nextDrawAt && depositDelta && ((nextDrawAt || 0) - now) / 1000 < depositDelta) {
+            depositDeltaModalRef.current.show();
+            return null;
+        }
+
+        return await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
+    };
+
     useEffect(() => {
         if (blocker.state === 'blocked') {
             if (!transferForm.dirty) {
@@ -702,6 +736,7 @@ const Deposit = () => {
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={startTransition}
+                            onDeposit={onDeposit}
                             onFinishDeposit={(callback) => {
                                 const tl = gsap.timeline({
                                     ...GSAP_DEFAULT_CONFIG,
@@ -751,6 +786,19 @@ const Deposit = () => {
                     </div>
                 </div>
             </div>
+            <DepositDeltaModal
+                modalRef={depositDeltaModalRef}
+                onContinue={() => {
+                    const depositBtn = document.querySelector('.deposit-cta');
+
+                    depositDeltaModalRef.current?.hide();
+
+                    if (depositBtn) {
+                        depositBtn.setAttribute('force-deposit', 'true');
+                        depositBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                    }
+                }}
+            />
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
             <IbcTransferModal
                 modalRef={ibcModalRef}

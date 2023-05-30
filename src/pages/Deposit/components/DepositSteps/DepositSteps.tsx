@@ -4,8 +4,8 @@ import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch, RootState } from 'redux/store';
+import { useSelector } from 'react-redux';
+import { RootState } from 'redux/store';
 import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
@@ -41,6 +41,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
+    onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force?: boolean) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
@@ -60,10 +61,10 @@ const DepositStep1 = (
     props: StepProps & {
         nonEmptyWallets: OtherWalletModel[];
         form: FormikProps<{ amount: string }>;
-        onDeposit: (amount: string) => void;
+        onTransfer: (amount: string) => void;
     },
 ) => {
-    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, onDeposit } = props;
+    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, onTransfer } = props;
 
     const navigate = useNavigate();
 
@@ -163,7 +164,7 @@ const DepositStep1 = (
                     </Card>
                     <Button
                         type={isLoading ? 'button' : 'submit'}
-                        onClick={() => onDeposit(form.values.amount)}
+                        onClick={() => onTransfer(form.values.amount)}
                         className='position-relative deposit-cta w-100 mt-4'
                         disabled={isLoading}
                         //loading={isLoading}
@@ -180,14 +181,14 @@ const DepositStep1 = (
 const DepositStep2 = (
     props: StepProps & {
         amount: string;
+        onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force?: boolean) => Promise<void>;
         onFinishDeposit: (infos: TxInfos) => void;
         initialAmount?: string;
         onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
-    const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, onPrevStep, onFinishDeposit } = props;
+    const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, onDeposit } = props;
 
-    const dispatch = useDispatch<Dispatch>();
     const navigate = useNavigate();
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
@@ -199,6 +200,7 @@ const DepositStep2 = (
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
     const [error, setError] = useState('');
+
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
 
     const validateInput = (value: string) => {
@@ -321,24 +323,15 @@ const DepositStep2 = (
             <Button
                 type='button'
                 onClick={async () => {
-                    const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances));
-                    const depositAmountNumber = Number(depositAmount);
+                    let force = false;
+                    const depositBtn = document.querySelector('.deposit-cta');
+                    const depositBtnForceAttr = depositBtn ? depositBtn.attributes.getNamedItem('force-deposit')?.value : null;
 
-                    if (depositAmountNumber > maxAmount) {
-                        onPrevStep(depositAmount, (depositAmountNumber - maxAmount).toFixed(6));
-                        return;
+                    if (depositBtnForceAttr) {
+                        force = depositBtnForceAttr === 'true';
                     }
-                    const res = await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
 
-                    if (res && !res.error && res.hash) {
-                        onFinishDeposit({
-                            hash: LumUtils.toHex(res.hash).toUpperCase(),
-                            amount: numeral(depositAmount).format('0,0'),
-                            denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
-                            tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + depositAmountNumber).format('0,0'),
-                            poolId: poolToDeposit.poolId.toString(),
-                        });
-                    }
+                    await onDeposit(poolToDeposit, depositAmount, force);
                 }}
                 disabled={!!error || isLoading}
                 //loading={isLoading}
@@ -440,7 +433,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
@@ -467,7 +460,7 @@ const DepositSteps = (props: Props) => {
                             subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
                             currentPool={currentPool}
                             form={transferForm}
-                            onDeposit={(amount) => setAmount(amount)}
+                            onTransfer={(amount) => setAmount(amount)}
                             price={price}
                             pools={pools}
                             balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
@@ -481,6 +474,20 @@ const DepositSteps = (props: Props) => {
                             balances={lumWallet?.balances || []}
                             initialAmount={initialAmount}
                             amount={amount}
+                            onDeposit={async (poolToDeposit, depositAmount, force) => {
+                                const res = await onDeposit(poolToDeposit, depositAmount, force);
+
+                                if (res && !res.error) {
+                                    onFinishDeposit(onNextStep);
+                                    setTxInfos({
+                                        hash: LumUtils.toHex(res.hash).toUpperCase(),
+                                        amount: numeral(depositAmount).format('0,0'),
+                                        denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
+                                        tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),
+                                        poolId: poolToDeposit.poolId.toString(),
+                                    });
+                                }
+                            }}
                             onFinishDeposit={(infos) => {
                                 onFinishDeposit(onNextStep);
                                 setTxInfos(infos);
