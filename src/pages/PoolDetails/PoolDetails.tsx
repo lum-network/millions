@@ -11,7 +11,7 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
 import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, SmallerDecimal, Table, Tooltip } from 'components';
-import { NavigationConstants } from 'constant';
+import { ApiConstants, NavigationConstants } from 'constant';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
@@ -68,7 +68,7 @@ const PoolDetails = () => {
     const avgDeposit = (NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()) * prices[denom] || 0;
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
-        chances: prizeBatch.poolPercent.toNumber() / 100,
+        chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
         value: ((pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber(),
     }));
 
