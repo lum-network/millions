@@ -444,6 +444,9 @@ export default {
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',
         deposits_other: '{{ count }} Deposits',
+        depositDeltaModal: {
+            title: 'You are depositing after the delta of {{ delta }} minutes.\n\nYou will be eligible only from the next draw, this is to ensure security of the protocol and avoid spammy transactions'
+        }
     },
     luckiestWinners: {
         title: 'Luckiest Winners',

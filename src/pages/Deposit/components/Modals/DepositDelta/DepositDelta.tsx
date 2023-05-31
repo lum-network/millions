@@ -5,19 +5,17 @@ import { Button, Modal } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { RootState } from 'redux/store';
 import { I18n } from 'utils';
+import Assets from 'assets';
 
 const DepositDelta = ({ modalRef, onContinue }: { modalRef: React.RefObject<ModalHandlers>; onContinue: () => void }) => {
     const depositDelta = useSelector((state: RootState) => state.pools.depositDelta);
 
     return (
         <Modal id='depositDeltaModal' ref={modalRef}>
-            <div>
-                You are depositing after the deposit delta of {(depositDelta || 300) / 60} minutes.
-                <br />
-                You will be eligible only from the next draw, this is the ensure security and avoid spamming transactions to false draw results
-            </div>
-            <div className='d-flex flex-row align-items-center justify-content-between mt-4'>
-                <Button outline className='w-100 me-2' onClick={() => modalRef.current?.hide()}>
+            <img src={Assets.images.info} alt='info' width={42} height={42} />
+            <h3 className='mt-4'>{I18n.t('deposit.depositDeltaModal.title', { delta: (depositDelta || 300) / 60 })}</h3>
+            <div className='d-flex flex-row align-items-center justify-content-between mt-5'>
+                <Button outline className='w-100 me-4' onClick={() => modalRef.current?.hide()}>
                     {I18n.t('common.cancel')}
                 </Button>
                 <Button className='w-100' onClick={onContinue}>
