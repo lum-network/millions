@@ -41,7 +41,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
-    onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force?: boolean) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
+    onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force: boolean) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
@@ -181,8 +181,7 @@ const DepositStep1 = (
 const DepositStep2 = (
     props: StepProps & {
         amount: string;
-        onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force?: boolean) => Promise<void>;
-        onFinishDeposit: (infos: TxInfos) => void;
+        onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force: boolean) => Promise<void>;
         initialAmount?: string;
         onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
@@ -487,10 +486,6 @@ const DepositSteps = (props: Props) => {
                                         poolId: poolToDeposit.poolId.toString(),
                                     });
                                 }
-                            }}
-                            onFinishDeposit={(infos) => {
-                                onFinishDeposit(onNextStep);
-                                setTxInfos(infos);
                             }}
                             currentPool={currentPool}
                             pools={pools}
