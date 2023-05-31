@@ -419,8 +419,8 @@ export default {
             },
         ],
         shareStep: {
-            title: 'Your savings are now in good hands! 🥳',
-            subtitle: 'You are always eligible for all the next draws coming!<br/>Share your deposit on Twitter to see how high the total amount saved can go!',
+            title: 'Your savings are now<br />in good hands! 🥳',
+            subtitle: 'You are always eligible for all the next draws coming!<br/>Share your deposit on Twitter to see<br />how high the total amount saved can go!',
         },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
