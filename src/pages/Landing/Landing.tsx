@@ -21,6 +21,7 @@ import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
 import PoolCardPlaceholder from './components/PoolCardPlaceholder';
+import Footer from './components/Footer';
 
 import './Landing.scss';
 
@@ -505,7 +506,7 @@ const Landing = () => {
                                 },
                             ]}
                         />
-                        Footer
+                        <Footer />
                     </Card>
                 </div>
             </div>

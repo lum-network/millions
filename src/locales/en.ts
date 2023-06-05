@@ -195,6 +195,34 @@ export default {
                 },
             ],
         },
+        footer: {
+            learn: {
+                title: 'Learn',
+                wallet: 'Get an interchain wallet',
+                tokens: 'Get interchain tokens',
+                faq: 'FAQ'
+            },
+            documentation: {
+                title: 'Documentation',
+                lexicon: 'Lexicon',
+                rules: 'Main rules and concepts',
+                pool: 'Pool Management',
+                deposits: 'Deposits & Withdrawals',
+                drawMechanism: 'Draw Mechanism',
+                allDoc: 'All documentation'
+            },
+            community: {
+                title: 'Community',
+                twitter: 'Twitter',
+                discord: 'Discord',
+                github: 'Github',
+                medium: 'Medium'
+            },
+            builtOn: {
+                title: 'Built on Lum Network',
+                tAndC: 'Terms & Conditions'
+            }
+        }
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     keplrDownloadModal: {
