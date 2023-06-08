@@ -211,7 +211,6 @@ export const wallet = createModel<RootModel>()({
                                 },
                             },
                         ],
-                        coinType: 118,
                         beta: chainId.includes('testnet'),
                     });
                 } catch {

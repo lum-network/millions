@@ -7,8 +7,10 @@ class Firebase {
     public app?: FirebaseApp;
     public analytics?: Analytics;
     private constructor() {
-        this.app = initializeApp(FirebaseConstants.FIREBASE_CONFIG);
-        this.analytics = getAnalytics(this.app);
+        if (process.env.NODE_ENV !== 'test') {
+            this.app = initializeApp(FirebaseConstants.FIREBASE_CONFIG);
+            this.analytics = getAnalytics(this.app);
+        }
     }
 
     public static getInstance(): Firebase {

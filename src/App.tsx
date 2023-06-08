@@ -16,8 +16,11 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 import store from './redux/store';
 
+// Conditional import for tests to pass as we use a script loaded in index.html to use SplitText
+const ST = process.env.NODE_ENV === 'test' ? import('gsap-trial/SplitText') : SplitText;
+
 gsap.config({ nullTargetWarn: false });
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, ScrollToPlugin, CustomEase, SplitText, CSSPlugin);
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, ScrollToPlugin, CustomEase, ST, CSSPlugin);
 
 const App = () => {
     return (
