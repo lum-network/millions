@@ -20,7 +20,7 @@ const PoolCard = ({ denom, prize }: IProps) => {
                 </div>
             </div>
             <div className='tvl-container d-flex flex-column align-items-center'>
-                <span className='tvl-legend mb-2'>{denom === 'atom' ? 'Launch: June 9th' : 'To be announced'}</span>
+                <span className='tvl-legend mb-2'>{denom === 'atom' ? 'Launch: mid-June' : 'To be announced'}</span>
                 <span className='tvl mb-1'>{denom === 'atom' ? 'Cosmos Hub' : denom.includes('#2') ? 'Mad Scientist?' : 'Lucky Star?'}</span>
             </div>
             <Card withoutPadding flat className='prize-card'>
