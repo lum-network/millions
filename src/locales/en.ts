@@ -141,7 +141,7 @@ export default {
                 },
                 {
                     title: 'What is a Prize-Linked Savings Account?',
-                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is then distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
+                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
                 },
                 {
                     title: 'Is Cosmos Millions free to use?',
@@ -195,6 +195,34 @@ export default {
                 },
             ],
         },
+        footer: {
+            learn: {
+                title: 'Learn',
+                wallet: 'Get an interchain wallet',
+                tokens: 'Get interchain tokens',
+                faq: 'FAQ'
+            },
+            documentation: {
+                title: 'Documentation',
+                lexicon: 'Lexicon',
+                rules: 'Main rules and concepts',
+                pool: 'Pool Management',
+                deposits: 'Deposits & Withdrawals',
+                drawMechanism: 'Draw Mechanism',
+                allDoc: 'All documentation'
+            },
+            community: {
+                title: 'Community',
+                twitter: 'Twitter',
+                discord: 'Discord',
+                github: 'Github',
+                medium: 'Medium'
+            },
+            builtOn: {
+                title: 'Built on Lum Network',
+                tAndC: 'Terms & Conditions'
+            }
+        }
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     keplrDownloadModal: {
@@ -419,8 +447,8 @@ export default {
             },
         ],
         shareStep: {
-            title: 'Your savings are now in good hands! 🥳',
-            subtitle: 'You are always eligible for all the next draws coming!<br/>Share your deposit on Twitter to see how high the total amount saved can go!',
+            title: 'Your savings are now<br />in good hands! 🥳',
+            subtitle: 'You are always eligible for all the next draws coming!<br/>Share your deposit on Twitter to see<br />how high the total amount saved can go!',
         },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:

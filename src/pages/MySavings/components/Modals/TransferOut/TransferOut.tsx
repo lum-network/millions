@@ -58,10 +58,10 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                     type: 'withdraw',
                     amount: {
                         amount,
-                        denom: pool.internalInfos.ibcDenom,
+                        denom: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetDenom : pool.internalInfos.ibcDenom,
                     },
                     normalDenom: normalDenom,
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
+                    ibcChannel: pool.transferChannelId,
                     chainId: LumClient.getChainId() || '',
                 });
 

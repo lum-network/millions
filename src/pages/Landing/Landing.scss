@@ -520,5 +520,21 @@
             top: -215px;
             left: calc(50% - 126px);
         }
+
+        .footer-title {
+            color: $color-primary;
+        }
+
+        a {
+            color: $color-black;
+            text-decoration: none;
+            transition: all 150ms linear;
+            font-weight: 200;
+            width: fit-content;
+            &:hover {
+                color: $color-black;
+                transform: scale(1.05)
+            }
+        }
     }
 }

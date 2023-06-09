@@ -350,9 +350,9 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
 
     return (
         <div className='step-3'>
-            <div className='d-flex flex-row mt-2 mb-3 mb-sm-5 mb-lg-0'>
-                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
-                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
+            <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center mt-2 mb-3 mb-sm-5 mb-lg-0'>
+                <div className='card-step-title text-nowrap text-center text-lg-start' dangerouslySetInnerHTML={{ __html: title }} />
+                <div className='card-step-subtitle text-nowrap text-center text-lg-start mt-4 mt-lg-0' dangerouslySetInnerHTML={{ __html: subtitle }} />
             </div>
             <div className='d-flex flex-column mt-5'>
                 <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
@@ -369,7 +369,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                     </div>
                     <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                 </div>
-                <div className='row row-cols-3 gx-4 ctas-section'>
+                <div className='row row-cols-1 row-cols-lg-3 gx-4 gy-4 ctas-section'>
                     <div className='col'>
                         <Card
                             flat
