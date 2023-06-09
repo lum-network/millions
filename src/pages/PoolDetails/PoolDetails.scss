@@ -15,7 +15,7 @@
 
     h4 {
         @include media-breakpoint-down(lg) {
-            @include font-size(0.75rem);
+            @include font-size(1.125rem);
         }
     }
 
@@ -89,15 +89,40 @@
         }
     }
 
-    .stat-bg-white {
+    .stat-bg-white,
+    .tvl-detail-card {
         background-color: $color-white;
         color: $color-primary;
         border-radius: 8px;
         padding: 14px 22px;
     }
 
-    .my-deposits-card {
+    .tvl-detail-card {
+        padding: 22px 22px;
+
+        .tvl-detail-amount {
+            font-size: 24px;
+            color: $color-black;
+
+            .denom {
+                color: $color-primary;
+            }
+        }
+
+        .usd-amount {
+            font-size: 12px;
+            color: $color-black;
+            font-weight: 200;
+        }
+    }
+
+    .my-deposits-card,
+    .tvl-details-card {
         padding: 40px 32px;
+
+        @include media-breakpoint-down(md) {
+            padding: 24px;
+        }
     }
 
     .prize-distribution-card {

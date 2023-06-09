@@ -75,6 +75,9 @@ const PoolDetails = () => {
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
     const prizeDistributionHeaders = I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true });
 
+    const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
+    const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
+
     return (
         <div className='pool-details-container mt-5'>
             <Card className='glow-bg'>
@@ -148,6 +151,39 @@ const PoolDetails = () => {
                     />
                     {pool.internalInfos?.illustration && <img alt='' src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
                 </Card>
+                {(usersDepositsAmount > 0 || sponsorshipAmount > 0) && (
+                    <>
+                        <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.tvlDetails.title')}</h2>
+                        <Card flat withoutPadding className='d-flex flex-column tvl-details-card'>
+                            {sponsorshipAmount > 0 && (
+                                <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 tvl-detail-card'>
+                                    <div className='d-flex flex-row align-items-center'>
+                                        <img src={Assets.images.sponsor} className='me-3' />
+                                        <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.sponsor')}</h4>
+                                    </div>
+                                    <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
+                                        <div className='tvl-detail-amount'>
+                                            {sponsorshipAmount} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                        </div>
+                                        <small className='usd-amount'>{numeral(sponsorshipAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
+                                    </div>
+                                </div>
+                            )}
+                            <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center tvl-detail-card'>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <img src={Assets.images.sponsor} className='me-3' />
+                                    <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.deposits')}</h4>
+                                </div>
+                                <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
+                                    <div className='tvl-detail-amount'>
+                                        {usersDepositsAmount} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                    </div>
+                                    <small className='usd-amount'>{numeral(usersDepositsAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
+                                </div>
+                            </div>
+                        </Card>
+                    </>
+                )}
                 {userDeposits && (
                     <>
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.myDeposits', { denom: denom.toUpperCase() })}</h2>
@@ -179,19 +215,32 @@ const PoolDetails = () => {
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
-                            <Card flat withoutPadding className='prize-distribution-card'>
-                                <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
-                                    {prizes.map((prize, index) => (
-                                        <tr key={index} className='stat-bg-white'>
-                                            <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value).format('$0,0')}</td>
-                                            <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
-                                            <td className='text-end' data-label={prizeDistributionHeaders[2]}>
-                                                1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </Table>
-                            </Card>
+                            {winSizes.width > 768 ? (
+                                <Card flat withoutPadding className='prize-distribution-card'>
+                                    <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
+                                        {prizes.map((prize, index) => (
+                                            <tr key={`prize-${index}`} className='stat-bg-white'>
+                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value).format('$0,0')}</td>
+                                                <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
+                                                <td className='text-end' data-label={prizeDistributionHeaders[2]}>
+                                                    1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </Table>
+                                </Card>
+                            ) : (
+                                prizes.map((prize, index) => (
+                                    <Card flat key={`prize-${index}`} className={index < prizes.length ? 'mb-3' : ''}>
+                                        <h4>{prizeDistributionHeaders[0]}</h4>
+                                        <div className='stat-bg-white mb-3'>{numeral(prize.value).format('$0,0')}</div>
+                                        <h4>{prizeDistributionHeaders[1]}</h4>
+                                        <div className='stat-bg-white mb-3'>{prize.count}</div>
+                                        <h4>{prizeDistributionHeaders[2]}</h4>
+                                        <div className='stat-bg-white'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</div>
+                                    </Card>
+                                ))
+                            )}
                             <Lottie
                                 className='d-none d-sm-block cosmonaut-with-duck'
                                 animationData={cosmonautWithDuck}
