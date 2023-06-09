@@ -9,7 +9,7 @@ import { CustomEase } from 'gsap/CustomEase';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { Lottie, Modal, Steps } from 'components';
+import { Card, Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
@@ -20,10 +20,10 @@ import { RootState, Dispatch } from 'redux/store';
 import DepositSteps from './components/DepositSteps/DepositSteps';
 import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
 import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
-import DepositDeltaModal from './components/Modals/DepositDelta/DepositDelta';
 import Error404 from '../404/404';
 
 import './Deposit.scss';
+import Assets from 'assets';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
@@ -55,7 +55,6 @@ const Deposit = () => {
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
-    const depositDeltaModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
 
@@ -100,6 +99,11 @@ const Deposit = () => {
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
     });
+
+    const now = Date.now();
+    const nextDrawAt = pool && pool.nextDrawAt ? pool.nextDrawAt.getTime() : now;
+
+    const withinDepositDelta = (nextDrawAt - now) / 1000 < (depositDelta || 0);
 
     const cardTimeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
@@ -515,9 +519,7 @@ const Deposit = () => {
         }
     };
 
-    const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string, force: boolean) => {
-        const now = Date.now();
-        const nextDrawAt = poolToDeposit.nextDrawAt?.getTime() || now;
+    const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string) => {
         const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, lumWallet?.balances || []));
         const depositAmountNumber = Number(depositAmount);
 
@@ -533,11 +535,6 @@ const Deposit = () => {
                 ibcModalRef.current.show();
             }
 
-            return null;
-        }
-
-        if (!force && depositDeltaModalRef.current && depositDelta && (nextDrawAt - now) / 1000 < depositDelta) {
-            depositDeltaModalRef.current.show();
             return null;
         }
 
@@ -708,6 +705,14 @@ const Deposit = () => {
                 }
             });
 
+            if (withinDepositDelta) {
+                timeline.from('#depositFlow .deposit-delta-card', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                });
+            }
+
             timeline.add(cardTimeline(), '<0.2');
 
             if (currentStep === 0) {
@@ -757,6 +762,12 @@ const Deposit = () => {
                     <div className='col'>
                         <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                        {withinDepositDelta && (
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                                <img src={Assets.images.questionMark} alt='' />
+                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
+                            </Card>
+                        )}
                     </div>
                 )}
                 <div className='col'>
@@ -814,19 +825,6 @@ const Deposit = () => {
                     </div>
                 </div>
             </div>
-            <DepositDeltaModal
-                modalRef={depositDeltaModalRef}
-                onContinue={() => {
-                    const depositBtn = document.querySelector('.deposit-cta');
-
-                    depositDeltaModalRef.current?.hide();
-
-                    if (depositBtn) {
-                        depositBtn.setAttribute('force-deposit', 'true');
-                        depositBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-                    }
-                }}
-            />
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
             <IbcTransferModal
                 modalRef={ibcModalRef}

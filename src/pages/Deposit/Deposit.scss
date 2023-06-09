@@ -36,6 +36,23 @@
     .index-default-border {
         opacity: 0;
     }
+
+    .deposit-delta-card {
+        margin-right: 15rem;
+        border-radius: 12px;
+        padding: 2.25rem 1.75rem;
+        
+        div {
+            color: $color-primary;
+            font-weight: 350;
+            font-size: 14px;
+            line-height: 17px;
+        }
+
+        @include media-breakpoint-down(lg) {
+            margin-right: 0
+        }
+    }
 }
 
 #quitModal,

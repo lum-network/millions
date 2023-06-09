@@ -25,6 +25,7 @@ import logout from './images/logout.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
+import questionMark from './images/questionmark.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
 import trophy from './images/trophy.svg';
@@ -80,6 +81,7 @@ const Assets = {
         lumLogoPurple,
         mintscanPurple,
         mySavings,
+        questionMark,
         star,
         success,
         trophy,

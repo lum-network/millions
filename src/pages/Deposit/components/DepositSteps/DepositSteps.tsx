@@ -41,7 +41,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
-    onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force: boolean) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
+    onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel;
@@ -181,7 +181,7 @@ const DepositStep1 = (
 const DepositStep2 = (
     props: StepProps & {
         amount: string;
-        onDeposit: (poolToDeposit: PoolModel, depositAmount: string, force: boolean) => Promise<void>;
+        onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<void>;
         initialAmount?: string;
         onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
@@ -322,15 +322,7 @@ const DepositStep2 = (
             <Button
                 type='button'
                 onClick={async () => {
-                    let force = false;
-                    const depositBtn = document.querySelector('.deposit-cta');
-                    const depositBtnForceAttr = depositBtn ? depositBtn.attributes.getNamedItem('force-deposit')?.value : null;
-
-                    if (depositBtnForceAttr) {
-                        force = depositBtnForceAttr === 'true';
-                    }
-
-                    await onDeposit(poolToDeposit, depositAmount, force);
+                    await onDeposit(poolToDeposit, depositAmount);
                 }}
                 disabled={!!error || isLoading}
                 //loading={isLoading}
@@ -473,8 +465,8 @@ const DepositSteps = (props: Props) => {
                             balances={lumWallet?.balances || []}
                             initialAmount={initialAmount}
                             amount={amount}
-                            onDeposit={async (poolToDeposit, depositAmount, force) => {
-                                const res = await onDeposit(poolToDeposit, depositAmount, force);
+                            onDeposit={async (poolToDeposit, depositAmount) => {
+                                const res = await onDeposit(poolToDeposit, depositAmount);
 
                                 if (res && !res.error) {
                                     onFinishDeposit(onNextStep);
