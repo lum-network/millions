@@ -258,6 +258,11 @@ export default {
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Variable APY',
+        tvlDetails: {
+            title: 'Total Value Locked details',
+            sponsor: 'Sponsorship',
+            deposits: 'Cosmonauts Deposits'
+        },
         winners: {
             title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
