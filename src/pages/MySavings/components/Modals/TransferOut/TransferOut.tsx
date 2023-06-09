@@ -61,7 +61,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                         denom: pool.internalInfos.ibcDenom,
                     },
                     normalDenom: normalDenom,
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
+                    ibcChannel: pool.transferChannelId,
                     chainId: LumClient.getChainId() || '',
                 });
 

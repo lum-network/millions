@@ -66,7 +66,7 @@ const Deposit = () => {
         onSubmit: async (values) => {
             const amount = values.amount.toString();
 
-            if (pool) {
+            if (pool && pool.internalInfos) {
                 const res = await dispatch.wallet.ibcTransfer({
                     type: 'deposit',
                     fromAddress: otherWallet.address,
@@ -76,7 +76,7 @@ const Deposit = () => {
                         denom: pool.nativeDenom,
                     },
                     normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                    ibcChannel: pool.transferChannelId,
+                    ibcChannel: pool.internalInfos.ibcSourceChannel,
                     chainId: pool.chainId,
                 });
 
@@ -139,9 +139,11 @@ const Deposit = () => {
                     y: 0,
                 },
                 '<0.1',
-            )
-            .fromTo(
-                '#depositFlow .winning-chance-card',
+            );
+
+        if (pools.length > 1) {
+            tl.fromTo(
+                '#depositFlow .step-1 .custom-select',
                 {
                     opacity: 0,
                     y: 50,
@@ -151,7 +153,21 @@ const Deposit = () => {
                     y: 0,
                 },
                 '<0.1',
-            )
+            );
+        }
+
+        tl.fromTo(
+            '#depositFlow .winning-chance-card',
+            {
+                opacity: 0,
+                y: 50,
+            },
+            {
+                opacity: 1,
+                y: 0,
+            },
+            '<0.1',
+        )
             .fromTo(
                 '#depositFlow .deposit-cta .deposit-cta-bg',
                 {
@@ -211,15 +227,27 @@ const Deposit = () => {
                     y: 50,
                 },
                 '<0.1',
-            )
-            .from(
-                '#depositFlow .step-2 .step2-input-container',
+            );
+
+        if (pools.length > 1) {
+            tl.from(
+                '#depositFlow .step-2 .custom-select',
                 {
                     opacity: 0,
                     y: 50,
                 },
                 '<0.1',
-            )
+            );
+        }
+
+        tl.from(
+            '#depositFlow .step-2 .step2-input-container',
+            {
+                opacity: 0,
+                y: 50,
+            },
+            '<0.1',
+        )
             .from(
                 '#depositFlow .step-2 .fees-warning',
                 {
