@@ -42,11 +42,13 @@ const Winners = () => {
                     <div className='col-12'>
                         <Card className='no-winners d-flex flex-row align-items-center justify-content-between glow-bg'>
                             <Lottie animationData={cosmonautWithDuck} className='cosmonaut-duck' />
-                            <div className='infos'>
-                                <h2>{I18n.t('luckiestWinners.noWinnersYet.title')}</h2>
-                                <p className='mb-0'>{I18n.t('luckiestWinners.noWinnersYet.description')}</p>
+                            <div className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center flex-grow-1 infos'>
+                                <div className='mb-3 mb-lg-0'>
+                                    <h2>{I18n.t('luckiestWinners.noWinnersYet.title')}</h2>
+                                    <p className='mb-0'>{I18n.t('luckiestWinners.noWinnersYet.description')}</p>
+                                </div>
+                                <Button to={NavigationConstants.POOLS}>{I18n.t('luckiestWinners.noWinnersYet.cta')}</Button>
                             </div>
-                            <Button to={NavigationConstants.POOLS}>{I18n.t('luckiestWinners.noWinnersYet.cta')}</Button>
                         </Card>
                     </div>
                 )}

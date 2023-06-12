@@ -13,7 +13,7 @@ import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
 import { I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
-import { NavigationConstants } from 'constant';
+import { Breakpoints, NavigationConstants } from 'constant';
 
 import './Header.scss';
 
@@ -222,15 +222,15 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             ]}
                         />
                     </Link>
-                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= 992 ? renderBurger() : renderContent(false)}</div>
+                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= Breakpoints.LG ? renderBurger() : renderContent(false)}</div>
                 </nav>
             </header>
-            {winSizes.width <= 992 && (
+            {winSizes.width <= Breakpoints.LG && (
                 <Menu
                     right
                     customBurgerIcon={false}
                     customCrossIcon={false}
-                    width={winSizes.width < 576 ? winSizes.width : 390}
+                    width={winSizes.width < Breakpoints.SM ? winSizes.width : 390}
                     isOpen={isMenuOpen}
                     onStateChange={(state) => setIsMenuOpen(state.isOpen)}
                 >

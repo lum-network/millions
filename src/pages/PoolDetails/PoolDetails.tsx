@@ -10,8 +10,9 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, SmallerDecimal, Table, Tooltip } from 'components';
-import { ApiConstants, NavigationConstants } from 'constant';
+import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
+import { ApiConstants, Breakpoints, NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
@@ -20,7 +21,6 @@ import Skeleton from 'react-loading-skeleton';
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
 import './PoolDetails.scss';
-import { useWindowSize } from 'hooks';
 
 const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
@@ -43,6 +43,7 @@ const PoolDetails = () => {
     const [estimationAmount, setEstimationAmount] = useState('100');
     const [estimatedChances, setEstimatedChances] = useState(0);
     const [drawsHistoryPage, setDrawsHistoryPage] = useState(1);
+    const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
 
@@ -215,7 +216,7 @@ const PoolDetails = () => {
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
-                            {winSizes.width > 768 ? (
+                            {winSizes.width > Breakpoints.LG ? (
                                 <Card flat withoutPadding className='prize-distribution-card'>
                                     <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
                                         {prizes.map((prize, index) => (
@@ -374,52 +375,143 @@ const PoolDetails = () => {
                         <div className='col-12'>
                             <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.drawsHistory.title')}</h2>
                             <Card flat withoutPadding className='draws-history-card'>
-                                <Table
-                                    className='draws-history-table w-100'
-                                    headers={drawHistoryHeaders}
-                                    responsive={winSizes.width > 576 ? false : true}
-                                    pagination={
-                                        pool.draws.length > 5
-                                            ? {
-                                                  page: drawsHistoryPage,
-                                                  pagesTotal: Math.ceil(pool.draws.length / 5),
-                                                  hasNextPage: drawsHistoryPage < Math.ceil(pool.draws.length / 5),
-                                                  hasPreviousPage: drawsHistoryPage > 1,
-                                              }
-                                            : undefined
-                                    }
-                                    customPagination='draws-history-pagination'
-                                    onPageChange={(page) => setDrawsHistoryPage(page)}
-                                >
-                                    {pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {
-                                        return (
-                                            <tr
-                                                key={`draw-${index}`}
+                                {winSizes.width < Breakpoints.MD ? (
+                                    <>
+                                        <div className='d-flex flex-column'>
+                                            <div className='d-flex flex-column'>
+                                                <label>{drawHistoryHeaders[0]}</label>
+                                                <div className='stat-bg-white'>
+                                                    <div className='d-flex align-items-center justify-content-center index-container'>
+                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.poolId.toString()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='d-flex flex-column my-3'>
+                                                <label>{drawHistoryHeaders[1]}</label>
+                                                <div className='stat-bg-white'>
+                                                    <div className='d-flex align-items-center justify-content-center index-container'>
+                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='d-flex flex-column'>
+                                                <label>{drawHistoryHeaders[2]}</label>
+                                                <div className='stat-bg-white'>
+                                                    <div className='draw-date'>
+                                                        {dayjs(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='d-flex flex-column my-3'>
+                                                <label>{drawHistoryHeaders[3]}</label>
+                                                <div className='stat-bg-white'>{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
+                                            </div>
+                                            <div className='d-flex flex-column'>
+                                                <label>{drawHistoryHeaders[4]}</label>
+                                                <div className='stat-bg-white'>
+                                                    <SmallerDecimal
+                                                        nb={numeral(
+                                                            NumbersUtils.convertUnitNumber(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinAmount || '0') *
+                                                                (prices[denom] || 1),
+                                                        ).format('$0,0[.]00')}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='d-flex flex-row mt-4'>
+                                            <button
+                                                type='button'
+                                                className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn'
+                                                disabled={smallDrawsHistoryVisibleItem === 0 && drawsHistoryPage === 1}
                                                 onClick={() => {
-                                                    setSelectedDraw(draw);
-                                                    modalRef.current?.show();
+                                                    if (smallDrawsHistoryVisibleItem === 0) {
+                                                        setDrawsHistoryPage(drawsHistoryPage - 1);
+                                                        setSmallDrawsHistoryVisibleItem(4);
+                                                    } else {
+                                                        setSmallDrawsHistoryVisibleItem(smallDrawsHistoryVisibleItem - 1);
+                                                    }
                                                 }}
-                                                className='scale-hover'
                                             >
-                                                <td data-label={drawHistoryHeaders[0]}>
-                                                    <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.poolId.toString()}</div>
-                                                </td>
-                                                <td data-label={drawHistoryHeaders[1]}>
-                                                    <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.drawId.toString()}</div>
-                                                </td>
-                                                <td data-label={drawHistoryHeaders[2]}>
-                                                    <div className='draw-date mt-2'>{dayjs(draw.createdAt).format('DD MMM YYYY - hh:mmA')}</div>
-                                                </td>
-                                                <td data-label={drawHistoryHeaders[3]} className='text-end'>
-                                                    {draw.totalWinCount.toString()}
-                                                </td>
-                                                <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </Table>
+                                                {I18n.t('common.prev')}
+                                            </button>
+                                            <button
+                                                type='button'
+                                                className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
+                                                disabled={(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem === pool.draws.length - 1}
+                                                onClick={() => {
+                                                    if (smallDrawsHistoryVisibleItem === 4) {
+                                                        setDrawsHistoryPage(drawsHistoryPage + 1);
+                                                        setSmallDrawsHistoryVisibleItem(0);
+                                                    } else {
+                                                        setSmallDrawsHistoryVisibleItem(smallDrawsHistoryVisibleItem + 1);
+                                                    }
+                                                }}
+                                            >
+                                                {I18n.t('common.next')}
+                                            </button>
+                                        </div>
+                                        <Pagination
+                                            customPagination='draws-history-pagination mt-4 justify-content-center'
+                                            pagination={{
+                                                page: drawsHistoryPage,
+                                                hasPreviousPage: drawsHistoryPage > 1,
+                                                hasNextPage: drawsHistoryPage < Math.ceil(pool.draws.length / 5),
+                                                pagesTotal: Math.ceil(pool.draws.length / 5),
+                                            }}
+                                            onPageChange={(page) => {
+                                                setSmallDrawsHistoryVisibleItem(0);
+                                                setDrawsHistoryPage(page);
+                                            }}
+                                        />
+                                    </>
+                                ) : (
+                                    <Table
+                                        className='draws-history-table w-100'
+                                        headers={drawHistoryHeaders}
+                                        responsive={winSizes.width > Breakpoints.SM ? false : true}
+                                        pagination={
+                                            pool.draws.length > 5
+                                                ? {
+                                                      page: drawsHistoryPage,
+                                                      pagesTotal: Math.ceil(pool.draws.length / 5),
+                                                      hasNextPage: drawsHistoryPage < Math.ceil(pool.draws.length / 5),
+                                                      hasPreviousPage: drawsHistoryPage > 1,
+                                                  }
+                                                : undefined
+                                        }
+                                        customPagination='draws-history-pagination'
+                                        onPageChange={(page) => setDrawsHistoryPage(page)}
+                                    >
+                                        {pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {
+                                            return (
+                                                <tr
+                                                    key={`draw-${index}`}
+                                                    onClick={() => {
+                                                        setSelectedDraw(draw);
+                                                        modalRef.current?.show();
+                                                    }}
+                                                    className='scale-hover'
+                                                >
+                                                    <td data-label={drawHistoryHeaders[0]}>
+                                                        <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.poolId.toString()}</div>
+                                                    </td>
+                                                    <td data-label={drawHistoryHeaders[1]}>
+                                                        <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.drawId.toString()}</div>
+                                                    </td>
+                                                    <td data-label={drawHistoryHeaders[2]}>
+                                                        <div className='draw-date mt-2'>{dayjs(draw.createdAt).format('DD MMM YYYY - hh:mmA')}</div>
+                                                    </td>
+                                                    <td data-label={drawHistoryHeaders[3]} className='text-end'>
+                                                        {draw.totalWinCount.toString()}
+                                                    </td>
+                                                    <td data-label={drawHistoryHeaders[4]} className='text-end'>
+                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </Table>
+                                )}
                             </Card>
                         </div>
                     </div>

@@ -29,6 +29,10 @@
             transform: rotateY(180deg);
             bottom: -55px;
             left: 0;
+
+            @include media-breakpoint-down(md) {
+                bottom: unset;
+            }
         }
     }
 }

@@ -8,4 +8,6 @@ import * as PoolsConstants from './pools';
 export const LUM_COINGECKO_ID = 'lum-network';
 export const LUM_WALLET_LINK = 'https://wallet.lum.network';
 
+export * from './breakpoints';
+
 export { ApiConstants, FirebaseConstants, DenomsConstants, NavigationConstants, LandingConstants, PoolsConstants };

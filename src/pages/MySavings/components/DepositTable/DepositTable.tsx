@@ -1,14 +1,15 @@
 import React from 'react';
-import dayjs from 'dayjs';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import dayjs from 'dayjs';
+import numeral from 'numeral';
 
 import { Button, Collapsible, SmallerDecimal } from 'components';
+import { Breakpoints } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './DepositTable.scss';
-import numeral from 'numeral';
 
 interface IProps {
     deposits: AggregatedDepositModel[];
@@ -64,7 +65,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
         const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
 
         const ActionsContainer = ({ children }: { children: JSX.Element[] }) => {
-            if (winSizes.width < 768) {
+            if (winSizes.width < Breakpoints.MD) {
                 return <div className='row pt-3'>{children}</div>;
             }
 
@@ -112,8 +113,8 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                 <Collapsible
                     key={`collapsible-deposit-${index}`}
                     className='d-flex flex-column collapsible-deposits deposit-card'
-                    buttonBorder={winSizes.width < 576 ? false : true}
-                    toggleWithButton={winSizes.width < 576 ? false : true}
+                    buttonBorder={winSizes.width < Breakpoints.SM ? false : true}
+                    toggleWithButton={winSizes.width < Breakpoints.SM ? false : true}
                     header={
                         <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
                             <div className='col-12 col-md-6'>
