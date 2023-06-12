@@ -2,12 +2,23 @@ import { createModel } from '@rematch/core';
 import { LumClient } from 'utils';
 import { RootModel } from '.';
 
+interface AppState {
+    approvedTermsVersion: number;
+    initialized: boolean;
+}
+
 export const app = createModel<RootModel>()({
     name: 'app',
-    state: false,
+    state: {
+        approvedTermsVersion: 0,
+        initialized: false,
+    } as AppState,
     reducers: {
-        SET_INITIALIZED: (_, payload: boolean) => {
-            return payload;
+        SET_INITIALIZED: (state, initialized: boolean) => {
+            return {
+                ...state,
+                initialized,
+            };
         },
     },
     effects: (dispatch) => ({
