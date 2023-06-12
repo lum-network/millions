@@ -76,7 +76,7 @@ const Deposit = () => {
                         denom: pool.nativeDenom,
                     },
                     normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
+                    ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
                     chainId: pool.chainId,
                 });
 
