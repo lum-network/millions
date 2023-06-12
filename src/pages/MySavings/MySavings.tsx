@@ -41,6 +41,7 @@ const MySavings = () => {
         isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
         alreadySeenConfetti: state.prizes.alreadySeenConfetti,
     }));
+
     const dispatch = useDispatch<Dispatch>();
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
@@ -114,7 +115,11 @@ const MySavings = () => {
                                         {I18n.t('mySavings.withdraw')}
                                     </Button>
                                 ) : null}
-                                <Button to={`${NavigationConstants.POOLS}/${normalDenom}`} className='flex-grow-1'>
+                                <Button
+                                    disabled={normalDenom === LumConstants.LumDenom && !pools.find((pool) => pool.nativeDenom === LumConstants.MicroLumDenom)}
+                                    to={`${NavigationConstants.POOLS}/${normalDenom}`}
+                                    className='flex-grow-1'
+                                >
                                     {I18n.t('mySavings.deposit')}
                                 </Button>
                             </div>

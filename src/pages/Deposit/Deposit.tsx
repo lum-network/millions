@@ -76,7 +76,7 @@ const Deposit = () => {
                         denom: pool.nativeDenom,
                     },
                     normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
+                    ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
                     chainId: pool.chainId,
                 });
 
@@ -696,6 +696,12 @@ const Deposit = () => {
         }
     }, [currentStep]);
 
+    useEffect(() => {
+        if (currentStep >= steps.length) {
+            confettis(10000);
+        }
+    }, [currentStep]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -711,10 +717,6 @@ const Deposit = () => {
     }
 
     const isLastStep = currentStep >= steps.length;
-
-    if (isLastStep) {
-        confettis(10000);
-    }
 
     return (
         <div id='depositFlow' ref={depositFlowContainerRef}>

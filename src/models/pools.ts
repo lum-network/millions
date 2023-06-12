@@ -7,6 +7,7 @@ export interface PoolInternalInfosModel {
     rpc: string;
     chainName: string;
     ibcSourceChannel: string;
+    ibcTestnetSourceChannel: string;
     ibcDenom: string;
     ibcTestnetDenom: string;
     unbondingTime: number;
