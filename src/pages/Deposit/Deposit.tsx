@@ -696,6 +696,12 @@ const Deposit = () => {
         }
     }, [currentStep]);
 
+    useEffect(() => {
+        if (currentStep >= steps.length) {
+            confettis(10000);
+        }
+    }, [currentStep]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -711,10 +717,6 @@ const Deposit = () => {
     }
 
     const isLastStep = currentStep >= steps.length;
-
-    if (isLastStep) {
-        confettis(10000);
-    }
 
     return (
         <div id='depositFlow' ref={depositFlowContainerRef}>
