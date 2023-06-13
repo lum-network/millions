@@ -57,8 +57,6 @@ export const pools = createModel<RootModel>()({
                     const pools: PoolModel[] = [];
 
                     for (const pool of res) {
-                        //FIXME: Check if we can remove this
-                        // const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
                         const draws = await dispatch.pools.getPoolDraws(pool.poolId);
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
@@ -68,7 +66,6 @@ export const pools = createModel<RootModel>()({
                         pools.push({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
-                            // prizes,
                             apy: 0,
                             draws,
                             nextDrawAt,
