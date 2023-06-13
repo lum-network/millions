@@ -120,7 +120,7 @@ const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
                         disabled={!metadata?.hasNextPage && smallTableVisibleItem === prizes.length - 1}
                         onClick={() => {
-                            if (smallTableVisibleItem === 4) {
+                            if (smallTableVisibleItem === prizes.length - 1) {
                                 if (metadata && onPageChange) {
                                     onPageChange(metadata.page + 1);
                                 }
