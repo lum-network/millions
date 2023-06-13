@@ -9,31 +9,34 @@ import { CustomEase } from 'gsap/CustomEase';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { Lottie, Modal, Steps } from 'components';
+import { Card, Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
-import { DenomsUtils, I18n } from 'utils';
+import { PoolModel } from 'models';
+import { DenomsUtils, I18n, WalletUtils } from 'utils';
+import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
 import DepositSteps from './components/DepositSteps/DepositSteps';
 import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
 import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
-import { confettis } from 'utils/confetti';
 
 import './Deposit.scss';
+import Assets from 'assets';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
 const Deposit = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const { otherWallets, lumWallet, prices, pools, pool, isTransferring } = useSelector((state: RootState) => ({
+    const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
+        depositDelta: state.pools.depositDelta,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
 
@@ -42,16 +45,17 @@ const Deposit = () => {
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
     const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('0');
-
-    const depositFlowContainerRef = useRef(null);
-    const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
-    const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const [timeline] = useState<gsap.core.Timeline>(
         gsap.timeline({
             defaults: GSAP_DEFAULT_CONFIG,
             smoothChildTiming: true,
         }),
     );
+
+    const depositFlowContainerRef = useRef(null);
+    const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
     const dispatch = useDispatch<Dispatch>();
 
     const prevStep = usePrevious(currentStep);
@@ -95,6 +99,11 @@ const Deposit = () => {
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
     });
+
+    const now = Date.now();
+    const nextDrawAt = pool && pool.nextDrawAt ? pool.nextDrawAt.getTime() : now;
+
+    const withinDepositDelta = (nextDrawAt - now) / 1000 < (depositDelta || 0);
 
     const cardTimeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
@@ -510,6 +519,28 @@ const Deposit = () => {
         }
     };
 
+    const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string) => {
+        const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, lumWallet?.balances || []));
+        const depositAmountNumber = Number(depositAmount);
+
+        if (depositAmountNumber > maxAmount) {
+            const prev = depositAmount;
+            const next = (depositAmountNumber - maxAmount).toFixed(6);
+
+            transferForm.setFieldValue('amount', next);
+            setIbcModalPrevAmount(prev);
+            setIbcModalDepositAmount(next);
+
+            if (ibcModalRef.current) {
+                ibcModalRef.current.show();
+            }
+
+            return null;
+        }
+
+        return await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
+    };
+
     useEffect(() => {
         if (blocker.state === 'blocked') {
             if (!transferForm.dirty) {
@@ -674,6 +705,14 @@ const Deposit = () => {
                 }
             });
 
+            if (withinDepositDelta) {
+                timeline.from('#depositFlow .deposit-delta-card', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                });
+            }
+
             timeline.add(cardTimeline(), '<0.2');
 
             if (currentStep === 0) {
@@ -725,6 +764,12 @@ const Deposit = () => {
                     <div className='col'>
                         <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                        {withinDepositDelta && (
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                                <img src={Assets.images.questionMark} alt='' />
+                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
+                            </Card>
+                        )}
                     </div>
                 )}
                 <div className='col'>
@@ -732,6 +777,7 @@ const Deposit = () => {
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={startTransition}
+                            onDeposit={onDeposit}
                             onFinishDeposit={(callback) => {
                                 const tl = gsap.timeline({
                                     ...GSAP_DEFAULT_CONFIG,

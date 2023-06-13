@@ -206,6 +206,20 @@ class LumClient {
         return Number((await this.client.queryClient.millions.params()).feesStakers) / ApiConstants.CLIENT_PRECISION;
     };
 
+    getMinDepositDelta = async () => {
+        if (this.client === null) {
+            return null;
+        }
+
+        const depositDelta = (await this.client.queryClient.millions.params()).minDepositDrawDelta?.seconds.toNumber();
+
+        if (!depositDelta) {
+            return null;
+        }
+
+        return depositDelta;
+    };
+
     depositToPool = async (wallet: LumWallet, pool: PoolModel, amount: string) => {
         if (this.client === null) {
             return null;

@@ -10,6 +10,7 @@ import { LumConstants } from '@lum-network/sdk-javascript';
 interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
+    depositDelta: number | null;
     mutexAdditionalInfos: boolean;
 }
 
@@ -18,6 +19,7 @@ export const pools = createModel<RootModel>()({
     state: {
         pools: [],
         bestPoolPrize: null,
+        depositDelta: null,
         mutexAdditionalInfos: false,
     } as PoolsState,
     reducers: {
@@ -31,6 +33,12 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 bestPoolPrize,
+            };
+        },
+        setDepositDelta: (state: PoolsState, depositDelta: number) => {
+            return {
+                ...state,
+                depositDelta,
             };
         },
         setMutexAdditionalInfos: (state: PoolsState, mutexAdditionalInfos: boolean): PoolsState => {
@@ -182,6 +190,15 @@ export const pools = createModel<RootModel>()({
                 }
 
                 dispatch.pools.setBestPoolPrize(sortedPools[0]);
+            } catch {}
+        },
+        async getDepositDelta() {
+            try {
+                const depositDelta = await LumClient.getMinDepositDelta();
+
+                if (depositDelta) {
+                    dispatch.pools.setDepositDelta(depositDelta);
+                }
             } catch {}
         },
     }),

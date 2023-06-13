@@ -80,14 +80,14 @@ export default {
         leavePool: 'Successfully left {{ denom }} pool {{ poolId }}',
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
-        logOut: 'You have been logged out.'
+        logOut: 'You have been logged out.',
     },
     pending: {
         ibcTransfer: 'Transferring...',
         deposit: 'Depositing to {{ denom }} pool...',
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
-        claimAndCompound: 'Compounding prizes...'
+        claimAndCompound: 'Compounding prizes...',
     },
     landing: {
         howItWorks: 'How it works',
@@ -151,7 +151,8 @@ export default {
                 },
                 {
                     title: 'How can I participate?',
-                    answer: 'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                    answer:
+                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
                         'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
                         'Check the <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
@@ -161,7 +162,8 @@ export default {
                 },
                 {
                     title: 'Are my deposits safe?',
-                    answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
+                    answer:
+                        'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
                         '\n' +
                         'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. See Security & Audit',
                 },
@@ -183,7 +185,7 @@ export default {
                 },
                 {
                     title: 'How long do I have to claim my prizes?',
-                    answer: "After winning a prize on Cosmos Millions, you can claim it by accessing the \"My savings\" section of the web application. You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don't forget to come check the platform regularly to ensure that you don't miss the deadline for claiming your prize!",
+                    answer: 'After winning a prize on Cosmos Millions, you can claim it by accessing the "My savings" section of the web application. You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don\'t forget to come check the platform regularly to ensure that you don\'t miss the deadline for claiming your prize!',
                 },
                 {
                     title: 'What is the Cosmos ecosystem?',
@@ -202,7 +204,7 @@ export default {
                 title: 'Learn',
                 wallet: 'Get an interchain wallet',
                 tokens: 'Get interchain tokens',
-                faq: 'FAQ'
+                faq: 'FAQ',
             },
             documentation: {
                 title: 'Documentation',
@@ -211,20 +213,20 @@ export default {
                 pool: 'Pool Management',
                 deposits: 'Deposits & Withdrawals',
                 drawMechanism: 'Draw Mechanism',
-                allDoc: 'All documentation'
+                allDoc: 'All documentation',
             },
             community: {
                 title: 'Community',
                 twitter: 'Twitter',
                 discord: 'Discord',
                 github: 'Github',
-                medium: 'Medium'
+                medium: 'Medium',
             },
             builtOn: {
                 title: 'Built on Lum Network',
-                tAndC: 'Terms & Conditions'
-            }
-        }
+                tAndC: 'Terms & Conditions',
+            },
+        },
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     keplrDownloadModal: {
@@ -279,7 +281,7 @@ export default {
         prizeDistribution: {
             title: 'Prize Distribution',
             tableHeaders: ['Prize Value', 'Number of prizes', 'Chance to win'],
-            hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).'
+            hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
         },
         winningChances: {
             title: 'Winning Chances',
@@ -479,6 +481,9 @@ export default {
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',
         deposits_other: '{{ count }} Deposits',
+        depositDeltaHint:
+            'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
+            '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
@@ -488,6 +493,6 @@ export default {
             title: 'You could be here!',
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
-        }
+        },
     },
 };
