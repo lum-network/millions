@@ -46,16 +46,18 @@ const MainLayout = () => {
     }, [wallet, location, enableAutoConnect]);
 
     useEffect(() => {
-        if (location.pathname === NavigationConstants.LANDING) {
-            setEnableAutoConnect(false);
-        }
-
         if (location.pathname !== NavigationConstants.LANDING && (!approvedTermsVersion || Number(approvedTermsVersion) < TERMS_VERSION)) {
             if (termsModalRef.current) {
                 termsModalRef.current.show();
             }
 
             return;
+        }
+
+        if (location.pathname === NavigationConstants.LANDING) {
+            setEnableAutoConnect(false);
+        } else {
+            setEnableAutoConnect(true);
         }
 
         if (location.state?.autoConnect) {
