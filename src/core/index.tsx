@@ -55,7 +55,7 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        dispatch.app.init({ withWallets: location.pathname !== NavigationConstants.LANDING }).finally(() => null);
+        dispatch.app.init().finally(() => null);
     }, []);
 
     return (
