@@ -36,7 +36,7 @@ const MainLayout = () => {
     useEffect(() => {
         const autoConnect = async () => {
             console.log('enable auto connect :', enableAutoConnect);
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: enableAutoConnect === true }).finally(() => null);
+            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: enableAutoConnect }).finally(() => null);
             await dispatch.wallet.connectOtherWallets(null);
         };
 

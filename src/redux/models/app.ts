@@ -10,7 +10,7 @@ export const app = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async init(payload: { withWallets?: boolean }) {
+        async init() {
             await LumClient.connect();
 
             await dispatch.stats.fetchStats();
@@ -18,12 +18,6 @@ export const app = createModel<RootModel>()({
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.pools.getDepositDelta();
             await dispatch.prizes.fetchBiggestPrizes();
-
-            // if (payload.withWallets) {
-            //     console.log('withWallets');
-            //     await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
-            //     await dispatch.wallet.connectOtherWallets(null);
-            // }
 
             dispatch.app.SET_INITIALIZED(true);
         },
