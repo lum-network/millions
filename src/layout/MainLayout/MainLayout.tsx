@@ -326,7 +326,6 @@ const MainLayout = () => {
                 <div className='d-flex flex-row'>
                     <Button
                         disabled={!termsChecked}
-                        data-bs-dismiss='modal'
                         onClick={() => {
                             localStorage.clear();
                             localStorage.setItem('@approvedTermsVersion', String(TERMS_VERSION));
@@ -341,7 +340,6 @@ const MainLayout = () => {
                         {I18n.t('termsModal.cta')}
                     </Button>
                     <Button
-                        data-bs-dismiss='modal'
                         outline
                         className='ms-4'
                         to={NavigationConstants.LANDING}
