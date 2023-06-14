@@ -1,24 +1,12 @@
 import { createModel } from '@rematch/core';
 import { LumClient } from 'utils';
 import { RootModel } from '.';
-
-interface AppState {
-    approvedTermsVersion: number;
-    initialized: boolean;
-}
-
 export const app = createModel<RootModel>()({
     name: 'app',
-    state: {
-        approvedTermsVersion: 0,
-        initialized: false,
-    } as AppState,
+    state: false,
     reducers: {
-        SET_INITIALIZED: (state, initialized: boolean) => {
-            return {
-                ...state,
-                initialized,
-            };
+        SET_INITIALIZED: (_, initialized: boolean) => {
+            return initialized;
         },
     },
     effects: (dispatch) => ({
@@ -31,10 +19,11 @@ export const app = createModel<RootModel>()({
             await dispatch.pools.getDepositDelta();
             await dispatch.prizes.fetchBiggestPrizes();
 
-            if (payload.withWallets) {
-                await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
-                await dispatch.wallet.connectOtherWallets(null);
-            }
+            // if (payload.withWallets) {
+            //     console.log('withWallets');
+            //     await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
+            //     await dispatch.wallet.connectOtherWallets(null);
+            // }
 
             dispatch.app.SET_INITIALIZED(true);
         },

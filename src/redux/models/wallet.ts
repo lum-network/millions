@@ -144,6 +144,7 @@ export const wallet = createModel<RootModel>()({
     },
     effects: (dispatch) => ({
         async enableKeplrAndConnectLumWallet(payload: { silent: boolean } /* state */) {
+            console.log('enableKeplrAndConnectLumWallet');
             const { silent } = payload;
             const keplrWindow = window as KeplrWindow;
 
