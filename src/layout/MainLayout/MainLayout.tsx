@@ -20,7 +20,7 @@ const MainLayout = () => {
 
     const location = useLocation();
 
-    const approvedTermsVersion = localStorage.getItem('@approvedTermsVersion');
+    const [approvedTermsVersion, setApprovedTermsVersion] = useState(localStorage.getItem('@approvedTermsVersion'));
 
     const keplrModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const logoutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -49,7 +49,7 @@ const MainLayout = () => {
         ) {
             autoConnect().finally(() => null);
         }
-    }, [wallet, location, enableAutoConnect]);
+    }, [wallet, location, enableAutoConnect, approvedTermsVersion]);
 
     useEffect(() => {
         if (location.pathname !== NavigationConstants.LANDING && (!approvedTermsVersion || Number(approvedTermsVersion) < TERMS_VERSION)) {
@@ -92,6 +92,12 @@ const MainLayout = () => {
             window.removeEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
         };
     }, [wallet]);
+
+    const removeBackdrop = () => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+
+        backdrops.forEach((backdrop) => backdrop.remove());
+    };
 
     return (
         <>
@@ -326,13 +332,17 @@ const MainLayout = () => {
                 <div className='d-flex flex-row'>
                     <Button
                         disabled={!termsChecked}
+                        data-bs-dismiss='modal'
                         onClick={() => {
-                            localStorage.clear();
-                            localStorage.setItem('@approvedTermsVersion', String(TERMS_VERSION));
-
                             if (termsModalRef.current) {
                                 termsModalRef.current.hide();
                             }
+
+                            removeBackdrop();
+
+                            localStorage.clear();
+                            localStorage.setItem('@approvedTermsVersion', String(TERMS_VERSION));
+                            setApprovedTermsVersion(String(TERMS_VERSION));
 
                             setEnableAutoConnect(true);
                         }}
@@ -347,6 +357,8 @@ const MainLayout = () => {
                             if (termsModalRef.current) {
                                 termsModalRef.current.hide();
                             }
+
+                            removeBackdrop();
                         }}
                     >
                         {I18n.t('termsModal.cancel')}
