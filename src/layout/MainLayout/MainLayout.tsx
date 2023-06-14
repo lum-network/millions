@@ -15,7 +15,7 @@ import { I18n, KeplrUtils, ToastUtils } from 'utils';
 import './MainLayout.scss';
 
 const MainLayout = () => {
-    const [enableAutoConnect, setEnableAutoConnect] = useState(false);
+    const [enableAutoConnect, setEnableAutoConnect] = useState(true);
     const [termsChecked, setTermsChecked] = useState(false);
 
     const location = useLocation();
@@ -35,12 +35,18 @@ const MainLayout = () => {
 
     useEffect(() => {
         const autoConnect = async () => {
-            console.log('enable auto connect :', enableAutoConnect);
             await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: enableAutoConnect }).finally(() => null);
             await dispatch.wallet.connectOtherWallets(null);
         };
 
-        if (!wallet && KeplrUtils.isKeplrInstalled() && location.pathname !== NavigationConstants.LANDING && enableAutoConnect) {
+        if (
+            !wallet &&
+            KeplrUtils.isKeplrInstalled() &&
+            location.pathname !== NavigationConstants.LANDING &&
+            enableAutoConnect &&
+            approvedTermsVersion &&
+            TERMS_VERSION >= Number(approvedTermsVersion)
+        ) {
             autoConnect().finally(() => null);
         }
     }, [wallet, location, enableAutoConnect]);
@@ -56,8 +62,6 @@ const MainLayout = () => {
 
         if (location.pathname === NavigationConstants.LANDING) {
             setEnableAutoConnect(false);
-        } else {
-            setEnableAutoConnect(true);
         }
 
         if (location.state?.autoConnect) {
