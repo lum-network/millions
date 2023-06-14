@@ -86,3 +86,48 @@ html body {
         display: none;
     }
 }
+
+input[type='checkbox'] {
+    cursor: pointer;
+    position: relative;
+
+    &:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 0;
+        left: 0;
+        background-color: $color-white;
+        border: 2px solid $color-black;
+        border-radius: 4px;
+    }
+
+    &:checked:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 0;
+        left: 0;
+        background-color: $color-primary;
+        border: solid 2px $color-primary;
+    }
+
+    &:checked:after {
+        content: "";
+        display: block;
+        width: 6px;
+        height: 10px;
+        border: solid $color-white;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+        position: absolute;
+        top: 3px;
+        left: 7px;
+    }
+}

@@ -27,6 +27,6 @@ export const DEPOSITS_AND_WITHDRAWALS_DOC = 'https://docs.cosmosmillions.com/cos
 export const DRAW_MECHANISM_DOC = 'https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism';
 
 // To fill with Terms & Conditions link when released
-export const TANDC = '';
+export const TANDC = 'https://cosmosmillions.com/terms.pdf';
 
 export type PoolsParams = { poolId: string; denom: string };
