@@ -44,11 +44,7 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                     <div className='prize'>
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
                     </div>
-                    {loadingAdditionalInfo || loadingFetchPools ? (
-                        <Skeleton height={41} width={200} />
-                    ) : (
-                        <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>
-                    )}
+                    {loadingAdditionalInfo ? <Skeleton height={41} width={200} /> : <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>}
                 </div>
             </div>
             <div className='information-container'>
@@ -57,14 +53,14 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                         <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} />
                         {I18n.t('pools.apy')}
                     </div>
-                    {loadingAdditionalInfo || loadingFetchPools ? <Skeleton height={18} width={70} /> : <div className='apy'>{apy ? numeral(apy).format('0.00') : '--'}%</div>}
+                    {loadingAdditionalInfo ? <Skeleton height={18} width={70} /> : <div className='apy'>{apy ? numeral(apy).format('0.00') : '--'}%</div>}
                 </div>
                 <div className='separator' />
                 <div className='tvl-container py-2'>
                     <div className='tvl-label'>
                         <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' width={22} height={22} /> {I18n.t('pools.tvl')}
                     </div>
-                    <div className='tvl'>${numeral(tvl * price).format('0,0')}</div>
+                    {loadingAdditionalInfo ? <Skeleton height={18} width={70} /> : <div className='tvl'>${numeral(tvl * price).format('0,0')}</div>}
                 </div>
                 <div className='separator' />
                 <div className='countdown-container pt-2'>

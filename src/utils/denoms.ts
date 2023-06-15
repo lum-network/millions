@@ -62,11 +62,14 @@ export const translateLumIbcBalances = async (balances: LumTypes.Coin[]) => {
                         denom: res.denomTrace.baseDenom,
                     };
                 }
-            } catch {}
+            } catch {
+                console.warn('Error while getting denom trace');
+            }
         }
 
         translatedBalances.push(translatedBalance);
     }
+
     return translatedBalances;
 };
 

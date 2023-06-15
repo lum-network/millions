@@ -151,11 +151,11 @@ export const pools = createModel<RootModel>()({
                 }
 
                 dispatch.pools.setPools(pools);
-                dispatch.pools.getNextBestPrize(null);
+                await dispatch.pools.getNextBestPrize(null);
             } catch (e) {
                 await dispatch.pools.setMutexAdditionalInfos(false);
 
-                console.error((e as Error).message);
+                console.warn((e as Error).message);
             }
 
             await dispatch.pools.setMutexAdditionalInfos(false);

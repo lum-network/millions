@@ -25,7 +25,9 @@ const MainLayout = () => {
     const keplrModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const logoutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const termsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
     const wallet = useSelector((state: RootState) => state.wallet.lumWallet);
+    const appInitialized = useSelector((state: RootState) => state.app);
 
     const appLoading = useSelector((state: RootState) => state.loading.effects.app.init);
 
@@ -41,6 +43,7 @@ const MainLayout = () => {
 
         if (
             !wallet &&
+            appInitialized &&
             KeplrUtils.isKeplrInstalled() &&
             location.pathname !== NavigationConstants.LANDING &&
             enableAutoConnect &&
@@ -49,7 +52,7 @@ const MainLayout = () => {
         ) {
             autoConnect().finally(() => null);
         }
-    }, [wallet, location, enableAutoConnect, approvedTermsVersion]);
+    }, [wallet, location, enableAutoConnect, approvedTermsVersion, appInitialized]);
 
     useEffect(() => {
         if (location.pathname !== NavigationConstants.LANDING && (!approvedTermsVersion || Number(approvedTermsVersion) < TERMS_VERSION)) {
