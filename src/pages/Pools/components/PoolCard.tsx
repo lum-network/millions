@@ -21,7 +21,6 @@ interface IProps {
 
 const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
-    const loadingFetchPools = useSelector((state: RootState) => state.loading.effects.pools.fetchPools);
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
 
