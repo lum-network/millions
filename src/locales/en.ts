@@ -240,6 +240,13 @@ export default {
         title: 'Are you sure you want\nto log out ?',
         logoutBtn: 'Log out',
     },
+    termsModal: {
+        title: 'Terms of use',
+        description: 'Please read these terms carefully and click the button at the bottom to acknowledge that you have read and accepted the terms and conditions',
+        checkbox: 'Accept Terms of use',
+        cta: 'Accept',
+        cancel: 'Cancel',
+    },
     home: {
         title: 'Dashboard',
         nextBestPrize: 'Next Draw',
@@ -265,7 +272,7 @@ export default {
         tvlDetails: {
             title: 'Total Value Locked details',
             sponsor: 'Sponsorship',
-            deposits: 'Cosmonauts Deposits'
+            deposits: 'Cosmonauts Deposits',
         },
         winners: {
             title: 'Winners in Numbers',
