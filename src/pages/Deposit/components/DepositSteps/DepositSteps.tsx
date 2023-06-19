@@ -69,6 +69,18 @@ const DepositStep1 = (
     const navigate = useNavigate();
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.ibcTransfer);
+    const prizeStrat = currentPool.prizeStrategy;
+
+    let avgPrize = 0;
+
+    if (prizeStrat) {
+        let avgPrizesDrawn = 0;
+        for (const prizeBatch of prizeStrat.prizeBatches) {
+            avgPrizesDrawn += (Number(currentPool.prizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
+        }
+
+        avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;
+    }
 
     return (
         <div className='step-1'>
@@ -157,8 +169,7 @@ const DepositStep1 = (
                                 </span>
                             </div>
                             <div>
-                                {(NumbersUtils.convertUnitNumber(currentPool.tvlAmount) / currentPool.depositorsCount.toNumber()).toFixed(0)}{' '}
-                                {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
+                                {avgPrize.toFixed(2)} {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
                             </div>
                         </div>
                     </Card>
