@@ -15,7 +15,7 @@ import { ApiConstants, Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils, PoolsUtils } from 'utils';
+import { DenomsUtils, I18n, KeplrUtils, NumbersUtils, PoolsUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -116,7 +116,18 @@ const PoolDetails = () => {
                                 <div className='total-value-locked text-nowrap'>${numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[denom] || 1)).format('0,0')}</div>
                             </div>
                         </div>
-                        <Button to={`${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`} className='deposit-btn'>
+                        <Button
+                            disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
+                            {...(!KeplrUtils.isKeplrInstalled()
+                                ? {
+                                      'data-bs-target': '#get-keplr-modal',
+                                      'data-bs-toggle': 'modal',
+                                  }
+                                : {
+                                      to: `${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`,
+                                  })}
+                            className='deposit-btn'
+                        >
                             {I18n.t('mySavings.deposit')}
                         </Button>
                     </div>
@@ -377,7 +388,15 @@ const PoolDetails = () => {
                             <Card flat withoutPadding className='draws-history-card'>
                                 {winSizes.width < Breakpoints.MD ? (
                                     <>
-                                        <div className='d-flex flex-column'>
+                                        <div
+                                            className='d-flex flex-column'
+                                            onClick={() => {
+                                                if (pool.draws) {
+                                                    setSelectedDraw(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]);
+                                                    modalRef.current?.show();
+                                                }
+                                            }}
+                                        >
                                             <div className='d-flex flex-column'>
                                                 <label>{drawHistoryHeaders[0]}</label>
                                                 <div className='stat-bg-white'>

@@ -6,7 +6,7 @@ import numeral from 'numeral';
 import { Button, Card, CountDown } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, KeplrUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
@@ -72,7 +72,18 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                 </div>
             </div>
             <div className='w-100'>
-                <Button disabled={lumWallet === null} to={`${NavigationConstants.POOLS}/${denom}/${poolId}`} className='deposit-cta w-100'>
+                <Button
+                    disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
+                    {...(!KeplrUtils.isKeplrInstalled()
+                        ? {
+                              'data-bs-target': '#get-keplr-modal',
+                              'data-bs-toggle': 'modal',
+                          }
+                        : {
+                              to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
+                          })}
+                    className='deposit-cta w-100'
+                >
                     {I18n.t('pools.cta')}
                 </Button>
             </div>

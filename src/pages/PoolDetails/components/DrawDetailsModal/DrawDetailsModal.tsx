@@ -83,7 +83,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                                 {StringsUtils.trunc(winner.winnerAddress)}
                                             </div>
                                         </td>
-                                        <td className='text-end'>
+                                        <td className='text-md-end'>
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                                 <div className='amount text-nowrap'>{numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}</div>
                                                 <small className='usd-price'>

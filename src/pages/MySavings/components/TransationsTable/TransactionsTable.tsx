@@ -150,7 +150,7 @@ const TransactionsTable = ({
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                        disabled={!pagination?.hasNextPage && smallTableVisibleItem === 29}
+                        disabled={((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem === transactions.length - 1}
                         onClick={() => {
                             if (smallTableVisibleItem === 29) {
                                 if (pagination) {

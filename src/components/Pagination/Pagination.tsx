@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { Breakpoints } from 'constant';
+import { useWindowSize } from 'hooks';
+
 import './Pagination.scss';
 
 interface Props {
@@ -18,6 +21,8 @@ const Pagination = ({ pagination, onPageChange, customPagination }: Props) => {
         return null;
     }
 
+    const winSizes = useWindowSize();
+
     const { page, hasPreviousPage, hasNextPage, pagesTotal } = pagination;
 
     if (page === undefined || pagesTotal === undefined) {
@@ -35,11 +40,11 @@ const Pagination = ({ pagination, onPageChange, customPagination }: Props) => {
                 {hasPreviousPage && page > 1 && (
                     <li className='page-item'>
                         <a onClick={() => onPageChange(1)} className='page-link pointer'>
-                            1 ...
+                            {winSizes.width > Breakpoints.SM ? 1 : null} ...
                         </a>
                     </li>
                 )}
-                {hasPreviousPage && page > 2 && (
+                {winSizes.width > Breakpoints.MD && hasPreviousPage && page > 2 && (
                     <li className='page-item'>
                         <a onClick={() => onPageChange(page - 1)} className='page-link pointer'>
                             {page - 1}
@@ -49,17 +54,17 @@ const Pagination = ({ pagination, onPageChange, customPagination }: Props) => {
                 <li className='page-item active' aria-current='page'>
                     <span className='page-link'>{page}</span>
                 </li>
-                {hasNextPage && (
+                {winSizes.width > Breakpoints.MD && hasNextPage && (
                     <li className='page-item'>
                         <a onClick={() => onPageChange(page + 1)} className='page-link pointer'>
                             {page + 1}
                         </a>
                     </li>
                 )}
-                {hasNextPage && page < pagesTotal - 1 && (
+                {hasNextPage && page < pagesTotal && (
                     <li className='page-item'>
                         <a onClick={() => onPageChange(pagesTotal)} className='page-link pointer'>
-                            ... {pagesTotal}
+                            ... {winSizes.width > Breakpoints.SM ? pagesTotal : null}
                         </a>
                     </li>
                 )}
