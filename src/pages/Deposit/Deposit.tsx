@@ -845,22 +845,24 @@ const Deposit = () => {
                 onConfirm={async () => {
                     const amount = transferForm.values.amount.toString();
 
-                    const res = await dispatch.wallet.ibcTransfer({
-                        type: 'deposit',
-                        fromAddress: otherWallet.address,
-                        toAddress: lumWallet?.address || '',
-                        amount: {
-                            amount,
-                            denom: pool.nativeDenom,
-                        },
-                        normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                        ibcChannel: pool.transferChannelId,
-                        chainId: pool.chainId,
-                    });
+                    if (pool && pool.internalInfos) {
+                        const res = await dispatch.wallet.ibcTransfer({
+                            type: 'deposit',
+                            fromAddress: otherWallet.address,
+                            toAddress: lumWallet?.address || '',
+                            amount: {
+                                amount,
+                                denom: pool.nativeDenom,
+                            },
+                            normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                            ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
+                            chainId: pool.chainId,
+                        });
 
-                    if (res && !res.error) {
-                        if (ibcModalRef.current) {
-                            ibcModalRef.current.hide();
+                        if (res && !res.error) {
+                            if (ibcModalRef.current) {
+                                ibcModalRef.current.hide();
+                            }
                         }
                     }
                 }}
