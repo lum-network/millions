@@ -6,6 +6,7 @@ import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -57,6 +58,10 @@ export const pools = createModel<RootModel>()({
                     const pools: PoolModel[] = [];
 
                     for (const pool of res) {
+                        if (pool.state !== PoolState.POOL_STATE_READY) {
+                            continue;
+                        }
+
                         const draws = await dispatch.pools.getPoolDraws(pool.poolId);
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
