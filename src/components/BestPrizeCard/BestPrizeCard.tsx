@@ -75,7 +75,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                         </div>
                         <div className='mt-4 mt-sm-0'>
                             {drawInProgress ? (
-                                <div className='draw-in-progress-container'>
+                                <div className='draw-in-progress-container text-nowrap'>
                                     <img src={Assets.images.deposit} alt='deposit' height={16} width={16} />
                                     <span className='ms-2'>{I18n.t('common.drawInProgress')}</span>
                                 </div>
