@@ -275,7 +275,7 @@ const MainLayout = () => {
                         the connected Wallets, regardless of whether they are used to effectuate transactions, and shall not be liable for any damages arising out of or related to your use of the
                         Wallets or your inability to connect or use the Wallets to execute transactions.
                     </p>
-                    <h5>3.4 Sign Requests</h5>
+                    <h5>3.4 Generation of Sign Requests</h5>
                     <p>
                         Once you have connected a Wallet to the Cosmos Millions Interface, you can use the Cosmos Millions Interface to initiate transactions from your blockchain address by generating
                         standardized transaction messages (“Sign Requests”). Sign Requests generated on the Cosmos Millions Interface are sent to the connected Wallet for approval.
