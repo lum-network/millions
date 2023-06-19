@@ -29,6 +29,8 @@ export default {
         prizePool: 'Prize Pool',
         drawInProgress: 'Draw in progress',
         loading: 'Loading...',
+        prev: 'Prev',
+        next: 'Next'
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',
@@ -321,7 +323,7 @@ export default {
             claimPrize: 'Claim Prize',
             deposit: 'Deposit',
         },
-        txListHeaders: ['Type', 'Amount'],
+        txListHeaders: ['Type', 'Hash', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         transferWaitingCta: 'Usually ~1 minute',
@@ -493,6 +495,7 @@ export default {
     luckiestWinners: {
         title: 'Luckiest Winners',
         latestWinners: 'Latest Winners',
+        winnersHeaders: ['Winner', 'Draw', 'Date', 'Amount'],
         noWinnersYet: {
             title: 'You could be here!',
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",

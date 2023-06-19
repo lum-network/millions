@@ -17,7 +17,7 @@
         justify-content: space-between;
         align-items: center;
         background-color: $color-primary-light;
-        border-radius: 13px;
+        border-radius: 12px;
         padding: 25px 32px;
         width: 100%;
 
@@ -72,9 +72,12 @@
         &.success {
             background: $color-success;
         }
-
+        
         &.failure {
             background: $color-failure;
+        }
+        &.pending {
+            font-size: 10px;
         }
     }
 }

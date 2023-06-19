@@ -109,7 +109,7 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                     styles={{
                         control: (provided) => ({
                             ...provided,
-                            borderRadius: 15,
+                            borderRadius: 12,
                             borderColor: 'rgba(86, 52, 222, 0.2)',
                             borderWidth: 2,
                             paddingTop: '0.75rem',

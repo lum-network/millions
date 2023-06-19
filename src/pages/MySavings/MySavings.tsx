@@ -12,7 +12,7 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
-import { NavigationConstants } from 'constant';
+import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
@@ -214,7 +214,7 @@ const MySavings = () => {
                                     <SmallerDecimal
                                         big
                                         nb={totalBalancePrice}
-                                        fontSize={winSizes.width < 576 ? FontsUtils.calculateFontSize(totalBalancePrice.length, winSizes.width, 42) : undefined}
+                                        fontSize={winSizes.width < Breakpoints.SM ? FontsUtils.calculateFontSize(totalBalancePrice.length, winSizes.width, 42) : undefined}
                                         className='balance-number mt-3'
                                     />
                                 ) : (
@@ -235,7 +235,7 @@ const MySavings = () => {
                                 ]}
                             />
                         </Card>
-                        {winSizes.width <= 992 ? (
+                        {winSizes.width < Breakpoints.LG ? (
                             <div className='mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
@@ -315,9 +315,7 @@ const MySavings = () => {
                                                   }
                                                 : undefined
                                         }
-                                        onPageChange={(page) => {
-                                            dispatch.wallet.setActivitiesPage(page);
-                                        }}
+                                        onPageChange={dispatch.wallet.setActivitiesPage}
                                     />
                                 </Card>
                             </>
@@ -326,7 +324,7 @@ const MySavings = () => {
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3'>
                     <div className='row'>
-                        {winSizes.width > 992 ? (
+                        {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />

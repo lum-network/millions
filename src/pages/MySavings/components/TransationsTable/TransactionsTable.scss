@@ -13,48 +13,79 @@
             padding-right: 32px;
         }
         
-        .tx-icon-container {
-            width: 32px;
-            height: 32px;
+    }
 
-            background: #ffffff;
-            border-radius: 7px;
+    .tx-icon-container {
+        width: 32px;
+        height: 32px;
 
-            img {
-                width: 14px;
-                height: 14px;
-                object-fit: contain;
-            }
+        background: #ffffff;
+        border-radius: 7px;
+
+        img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
         }
+    }
 
-        .msg-count-badge {
-            background-color: $color-primary;
-            color: $color-primary-light;
-            font-size: 12px;
-            max-height: 24px;
-        }
+    .msg-count-badge {
+        background-color: $color-primary;
+        color: $color-primary-light;
+        font-size: 12px;
+        max-height: 24px;
+    }
 
-        .tx-amount {
-            color: $color-black;
-            .denom {
-                color: $color-primary;
-            }
-        }
-
-        .usd-price {
-            font-size: 12px;
-            color: $color-black;
-            font-weight: 200;
-        }
-
-        .tx-height {
+    .tx-amount {
+        color: $color-black;
+        .denom {
             color: $color-primary;
-            opacity: 0.8;
-            text-decoration: none;
-            font-size: 14px;
-            &:hover {
-                opacity: 1;
+        }
+    }
+
+    .usd-price {
+        font-size: 12px;
+        color: $color-black;
+        font-weight: 200;
+    }
+
+    .tx-height {
+        color: $color-primary;
+        opacity: 0.8;
+        text-decoration: none;
+        font-size: 14px;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    label {
+        color: $color-primary;
+        margin-bottom: 0.25rem;
+    }
+
+    .table-item {
+        background-color: $color-primary-light;
+        border-radius: 12px;
+        padding: 14px 22px;
+    }
+
+    .selectable-btn {
+        background-color: transparent;
+        border-radius: 12px;
+        border: 2.5px solid $color-primary;
+        color: $color-primary;
+
+        &:not(:disabled) {
+            &:hover,
+            &.active {
+                background-color: $color-primary;
+                color: $color-white;
             }
+        }
+
+        &:disabled {
+            opacity: 0.2;
         }
     }
 }

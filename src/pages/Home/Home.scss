@@ -55,6 +55,10 @@
         line-height: 50px;
         color: $color-black;
         text-transform: uppercase;
+
+        @include media-breakpoint-down(sm) {
+            font-size: 30px;
+        }
     }
 
     .big-winners-container {

@@ -157,7 +157,7 @@
 
         .estimation-input-container {
             border: 2.5px solid rgba(86, 52, 222, 0.2);
-            border-radius: 15px;
+            border-radius: 12px;
             input {
                 border: 0;
                 background: transparent;
@@ -185,11 +185,6 @@
                     color: $color-primary;
                     background: $color-white;
                     padding: 1.5rem 0;
-
-                    .draw-date {
-                        color: $color-black;
-                        font-size: 14px;
-                    }
                 }
 
                 td:first-child,
@@ -219,6 +214,16 @@
             }
         }
 
+        .draw-date {
+            color: $color-black;
+            font-size: 14px;
+        }
+
+        label {
+            color: $color-primary;
+            margin-bottom: 0.25rem;
+        }
+
         @include media-breakpoint-down(md) {
             padding: 24px;
         }
@@ -230,10 +235,16 @@
         border: 2.5px solid $color-primary;
         color: $color-primary;
 
-        &:hover,
-        &.active {
-            background-color: $color-primary;
-            color: $color-white;
+        &:not(:disabled) {
+            &:hover,
+            &.active {
+                background-color: $color-primary;
+                color: $color-white;
+            }
+        }
+
+        &:disabled {
+            opacity: 0.2;
         }
     }
 
@@ -292,7 +303,7 @@
 
         .table tbody tr td {
             padding: 1.5rem 1.5rem;
-            text-align: right;
+            text-align: left;
             vertical-align: middle;
             &:first-child {
                 border-top-right-radius: 15px;

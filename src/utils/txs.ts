@@ -1,9 +1,11 @@
-import { LumConstants, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import Assets from 'assets';
+import { LumConstants, LumMessages, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { Any } from '@lum-network/sdk-javascript/build/codec/google/protobuf/any';
 import { TransactionModel } from 'models';
 import Long from 'long';
+import { I18n, NumbersUtils } from 'utils';
+
 import { getDenomFromIbc } from './denoms';
-import { NumbersUtils } from 'utils';
 
 type MillionsTxInfos = {
     amount: LumTypes.Coin;
@@ -164,3 +166,28 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
 
 export const sortByBlockHeight = (txs: TransactionModel[]): TransactionModel[] => txs.sort((txA, txB) => txA.height - txB.height);
 export const sortByBlockHeightDesc = (txs: TransactionModel[]): TransactionModel[] => txs.sort((txA, txB) => txB.height - txA.height);
+
+export const getTxTypeAndIcon = (transaction: TransactionModel) => {
+    let type = '';
+    let icon = '';
+
+    switch (transaction.messages[0]) {
+        case LumMessages.MsgMillionsDepositUrl:
+            type = I18n.t('mySavings.transactionTypes.deposit');
+            icon = Assets.images.deposit;
+            break;
+        case LumMessages.MsgWithdrawDepositUrl:
+            type = I18n.t('mySavings.transactionTypes.leavePool');
+            icon = Assets.images.leavePool;
+            break;
+        case LumMessages.MsgClaimPrizeUrl:
+            type = I18n.t('mySavings.transactionTypes.claimPrize');
+            icon = Assets.images.trophyPurple;
+            break;
+    }
+
+    return {
+        type,
+        icon,
+    };
+};

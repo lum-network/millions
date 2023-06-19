@@ -40,7 +40,14 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
 
     return (
         <button
-            onClick={!loading && !disabled ? onClick : () => null}
+            onClick={
+                !loading && !disabled
+                    ? (event) => {
+                          event.stopPropagation();
+                          onClick?.();
+                      }
+                    : () => null
+            }
             className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${className}`}
             {...rest}
         >
