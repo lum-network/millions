@@ -65,8 +65,6 @@ const PoolDetails = () => {
         return <Error404 />;
     }
 
-    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? deposit.poolId?.equals(poolId) : deposit.amount?.denom === 'u' + denom));
-    const avgDeposit = (NumbersUtils.convertUnitNumber(pool.tvlAmount) / pool.depositorsCount.toNumber()) * prices[denom] || 0;
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
         chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
@@ -78,6 +76,9 @@ const PoolDetails = () => {
 
     const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
     const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
+
+    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? deposit.poolId?.equals(poolId) : deposit.amount?.denom === 'u' + denom));
+    const avgDeposit = (usersDepositsAmount / pool.depositorsCount.toNumber()) * prices[denom] || 0;
 
     return (
         <div className='pool-details-container mt-5'>

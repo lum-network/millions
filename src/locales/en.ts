@@ -30,7 +30,7 @@ export default {
         drawInProgress: 'Draw in progress',
         loading: 'Loading...',
         prev: 'Prev',
-        next: 'Next'
+        next: 'Next',
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',
