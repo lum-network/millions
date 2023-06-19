@@ -1,7 +1,7 @@
 {
   "hosting": [
     {
-      "target": "lum-network-millions",
+      "target": "mainnet",
       "public": "build",
       "ignore": [
         "firebase.json",
@@ -16,7 +16,7 @@
       ]
     },
     {
-      "target": "lum-network-millions-testnet",
+      "target": "testnet",
       "public": "build",
       "ignore": [
         "firebase.json",
