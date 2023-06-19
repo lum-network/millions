@@ -162,7 +162,12 @@ const DepositStep1 = (
                             </div>
                         </div>
                     </Card>
-                    <Button type={isLoading ? 'button' : 'submit'} onClick={() => onTransfer(form.values.amount)} className='position-relative deposit-cta w-100 mt-4' disabled={isLoading}>
+                    <Button
+                        type={isLoading ? 'button' : 'submit'}
+                        onClick={() => onTransfer(form.values.amount)}
+                        className='position-relative deposit-cta w-100 mt-4'
+                        disabled={isLoading || !!(form.touched.amount && form.errors.amount)}
+                    >
                         <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
                         <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
                     </Button>
@@ -198,16 +203,11 @@ const DepositStep2 = (
 
     const validateInput = (value: string) => {
         const depositAmountNumber = Number(value);
-        const minDeposit = Number(NumbersUtils.convertUnitNumber(poolToDeposit.minDepositAmount));
 
         if (Number.isNaN(depositAmountNumber)) {
             setError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
         } else {
-            if (depositAmountNumber < minDeposit) {
-                setError(I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit }));
-            } else {
-                setError('');
-            }
+            setError('');
         }
     };
 
@@ -374,7 +374,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/txs/${txInfos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/lum/txs/${txInfos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
