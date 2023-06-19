@@ -150,7 +150,7 @@ export const pools = createModel<RootModel>()({
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    pool.apy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+                    pool.apy = ((nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl)) * 100;
 
                     WalletClient.disconnect();
                 }

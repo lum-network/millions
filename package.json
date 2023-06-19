@@ -5,7 +5,7 @@
   "dependencies": {
     "@firebase/analytics": "^0.9.3",
     "@keplr-wallet/types": "^0.11.44",
-    "@lum-network/sdk-javascript": "^0.8.2",
+    "@lum-network/sdk-javascript": "^0.8.5",
     "@popperjs/core": "^2.11.6",
     "@rematch/core": "^2.2.0",
     "@rematch/loading": "^2.1.2",
@@ -64,8 +64,8 @@
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "deploy-prod": "yarn build && firebase target:apply hosting mainnet lum-network-millions && firebase deploy --only hosting:mainnet",
-    "deploy-dev": "yarn build && firebase target:apply hosting testnet lum-network-millions-testnet && firebase deploy --only hosting:testnet"
+    "deploy-prod": "cp .env.prod .env && yarn build && firebase target:apply hosting mainnet lum-network-millions && firebase deploy --only hosting:mainnet",
+    "deploy-dev": "cp .env.dev .env && yarn build && firebase target:apply hosting testnet lum-network-millions-testnet && firebase deploy --only hosting:testnet"
   },
   "eslintConfig": {
     "extends": [
