@@ -199,8 +199,8 @@ const MainLayout = () => {
                     <h5>PREAMBLE</h5>
                     <p>
                         These Cosmos Millions Interface Terms of Use (“<strong>Terms</strong>”), together with any documents incorporated by reference herein, govern your access to and use of this
-                        user interface, including all related tools and application programming interfaces (APIs) that are made available thereon (“<strong>Cosmos Millions Interface</strong>”). By visiting or using the
-                        the Cosmos Millions Interface, you signify your consent to these Terms.
+                        user interface, including all related tools and application programming interfaces (APIs) that are made available thereon (“<strong>Cosmos Millions Interface</strong>”). By
+                        visiting or using the the Cosmos Millions Interface, you signify your consent to these Terms.
                     </p>
                     <p>
                         The operator of the Cosmos Millions Interface (“<strong>Interface Operator</strong>”) reserves the right to modify these Terms at any time at its sole discretion. In this case,
