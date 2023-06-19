@@ -468,7 +468,7 @@ export default {
         },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
-            'My savings are going to the moon 🚀 I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+            'I have just deposited in @cosmosmillions’ ${{ denom }} pool ⚛️🎉\n\nJoin me and all the others Cosmonauts 🧑‍🚀 we have deposited {{ tvl }} so far! Dozens of prizes to win every week in this prize-linked savings account built for the Interchain #CosmosSZN #Cosmos #IBCGang',
         goToMySavings: 'Go to\nmy savings',
         seeOnMintscan: 'See transaction\non Mintscan',
         seeOnExplorer: 'See transaction\non Lum Explorer',
