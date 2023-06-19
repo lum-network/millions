@@ -256,7 +256,7 @@ export default {
         title: 'Pools',
         totalDeposit: 'Total Deposit',
         tvl: 'TVL:',
-        apy: 'Variable APY:',
+        apy: 'Estimated APY:',
         cta: 'Deposit in Pool',
         drawEndAt: 'Next draw in:',
         poolId: 'Pool #{{ poolId }}',
@@ -266,7 +266,7 @@ export default {
         prizePool: 'Prize Pool',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
-        variableAPY: 'Variable APY',
+        variableAPY: 'Estimated APY',
         tvlDetails: {
             title: 'Total Value Locked details',
             sponsor: 'Sponsorship',
@@ -291,7 +291,7 @@ export default {
         winningChances: {
             title: 'Winning Chances',
             estimatedSavings: 'Estimated savings',
-            chanceToWin: 'Chance to win',
+            chanceToWin: 'Estimated chance to win',
         },
         drawsHistory: {
             title: 'Draws History',
