@@ -315,7 +315,7 @@ export const wallet = createModel<RootModel>()({
 
                         WalletClient.disconnect();
                     } catch (e) {
-                        console.error((e as Error).message);
+                        console.warn((e as Error).message);
                     }
                 }
             }
@@ -327,12 +327,12 @@ export const wallet = createModel<RootModel>()({
 
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
+            await dispatch.pools.fetchPools();
+            await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
-            await dispatch.pools.fetchPools();
-            await dispatch.pools.getPoolsAdditionalInfo(null);
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
@@ -341,12 +341,13 @@ export const wallet = createModel<RootModel>()({
                 if (result) {
                     const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
                     const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom);
+
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
 
                     return filteredBalances;
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getActivities(payload: GetActivitiesPayload, state) {
@@ -369,7 +370,7 @@ export const wallet = createModel<RootModel>()({
                     });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getDepositsAndWithdrawals(address: string) {
@@ -380,7 +381,7 @@ export const wallet = createModel<RootModel>()({
                     dispatch.wallet.setLumWalletData({ deposits: res });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getPrizes(address: string) {
@@ -400,7 +401,7 @@ export const wallet = createModel<RootModel>()({
                     });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
