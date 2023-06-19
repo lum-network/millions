@@ -57,10 +57,14 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmo
     const balance = balances?.find((b) => b.denom === denom);
 
     if (balance) {
-        const amount = convertUnitNumber(balance.amount);
+        let amount = convertUnitNumber(balance.amount);
 
         if (feesAmount) {
-            return (amount - feesAmount).toFixed(6);
+            amount -= feesAmount;
+        }
+
+        if (amount < 0) {
+            return '0';
         }
 
         return amount.toFixed(6);
