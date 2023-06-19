@@ -403,7 +403,7 @@ export default {
             steps: [
                 {
                     title: 'Choose the pool you want to leave',
-                    subtitle: 'Redeem your savings\nor transfer your available tokens',
+                    subtitle: 'Redeem your savings',
                     cardTitle: 'Leave pool',
                     cardSubtitle:
                         'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
