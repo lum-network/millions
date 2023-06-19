@@ -264,7 +264,9 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     prize.amount ? (
                                                         <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-4' : ''}`}>
                                                             <div className='d-flex flex-row align-items-end justify-content-between text-start mb-2'>
-                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} <br /> {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -{' '}
+                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
+                                                                <br />
+                                                                {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -{' '}
                                                                 {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId.toString() })}
                                                                 <div className='date'>{dayjs(prize.createdAt).format('dddd, MMMM D h:mm A')}</div>
                                                             </div>
