@@ -232,7 +232,7 @@ const PoolDetails = () => {
                                     <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
                                         {prizes.map((prize, index) => (
                                             <tr key={`prize-${index}`} className='stat-bg-white'>
-                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value).format('$0,0')}</td>
+                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value / prize.count).format('$0,0[.]00')}</td>
                                                 <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
                                                 <td className='text-end' data-label={prizeDistributionHeaders[2]}>
                                                     1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
@@ -245,7 +245,7 @@ const PoolDetails = () => {
                                 prizes.map((prize, index) => (
                                     <Card flat key={`prize-${index}`} className={index < prizes.length ? 'mb-3' : ''}>
                                         <h4>{prizeDistributionHeaders[0]}</h4>
-                                        <div className='stat-bg-white mb-3'>{numeral(prize.value).format('$0,0')}</div>
+                                        <div className='stat-bg-white mb-3'>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
                                         <h4>{prizeDistributionHeaders[1]}</h4>
                                         <div className='stat-bg-white mb-3'>{prize.count}</div>
                                         <h4>{prizeDistributionHeaders[2]}</h4>
