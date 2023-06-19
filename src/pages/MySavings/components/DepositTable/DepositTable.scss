@@ -72,9 +72,12 @@
         &.success {
             background: $color-success;
         }
-
+        
         &.failure {
             background: $color-failure;
+        }
+        &.pending {
+            font-size: 10px;
         }
     }
 }

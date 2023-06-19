@@ -43,6 +43,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
 
             case DepositState.DEPOSIT_STATE_IBC_TRANSFER:
             case DepositState.DEPOSIT_STATE_ICA_DELEGATE:
+                statusClassName = 'pending';
                 cta = I18n.t('mySavings.transferWaitingCta');
                 break;
         }
