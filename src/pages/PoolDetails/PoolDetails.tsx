@@ -70,7 +70,7 @@ const PoolDetails = () => {
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
         chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
-        value: ((pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber(),
+        value: (pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100) * prices[denom],
     }));
 
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });

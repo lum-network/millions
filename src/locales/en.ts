@@ -58,7 +58,7 @@ export default {
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
-            lessThanMinDeposit: 'Amount must be greather than minimum deposit of {{ minDeposit }}',
+            lessThanMinDeposit: 'Amount must be equal or greather than minimum deposit of {{ minDeposit }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
             generic: 'Failed to deposit to {{ denom }} pool',
@@ -111,8 +111,8 @@ export default {
         winners: {
             title: 'How it Works',
             p1: 'Deposit\nyour assets',
-            p2: 'You are eligible to all the next\nprizes automatically ',
-            p3: 'You win! Compound your prize to boost your chances of earning more next time!',
+            p2: 'You are eligible for all the next\nprizes automatically ',
+            p3: 'You win! Cash out or compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for the next draw!',
             or: 'OR',
         },
@@ -258,7 +258,7 @@ export default {
         title: 'Pools',
         totalDeposit: 'Total Deposit',
         tvl: 'TVL:',
-        apy: 'Variable APY:',
+        apy: 'Estimated APY:',
         cta: 'Deposit in Pool',
         drawEndAt: 'Next draw in:',
         poolId: 'Pool #{{ poolId }}',
@@ -268,7 +268,7 @@ export default {
         prizePool: 'Prize Pool',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
-        variableAPY: 'Variable APY',
+        variableAPY: 'Estimated APY',
         tvlDetails: {
             title: 'Total Value Locked details',
             sponsor: 'Sponsorship',
@@ -293,7 +293,7 @@ export default {
         winningChances: {
             title: 'Winning Chances',
             estimatedSavings: 'Estimated savings',
-            chanceToWin: 'Chance to win',
+            chanceToWin: 'Estimated chance to win',
         },
         drawsHistory: {
             title: 'Draws History',
@@ -405,7 +405,7 @@ export default {
             steps: [
                 {
                     title: 'Choose the pool you want to leave',
-                    subtitle: 'Redeem your savings\nor transfer your available tokens',
+                    subtitle: 'Redeem your savings',
                     cardTitle: 'Leave pool',
                     cardSubtitle:
                         'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',

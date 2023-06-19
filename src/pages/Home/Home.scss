@@ -39,6 +39,15 @@
         }
     }
 
+    .cosmonaut-with-balloons.no-prizes {
+        position: unset;
+        width: 165px;
+        height: 165px;
+        top: unset;
+        right: unset;
+        display: block !important;
+    }
+
     .total-value-locked {
         font-style: normal;
         font-weight: 400;

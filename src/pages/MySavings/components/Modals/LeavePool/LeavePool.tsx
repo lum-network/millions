@@ -13,7 +13,7 @@ interface Props {
 }
 
 const LeavePool = ({ deposit }: Props) => {
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
 
@@ -29,8 +29,6 @@ const LeavePool = ({ deposit }: Props) => {
             return;
         }
 
-        setCurrentStep(currentStep + 1);
-
         const res = await dispatch.wallet.leavePool({
             poolId: deposit.poolId,
             depositId: deposit.depositId,
@@ -38,8 +36,9 @@ const LeavePool = ({ deposit }: Props) => {
         });
 
         if (!res || (res && res.error)) {
-            setCurrentStep(0);
+            setCurrentStep(1);
         } else {
+            setCurrentStep(currentStep + 1);
             if (modalRef.current) {
                 modalRef.current.hide();
             }
@@ -48,7 +47,7 @@ const LeavePool = ({ deposit }: Props) => {
 
     useEffect(() => {
         const handler = () => {
-            setCurrentStep(0);
+            setCurrentStep(1);
         };
 
         const leavePoolModal = document.getElementById('leavePoolModal');

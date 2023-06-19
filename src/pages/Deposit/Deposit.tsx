@@ -13,7 +13,7 @@ import { Card, Lottie, Modal, Steps } from 'components';
 import { NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, I18n, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -65,7 +65,14 @@ const Deposit = () => {
             amount: '',
         },
         validationSchema: yup.object().shape({
-            amount: yup.string().required(I18n.t('errors.generic.required', { field: 'Amount' })),
+            amount: yup
+                .string()
+                .required(I18n.t('errors.generic.required', { field: 'Amount' }))
+                .test(
+                    'min-deposit',
+                    () => I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') }),
+                    (value) => (pool && pool.minDepositAmount && value ? Number(value) >= NumbersUtils.convertUnitNumber(pool.minDepositAmount) : false),
+                ),
         }),
         onSubmit: async (values) => {
             const amount = values.amount.toString();
@@ -838,22 +845,24 @@ const Deposit = () => {
                 onConfirm={async () => {
                     const amount = transferForm.values.amount.toString();
 
-                    const res = await dispatch.wallet.ibcTransfer({
-                        type: 'deposit',
-                        fromAddress: otherWallet.address,
-                        toAddress: lumWallet?.address || '',
-                        amount: {
-                            amount,
-                            denom: pool.nativeDenom,
-                        },
-                        normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                        ibcChannel: pool.transferChannelId,
-                        chainId: pool.chainId,
-                    });
+                    if (pool && pool.internalInfos) {
+                        const res = await dispatch.wallet.ibcTransfer({
+                            type: 'deposit',
+                            fromAddress: otherWallet.address,
+                            toAddress: lumWallet?.address || '',
+                            amount: {
+                                amount,
+                                denom: pool.nativeDenom,
+                            },
+                            normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                            ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
+                            chainId: pool.chainId,
+                        });
 
-                    if (res && !res.error) {
-                        if (ibcModalRef.current) {
-                            ibcModalRef.current.hide();
+                        if (res && !res.error) {
+                            if (ibcModalRef.current) {
+                                ibcModalRef.current.hide();
+                            }
                         }
                     }
                 }}
