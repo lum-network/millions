@@ -109,8 +109,8 @@ export default {
         winners: {
             title: 'How it Works',
             p1: 'Deposit\nyour assets',
-            p2: 'You are eligible to all the next\nprizes automatically ',
-            p3: 'You win! Compound your prize to boost your chances of earning more next time!',
+            p2: 'You are eligible for all the next\nprizes automatically ',
+            p3: 'You win! Cash out or compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for the next draw!',
             or: 'OR',
         },
