@@ -44,31 +44,39 @@ const Home = () => {
                             </Card>
                         </div>
                         <div className='col-12 col-lg-6 col-xxl-12'>
-                            {!!biggestPrizes.length && (
-                                <Card>
+                            <Card>
+                                <h3>{I18n.t('home.lastBigWinners')}</h3>
+                                <div className='d-flex align-items-center justify-content-center text-center'>
                                     <Lottie
-                                        className='cosmonaut-with-balloons'
+                                        className={biggestPrizes && biggestPrizes.length > 0 ? 'cosmonaut-with-balloons' : 'cosmonaut-with-balloons no-prizes'}
                                         animationData={cosmonautWithBalloons}
                                         segments={[
                                             [0, 30],
                                             [30, 128],
                                         ]}
                                     />
-                                    <h3>{I18n.t('home.lastBigWinners')}</h3>
-                                    <div className='big-winners-container pt-4'>
-                                        {biggestPrizes.slice(0, 3).map((prize, index) => (
-                                            <BigWinnerCard
-                                                key={index}
-                                                price={prize.usdTokenValue}
-                                                address={prize.winnerAddress}
-                                                prize={prize.amount.amount}
-                                                denom={prize.amount.denom}
-                                                className='flex-grow-1'
-                                            />
-                                        ))}
-                                    </div>
-                                </Card>
-                            )}
+                                </div>
+                                <div className='big-winners-container pt-4'>
+                                    {biggestPrizes && biggestPrizes.length > 0 ? (
+                                        biggestPrizes
+                                            .slice(0, 3)
+                                            .map((prize, index) => (
+                                                <BigWinnerCard
+                                                    key={index}
+                                                    price={prize.usdTokenValue}
+                                                    address={prize.winnerAddress}
+                                                    prize={prize.amount.amount}
+                                                    denom={prize.amount.denom}
+                                                    className='flex-grow-1'
+                                                />
+                                            ))
+                                    ) : (
+                                        <div className='d-flex flex-column align-items-center justify-content-center text-center'>
+                                            <h3 className=''>{I18n.t('mySavings.noPrizes.title')}</h3>
+                                        </div>
+                                    )}
+                                </div>
+                            </Card>
                         </div>
                     </div>
                 </div>
