@@ -175,7 +175,7 @@ const PoolDetails = () => {
                                     </div>
                                     <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                         <div className='tvl-detail-amount'>
-                                            {sponsorshipAmount} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                            {numeral(sponsorshipAmount).format('0,0')} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
                                         </div>
                                         <small className='usd-amount'>{numeral(sponsorshipAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
                                     </div>
@@ -188,7 +188,7 @@ const PoolDetails = () => {
                                 </div>
                                 <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                     <div className='tvl-detail-amount'>
-                                        {usersDepositsAmount} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                        {numeral(usersDepositsAmount).format('0,0')} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
                                     </div>
                                     <small className='usd-amount'>{numeral(usersDepositsAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
                                 </div>
