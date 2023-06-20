@@ -56,7 +56,7 @@ export const float2ratio = (x: number) => {
     }
 
     if (x1 >= baseRatio) {
-        return '1 in 1';
+        return '1 in 1.01';
     }
 
     const ratio = 100 / (x * 100);

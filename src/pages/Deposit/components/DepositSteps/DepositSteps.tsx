@@ -476,7 +476,7 @@ const DepositSteps = (props: Props) => {
                                     onFinishDeposit(onNextStep);
                                     setTxInfos({
                                         hash: LumUtils.toHex(res.hash).toUpperCase(),
-                                        amount: numeral(depositAmount).format('0,0'),
+                                        amount: numeral(depositAmount).format('0,0[.]00'),
                                         denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
                                         tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),
                                         poolId: poolToDeposit.poolId.toString(),
