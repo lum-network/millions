@@ -2,7 +2,7 @@ export const calculateFontSize = (charactersCount: number, screenWidth: number, 
     const MAX_FONT_SIZE = 140;
     const MIN_FONT_SIZE = minFontSize;
     const MAX_CHARACTERS = 10;
-    const MIN_CHARACTERS = 4;
+    const MIN_CHARACTERS = 3;
     const SCREEN_WEIGHT = 0.5;
 
     const range = MAX_FONT_SIZE - MIN_FONT_SIZE;
