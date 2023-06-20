@@ -158,7 +158,7 @@ const DepositStep1 = (
                                     <Tooltip id='winning-chance-tooltip' />
                                 </span>
                             </div>
-                            <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 0, currentPool, price || 0) * 100)}</div>
+                            <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool, price || 0) * 100)}</div>
                         </div>
                         <div className='average-prize d-flex flex-row justify-content-between mt-4'>
                             <div>
