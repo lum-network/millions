@@ -32,8 +32,8 @@ export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number })
     return bestPrize;
 };
 
-export const getWinningChances = (inputAmount: number, pool: PoolModel, prices: { [index: string]: number } | number) => {
-    const amount = inputAmount / (typeof prices === 'number' ? prices : prices[getNormalDenom(pool.nativeDenom)] || 1);
+export const getWinningChances = (inputAmount: number, pool: PoolModel, prices?: { [index: string]: number } | number) => {
+    const amount = prices ? inputAmount / (typeof prices === 'number' ? prices : prices[getNormalDenom(pool.nativeDenom)] || 1) : inputAmount;
     const tvl = convertUnitNumber(pool.tvlAmount);
     const sponsorTvl = convertUnitNumber(pool.sponsorshipAmount);
     const prizeStrat = pool.prizeStrategy;

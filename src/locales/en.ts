@@ -58,7 +58,7 @@ export default {
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
-            lessThanMinDeposit: 'Amount must be equal or greather than minimum deposit of {{ minDeposit }}',
+            lessThanMinDeposit: 'Amount must be equal to or greather than {{ minDeposit }} {{ denom }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
             generic: 'Failed to deposit to {{ denom }} pool',

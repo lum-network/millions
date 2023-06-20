@@ -70,7 +70,7 @@ const Deposit = () => {
                 .required(I18n.t('errors.generic.required', { field: 'Amount' }))
                 .test(
                     'min-deposit',
-                    () => I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') }),
+                    () => I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0'), denom: denom?.toUpperCase() }),
                     (value) => (pool && pool.minDepositAmount && value ? Number(value) >= NumbersUtils.convertUnitNumber(pool.minDepositAmount) : false),
                 ),
         }),
