@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import infoIcon from 'assets/images/info.svg';
@@ -118,6 +118,7 @@ const MainLayout = () => {
                             <Outlet />
                         )}
                         <RouteListener location={location} />
+                        <ScrollRestoration />
                     </main>
                 </div>
             </div>
