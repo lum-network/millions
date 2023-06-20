@@ -26,7 +26,7 @@ export default {
         draw: 'Draw',
         deposit: 'Deposit',
         pool: 'Pool',
-        prizePool: 'Prize Pool',
+        prizePool: 'Estimated Prize Pool',
         drawInProgress: 'Draw in progress',
         loading: 'Loading...',
         prev: 'Prev',
@@ -119,7 +119,7 @@ export default {
         pools: {
             title: 'Pools Available',
             deposited: 'Deposited',
-            prizeToWin: 'Prize to win',
+            prizeToWin: 'Estimated Prize',
             newPool: 'Suggest a new pool',
             tvl: 'Total Value Locked',
             cta: 'See all pools',
@@ -249,7 +249,7 @@ export default {
     },
     home: {
         title: 'Dashboard',
-        nextBestPrize: 'Next Draw',
+        nextBestPrize: 'Estimated Next Draw',
         lastBigWinners: 'Luckiest Winners',
         totalValueLocked: 'Total Value Locked',
         cta: 'SAVE & WIN',
@@ -265,7 +265,7 @@ export default {
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
-        prizePool: 'Prize Pool',
+        prizePool: 'Estimated Prize',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',

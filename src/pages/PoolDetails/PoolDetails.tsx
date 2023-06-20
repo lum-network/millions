@@ -68,7 +68,7 @@ const PoolDetails = () => {
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity.toNumber(),
         chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
-        value: (pool.prizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100) * prices[denom],
+        value: (pool.estimatedPrizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100) * prices[denom],
     }));
 
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
@@ -139,13 +139,13 @@ const PoolDetails = () => {
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (
-                            <div className='display-6'>{pool.prizeToWin && prices ? numeral(pool.prizeToWin.amount * (prices[denom] || 1)).format('$0,0') : '--'}</div>
+                            <div className='display-6'>{pool.estimatedPrizeToWin && prices ? numeral(pool.estimatedPrizeToWin.amount * (prices[denom] || 1)).format('$0,0') : '--'}</div>
                         )}
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={20} width={150} />
                         ) : (
                             <>
-                                {pool.prizeToWin ? numeral(pool.prizeToWin.amount).format('0,0') : '--'} {denom.toUpperCase()}
+                                {pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0') : '--'} {denom.toUpperCase()}
                             </>
                         )}
                     </div>

@@ -74,7 +74,8 @@ export const pools = createModel<RootModel>()({
                             apy: 0,
                             draws,
                             nextDrawAt,
-                            prizeToWin: null,
+                            currentPrizeToWin: null,
+                            estimatedPrizeToWin: null,
                         });
                     }
 
@@ -134,7 +135,22 @@ export const pools = createModel<RootModel>()({
                                 : '0',
                         );
 
-                    pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
+                    const startDate = dayjs(pool.lastDrawCreatedAt || /*pool.createdAt*/ '2023-06-19T00:08:00.000Z'); //FIXME
+                    const endDate = dayjs(pool.nextDrawAt);
+
+                    const elapsedDuration = dayjs.duration(dayjs().diff(startDate));
+                    const elapsedMinutes = elapsedDuration.asMinutes();
+
+                    const totalDuration = dayjs.duration(endDate.diff(startDate));
+                    const totalMinutes = totalDuration.asMinutes();
+
+                    const dailyAverageIncrease = prizePool / elapsedMinutes;
+
+                    const remainingMinutes = totalMinutes - elapsedMinutes;
+                    const estimatedPrizePool = dailyAverageIncrease * remainingMinutes;
+
+                    pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
+                    pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
                     const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
@@ -186,8 +202,8 @@ export const pools = createModel<RootModel>()({
 
                 const sortedPools = pools.sort(
                     (a, b) =>
-                        (b.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.prizeToWin?.denom || 'uatom')] -
-                        (a.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.prizeToWin?.denom || 'uatom')],
+                        (b.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.estimatedPrizeToWin?.denom || 'uatom')] -
+                        (a.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.estimatedPrizeToWin?.denom || 'uatom')],
                 );
 
                 if (sortedPools.length === 0) {

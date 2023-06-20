@@ -76,7 +76,7 @@ const DepositStep1 = (
     if (prizeStrat) {
         let avgPrizesDrawn = 0;
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(currentPool.prizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
+            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
         }
 
         avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;
