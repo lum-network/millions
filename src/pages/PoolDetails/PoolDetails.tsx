@@ -56,7 +56,8 @@ const PoolDetails = () => {
 
     useEffect(() => {
         if (pool) {
-            const chances = PoolsUtils.getWinningChances(Number(estimationAmount), pool, prices);
+            const estimationAmountNumber = Number(estimationAmount);
+            const chances = PoolsUtils.getWinningChances(estimationAmountNumber, pool, prices);
             setEstimatedChances(chances);
         }
     }, [estimationAmount]);
@@ -135,7 +136,7 @@ const PoolDetails = () => {
                 </div>
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
-                        <h2>{I18n.t('poolDetails.prizePool')}</h2>
+                        <h2 className='mb-0'>{I18n.t('poolDetails.prizePool')}</h2>
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (
@@ -150,7 +151,7 @@ const PoolDetails = () => {
                         )}
                     </div>
                     <div className='next-draw-container'>
-                        <h2>{I18n.t('poolDetails.nextDraw')}</h2>
+                        <h2 className='mb-0'>{I18n.t('poolDetails.nextDraw')}</h2>
                         <div className={`display-6 ${drawInProgress ? 'draw-in-progress' : ''}`}>
                             {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
                         </div>
@@ -222,7 +223,7 @@ const PoolDetails = () => {
                     {prizes && (
                         <div className='col position-relative'>
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
-                                <h2>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
+                                <h2 className='mb-0'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
                                 <span data-tooltip-id='prize-distribution-tooltip' data-tooltip-html={I18n.t('poolDetails.prizeDistribution.hint')} className='ms-2 mb-2'>
                                     <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='prize-distribution-tooltip' />
@@ -267,7 +268,7 @@ const PoolDetails = () => {
                     <div className='col'>
                         <div className='h-100'>
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
-                                <h2>{I18n.t('poolDetails.winningChances.title')}</h2>
+                                <h2 className='mb-0'>{I18n.t('poolDetails.winningChances.title')}</h2>
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2 mb-2'>
                                     <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='winning-chance-tooltip' />
@@ -279,7 +280,16 @@ const PoolDetails = () => {
                                     <div className='d-flex flex-column mt-2'>
                                         <div className='estimation-input-container d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center py-2 px-4'>
                                             <div className='d-flex flex-row align-items-center me-0 me-sm-3'>
-                                                $<input type='number' className='w-100' min='0' value={estimationAmount} onChange={(e) => setEstimationAmount(e.target.value)} />
+                                                $
+                                                <input
+                                                    type='text'
+                                                    className='w-100'
+                                                    value={estimationAmount}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.replace(/[^0-9\.]/, '');
+                                                        setEstimationAmount(val);
+                                                    }}
+                                                />
                                             </div>
                                             {estimationAmount && (
                                                 <div className='crypto-amount text-nowrap'>
@@ -289,12 +299,13 @@ const PoolDetails = () => {
                                         </div>
                                         <div className='d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3'>
                                             {[10, 100, 1000, 10000].map((amount, index) => {
+                                                const numValue = Number(estimationAmount);
                                                 return (
                                                     <button
                                                         type='button'
                                                         key={`estimation-for-${amount}`}
                                                         className={`d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ${index > 0 ? 'ms-0 ms-sm-3 mt-3 mt-sm-0' : ''} ${
-                                                            estimationAmount === amount.toFixed() ? 'active' : ''
+                                                            numValue.toFixed() === amount.toFixed() ? 'active' : ''
                                                         }`}
                                                         onClick={() => setEstimationAmount(amount.toFixed())}
                                                     >
