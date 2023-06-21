@@ -135,20 +135,6 @@ export const pools = createModel<RootModel>()({
                                 : '0',
                         );
 
-                    // const startDate = dayjs(pool.lastDrawCreatedAt || /*pool.createdAt*/ '2023-06-19T00:08:00.000Z'); //FIXME
-                    // const endDate = dayjs(pool.nextDrawAt);
-                    //
-                    // const elapsedDuration = dayjs.duration(dayjs().diff(startDate));
-                    // const elapsedMinutes = elapsedDuration.asMinutes();
-                    //
-                    // const totalDuration = dayjs.duration(endDate.diff(startDate));
-                    // const totalMinutes = totalDuration.asMinutes();
-                    //
-                    // const dailyAverageIncrease = prizePool / elapsedMinutes;
-                    //
-                    // const remainingMinutes = totalMinutes - elapsedMinutes;
-                    // const estimatedPrizePool = dailyAverageIncrease * remainingMinutes;
-
                     pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
@@ -167,6 +153,7 @@ export const pools = createModel<RootModel>()({
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
                     pool.apy = ((nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl)) * 100;
 
+                    // Calculate estimated prize to win
                     const endDate = dayjs(pool.nextDrawAt);
                     const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
 
