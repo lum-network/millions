@@ -304,7 +304,7 @@ const DepositStep2 = (
             </div>
             {pools.length > 1 && (
                 <PoolSelect
-                    className='mt-4'
+                    className='mt-4 pool-select'
                     pools={pools}
                     options={pools.map((pool) => ({
                         value: pool.poolId.toString(),

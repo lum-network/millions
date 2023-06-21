@@ -243,6 +243,14 @@ const Deposit = () => {
                     y: 50,
                 },
                 '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .step2-input-container',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
             );
 
         if (pools.length > 1) {
@@ -257,21 +265,13 @@ const Deposit = () => {
         }
 
         tl.from(
-            '#depositFlow .step-2 .step2-input-container',
+            '#depositFlow .step-2 .fees-warning',
             {
                 opacity: 0,
                 y: 50,
             },
             '<0.1',
         )
-            .from(
-                '#depositFlow .step-2 .fees-warning',
-                {
-                    opacity: 0,
-                    y: 50,
-                },
-                '<0.1',
-            )
             .from(
                 '#depositFlow .step-2 .deposit-cta .deposit-cta-bg',
                 {
