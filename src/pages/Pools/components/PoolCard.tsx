@@ -15,12 +15,11 @@ interface IProps {
     tvl: number;
     poolId: string;
     estimatedPrize?: number;
-    currentPrize?: number;
     drawEndAt: Date;
     apy: number;
 }
 
-const PoolCard = ({ denom, tvl, poolId, estimatedPrize, currentPrize, drawEndAt, apy }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
