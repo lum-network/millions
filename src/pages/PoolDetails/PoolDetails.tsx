@@ -135,7 +135,17 @@ const PoolDetails = () => {
                 </div>
                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between position-relative prize-draw-card'>
                     <div className='biggest-prize-container d-flex flex-column mb-4 mb-lg-0'>
-                        <h2>{I18n.t('poolDetails.prizePool')}</h2>
+                        <div className='d-flex align-items-center'>
+                            <h2>{I18n.t('poolDetails.prizePool')}</h2>
+                            <span
+                                data-tooltip-id='winning-chance-tooltip'
+                                data-tooltip-html={I18n.t('poolDetails.prizePoolHint', { prizePool: Math.round(pool.currentPrizeToWin?.amount || 0), denom: denom.toUpperCase() })}
+                                className='ms-2 mb-2'
+                            >
+                                <img src={Assets.images.info} alt='info' />
+                                <Tooltip id='winning-chance-tooltip' />
+                            </span>
+                        </div>
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (

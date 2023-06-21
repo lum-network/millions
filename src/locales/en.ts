@@ -249,7 +249,7 @@ export default {
     },
     home: {
         title: 'Dashboard',
-        nextBestPrize: 'Estimated Next Draw',
+        nextBestPrize: 'Next Draw',
         lastBigWinners: 'Luckiest Winners',
         totalValueLocked: 'Total Value Locked',
         cta: 'SAVE & WIN',
@@ -266,6 +266,7 @@ export default {
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
         prizePool: 'Estimated Prize',
+        prizePoolHint: 'This is an estimated prize pool. The current prize pool is {{ prizePool }} {{ denom }}',
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',

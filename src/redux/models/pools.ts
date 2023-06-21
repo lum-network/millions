@@ -135,22 +135,21 @@ export const pools = createModel<RootModel>()({
                                 : '0',
                         );
 
-                    const startDate = dayjs(pool.lastDrawCreatedAt || /*pool.createdAt*/ '2023-06-19T00:08:00.000Z'); //FIXME
-                    const endDate = dayjs(pool.nextDrawAt);
-
-                    const elapsedDuration = dayjs.duration(dayjs().diff(startDate));
-                    const elapsedMinutes = elapsedDuration.asMinutes();
-
-                    const totalDuration = dayjs.duration(endDate.diff(startDate));
-                    const totalMinutes = totalDuration.asMinutes();
-
-                    const dailyAverageIncrease = prizePool / elapsedMinutes;
-
-                    const remainingMinutes = totalMinutes - elapsedMinutes;
-                    const estimatedPrizePool = dailyAverageIncrease * remainingMinutes;
+                    // const startDate = dayjs(pool.lastDrawCreatedAt || /*pool.createdAt*/ '2023-06-19T00:08:00.000Z'); //FIXME
+                    // const endDate = dayjs(pool.nextDrawAt);
+                    //
+                    // const elapsedDuration = dayjs.duration(dayjs().diff(startDate));
+                    // const elapsedMinutes = elapsedDuration.asMinutes();
+                    //
+                    // const totalDuration = dayjs.duration(endDate.diff(startDate));
+                    // const totalMinutes = totalDuration.asMinutes();
+                    //
+                    // const dailyAverageIncrease = prizePool / elapsedMinutes;
+                    //
+                    // const remainingMinutes = totalMinutes - elapsedMinutes;
+                    // const estimatedPrizePool = dailyAverageIncrease * remainingMinutes;
 
                     pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
-                    pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
                     const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
@@ -167,6 +166,15 @@ export const pools = createModel<RootModel>()({
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
                     pool.apy = ((nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl)) * 100;
+
+                    const endDate = dayjs(pool.nextDrawAt);
+                    const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
+
+                    const apyPerMinute = pool.apy / (365 * 24 * 60);
+
+                    const estimatedPrizePool = prizePool + prizePool * apyPerMinute * remainingDurationAsMinutes;
+
+                    pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
                     WalletClient.disconnect();
                 }
