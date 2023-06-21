@@ -517,9 +517,6 @@ const Deposit = () => {
                         },
                     ),
                 )
-                .set('#depositFlow .deposit-steps .card-content', {
-                    opacity: 1,
-                })
                 .add(cardTimeline(), '<0.2');
         } else {
             cardTl.call(() => setCurrentStep(currentStep + 1)).add(cardTimeline(), '<0.2');
@@ -738,6 +735,11 @@ const Deposit = () => {
 
     useEffect(() => {
         if (currentStep > 0 && prevStep !== undefined) {
+            if (currentStep !== steps.length) {
+                timeline.set('#depositFlow .deposit-steps .card-content', {
+                    opacity: 1,
+                });
+            }
             timeline.add(currentStep === steps.length ? shareStepTimeline() : step2Timeline(), '+=0.5');
         }
     }, [currentStep]);
