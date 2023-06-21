@@ -92,6 +92,10 @@
         color: $color-black;
     }
 
+    .pool-select {
+        z-index: 10;
+    }
+
     .deposit-warning {
         font-weight: 300;
         font-size: 14px;

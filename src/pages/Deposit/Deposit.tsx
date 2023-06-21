@@ -243,6 +243,14 @@ const Deposit = () => {
                     y: 50,
                 },
                 '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .step2-input-container',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
             );
 
         if (pools.length > 1) {
@@ -257,21 +265,13 @@ const Deposit = () => {
         }
 
         tl.from(
-            '#depositFlow .step-2 .step2-input-container',
+            '#depositFlow .step-2 .fees-warning',
             {
                 opacity: 0,
                 y: 50,
             },
             '<0.1',
         )
-            .from(
-                '#depositFlow .step-2 .fees-warning',
-                {
-                    opacity: 0,
-                    y: 50,
-                },
-                '<0.1',
-            )
             .from(
                 '#depositFlow .step-2 .deposit-cta .deposit-cta-bg',
                 {
@@ -517,9 +517,6 @@ const Deposit = () => {
                         },
                     ),
                 )
-                .set('#depositFlow .deposit-steps .card-content', {
-                    opacity: 1,
-                })
                 .add(cardTimeline(), '<0.2');
         } else {
             cardTl.call(() => setCurrentStep(currentStep + 1)).add(cardTimeline(), '<0.2');
@@ -738,6 +735,11 @@ const Deposit = () => {
 
     useEffect(() => {
         if (currentStep > 0 && prevStep !== undefined) {
+            if (currentStep !== steps.length) {
+                timeline.set('#depositFlow .deposit-steps .card-content', {
+                    opacity: 1,
+                });
+            }
             timeline.add(currentStep === steps.length ? shareStepTimeline() : step2Timeline(), '+=0.5');
         }
     }, [currentStep]);
