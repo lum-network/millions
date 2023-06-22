@@ -151,15 +151,17 @@ export const pools = createModel<RootModel>()({
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    pool.apy = ((nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl)) * 100;
+                    const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+
+                    pool.apy = variableApy * 100;
 
                     // Calculate estimated prize to win
                     const endDate = dayjs(pool.nextDrawAt);
                     const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
 
-                    const apyPerMinute = pool.apy / (365 * 24 * 60);
+                    const apyPerMinute = variableApy / (365 * 24 * 60);
 
-                    const estimatedPrizePool = prizePool + prizePool * apyPerMinute * remainingDurationAsMinutes;
+                    const estimatedPrizePool = prizePool + poolTvl * apyPerMinute * remainingDurationAsMinutes;
 
                     pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
