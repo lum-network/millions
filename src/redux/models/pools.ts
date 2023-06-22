@@ -159,7 +159,7 @@ export const pools = createModel<RootModel>()({
                     const endDate = dayjs(pool.nextDrawAt);
                     const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
 
-                    const apyPerMinute = variableApy / (365 * 24 * 60);
+                    const apyPerMinute = nativeApy / (365 * 24 * 60);
 
                     const estimatedPrizePool = prizePool + poolTvl * apyPerMinute * remainingDurationAsMinutes;
 
