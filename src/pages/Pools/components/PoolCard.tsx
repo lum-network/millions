@@ -44,12 +44,12 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
                     </div>
                     {loadingAdditionalInfo ? (
-                        <Skeleton height={36} width={200} />
+                        <Skeleton height={26} width={190} />
                     ) : (
                         <div className='prize-value'>${price && estimatedPrize ? numeral(estimatedPrize * price).format('0,0') : ' --'}</div>
                     )}
                     {loadingAdditionalInfo ? (
-                        <Skeleton height={16} width={190} />
+                        <Skeleton height={12} width={170} />
                     ) : (
                         <div className='prize-amount'>
                             {estimatedPrize ? numeral(estimatedPrize).format('0,0') : ' --'} {denom}
