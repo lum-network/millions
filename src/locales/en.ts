@@ -266,7 +266,7 @@ export default {
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
         prizePool: 'Estimated Prize',
-        prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the expected TVL at draw time. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
+        prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the current TVL. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',
