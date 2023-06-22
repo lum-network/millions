@@ -127,7 +127,7 @@ export default {
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
             p1: 'Leveraging the Interchain Stack (Cosmos-SDK, Tendermint BFT, IBC, ICA, ICQ), our prize-linked savings enhance traditional savings methods.',
-            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Interchain of Blockchains.',
+            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Internet of Blockchains.',
             p3: 'Our open-source, audited protocol ensures fair prize distribution, making saving a more positive and rewarding experience for all users!',
             cta: 'Start saving now!',
         },
