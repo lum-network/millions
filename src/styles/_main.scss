@@ -44,7 +44,9 @@ html body {
     transition: scale linear 150ms !important;
 
     &:hover {
-        scale: 1.05 !important;
+        -webkit-font-smoothing: subpixel-antialiased;
+        scale: 1.048;
+        backface-visibility: hidden;
     }
 }
 
