@@ -369,7 +369,7 @@ const Landing = () => {
                     </div>
                     <div className='pools-cards-container cards-list'>
                         {pools.slice(0, 3).map((pool, index) => (
-                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.prizeToWin?.amount || 0} />
+                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.estimatedPrizeToWin?.amount || 0} />
                         ))}
                         {poolsPlaceholders.map((_, index) => (
                             <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />

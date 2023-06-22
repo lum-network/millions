@@ -20,6 +20,7 @@ export interface PoolModel extends Pool {
     prizes?: Prize[];
     draws?: Draw[];
     nextDrawAt?: Date;
-    prizeToWin: BalanceModel | null;
+    currentPrizeToWin: BalanceModel | null;
+    estimatedPrizeToWin: BalanceModel | null;
     apy: number;
 }

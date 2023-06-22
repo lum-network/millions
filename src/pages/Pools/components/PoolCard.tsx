@@ -14,12 +14,12 @@ interface IProps {
     denom: string;
     tvl: number;
     poolId: string;
-    prize?: number;
+    estimatedPrize?: number;
     drawEndAt: Date;
     apy: number;
 }
 
-const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
@@ -43,7 +43,11 @@ const PoolCard = ({ denom, tvl, poolId, prize, drawEndAt, apy }: IProps) => {
                     <div className='prize'>
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
                     </div>
-                    {loadingAdditionalInfo ? <Skeleton height={41} width={200} /> : <div className='prize-value mt-1'>${price && prize ? numeral(prize * price).format('0,0') : ' --'}</div>}
+                    {loadingAdditionalInfo ? (
+                        <Skeleton height={41} width={200} />
+                    ) : (
+                        <div className='prize-value mt-1'>${price && estimatedPrize ? numeral(estimatedPrize * price).format('0,0') : ' --'}</div>
+                    )}
                 </div>
             </div>
             <div className='information-container'>

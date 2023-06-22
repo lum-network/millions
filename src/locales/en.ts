@@ -26,7 +26,7 @@ export default {
         draw: 'Draw',
         deposit: 'Deposit',
         pool: 'Pool',
-        prizePool: 'Prize Pool',
+        prizePool: 'Estimated Prize Pool',
         drawInProgress: 'Draw in progress',
         loading: 'Loading...',
         prev: 'Prev',
@@ -119,7 +119,7 @@ export default {
         pools: {
             title: 'Pools Available',
             deposited: 'Deposited',
-            prizeToWin: 'Prize to win',
+            prizeToWin: 'Estimated Prize',
             newPool: 'Suggest a new pool',
             tvl: 'Total Value Locked',
             cta: 'See all pools',
@@ -265,7 +265,8 @@ export default {
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
-        prizePool: 'Prize Pool',
+        prizePool: 'Estimated Prize',
+        prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the current TVL. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',

@@ -74,7 +74,8 @@ export const pools = createModel<RootModel>()({
                             apy: 0,
                             draws,
                             nextDrawAt,
-                            prizeToWin: null,
+                            currentPrizeToWin: null,
+                            estimatedPrizeToWin: null,
                         });
                     }
 
@@ -134,7 +135,7 @@ export const pools = createModel<RootModel>()({
                                 : '0',
                         );
 
-                    pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
+                    pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
                     const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
@@ -150,7 +151,19 @@ export const pools = createModel<RootModel>()({
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    pool.apy = ((nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl)) * 100;
+                    const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+
+                    pool.apy = variableApy * 100;
+
+                    // Calculate estimated prize to win
+                    const endDate = dayjs(pool.nextDrawAt);
+                    const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
+
+                    const apyPerMinute = nativeApy / (365 * 24 * 60);
+
+                    const estimatedPrizePool = prizePool + poolTvl * apyPerMinute * remainingDurationAsMinutes;
+
+                    pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
                     WalletClient.disconnect();
                 }
@@ -186,8 +199,8 @@ export const pools = createModel<RootModel>()({
 
                 const sortedPools = pools.sort(
                     (a, b) =>
-                        (b.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.prizeToWin?.denom || 'uatom')] -
-                        (a.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.prizeToWin?.denom || 'uatom')],
+                        (b.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.estimatedPrizeToWin?.denom || 'uatom')] -
+                        (a.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.estimatedPrizeToWin?.denom || 'uatom')],
                 );
 
                 if (sortedPools.length === 0) {

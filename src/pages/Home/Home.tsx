@@ -27,7 +27,7 @@ const Home = () => {
                     <BestPrizeCard
                         delay={150}
                         className='min-height-550'
-                        biggestPrize={bestPoolPrize?.prizeToWin || null}
+                        biggestPrize={bestPoolPrize?.estimatedPrizeToWin || null}
                         poolId={bestPoolPrize?.poolId.toString()}
                         countdownTo={bestPoolPrize?.nextDrawAt}
                     />
