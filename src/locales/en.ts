@@ -380,7 +380,7 @@ export default {
             drawId: 'Draw #{{ drawId }}',
             shareTitle: 'Spread the word!',
             shareTwitterContent:
-                'My savings are going to the moon 🚀 I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+                'Just claimed my ${{ denom }} prize on @cosmosmillions! ️🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
