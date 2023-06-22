@@ -48,6 +48,6 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           expires: 7d
           projectId: lum-network
-          target: testnet
+          target: mainnet
         env:
           FIREBASE_CLI_PREVIEWS: hostingchannels
