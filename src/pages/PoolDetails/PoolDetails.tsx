@@ -140,7 +140,11 @@ const PoolDetails = () => {
                             <h2 className='mb-0'>{I18n.t('poolDetails.prizePool')}</h2>
                             <span
                                 data-tooltip-id='winning-chance-tooltip'
-                                data-tooltip-html={I18n.t('poolDetails.prizePoolHint', { prizePool: Math.round(pool.currentPrizeToWin?.amount || 0), denom: denom.toUpperCase() })}
+                                data-tooltip-html={I18n.t('poolDetails.prizePoolHint', {
+                                    prizePool: Math.round(pool.currentPrizeToWin?.amount || 0),
+                                    denom: denom.toUpperCase(),
+                                    prizePoolInUsd: Math.round((pool.currentPrizeToWin?.amount || 0) * (prices[denom] || 1)),
+                                })}
                                 className='ms-2 mb-2'
                             >
                                 <img src={Assets.images.info} alt='info' />

@@ -24,11 +24,11 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          REACT_APP_API_URL: "https://testnet-bridge.cosmosmillions.com/"
+          REACT_APP_API_URL: "https://explorer-mainnet.infra.lum.network"
           REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
           GENERATE_SOURCEMAP: "false"
-          REACT_APP_RPC_LUM: "https://testnet-rpc.cosmosmillions.com/lum/rpc"
-          REACT_APP_RPC_ATOM: "https://testnet-rpc.cosmosmillions.com/atom/rpc"
+          REACT_APP_RPC_LUM: "https://node0.mainnet.lum.network/rpc"
+          REACT_APP_RPC_ATOM: "https://rpc.cosmoshub.strange.love/"
           REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
           REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
           REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
