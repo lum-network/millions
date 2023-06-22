@@ -127,7 +127,7 @@ export default {
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
             p1: 'Leveraging the Interchain Stack (Cosmos-SDK, Tendermint BFT, IBC, ICA, ICQ), our prize-linked savings enhance traditional savings methods.',
-            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Interchain of Blockchains.',
+            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Internet of Blockchains.',
             p3: 'Our open-source, audited protocol ensures fair prize distribution, making saving a more positive and rewarding experience for all users!',
             cta: 'Start saving now!',
         },
@@ -381,7 +381,7 @@ export default {
             drawId: 'Draw #{{ drawId }}',
             shareTitle: 'Spread the word!',
             shareTwitterContent:
-                'My savings are going to the moon 🚀 I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+                'Just claimed my ${{ denom }} prize on @cosmosmillions! ️🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
