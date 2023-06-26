@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 import { slide as Menu } from 'react-burger-menu';
 
@@ -11,17 +11,18 @@ import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
-import { I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
+import { I18n } from 'utils';
+import { RootState } from 'redux/store';
 import { Breakpoints, NavigationConstants } from 'constant';
+
+import ConnectButton from '../ConnectButton/ConnectButton';
 
 import './Header.scss';
 
-const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
+const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const prizes = useSelector((state: RootState) => state.wallet.lumWallet?.prizes);
     const timeline = useRef<gsap.core.Timeline>();
-    const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -83,30 +84,6 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         },
     };
 
-    const connectWallet = async () => {
-        if (KeplrUtils.isKeplrInstalled()) {
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(null);
-        } else {
-            if (keplrModalRef.current) {
-                keplrModalRef.current.toggle();
-            }
-        }
-    };
-
-    const copyAddress = () => {
-        if (address) {
-            navigator.clipboard.writeText(address).then(
-                () => {
-                    ToastUtils.showSuccessToast({ content: I18n.t('common.copiedAddress') });
-                },
-                () => {
-                    ToastUtils.showErrorToast({ content: I18n.t('errors.copyAddress') });
-                },
-            );
-        }
-    };
-
     const renderContent = (inBurgerMenu: boolean) => {
         if (isLanding) {
             return (
@@ -146,7 +123,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
 
         return (
-            <ul className='navbar-nav flex-row align-items-center ms-auto'>
+            <ul className='d-flex flex-column flex-sm-row align-items-sm-center ms-auto'>
                 <li className='nav-item' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('home.title')}
@@ -168,26 +145,22 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                     </li>
                 )}
                 {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
-                <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
-                    <div className='d-flex flex-row'>
-                        <Button outline className='flex-grow-1' onClick={!address ? connectWallet : copyAddress}>
-                            {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
-                        </Button>
-                        {address && !inBurgerMenu ? (
-                            <Button
-                                textOnly
-                                className='ms-4'
-                                onClick={() => {
-                                    if (logoutModalRef.current) {
-                                        logoutModalRef.current.show();
-                                    }
-                                }}
-                            >
-                                <img src={Assets.images.logout} />
-                            </Button>
-                        ) : null}
-                    </div>
+                <li className={`nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0 ${inBurgerMenu && 'mb-5'}`}>
+                    <ConnectButton address={address} {...dismissMenuProps} />
                 </li>
+                {address && !inBurgerMenu ? (
+                    <Button
+                        textOnly
+                        className='ms-4'
+                        onClick={() => {
+                            if (logoutModalRef.current) {
+                                logoutModalRef.current.show();
+                            }
+                        }}
+                    >
+                        <img src={Assets.images.logout} />
+                    </Button>
+                ) : null}
             </ul>
         );
     };
@@ -195,7 +168,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     const renderBurger = () => {
         return (
             <button
-                className='navbar-toggler d-flex align-items-center justify-content-center'
+                className='navbar-toggler d-flex align-items-center justify-content-center ms-auto'
                 type='button'
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-controls='offcanvasNavbar'

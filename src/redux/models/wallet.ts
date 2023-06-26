@@ -5,7 +5,7 @@ import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
 
@@ -143,13 +143,18 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async enableKeplrAndConnectLumWallet(payload: { silent: boolean } /* state */) {
-            const { silent } = payload;
-            const keplrWindow = window as KeplrWindow;
+        async connectWallet(payload: { provider: WalletProvider; silent: boolean } /* state */) {
+            const { silent, provider } = payload;
+            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
-            if (!keplrWindow.getOfflineSigner || !keplrWindow.keplr) {
+            if (!walletProvider) {
+                ToastUtils.showErrorToast({ content: `${provider} is not available` });
+                return;
+            }
+
+            if (!walletProvider.getOfflineSigner) {
                 if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notInstalled') });
-            } else if (!keplrWindow.keplr.experimentalSuggestChain) {
+            } else if (!walletProvider.experimentalSuggestChain) {
                 if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notLatest') });
             } else {
                 const chainId = LumClient.getChainId();
@@ -161,7 +166,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await keplrWindow.keplr.experimentalSuggestChain({
+                    await walletProvider.experimentalSuggestChain({
                         chainId: chainId,
                         chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                         rpc,
@@ -220,14 +225,16 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await keplrWindow.keplr.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
-                    if (!keplrWindow.getOfflineSignerAuto) {
+                    await walletProvider.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
+                    if (!walletProvider.getOfflineSignerAuto) {
                         throw new Error(I18n.t('errors.keplr.offlineSigner'));
                     }
-                    const lumOfflineSigner = await keplrWindow.getOfflineSignerAuto(chainId);
+                    const lumOfflineSigner = await walletProvider.getOfflineSignerAuto(chainId);
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
+
+                        WalletUtils.storeAutoconnectKey(provider);
 
                         await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
                         if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
@@ -238,86 +245,90 @@ export const wallet = createModel<RootModel>()({
                 }
             }
         },
-        async connectOtherWallets(_, state) {
-            const keplrWindow = window as KeplrWindow;
-            if (keplrWindow.getOfflineSignerAuto) {
+        async connectOtherWallets(provider: WalletProvider, state) {
+            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+            try {
+                if (!walletProvider) {
+                    throw new Error(`${provider} is not available`);
+                }
+
                 for (const pool of state.pools.pools) {
                     if (!pool.internalInfos || pool.chainId.includes('lum')) {
                         continue;
                     }
 
-                    try {
-                        if (pool.chainId === 'gaia-devnet') {
-                            await KeplrUtils.enableKeplrWithInfos({
-                                bech32Config: {
-                                    bech32PrefixAccAddr: 'cosmos',
-                                    bech32PrefixAccPub: 'cosmospub',
-                                    bech32PrefixConsAddr: 'cosmosvalcons',
-                                    bech32PrefixConsPub: 'cosmosvalconspub',
-                                    bech32PrefixValAddr: 'cosmosvaloper',
-                                    bech32PrefixValPub: 'cosmosvaloperpub',
-                                },
-                                bip44: {
-                                    coinType: 118,
-                                },
-                                chainId: 'gaia-devnet',
-                                chainName: 'Cosmos Hub [Test Millions]',
-                                chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cosmoshub/chain.png',
-                                currencies: [
-                                    {
-                                        coinDecimals: 6,
-                                        coinDenom: 'ATOM',
-                                        coinGeckoId: 'cosmos',
-                                        coinMinimalDenom: 'uatom',
-                                    },
-                                ],
-                                features: [],
-                                feeCurrencies: [
-                                    {
-                                        coinDecimals: 6,
-                                        coinDenom: 'ATOM',
-                                        coinGeckoId: 'cosmos',
-                                        coinMinimalDenom: 'uatom',
-                                        gasPriceStep: {
-                                            average: 0.025,
-                                            high: 0.03,
-                                            low: 0.01,
-                                        },
-                                    },
-                                ],
-                                rest: 'https://testnet-rpc.cosmosmillions.com/atom/rest',
-                                rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
-                                stakeCurrency: {
+                    if (pool.chainId === 'gaia-devnet') {
+                        await KeplrUtils.enableKeplrWithInfos({
+                            bech32Config: {
+                                bech32PrefixAccAddr: 'cosmos',
+                                bech32PrefixAccPub: 'cosmospub',
+                                bech32PrefixConsAddr: 'cosmosvalcons',
+                                bech32PrefixConsPub: 'cosmosvalconspub',
+                                bech32PrefixValAddr: 'cosmosvaloper',
+                                bech32PrefixValPub: 'cosmosvaloperpub',
+                            },
+                            bip44: {
+                                coinType: 118,
+                            },
+                            chainId: 'gaia-devnet',
+                            chainName: 'Cosmos Hub [Test Millions]',
+                            chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cosmoshub/chain.png',
+                            currencies: [
+                                {
                                     coinDecimals: 6,
                                     coinDenom: 'ATOM',
                                     coinGeckoId: 'cosmos',
                                     coinMinimalDenom: 'uatom',
                                 },
-                            });
-                        }
-                        const offlineSigner = await keplrWindow.getOfflineSignerAuto(pool.chainId);
-                        const accounts = await offlineSigner.getAccounts();
+                            ],
+                            features: [],
+                            feeCurrencies: [
+                                {
+                                    coinDecimals: 6,
+                                    coinDenom: 'ATOM',
+                                    coinGeckoId: 'cosmos',
+                                    coinMinimalDenom: 'uatom',
+                                    gasPriceStep: {
+                                        average: 0.025,
+                                        high: 0.03,
+                                        low: 0.01,
+                                    },
+                                },
+                            ],
+                            rest: 'https://testnet-rpc.cosmosmillions.com/atom/rest',
+                            rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
+                            stakeCurrency: {
+                                coinDecimals: 6,
+                                coinDenom: 'ATOM',
+                                coinGeckoId: 'cosmos',
+                                coinMinimalDenom: 'uatom',
+                            },
+                        });
+                    }
+                    const offlineSigner = await walletProvider.getOfflineSignerAuto(pool.chainId);
+                    const accounts = await offlineSigner.getAccounts();
+
+                    if (accounts.length > 0) {
                         await WalletClient.connect(pool.internalInfos.rpc, offlineSigner);
 
-                        if (accounts.length > 0) {
-                            const res = await WalletClient.getWalletBalance(accounts[0].address);
+                        const res = await WalletClient.getWalletBalance(accounts[0].address);
 
-                            dispatch.wallet.setOtherWalletData({
-                                address: accounts[0].address,
-                                balances: res
-                                    ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter((balance) =>
-                                          DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
-                                      )
-                                    : [],
-                                denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                            });
-                        }
-
-                        WalletClient.disconnect();
-                    } catch (e) {
-                        console.warn((e as Error).message);
+                        dispatch.wallet.setOtherWalletData({
+                            address: accounts[0].address,
+                            balances: res
+                                ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter((balance) =>
+                                      DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
+                                  )
+                                : [],
+                            denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                        });
                     }
+
+                    WalletClient.disconnect();
                 }
+            } catch (e) {
+                console.warn((e as Error).message);
             }
         },
         async reloadWalletInfos({ address, force = true }: { address: string; force?: boolean }, state) {

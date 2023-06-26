@@ -229,12 +229,22 @@ export default {
         },
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
+    leapKeystoreChange: 'Leap Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
-        description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        keplr: {
+            description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        },
+        leap: {
+            description: 'You need an Interchain wallet to use Cosmos Millions.<br />Leap is a good alternative',
+        },
         link: 'Learn more about Interchain wallets',
         later: "I'll come back later",
         download: 'Download Keplr for Chrome',
+    },
+    chooseWalletModal: {
+        keplr: 'Keplr Wallet',
+        leap: 'Leap Wallet'
     },
     logoutModal: {
         title: 'Are you sure you want\nto log out ?',

@@ -14,6 +14,8 @@ export const GITHUB = 'https://github.com/lum-network';
 export const MINTSCAN = 'https://mintscan.io';
 export const TWEET_URL = 'https://twitter.com/intent/tweet';
 export const KEPLR_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap';
+export const LEAP_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/leap-cosmos-wallet/fcfcfllfndlomdhbehjjcoimbgofdncg';
+export const LEAP_DEEPLINK = 'https://leapcosmoswallet.page.link/4FQqpcNVJtTEb7yC8';
 export const BUY_LUM = 'https://app.osmosis.zone/?from=ATOM&to=LUM';
 
 export const INTERCHAIN_WALLETS_DOC = 'https://docs.cosmosmillions.com/welcome/getting-started/get-an-interchain-wallet';
@@ -26,7 +28,6 @@ export const POOL_MANAGEMENT_DOC = 'https://docs.cosmosmillions.com/cosmos-milli
 export const DEPOSITS_AND_WITHDRAWALS_DOC = 'https://docs.cosmosmillions.com/cosmos-millions/deposits-and-withdrawals';
 export const DRAW_MECHANISM_DOC = 'https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism';
 
-// To fill with Terms & Conditions link when released
 export const TANDC = 'https://cosmosmillions.com/terms.pdf';
 
 export type PoolsParams = { poolId: string; denom: string };

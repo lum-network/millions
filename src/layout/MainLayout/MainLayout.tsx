@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import infoIcon from 'assets/images/info.svg';
 import keplrIcon from 'assets/images/keplr.svg';
+import leapIcon from 'assets/images/leap.svg';
+
 import { Button, Card, Header, Modal } from 'components';
-import { NavigationConstants, TERMS_VERSION } from 'constant';
+import { NavigationConstants, TERMS_VERSION, WalletProvider } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
-import { I18n, KeplrUtils, ToastUtils } from 'utils';
+import { I18n, KeplrUtils, ToastUtils, WalletUtils } from 'utils';
 
 import './MainLayout.scss';
 
@@ -22,7 +25,6 @@ const MainLayout = () => {
 
     const [approvedTermsVersion, setApprovedTermsVersion] = useState(localStorage.getItem('@approvedTermsVersion'));
 
-    const keplrModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const logoutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const termsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -36,10 +38,12 @@ const MainLayout = () => {
     const visibilityState = useVisibilityState();
 
     useEffect(() => {
-        const autoConnect = async () => {
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: enableAutoConnect }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(null);
+        const autoConnect = async (provider: WalletProvider) => {
+            await dispatch.wallet.connectWallet({ provider, silent: enableAutoConnect }).finally(() => null);
+            await dispatch.wallet.connectOtherWallets(provider);
         };
+
+        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
 
         if (
             !wallet &&
@@ -48,9 +52,10 @@ const MainLayout = () => {
             location.pathname !== NavigationConstants.LANDING &&
             enableAutoConnect &&
             approvedTermsVersion &&
-            TERMS_VERSION >= Number(approvedTermsVersion)
+            TERMS_VERSION >= Number(approvedTermsVersion) &&
+            autoconnectProvider
         ) {
-            autoConnect().finally(() => null);
+            autoConnect(autoconnectProvider).finally(() => null);
         }
     }, [wallet, location, enableAutoConnect, approvedTermsVersion, appInitialized]);
 
@@ -84,17 +89,32 @@ const MainLayout = () => {
         const keplrKeystoreChangeHandler = () => {
             if (wallet) {
                 ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
-                dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: true }).finally(() => null);
-                dispatch.wallet.connectOtherWallets(null);
+                dispatch.wallet.connectWallet({ provider: WalletProvider.Keplr, silent: true }).finally(() => null);
+                dispatch.wallet.connectOtherWallets(WalletProvider.Keplr);
+            }
+        };
+
+        const leapKeystoreChangeHandler = () => {
+            if (wallet) {
+                ToastUtils.showInfoToast({ content: I18n.t('keplrKeystoreChange') });
+                dispatch.wallet.connectWallet({ provider: WalletProvider.Leap, silent: true }).finally(() => null);
+                dispatch.wallet.connectOtherWallets(WalletProvider.Leap);
             }
         };
 
         window.addEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
+        window.addEventListener('leap_keystorechange', leapKeystoreChangeHandler, false);
 
         return () => {
             window.removeEventListener('keplr_keystorechange', keplrKeystoreChangeHandler, false);
+            window.removeEventListener('leap_keystorechange', leapKeystoreChangeHandler, false);
         };
     }, [wallet]);
+
+    const onConnectWallet = async (provider: WalletProvider) => {
+        dispatch.wallet.connectWallet({ provider, silent: false }).finally(() => null);
+        dispatch.wallet.connectOtherWallets(provider);
+    };
 
     const removeBackdrop = () => {
         const backdrops = document.querySelectorAll('.modal-backdrop');
@@ -104,7 +124,7 @@ const MainLayout = () => {
 
     return (
         <>
-            <Header keplrModalRef={keplrModalRef} logoutModalRef={logoutModalRef} />
+            <Header logoutModalRef={logoutModalRef} />
             <div className='main-layout'>
                 <div className='custom-container container fill'>
                     <main className='h-100'>
@@ -122,48 +142,103 @@ const MainLayout = () => {
                     </main>
                 </div>
             </div>
-            <Modal id='get-keplr-modal' ref={keplrModalRef} withCloseButton={false}>
+            <Modal id='get-keplr-modal' contentClassName='bg-white' withCloseButton={false}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
-                <Card flat withoutPadding className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'>
-                    <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                {!isMobile && (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center p-4'
+                        onClick={() => {
+                            window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <p
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('keplrDownloadModal.keplr.description'),
+                                }}
+                            />
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                )}
+                <Card
+                    flat
+                    withoutPadding
+                    className='d-flex flex-column flex-sm-row align-items-center my-4 p-4'
+                    onClick={() => {
+                        window.open(isMobile ? NavigationConstants.LEAP_DEEPLINK : NavigationConstants.LEAP_EXTENSION_URL, '_blank');
+                    }}
+                    data-bs-dismiss='modal'
+                >
+                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <p
                             dangerouslySetInnerHTML={{
-                                __html: I18n.t('keplrDownloadModal.description'),
+                                __html: I18n.t('keplrDownloadModal.leap.description'),
                             }}
                         />
-                        <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} target='_blank' rel='noreferrer'>
+                        <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
                             {I18n.t('keplrDownloadModal.link')}
                         </a>
                     </div>
                 </Card>
-                <div className='d-flex flex-column flex-sm-row align-self-stretch justify-content-between'>
-                    <Button
-                        outline
-                        className='w-100'
-                        onClick={() => {
-                            if (keplrModalRef.current) {
-                                keplrModalRef.current.hide();
-                            }
-                        }}
-                    >
-                        {I18n.t('keplrDownloadModal.later')}
-                    </Button>
-                    <Button
-                        className='w-100 ms-0 ms-sm-4 mt-4 mt-sm-0'
-                        onClick={() => {
-                            window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
-                            if (keplrModalRef.current) {
-                                keplrModalRef.current.hide();
-                            }
-                        }}
-                    >
-                        {I18n.t('keplrDownloadModal.download')}
-                    </Button>
-                </div>
             </Modal>
-            <Modal id='logout-modal' ref={logoutModalRef}>
+            <Modal id='choose-wallet-modal' contentClassName='bg-white' withCloseButton={false}>
+                <img src={infoIcon} alt='info' width={42} height={42} />
+                <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
+                {!isMobile && (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center p-4'
+                        onClick={() => {
+                            onConnectWallet(WalletProvider.Keplr);
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <h2
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('chooseWalletModal.keplr'),
+                                }}
+                            />
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                )}
+                <Card
+                    flat
+                    withoutPadding
+                    className='d-flex flex-column flex-sm-row align-items-center my-4 p-4'
+                    onClick={() => {
+                        onConnectWallet(WalletProvider.Leap);
+                    }}
+                    data-bs-dismiss='modal'
+                >
+                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                    <div className='d-flex flex-column align-items-start text-start'>
+                        <h2
+                            dangerouslySetInnerHTML={{
+                                __html: I18n.t('chooseWalletModal.leap'),
+                            }}
+                        />
+                        <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                            {I18n.t('keplrDownloadModal.link')}
+                        </a>
+                    </div>
+                </Card>
+            </Modal>
+            <Modal id='logout-modal' contentClassName='bg-white' ref={logoutModalRef}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('logoutModal.title')}</h3>
                 <div className='d-flex flex-row align-self-stretch justify-content-between'>
