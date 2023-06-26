@@ -22,7 +22,7 @@ const ConnectButton = ({ address, onClick }: { address: string | undefined; onCl
         return (
             <Button
                 outline
-                className='flex-grow-1'
+                className='w-100'
                 onClick={() => {
                     copyAddress();
                     onClick();
@@ -34,7 +34,7 @@ const ConnectButton = ({ address, onClick }: { address: string | undefined; onCl
     }
 
     return (
-        <Button outline data-bs-toggle='modal' data-bs-target={!KeplrUtils.isKeplrInstalled() ? '#get-keplr-modal' : '#choose-wallet-modal'} className='flex-grow-1' onClick={onClick}>
+        <Button outline data-bs-toggle='modal' data-bs-target={!KeplrUtils.isKeplrInstalled() ? '#get-keplr-modal' : '#choose-wallet-modal'} className='w-100' onClick={onClick}>
             {I18n.t('connectWallet')}
         </Button>
     );

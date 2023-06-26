@@ -35,13 +35,23 @@
         width: 76px;
         height: 76px;
     }
-
+    
     h3 {
         color: $color-black;
         font-weight: 400;
         font-size: 24px;
     }
+}
 
+#choose-wallet-modal {
+    a {
+        color: $color-black;
+        font-weight: 300;
+        font-size: 14px;
+    }
+}
+
+#get-keplr-modal {
     p {
         color: $color-black;
         font-weight: 300;
