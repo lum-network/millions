@@ -219,7 +219,7 @@ export const wallet = createModel<RootModel>()({
                         coinType: 118,
                         beta: chainId.includes('testnet'),
                     });
-                } catch (e) {
+                } catch {
                     if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
                     return;
                 }
