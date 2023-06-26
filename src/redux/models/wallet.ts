@@ -220,7 +220,7 @@ export const wallet = createModel<RootModel>()({
                         beta: chainId.includes('testnet'),
                     });
                 } catch (e) {
-                    if (!silent) ToastUtils.showErrorToast({ content: (e as Error).message || I18n.t('errors.keplr.networkAdd') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
                     return;
                 }
 
