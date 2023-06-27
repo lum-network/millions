@@ -25,8 +25,7 @@ class LumApi extends HttpClient {
 
     getPrizesStats = async (denom: string) => this.request<PrizeStatsModel>({ url: `/millions/prizes/stats/${denom}`, method: 'GET' }, PrizeStatsModel);
 
-    fetchDepositsDrops = async (address: string, page = 0) =>
-        this.request<DepositDropModel>({ url: `/millions/deposits?limit=5&page=${page}` /*`/millions/deposits/drops/${address}?limit=10&page=${page}`*/, method: 'GET' }, DepositDropModel);
+    fetchDepositsDrops = async (address: string, page = 0) => this.request<DepositDropModel[]>({ url: `/millions/deposits/drops/${address}?limit=10&page=${page}`, method: 'GET' }, DepositDropModel);
 }
 
 export default LumApi.getInstance();

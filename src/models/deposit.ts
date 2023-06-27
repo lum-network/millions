@@ -2,6 +2,7 @@ import { Deposit as MillionsDeposit } from '@lum-network/sdk-javascript/build/co
 
 export interface DepositModel extends MillionsDeposit {
     isWithdrawing?: boolean;
+    isDepositDrop?: boolean;
     unbondingEndAt?: Date;
 }
 

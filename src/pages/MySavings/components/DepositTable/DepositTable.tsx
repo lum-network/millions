@@ -8,6 +8,7 @@ import { Breakpoints } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import Assets from 'assets';
 
 import './DepositTable.scss';
 
@@ -29,7 +30,12 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
         switch (deposit.state) {
             case DepositState.DEPOSIT_STATE_SUCCESS:
                 statusClassName = 'success';
-                cta = (
+                cta = deposit.isDepositDrop ? (
+                    <div className='d-flex align-items-center'>
+                        <p className='me-3 mb-0'>{I18n.t('mySavings.depositDrop')}</p>
+                        <img alt='Deposit drop' src={Assets.images.depositDrop} />
+                    </div>
+                ) : (
                     <Button textOnly onClick={() => onLeavePool(deposit as DepositModel)} data-bs-target='#leavePoolModal' data-bs-toggle='modal' className='h-100'>
                         {I18n.t('mySavings.leavePoolCta')}
                     </Button>
