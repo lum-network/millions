@@ -199,7 +199,7 @@ const PoolDetails = () => {
                             )}
                             <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center tvl-detail-card'>
                                 <div className='d-flex flex-row align-items-center'>
-                                    <img src={Assets.images.sponsor} className='me-3' />
+                                    <img src={Assets.images.tvlDeposit} className='me-3' />
                                     <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.deposits')}</h4>
                                 </div>
                                 <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>

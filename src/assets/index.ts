@@ -32,6 +32,7 @@ import success from './images/success.svg';
 import trophy from './images/trophy.svg';
 import trophyPurple from './images/trophy_purple.svg';
 import trophyGreen from './images/trophy_green.svg';
+import tvlDeposit from './images/tvl_deposit.svg';
 import twitterButton from './images/twitter_button.svg';
 import twitterPlain from './images/twitter_plain.svg';
 import twitterWhite from './images/twitter_white.svg';
@@ -89,6 +90,7 @@ const Assets = {
         trophy,
         trophyGreen,
         trophyPurple,
+        tvlDeposit,
         twitterButton,
         twitterPlain,
         twitterWhite,
