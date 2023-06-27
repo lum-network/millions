@@ -120,8 +120,8 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                 <Collapsible
                     key={`collapsible-deposit-${index}`}
                     className='d-flex flex-column collapsible-deposits deposit-card'
-                    buttonBorder={winSizes.width < Breakpoints.SM ? false : true}
-                    toggleWithButton={winSizes.width < Breakpoints.SM ? false : true}
+                    buttonBorder={winSizes.width >= Breakpoints.SM}
+                    toggleWithButton={winSizes.width >= Breakpoints.SM}
                     header={
                         <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
                             <div className='col-12 col-md-6'>

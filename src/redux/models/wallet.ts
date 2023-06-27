@@ -4,11 +4,10 @@ import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-n
 import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, DepositModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
-import { LumApi } from 'api';
 
 interface IbcTransferPayload {
     fromAddress: string;
