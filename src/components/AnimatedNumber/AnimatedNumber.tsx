@@ -10,6 +10,7 @@ interface IProps {
 }
 
 const Counter = ({ number, duration = 1500, delay = 500 }: IProps) => {
+    console.log(number);
     const [count, setCount] = useState(0);
 
     useEffect(() => {

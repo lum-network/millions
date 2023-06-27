@@ -59,7 +59,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                                     $
                                 </span>
                                 <div style={{ fontSize: `${fontSize}px` }}>
-                                    <AnimatedNumber delay={delay} number={biggestPrize.amount * price} />
+                                    <AnimatedNumber delay={delay} number={Math.round(biggestPrize.amount * price)} />
                                 </div>
                             </>
                         ) : (
