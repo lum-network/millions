@@ -131,21 +131,23 @@ class LumClient {
 
         const aggregatedWithdrawals = await PoolsUtils.reduceDepositsByPoolId(withdrawalsToDeposit);
 
-        const [depositsDrops] = await LumApi.fetchDepositsDrops(address);
-
         const depositsDropsToDeposits: Partial<DepositModel>[] = [];
 
-        for (const drop of depositsDrops) {
-            depositsDropsToDeposits.push({
-                amount: drop.amount,
-                poolId: Long.fromNumber(drop.poolId),
-                depositId: Long.fromNumber(drop.depositId),
-                depositorAddress: drop.depositorAddress,
-                isWithdrawing: false,
-                isDepositDrop: true,
-                state: DepositState.DEPOSIT_STATE_SUCCESS,
-            });
-        }
+        try {
+            const [depositsDrops] = await LumApi.fetchDepositsDrops(address);
+
+            for (const drop of depositsDrops) {
+                depositsDropsToDeposits.push({
+                    amount: drop.amount,
+                    poolId: Long.fromNumber(drop.poolId),
+                    depositId: Long.fromNumber(drop.depositId),
+                    depositorAddress: drop.depositorAddress,
+                    isWithdrawing: false,
+                    isDepositDrop: true,
+                    state: DepositState.DEPOSIT_STATE_SUCCESS,
+                });
+            }
+        } catch {}
 
         const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits);
 
