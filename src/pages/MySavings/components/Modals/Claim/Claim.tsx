@@ -217,7 +217,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                         <h1 className='steps-title'>{I18n.t('mySavings.claimModal.title')}</h1>
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                     </div>
-                    <div className={`col ${currentStep === 0 && !claimOnly ? 'd-flex' : ''}`}>
+                    <div className='col'>
                         <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
                             <div className={`${!claimOnly ? 'h-100' : ''} d-flex flex-column justify-content-between text-center py-sm-4`}>
                                 {claimOnly ? (
@@ -242,7 +242,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                     <>
                                         <div className='mb-3 mb-sm-5 mb-lg-0'>
                                             <div className='card-title d-flex flex-row align-items-baseline justify-content-center'>
-                                                <img src={Assets.images.trophy} alt='Trophy' className='me-3' />
+                                                <img src={Assets.images.trophy} alt='Trophy' className='d-none d-sm-block me-3' />
                                                 {I18n.t('mySavings.claimModal.cardTitle')}
                                             </div>
                                             <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center mt-2'>
@@ -263,7 +263,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 {prizes.map((prize, index) =>
                                                     prize.amount ? (
                                                         <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-4' : ''}`}>
-                                                            <div className='d-flex flex-row align-items-end justify-content-between text-start mb-2'>
+                                                            <div className='d-flex flex-column flex-sm-row align-items-sm-end justify-content-between text-start mb-2'>
                                                                 ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
                                                                 <br />
                                                                 {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -{' '}

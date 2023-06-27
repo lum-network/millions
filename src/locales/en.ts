@@ -371,7 +371,7 @@ export default {
                     subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
                 },
             ],
-            cta: 'Transfer my available tokens',
+            cta: 'Transfer',
         },
         claimModal: {
             title: 'Cosmonaut,\nyour savings are blasting off like a rocketship 🚀',

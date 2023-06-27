@@ -123,7 +123,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
         }
 
         return (
-            <ul className='d-flex flex-column flex-sm-row align-items-sm-center ms-auto'>
+            <ul className='d-flex flex-column flex-lg-row align-items-lg-center ms-auto'>
                 <li className='nav-item' {...dismissMenuProps}>
                     <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
                         {I18n.t('home.title')}

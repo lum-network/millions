@@ -3,6 +3,12 @@
 .steps-title {
     color: $color-black;
     margin-bottom: 4rem;
+    
+    @include media-breakpoint-down(sm) {
+        font-size: 24px;
+        line-height: unset;
+        margin-bottom: 2rem;
+    }
 }
 
 .glow-bg {
@@ -13,9 +19,17 @@
     .card-step-title {
         font-size: 32px;
         text-align: start;
-    }
 
+        @include media-breakpoint-down(sm) {
+            font-size: 21px;
+        }
+    }
+    
     .card-step-subtitle {
+        @include media-breakpoint-down(sm) {
+            font-size: 12px;
+        }
+
         margin-top: 0;
         text-align: start;
     }

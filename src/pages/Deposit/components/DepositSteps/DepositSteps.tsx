@@ -129,6 +129,7 @@ const DepositStep1 = (
                 <div className='mt-5'>
                     {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
                         <AssetsSelect
+                            className='asset-select'
                             isLoading={isLoading}
                             balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
                                 if (balances.length > 0) {
@@ -151,7 +152,7 @@ const DepositStep1 = (
                     )}
                     <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
                         <div className='winning-chance d-flex flex-row justify-content-between'>
-                            <div>
+                            <div className='text-start'>
                                 {I18n.t('deposit.chancesHint.winning.title')}
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
@@ -161,7 +162,7 @@ const DepositStep1 = (
                             <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool))}</div>
                         </div>
                         <div className='average-prize d-flex flex-row justify-content-between mt-4'>
-                            <div>
+                            <div className='text-start'>
                                 {I18n.t('deposit.chancesHint.averagePrize.title')}
                                 <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
@@ -347,13 +348,13 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
     return (
         <div className='step-3'>
             <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center mt-2 mb-3 mb-sm-5 mb-lg-0'>
-                <div className='card-step-title text-nowrap text-center text-lg-start' dangerouslySetInnerHTML={{ __html: title }} />
-                <div className='card-step-subtitle text-nowrap text-center text-lg-start mt-4 mt-lg-0' dangerouslySetInnerHTML={{ __html: subtitle }} />
+                <div className='card-step-title text-center text-lg-start' dangerouslySetInnerHTML={{ __html: title }} />
+                <div className='card-step-subtitle text-center text-lg-start mt-4 mt-lg-0' dangerouslySetInnerHTML={{ __html: subtitle }} />
             </div>
             <div className='d-flex flex-column mt-5'>
-                <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
+                <div className='deposit-card d-flex flex-column flex-sm-row justify-content-between align-items-sm-center py-3 py-sm-4 px-4 px-sm-5 mb-4'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
+                        <img className='denom-icon' src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
                         <div className='d-flex flex-column ms-3'>
                             <div className='deposit-amount text-start'>
                                 {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
@@ -363,7 +364,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                             </small>
                         </div>
                     </div>
-                    <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
+                    <div className='deposit-state rounded-pill text-nowrap success mt-3 mt-sm-0'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                 </div>
                 <div className='row row-cols-1 row-cols-lg-3 gx-4 gy-4 ctas-section'>
                     <div className='col'>
@@ -419,7 +420,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                     }}
                 >
                     <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
-                    <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3 twitter-icon' width={25} style={{ zIndex: 0 }} />
+                    <img src={Assets.images.twitterWhite} alt='Twitter' className='d-none d-sm-block me-3 twitter-icon' width={25} style={{ zIndex: 0 }} />
                     <div className='deposit-cta-text'>{I18n.t('deposit.shareTwitter')}</div>
                 </Button>
             </div>
