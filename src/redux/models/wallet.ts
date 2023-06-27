@@ -8,6 +8,7 @@ import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, Wal
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
+import { LumApi } from 'api';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -376,6 +377,9 @@ export const wallet = createModel<RootModel>()({
         async getDepositsAndWithdrawals(address: string) {
             try {
                 const res = await LumClient.getDepositsAndWithdrawals(address);
+                const depositsDrops = await LumApi.fetchDepositsDrops(address);
+
+                console.log(depositsDrops);
 
                 if (res) {
                     dispatch.wallet.setLumWalletData({ deposits: res });
