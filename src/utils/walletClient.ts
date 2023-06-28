@@ -20,7 +20,7 @@ class WalletClient {
 
     // Utils
 
-    connect = async (rpc: string, offlineSigner?: OfflineSigner) => {
+    connect = async (rpc: string, offlineSigner?: OfflineSigner, silent?: boolean) => {
         try {
             if (!rpc) {
                 throw new Error('no rpc provided');
@@ -34,8 +34,9 @@ class WalletClient {
 
             this.connectedWithSigner = !!offlineSigner;
             this.chainId = await this.walletClient.getChainId();
-        } catch {
-            showErrorToast({ content: I18n.t('errors.client.rpc') });
+        } catch (e) {
+            if (!silent) showErrorToast({ content: I18n.t('errors.client.rpc') });
+            throw e;
         }
     };
 

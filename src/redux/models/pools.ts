@@ -114,7 +114,7 @@ export const pools = createModel<RootModel>()({
 
                     const client = new WalletClient();
 
-                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '');
+                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
 
                     const [bankBalance, stakingRewards] = await Promise.all([
                         client.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),

@@ -452,7 +452,7 @@ export const wallet = createModel<RootModel>()({
 
                 const client = new WalletClient();
 
-                await client.connect(rpc, offlineSigner);
+                await client.connect(rpc, offlineSigner, true);
 
                 const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
 

@@ -24,6 +24,7 @@ interface StepProps {
     pools: PoolModel[];
     title: string;
     subtitle: string;
+    disabled: boolean;
 }
 
 interface Props {
@@ -44,7 +45,7 @@ interface Props {
     onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
-    lumWallet: LumWalletModel;
+    lumWallet: LumWalletModel | null;
     transferForm: FormikProps<{ amount: string }>;
     price: number;
 }
@@ -64,7 +65,7 @@ const DepositStep1 = (
         onTransfer: (amount: string) => void;
     },
 ) => {
-    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, onTransfer } = props;
+    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, disabled, onTransfer } = props;
 
     const navigate = useNavigate();
 
@@ -83,7 +84,7 @@ const DepositStep1 = (
     }
 
     return (
-        <div className='step-1'>
+        <div className={`step-1 ${disabled && 'disabled'}`}>
             <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
                 <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
@@ -108,6 +109,7 @@ const DepositStep1 = (
                             step: 'any',
                             lang: 'en',
                             placeholder: (100 / price).toFixed(6),
+                            disabled,
                             ...form.getFieldProps('amount'),
                             onChange: (e) => {
                                 const inputAmount = Number(e.target.value);
@@ -131,6 +133,7 @@ const DepositStep1 = (
                         <AssetsSelect
                             className='asset-select'
                             isLoading={isLoading}
+                            disabled={disabled}
                             balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
                                 if (balances.length > 0) {
                                     result.push({
@@ -178,7 +181,7 @@ const DepositStep1 = (
                         type={isLoading ? 'button' : 'submit'}
                         onClick={() => onTransfer(form.values.amount)}
                         className='position-relative deposit-cta w-100 mt-4'
-                        disabled={isLoading || !!(form.touched.amount && form.errors.amount)}
+                        disabled={disabled || isLoading || !!(form.touched.amount && form.errors.amount)}
                     >
                         <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
                         <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
@@ -197,7 +200,7 @@ const DepositStep2 = (
         onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
-    const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, onDeposit } = props;
+    const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, disabled, onDeposit } = props;
 
     const navigate = useNavigate();
     const { denom } = useParams<NavigationConstants.PoolsParams>();
@@ -246,7 +249,7 @@ const DepositStep2 = (
     }, []);
 
     return (
-        <div className='step-2'>
+        <div className={`step-2 ${disabled && 'disabled'}`}>
             <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
                 <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
@@ -289,6 +292,7 @@ const DepositStep2 = (
                             max: balances.length > 0 ? balances[0].amount : '0',
                             step: 'any',
                             lang: 'en',
+                            disabled,
                         }}
                         price={price}
                         error={error}
@@ -306,6 +310,7 @@ const DepositStep2 = (
             {pools.length > 1 && (
                 <PoolSelect
                     className='mt-4 pool-select'
+                    disabled={disabled}
                     pools={pools}
                     options={pools.map((pool) => ({
                         value: pool.poolId.toString(),
@@ -330,7 +335,7 @@ const DepositStep2 = (
                 onClick={async () => {
                     await onDeposit(poolToDeposit, depositAmount);
                 }}
-                disabled={!!error || isLoading}
+                disabled={disabled || !!error || isLoading}
                 className='deposit-cta w-100 position-relative mt-4'
             >
                 <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
@@ -447,55 +452,55 @@ const DepositSteps = (props: Props) => {
     }, [lumWallet]);
 
     return (
-        <>
-            <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
-                <div className='card-content'>
-                    {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
-                        <DepositStep1
-                            title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
-                            subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
-                            currentPool={currentPool}
-                            form={transferForm}
-                            onTransfer={(amount) => setAmount(amount)}
-                            price={price}
-                            pools={pools}
-                            balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
-                            nonEmptyWallets={nonEmptyWallets}
-                        />
-                    )}
-                    {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
-                        <DepositStep2
-                            title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
-                            subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
-                            balances={lumWallet?.balances || []}
-                            initialAmount={initialAmount}
-                            amount={amount}
-                            onDeposit={async (poolToDeposit, depositAmount) => {
-                                const res = await onDeposit(poolToDeposit, depositAmount);
+        <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
+            <div className='card-content'>
+                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
+                    <DepositStep1
+                        title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
+                        subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
+                        currentPool={currentPool}
+                        form={transferForm}
+                        onTransfer={(amount) => setAmount(amount)}
+                        price={price}
+                        pools={pools}
+                        disabled={!otherWallet}
+                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        nonEmptyWallets={nonEmptyWallets}
+                    />
+                )}
+                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
+                    <DepositStep2
+                        title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
+                        subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
+                        balances={lumWallet?.balances || []}
+                        initialAmount={initialAmount}
+                        amount={amount}
+                        disabled={!lumWallet}
+                        onDeposit={async (poolToDeposit, depositAmount) => {
+                            const res = await onDeposit(poolToDeposit, depositAmount);
 
-                                if (res && !res.error) {
-                                    onFinishDeposit(onNextStep);
-                                    setTxInfos({
-                                        hash: LumUtils.toHex(res.hash).toUpperCase(),
-                                        amount: numeral(depositAmount).format('0,0[.]00'),
-                                        denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
-                                        tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),
-                                        poolId: poolToDeposit.poolId.toString(),
-                                    });
-                                }
-                            }}
-                            currentPool={currentPool}
-                            pools={pools}
-                            price={price}
-                            onPrevStep={onPrevStep}
-                        />
-                    )}
-                    {currentStep === steps.length && txInfos && (
-                        <DepositStep3 title={I18n.t('deposit.shareStep.title')} subtitle={I18n.t('deposit.shareStep.subtitle')} txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />
-                    )}
-                </div>
+                            if (res && !res.error) {
+                                onFinishDeposit(onNextStep);
+                                setTxInfos({
+                                    hash: LumUtils.toHex(res.hash).toUpperCase(),
+                                    amount: numeral(depositAmount).format('0,0[.]00'),
+                                    denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
+                                    tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),
+                                    poolId: poolToDeposit.poolId.toString(),
+                                });
+                            }
+                        }}
+                        currentPool={currentPool}
+                        pools={pools}
+                        price={price}
+                        onPrevStep={onPrevStep}
+                    />
+                )}
+                {currentStep === steps.length && txInfos && (
+                    <DepositStep3 title={I18n.t('deposit.shareStep.title')} subtitle={I18n.t('deposit.shareStep.subtitle')} txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />
+                )}
             </div>
-        </>
+        </div>
     );
 };
 

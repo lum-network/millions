@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Navigate, useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
+import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -758,10 +758,6 @@ const Deposit = () => {
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (!denom || !lumWallet || (denom !== 'lum' && !otherWallet)) {
-        return <Navigate to={NavigationConstants.HOME} />;
-    }
-
     if (denom === LumConstants.LumDenom) {
         steps.splice(0, 1);
     }
@@ -841,11 +837,11 @@ const Deposit = () => {
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
             <IbcTransferModal
                 modalRef={ibcModalRef}
-                denom={denom}
+                denom={denom || ''}
                 prevAmount={ibcModalPrevAmount}
                 nextAmount={ibcModalDepositAmount}
                 isLoading={isTransferring}
-                price={prices[denom]}
+                price={prices[denom || ''] || 0}
                 onConfirm={async () => {
                     const amount = transferForm.values.amount.toString();
 

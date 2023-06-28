@@ -73,6 +73,10 @@
 }
 
 .step-1 {
+    &.disabled {
+        opacity: 0.5;
+    }
+
     .winning-chance-card {
         padding-top: 1.25rem;
         padding-bottom: 1.25rem;
@@ -84,6 +88,10 @@
 }
 
 .step-2 {
+    &.disabled {
+        opacity: 0.5;
+    }
+
     .last-step-card {
         margin-top: 5rem;
         border-radius: 12px;
