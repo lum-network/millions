@@ -136,10 +136,18 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                 </li>
                 {address && (
                     <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
-                        <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink position-relative ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                            to={NavigationConstants.MY_SAVINGS}
+                            className={({ isActive }) => `navlink position-relative ${prizes && prizes.length > 0 && 'me-4 me-xl-3'} ${isActive ? 'active' : ''}`}
+                        >
                             {I18n.t('mySavings.title')}
-                            {prizes && prizes.length > 3 && (
-                                <div className='position-absolute top-0 start-100 rounded-circle' style={{ width: 15, height: 15, backgroundColor: '#FA7676', transform: 'translate(-50%, -40%)' }} />
+                            {prizes && prizes.length > 0 && (
+                                <div
+                                    className='prize-dot position-absolute top-0 start-100 rounded-circle d-flex align-items-center justify-content-center'
+                                    style={{ transform: 'translate(20%, -50%)' }}
+                                >
+                                    {prizes.length}
+                                </div>
                             )}
                         </NavLink>
                     </li>

@@ -58,6 +58,15 @@ header {
     }
 }
 
+.prize-dot {
+    width: 22px;
+    height: 22px;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: 0.5rem;
+    font-weight: 900;
+}
+
 .navlink {
     color: $color-primary;
     text-decoration: none;
