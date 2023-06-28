@@ -13,7 +13,7 @@ import Assets from 'assets';
 import './Home.scss';
 
 const Home = () => {
-    const bestPoolPrize = useSelector((state: RootState) => state.pools?.bestPoolPrize);
+    const bestPoolPrize = useSelector((state: RootState) => state.pools.bestPoolPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
     const biggestPrizes = useSelector((state: RootState) => state.prizes.biggestPrizes);

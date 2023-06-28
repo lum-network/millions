@@ -41,7 +41,9 @@ const Deposit = () => {
     }));
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
-    const [currentStep, setCurrentStep] = useState(existsInLumBalances && denom !== LumConstants.LumDenom ? 1 : 0);
+    const [currentStep, setCurrentStep] = useState(
+        existsInLumBalances && denom !== LumConstants.LumDenom && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
+    );
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
     const [ibcModalDepositAmount, setIbcModalDepositAmount] = useState<string>('0');

@@ -38,7 +38,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
             return;
         }
 
-        setFontSize(FontsUtils.calculateFontSize((biggestPrize?.amount * (price ?? 1)).toFixed().length, width));
+        setFontSize(FontsUtils.calculateFontSize((biggestPrize.amount * (price ?? 1)).toFixed().length, width));
     }, [biggestPrize, width]);
 
     return (

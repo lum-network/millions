@@ -17,31 +17,23 @@ class WalletClient {
 
     private walletClient: LumClient | SigningStargateClient | null = null;
     private connectedWithSigner = false;
-    private static instance: WalletClient;
-
-    static get Instance() {
-        if (!WalletClient.instance) {
-            WalletClient.instance = new WalletClient();
-        }
-
-        return WalletClient.instance;
-    }
 
     // Utils
 
     connect = async (rpc: string, offlineSigner?: OfflineSigner) => {
         try {
-            let client: LumClient | SigningStargateClient;
-
-            if (offlineSigner) {
-                client = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
-            } else {
-                client = await LumClient.connect(rpc);
+            if (!rpc) {
+                throw new Error('no rpc provided');
             }
 
-            this.walletClient = client;
+            if (offlineSigner) {
+                this.walletClient = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
+            } else {
+                this.walletClient = await LumClient.connect(rpc);
+            }
+
             this.connectedWithSigner = !!offlineSigner;
-            this.chainId = await client.getChainId();
+            this.chainId = await this.walletClient.getChainId();
         } catch {
             showErrorToast({ content: I18n.t('errors.client.rpc') });
         }
@@ -52,6 +44,7 @@ class WalletClient {
             this.walletClient.disconnect();
             this.walletClient = null;
             this.chainId = null;
+            this.connectedWithSigner = false;
         }
     };
 
@@ -147,4 +140,4 @@ class WalletClient {
     };
 }
 
-export default WalletClient.Instance;
+export default WalletClient;

@@ -99,7 +99,7 @@ export const pools = createModel<RootModel>()({
                 return;
             }
 
-            await dispatch.pools.setMutexAdditionalInfos(true);
+            dispatch.pools.setMutexAdditionalInfos(true);
 
             try {
                 const pools = [...state.pools.pools];
@@ -108,19 +108,17 @@ export const pools = createModel<RootModel>()({
                     // Calculate Prize to win
                     const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
 
-                    if (pool.nativeDenom === LumConstants.MicroLumDenom) {
-                        await WalletClient.connect(process.env.REACT_APP_RPC_LUM || '');
-                    } else {
-                        if (!pool.internalInfos) {
-                            continue;
-                        }
-
-                        await WalletClient.connect(pool.internalInfos?.rpc);
+                    if (pool.nativeDenom !== LumConstants.MicroLumDenom && !pool.internalInfos) {
+                        continue;
                     }
 
+                    const client = new WalletClient();
+
+                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '');
+
                     const [bankBalance, stakingRewards] = await Promise.all([
-                        WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
-                        WalletClient.getIcaAccountStakingRewards(pool.icaDepositAddress),
+                        client.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
+                        client.getIcaAccountStakingRewards(pool.icaDepositAddress),
                     ]);
 
                     const prizePool =
@@ -139,14 +137,14 @@ export const pools = createModel<RootModel>()({
 
                     // Calculate APY
                     const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
-                        WalletClient.getBonding(),
-                        WalletClient.getSupply(pool.nativeDenom),
-                        WalletClient.getCommunityTaxRate(),
-                        WalletClient.getInflation(),
+                        client.getBonding(),
+                        client.getSupply(pool.nativeDenom),
+                        client.getCommunityTaxRate(),
+                        client.getInflation(),
                         LumClient.getFeesStakers(),
                     ]);
 
-                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '0');
+                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
                     const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
@@ -165,18 +163,18 @@ export const pools = createModel<RootModel>()({
 
                     pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
 
-                    WalletClient.disconnect();
+                    client.disconnect();
                 }
 
                 dispatch.pools.setPools(pools);
                 await dispatch.pools.getNextBestPrize(null);
             } catch (e) {
-                await dispatch.pools.setMutexAdditionalInfos(false);
+                dispatch.pools.setMutexAdditionalInfos(false);
 
                 console.warn((e as Error).message);
             }
 
-            await dispatch.pools.setMutexAdditionalInfos(false);
+            dispatch.pools.setMutexAdditionalInfos(false);
         },
         async getPoolDraws(poolId: Long) {
             try {

@@ -112,8 +112,8 @@ const MainLayout = () => {
     }, [wallet]);
 
     const onConnectWallet = async (provider: WalletProvider) => {
-        dispatch.wallet.connectWallet({ provider, silent: false }).finally(() => null);
-        dispatch.wallet.connectOtherWallets(provider);
+        await dispatch.wallet.connectWallet({ provider, silent: false }).finally(() => null);
+        await dispatch.wallet.connectOtherWallets(provider);
     };
 
     const removeBackdrop = () => {

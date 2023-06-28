@@ -143,7 +143,7 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async connectWallet(payload: { provider: WalletProvider; silent: boolean } /* state */) {
+        async connectWallet(payload: { provider: WalletProvider; silent: boolean }, state) {
             const { silent, provider } = payload;
             const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
@@ -225,7 +225,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await walletProvider.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
+                    await walletProvider.enable([chainId, ...state.pools.pools.filter((p) => !p.chainId.includes('test') && !p.chainId.includes('dev')).map((pool) => pool.chainId)]);
                     if (!walletProvider.getOfflineSignerAuto) {
                         throw new Error(I18n.t('errors.keplr.offlineSigner'));
                     }
@@ -259,7 +259,7 @@ export const wallet = createModel<RootModel>()({
                     }
 
                     if (pool.chainId === 'gaia-devnet') {
-                        await KeplrUtils.enableKeplrWithInfos({
+                        await KeplrUtils.enableKeplrWithInfos(walletProvider, {
                             bech32Config: {
                                 bech32PrefixAccAddr: 'cosmos',
                                 bech32PrefixAccPub: 'cosmospub',
@@ -310,9 +310,11 @@ export const wallet = createModel<RootModel>()({
                     const accounts = await offlineSigner.getAccounts();
 
                     if (accounts.length > 0) {
-                        await WalletClient.connect(pool.internalInfos.rpc, offlineSigner);
+                        const client = new WalletClient();
 
-                        const res = await WalletClient.getWalletBalance(accounts[0].address);
+                        await client.connect(pool.internalInfos.rpc, offlineSigner);
+
+                        const res = await client.getWalletBalance(accounts[0].address);
 
                         dispatch.wallet.setOtherWalletData({
                             address: accounts[0].address,
@@ -323,9 +325,9 @@ export const wallet = createModel<RootModel>()({
                                 : [],
                             denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
                         });
-                    }
 
-                    WalletClient.disconnect();
+                        client.disconnect();
+                    }
                 }
             } catch (e) {
                 console.warn((e as Error).message);
@@ -338,6 +340,7 @@ export const wallet = createModel<RootModel>()({
 
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
+            await dispatch.stats.fetchStats();
             await dispatch.pools.fetchPools();
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
@@ -447,11 +450,13 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.unavailableRpc', { denom: normalDenom.toUpperCase() }));
                 }
 
-                await WalletClient.connect(rpc, offlineSigner);
+                const client = new WalletClient();
 
-                const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+                await client.connect(rpc, offlineSigner);
 
-                WalletClient.disconnect();
+                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+
+                client.disconnect();
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
