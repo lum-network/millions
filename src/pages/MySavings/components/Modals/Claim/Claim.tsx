@@ -128,6 +128,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [shareInfos, setShareInfos] = useState<ShareInfos | null>(null);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
+    const [toDeposit, setToDeposit] = useState<
+        {
+            amount: string;
+            pool: PoolModel;
+        }[]
+    >([]);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -139,12 +145,6 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     });
 
     const visibilityState = useVisibilityState();
-
-    useEffect(() => {
-        if (visibilityState === 'visible' && shareState === 'sharing') {
-            setShareState('shared');
-        }
-    }, [visibilityState, shareState]);
 
     const onClaim = async (compound: boolean) => {
         if (!prizes.length) {
@@ -187,6 +187,37 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     };
 
     useEffect(() => {
+        const prizesToDeposit = [];
+
+        for (const prize of prizes) {
+            if (!prize.amount) continue;
+
+            const existingItemIndex = prizesToDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
+            if (existingItemIndex === -1) {
+                const pool = pools.find((p) => p.poolId.equals(prize.poolId));
+
+                if (!pool) continue;
+
+                prizesToDeposit.push({
+                    amount: prize.amount.amount,
+                    pool,
+                });
+            } else {
+                console.log(prizesToDeposit[existingItemIndex]);
+                prizesToDeposit[existingItemIndex].amount = (Number(prizesToDeposit[existingItemIndex].amount) + Number(prize.amount.amount)).toFixed();
+            }
+        }
+
+        setToDeposit([...prizesToDeposit]);
+    }, [prizes]);
+
+    useEffect(() => {
+        if (visibilityState === 'visible' && shareState === 'sharing') {
+            setShareState('shared');
+        }
+    }, [visibilityState, shareState]);
+
+    useEffect(() => {
         const handler = () => {
             setCurrentStep(0);
             setClaimOnly(false);
@@ -206,6 +237,22 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             }
         };
     }, []);
+
+    const blockCompound = () => {
+        let blockCompound = false;
+
+        for (const pToDeposit of toDeposit) {
+            const pool = pools.find((p) => p.poolId.eq(pToDeposit.pool.poolId));
+            const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount);
+            const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0');
+
+            if (!pool || (pool && depositAmount < minDeposit)) {
+                blockCompound = true;
+            }
+        }
+
+        return blockCompound;
+    };
 
     return (
         <Modal id='claimModal' contentClassName={currentStep === 2 ? 'last-step' : ''} ref={modalRef} modalWidth={1080}>
@@ -290,27 +337,31 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 )}
                                             </div>
                                             <div className='mt-4'>
-                                                <Card flat withoutPadding className='fees-warning'>
+                                                <Card flat withoutPadding className='fees-warning mb-4'>
                                                     <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
                                                         <img src={Assets.images.info} alt='info' />
                                                         <Tooltip id='fees-tooltip' delay={2000} />
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
-                                                <Button
-                                                    type='button'
-                                                    onClick={() => {
-                                                        onClaim(true);
-                                                    }}
-                                                    className='w-100 mt-4'
-                                                    disabled={isLoading}
-                                                    loading={isLoading}
-                                                >
-                                                    <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
-                                                    {I18n.t('mySavings.claimModal.claimAndCompound')}
-                                                    <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
-                                                </Button>
-                                                <hr />
+                                                {!blockCompound() && (
+                                                    <>
+                                                        <Button
+                                                            type='button'
+                                                            onClick={() => {
+                                                                onClaim(true);
+                                                            }}
+                                                            className='w-100'
+                                                            disabled={isLoading}
+                                                            loading={isLoading}
+                                                        >
+                                                            <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
+                                                            {I18n.t('mySavings.claimModal.claimAndCompound')}
+                                                            <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
+                                                        </Button>
+                                                        <hr />
+                                                    </>
+                                                )}
                                                 <Button type='button' onClick={() => setClaimOnly(true)} outline loading={isLoading} disabled={isLoading} className='w-100'>
                                                     {I18n.t('mySavings.claimModal.claimMyPrizes')}
                                                 </Button>
