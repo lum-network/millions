@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
 
 import Assets from 'assets';
-import { Button, Card, Modal, Table } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Table } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { NavigationConstants } from 'constant';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
@@ -87,7 +87,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                                 <div className='amount text-nowrap'>{numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}</div>
                                                 <small className='usd-price'>
-                                                    {numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0')} {poolDenom.toUpperCase()}
+                                                    {numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} {poolDenom.toUpperCase()}
                                                 </small>
                                             </div>
                                         </td>
@@ -101,10 +101,15 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                     <div className='d-flex flex-row justify-content-between'>
                                         <div className='d-flex flex-column text-start'>
                                             <div className='display-6 prize-remaining-amount'>
-                                                {numeral(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}
+                                                {numeral(
+                                                    (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) * (prices[poolDenom] || 0),
+                                                ).format('$0,0[.]00')}
                                             </div>
                                             <div>
-                                                {NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(draw.prizePoolRemainsAmount))} {poolDenom.toUpperCase()}
+                                                <SmallerDecimal
+                                                    nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')}
+                                                />{' '}
+                                                {poolDenom.toUpperCase()}
                                             </div>
                                         </div>
                                         <Button
