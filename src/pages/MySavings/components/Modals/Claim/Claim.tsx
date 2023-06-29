@@ -124,25 +124,17 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
 };
 
 const Claim = ({ prizes, prices, pools }: Props) => {
+    const [blockedCompound, setBlockedCompound] = useState(false);
     const [claimOnly, setClaimOnly] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [shareInfos, setShareInfos] = useState<ShareInfos | null>(null);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
-    const [toDeposit, setToDeposit] = useState<
-        {
-            amount: string;
-            pool: PoolModel;
-        }[]
-    >([]);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.claimAndCompoundPrizes || state.loading.effects.wallet.claimPrizes);
-    const steps = I18n.t('mySavings.claimModal.steps', {
-        returnObjects: true,
-    });
 
     const visibilityState = useVisibilityState();
 
@@ -203,12 +195,11 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                     pool,
                 });
             } else {
-                console.log(prizesToDeposit[existingItemIndex]);
                 prizesToDeposit[existingItemIndex].amount = (Number(prizesToDeposit[existingItemIndex].amount) + Number(prize.amount.amount)).toFixed();
             }
         }
 
-        setToDeposit([...prizesToDeposit]);
+        setBlockedCompound(blockCompound([...prizesToDeposit]));
     }, [prizes]);
 
     useEffect(() => {
@@ -238,7 +229,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
         };
     }, []);
 
-    const blockCompound = () => {
+    const blockCompound = (
+        toDeposit: {
+            amount: string;
+            pool: PoolModel;
+        }[],
+    ) => {
         let blockCompound = false;
 
         for (const pToDeposit of toDeposit) {
@@ -253,6 +249,10 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
         return blockCompound;
     };
+
+    const steps = I18n.t(blockedCompound ? 'mySavings.claimModal.claimOnlySteps' : 'mySavings.claimModal.steps', {
+        returnObjects: true,
+    });
 
     return (
         <Modal id='claimModal' contentClassName={currentStep === 2 ? 'last-step' : ''} ref={modalRef} modalWidth={1080}>
@@ -344,7 +344,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
-                                                {!blockCompound() && (
+                                                {!blockedCompound && (
                                                     <>
                                                         <Button
                                                             type='button'

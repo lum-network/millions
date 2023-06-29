@@ -386,6 +386,16 @@ export default {
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
+            claimOnlySteps: [
+                {
+                    title: 'Wonderful! Take a look at what you have won!',
+                    subtitle: 'Click on “Claim my prizes” to simply get your prizes',
+                },
+                {
+                    title: 'Confirm your claim in Keplr',
+                    subtitle: 'Accept the transaction to claim your prizes!',
+                },
+            ],
             claimAndCompound: 'CLAIM & COMPOUND',
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
