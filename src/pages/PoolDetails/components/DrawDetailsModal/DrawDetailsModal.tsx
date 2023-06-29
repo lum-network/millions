@@ -101,9 +101,11 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                     <div className='d-flex flex-row justify-content-between'>
                                         <div className='d-flex flex-column text-start'>
                                             <div className='display-6 prize-remaining-amount'>
-                                                {numeral(
-                                                    (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) * (prices[poolDenom] || 0),
-                                                ).format('$0,0[.]00')}
+                                                <SmallerDecimal
+                                                    nb={numeral(
+                                                        (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) * (prices[poolDenom] || 0),
+                                                    ).format('$0,0[.]00')}
+                                                />
                                             </div>
                                             <div>
                                                 <SmallerDecimal
