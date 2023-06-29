@@ -223,7 +223,9 @@ const PoolDetails = () => {
                                         {I18n.t('common.deposit')}
                                         {userDeposits.deposits.length > 1 ? 's' : ` #${userDeposits.depositId?.toString()}`}
                                     </h3>
-                                    {NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}{' '}
+                                    <SmallerDecimal
+                                        nb={NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}
+                                    />{' '}
                                     {denom.toUpperCase()}
                                 </div>
                             </div>
