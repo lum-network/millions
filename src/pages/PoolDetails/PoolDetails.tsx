@@ -223,7 +223,9 @@ const PoolDetails = () => {
                                         {I18n.t('common.deposit')}
                                         {userDeposits.deposits.length > 1 ? 's' : ` #${userDeposits.depositId?.toString()}`}
                                     </h3>
-                                    {NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}{' '}
+                                    <SmallerDecimal
+                                        nb={NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}
+                                    />{' '}
                                     {denom.toUpperCase()}
                                 </div>
                             </div>
@@ -290,7 +292,7 @@ const PoolDetails = () => {
                             </div>
                             <Card flat withoutPadding className='winning-chances-card d-flex flex-column justify-content-between h-auto'>
                                 <div>
-                                    <small>{I18n.t('poolDetails.winningChances.estimatedSavings')}</small>
+                                    <small className='sub-title'>{I18n.t('poolDetails.winningChances.estimatedSavings')}</small>
                                     <div className='d-flex flex-column mt-2'>
                                         <div className='estimation-input-container d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center py-2 px-4'>
                                             <div className='d-flex flex-row align-items-center me-0 me-sm-3'>
@@ -331,7 +333,7 @@ const PoolDetails = () => {
                                     </div>
                                 </div>
                                 <div className='mt-3 mt-xl-5'>
-                                    <small>{I18n.t('poolDetails.winningChances.chanceToWin')}</small>
+                                    <small className='sub-title'>{I18n.t('poolDetails.winningChances.chanceToWin')}</small>
                                     <div className='chance-to-win mt-2 stat-bg-white'>{NumbersUtils.float2ratio(estimatedChances)}</div>
                                 </div>
                             </Card>
@@ -343,11 +345,11 @@ const PoolDetails = () => {
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.users.title')}</h2>
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center p-4'>
                             <div className='w-100 me-3'>
-                                <small>{I18n.t('poolDetails.users.deposit')}</small>
+                                <small className='sub-title'>{I18n.t('poolDetails.users.deposit')}</small>
                                 <div className='stat-bg-white mb-0 mt-2'>${pool ? numeral(avgDeposit).format('0,0') : 0}</div>
                             </div>
                             <div className='w-100 mt-4 mt-lg-0'>
-                                <small>{I18n.t('poolDetails.users.currentDraw')}</small>
+                                <small className='sub-title'>{I18n.t('poolDetails.users.currentDraw')}</small>
                                 <div className='stat-bg-white mb-0 mt-2'>{pool?.depositorsCount.toString() || 0}</div>
                             </div>
                         </Card>
@@ -361,15 +363,15 @@ const PoolDetails = () => {
                                 </h2>
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
                                     <div className='w-100'>
-                                        <small>{I18n.t('poolDetails.winners.totalPrizes')}</small>
+                                        <small className='sub-title'>{I18n.t('poolDetails.winners.totalPrizes')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
                                     </div>
                                     <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
-                                        <small>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
+                                        <small className='sub-title'>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPoolPrizes).format('0,0')}</div>
                                     </div>
                                     <div className='w-100'>
-                                        <small>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
+                                        <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
                                             $
                                             {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
