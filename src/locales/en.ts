@@ -337,6 +337,7 @@ export default {
         txListHeaders: ['Type', 'Hash', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
+        depositDrop: 'Deposit Drop',
         transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',

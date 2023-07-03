@@ -7,6 +7,8 @@ import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
+import { LumApi } from 'api';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -121,6 +123,7 @@ class LumClient {
                 depositId: withdrawal.withdrawalId,
                 depositorAddress: withdrawal.depositorAddress,
                 isWithdrawing: true,
+                isDepositDrop: false,
                 createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
             });
@@ -128,7 +131,27 @@ class LumClient {
 
         const aggregatedWithdrawals = await PoolsUtils.reduceDepositsByPoolId(withdrawalsToDeposit);
 
-        return [...aggregatedDeposits, ...aggregatedWithdrawals];
+        const depositsDropsToDeposits: Partial<DepositModel>[] = [];
+
+        try {
+            const [depositsDrops] = await LumApi.fetchDepositsDrops(address);
+
+            for (const drop of depositsDrops) {
+                depositsDropsToDeposits.push({
+                    amount: drop.amount,
+                    poolId: Long.fromNumber(drop.poolId),
+                    depositId: Long.fromNumber(drop.depositId),
+                    depositorAddress: drop.depositorAddress,
+                    isWithdrawing: false,
+                    isDepositDrop: true,
+                    state: DepositState.DEPOSIT_STATE_SUCCESS,
+                });
+            }
+        } catch {}
+
+        const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits);
+
+        return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedWithdrawals];
     };
 
     getWalletBalances = async (address: string) => {

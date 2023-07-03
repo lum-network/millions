@@ -10,6 +10,7 @@ import cosmonautCoin from './images/cosmonaut_coin.png';
 import claim from './images/claim.svg';
 import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
+import depositDrop from './images/deposit_drop.svg';
 import discord from './images/discord.svg';
 import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
@@ -69,6 +70,7 @@ const Assets = {
         claim,
         clock,
         deposit,
+        depositDrop,
         discord,
         discordButton,
         discordPlain,
