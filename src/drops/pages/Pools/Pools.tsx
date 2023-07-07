@@ -27,7 +27,7 @@ const Pools = ({}: IProps): JSX.Element => {
                 <img src={Assets.images.depositDrop} alt='Gift' />
                 <h1 className='ms-3 mb-0'>{I18n.t('depositDrops.pools.title')}</h1>
             </div>
-            <DepositDropsCard className='my-4' />
+            <DepositDropsCard cta={I18n.t('depositDrops.card.ctaFromPools')} link={NavigationConstants.DROPS_MY_DEPOSITS} className='my-4' />
             <div className='row g-xxl-5 g-4 py-2 py-lg-4'>
                 {pools.map((pool, index) => (
                     <div className='col-12 col-md-6 col-xl-4' key={`pool-${index}`}>

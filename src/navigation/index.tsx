@@ -3,7 +3,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, Location } from '
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { HomePage, MySavingsPage, PoolsPage, DepositPage, LandingPage, Error404, Winners, PoolDetailsPage } from 'pages';
-import { DropsPoolsPage } from 'drops/pages';
+import { DropsMyDepositsPage, DropsPoolsPage } from 'drops/pages';
 import { MainLayout } from 'layout';
 
 export const RouteListener = ({ location }: { location: Location }): JSX.Element | null => {
@@ -29,6 +29,7 @@ export const router = createBrowserRouter(
             <Route path={NavigationConstants.DROPS}>
                 <Route path={NavigationConstants.DROPS} element={<DropsPoolsPage />} />
                 <Route path={NavigationConstants.DROPS_POOLS} element={<DropsPoolsPage />} />
+                <Route path={NavigationConstants.DROPS_MY_DEPOSITS} element={<DropsMyDepositsPage />} />
             </Route>
             <Route path='*' element={<Error404 />} />
         </Route>,

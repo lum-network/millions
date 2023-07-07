@@ -9,10 +9,12 @@ import { RootState } from 'redux/store';
 import './DepositDropsCard.scss';
 
 interface IProps {
+    cta: string;
+    link: string;
     className?: string;
 }
 
-const DepositDropsCard = ({ className }: IProps): JSX.Element => {
+const DepositDropsCard = ({ className, cta, link }: IProps): JSX.Element => {
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
 
     return (
@@ -38,11 +40,11 @@ const DepositDropsCard = ({ className }: IProps): JSX.Element => {
                               'data-bs-toggle': 'modal',
                           }
                         : {
-                              to: NavigationConstants.DROPS_MY_DEPOSITS,
+                              to: link,
                           })}
                     className='ms-5 me-3 cta-drops'
                 >
-                    {I18n.t('depositDrops.myDeposits.title')}
+                    {cta}
                 </Button>
             </div>
         </Card>

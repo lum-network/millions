@@ -506,7 +506,7 @@ export default {
     },
     depositDrops: {
         myDeposits: {
-            title: 'My deposit drops',
+            title: 'My Deposit Drops',
         },
         pools: {
             title: 'Deposit Drops Tool',
@@ -516,6 +516,8 @@ export default {
             title: 'Deposit Drops',
             description:
                 'By making a deposit drop, you\'re boosting the winning chances of the recipient address, all while maintaining control over your deposit.<br /><a target="_blank" rel="noreferrer" href="{{ link }}">Read the docs</a>',
+            ctaFromPools: 'My Deposit drops',
+            ctaFromDeposits: 'New Deposit drop',
         },
     },
 };
