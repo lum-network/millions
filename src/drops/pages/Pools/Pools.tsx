@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavigationConstants } from 'constant';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import Assets from 'assets';

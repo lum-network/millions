@@ -185,7 +185,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                                         }
                                     }}
                                 >
-                                    <img src={Assets.images.logout} />
+                                    <img alt='logout' src={Assets.images.logout} />
                                 </Button>
                             ) : null}
                         </div>
@@ -232,7 +232,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                                     }
                                 }}
                             >
-                                <img src={Assets.images.logout} />
+                                <img alt='logout' src={Assets.images.logout} />
                             </Button>
                         ) : null}
                     </div>
@@ -307,7 +307,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                                         }
                                     }}
                                 >
-                                    <img src={Assets.images.logout} />
+                                    <img alt='logout' src={Assets.images.logout} />
                                 </Button>
                             ) : null}
                             <button className='close-btn d-flex align-items-center justify-content-center' type='button' aria-label='Close burger menu' {...dismissMenuProps}>
