@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { createBrowserRouter, createRoutesFromElements, Route, Location } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, Location, Navigate } from 'react-router-dom';
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { HomePage, MySavingsPage, PoolsPage, DepositPage, LandingPage, Error404, Winners, PoolDetailsPage } from 'pages';

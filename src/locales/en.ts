@@ -504,4 +504,18 @@ export default {
             cta: 'Deposit in Pool',
         },
     },
+    depositDrops: {
+        myDeposits: {
+            title: 'My deposit drops',
+        },
+        pools: {
+            title: 'Deposit Drops Tool',
+            ctaText: 'Deposit drop',
+        },
+        card: {
+            title: 'Deposit Drops',
+            description:
+                'By making a deposit drop, you\'re boosting the winning chances of the recipient address, all while maintaining control over your deposit.<br /><a target="_blank" rel="noreferrer" href="{{ link }}">Read the docs</a>',
+        },
+    },
 };

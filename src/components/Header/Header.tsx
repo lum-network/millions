@@ -23,6 +23,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     const timeline = useRef<gsap.core.Timeline>();
     const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
+    const [isDrops, setIsDrops] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const location = useLocation();
@@ -30,6 +31,8 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
 
     useEffect(() => {
         setIsLanding(window.location.pathname === NavigationConstants.LANDING);
+
+        setIsDrops(window.location.pathname.startsWith(NavigationConstants.DROPS));
     }, [location.pathname]);
 
     useEffect(() => {
@@ -140,6 +143,52 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         <Button to={NavigationConstants.HOME} {...dismissMenuProps} locationState={{ autoConnect: true }}>
                             {I18n.t('landing.openTheApp')}
                         </Button>
+                    </li>
+                </ul>
+            );
+        }
+
+        if (isDrops) {
+            return (
+                <ul className='navbar-nav flex-row align-items-center ms-auto'>
+                    <li className='nav-item' {...dismissMenuProps}>
+                        <NavLink to={NavigationConstants.DROPS_POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                            {I18n.t('pools.title')}
+                        </NavLink>
+                    </li>
+                    {address && (
+                        <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
+                            <NavLink to={NavigationConstants.DROPS_MY_DEPOSITS} className={({ isActive }) => `navlink position-relative ${isActive ? 'active' : ''}`}>
+                                {I18n.t('depositDrops.myDeposits.title')}
+                                {prizes && prizes.length > 3 && (
+                                    <div
+                                        className='position-absolute top-0 start-100 rounded-circle'
+                                        style={{ width: 15, height: 15, backgroundColor: '#FA7676', transform: 'translate(-50%, -40%)' }}
+                                    />
+                                )}
+                            </NavLink>
+                        </li>
+                    )}
+                    {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
+                    <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
+                        <div className='d-flex flex-row'>
+                            <Button outline className='flex-grow-1' onClick={!address ? connectWallet : copyAddress}>
+                                {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
+                            </Button>
+                            {address && !inBurgerMenu ? (
+                                <Button
+                                    textOnly
+                                    className='ms-4'
+                                    onClick={() => {
+                                        if (logoutModalRef.current) {
+                                            logoutModalRef.current.show();
+                                        }
+                                    }}
+                                >
+                                    <img src={Assets.images.logout} />
+                                </Button>
+                            ) : null}
+                        </div>
                     </li>
                 </ul>
             );
