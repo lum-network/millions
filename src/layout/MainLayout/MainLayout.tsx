@@ -172,6 +172,8 @@ const MainLayout = () => {
                         outline
                         className='w-100'
                         onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CANCELLED);
+
                             if (logoutModalRef.current) {
                                 logoutModalRef.current.hide();
                             }
@@ -182,6 +184,8 @@ const MainLayout = () => {
                     <Button
                         className='w-100 ms-4'
                         onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CONFIRMED);
+
                             if (logoutModalRef.current) {
                                 logoutModalRef.current.hide();
                             }

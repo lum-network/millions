@@ -26,4 +26,11 @@ export const ANALYTICS_EVENTS = {
     TERMS_CLICK: 'terms_click',
     LEARN_CLICK: 'learn_click',
     SAVE_AND_WIN_CLICK: 'save_and_win_click',
+    DASHBOARD_CLICK: 'dashboard_click',
+    POOLS_CLICK: 'pools_click',
+    MY_SAVINGS_CLICK: 'my_savings_click',
+    ADDRESS_COPIED: 'address_copied',
+    LOGOUT_CLICK: 'logout_click',
+    LOGOUT_CONFIRMED: 'logout_confirmed',
+    LOGOUT_CANCELLED: 'logout_cancelled',
 };
