@@ -10,8 +10,6 @@ import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
-import { toast } from 'react-toastify';
-import dismiss = toast.dismiss;
 
 class LumClient {
     private static instance: LumClient | null = null;
