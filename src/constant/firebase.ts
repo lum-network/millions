@@ -34,4 +34,6 @@ export const ANALYTICS_EVENTS = {
     LOGOUT_CONFIRMED: 'logout_confirmed',
     LOGOUT_CANCELLED: 'logout_cancelled',
     SIGN_IN: 'sign_in',
+    BEST_PRIZE_CARD_CLICK: 'best_prize_card_click',
+    LUCKIEST_WINNERS_CARD_CLICK: 'luckiest_winners_card_click',
 };
