@@ -4,10 +4,10 @@ import dayjs from 'dayjs';
 import numeral from 'numeral';
 
 import { Button, Collapsible, SmallerDecimal } from 'components';
-import { Breakpoints } from 'constant';
+import { Breakpoints, FirebaseConstants } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
 import Assets from 'assets';
 
 import './DepositTable.scss';
@@ -122,6 +122,15 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                     className='d-flex flex-column collapsible-deposits deposit-card'
                     buttonBorder={winSizes.width >= Breakpoints.SM}
                     toggleWithButton={winSizes.width >= Breakpoints.SM}
+                    onCollapse={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSITS_CLOSE_DETAILS_CLICK)}
+                    onExpand={() =>
+                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSITS_OPEN_DETAILS_CLICK, {
+                            pool_id: deposit.poolId?.toString() || '',
+                            deposits_number: deposit.deposits.length,
+                            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || ''),
+                            denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
+                        })
+                    }
                     header={
                         <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
                             <div className='col-12 col-md-6'>

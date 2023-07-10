@@ -12,10 +12,10 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
-import { Breakpoints, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -199,7 +199,12 @@ const MySavings = () => {
                         </div>
                         <p className='my-3 my-md-0'>{I18n.t('mySavings.newPrize.description')}</p>
                     </div>
-                    <Button className='claim-btn ms-md-auto' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                    <Button
+                        className='claim-btn ms-md-auto'
+                        data-bs-toggle='modal'
+                        data-bs-target='#claimModal'
+                        onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                    >
                         {I18n.t('mySavings.claim')}
                     </Button>
                 </Card>
@@ -246,7 +251,12 @@ const MySavings = () => {
                                         {prizesToClaim && prizesToClaim.length > 0 ? (
                                             <>
                                                 {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                                <Button
+                                                    className='my-savings-cta mt-4'
+                                                    data-bs-toggle='modal'
+                                                    data-bs-target='#claimModal'
+                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                                                >
                                                     {I18n.t('mySavings.claim')}
                                                 </Button>
                                             </>
@@ -335,7 +345,12 @@ const MySavings = () => {
                                         {prizesToClaim && prizesToClaim.length > 0 ? (
                                             <>
                                                 {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button className='my-savings-cta mt-4' data-bs-toggle='modal' data-bs-target='#claimModal'>
+                                                <Button
+                                                    className='my-savings-cta mt-4'
+                                                    data-bs-toggle='modal'
+                                                    data-bs-target='#claimModal'
+                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                                                >
                                                     {I18n.t('mySavings.claim')}
                                                 </Button>
                                             </>
@@ -365,7 +380,13 @@ const MySavings = () => {
                             <Card className='glow-bg'>
                                 <h3>{I18n.t('mySavings.governanceCard.title')}</h3>
                                 <p className='mt-4 mb-5'>{I18n.t('mySavings.governanceCard.description')}</p>
-                                <Button className='my-savings-cta' onClick={() => window.open(NavigationConstants.BUY_LUM, '_blank')}>
+                                <Button
+                                    className='my-savings-cta'
+                                    onClick={() => {
+                                        window.open(NavigationConstants.BUY_LUM, '_blank');
+                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.BUY_LUM_CLICK);
+                                    }}
+                                >
                                     {I18n.t('mySavings.governanceCard.cta')}
                                 </Button>
                             </Card>

@@ -36,4 +36,8 @@ export const ANALYTICS_EVENTS = {
     SIGN_IN: 'sign_in',
     BEST_PRIZE_CARD_CLICK: 'best_prize_card_click',
     LUCKIEST_WINNERS_CARD_CLICK: 'luckiest_winners_card_click',
+    CLAIM_PRIZE_CLICK: 'claim_prize_click',
+    BUY_LUM_CLICK: 'buy_lum_click',
+    DEPOSITS_OPEN_DETAILS_CLICK: 'deposits_open_details_click',
+    DEPOSITS_CLOSE_DETAILS_CLICK: 'deposits_close_details_click',
 };
