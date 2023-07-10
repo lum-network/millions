@@ -61,6 +61,10 @@ export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[]) 
             continue;
         }
 
+        if (deposit.depositorAddress !== deposit.winnerAddress) {
+            continue;
+        }
+
         const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString());
 
         if (existingDeposit && deposit.state === DepositState.DEPOSIT_STATE_SUCCESS) {
