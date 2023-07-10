@@ -9,6 +9,7 @@ import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -108,9 +109,23 @@ class LumClient {
             return null;
         }
 
-        const resDeposits = await this.client.queryClient.millions.accountDeposits(address);
+        let pageDeposits: Uint8Array | undefined = undefined;
+        const deposits: DepositModel[] = [];
 
-        const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(resDeposits.deposits);
+        while (true) {
+            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
+
+            deposits.push(...resDeposits.deposits);
+
+            // If we have pagination key, we just patch it, and it will process in the next loop
+            if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
+                pageDeposits = resDeposits.pagination.nextKey;
+            } else {
+                break;
+            }
+        }
+
+        const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
 
         const resWithdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
 
@@ -126,6 +141,7 @@ class LumClient {
                 isDepositDrop: false,
                 createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
+                winnerAddress: withdrawal.toAddress,
             });
         }
 
