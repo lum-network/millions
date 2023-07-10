@@ -140,6 +140,7 @@ class LumClient {
                 isDepositDrop: false,
                 createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
+                winnerAddress: withdrawal.toAddress,
             });
         }
 
