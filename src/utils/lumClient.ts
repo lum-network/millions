@@ -9,6 +9,7 @@ import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -112,7 +113,7 @@ class LumClient {
         const deposits: DepositModel[] = [];
 
         while (true) {
-            const resDeposits: any = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
+            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
 
             deposits.push(...resDeposits.deposits);
 
