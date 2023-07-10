@@ -11,9 +11,9 @@ import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
-import { I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
+import { Firebase, I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
-import { Breakpoints, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 
 import './Header.scss';
 
@@ -117,7 +117,13 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
-                        <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.DOCUMENTATION}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DOCUMENTATION_CLICK)}
+                        >
                             {I18n.t('landing.documentation')}
                         </a>
                     </li>
@@ -127,17 +133,34 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
-                        <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.TWITTER}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TWITTER_CLICK)}
+                        >
                             <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
                         </a>
                     </li>
                     <li className='nav-item' {...dismissMenuProps}>
-                        <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.DISCORD}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DISCORD_CLICK)}
+                        >
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
                     <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0'>
-                        <Button to={NavigationConstants.HOME} {...dismissMenuProps} locationState={{ autoConnect: true }}>
+                        <Button
+                            to={NavigationConstants.HOME}
+                            {...dismissMenuProps}
+                            locationState={{ autoConnect: true }}
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                        >
                             {I18n.t('landing.openTheApp')}
                         </Button>
                     </li>
