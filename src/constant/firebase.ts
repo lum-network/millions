@@ -12,6 +12,9 @@ export const FIREBASE_CONFIG = {
 // Analytics
 export const ANALYTICS_EVENTS = {
     SCREEN_VIEW: 'screen_view',
+    TERMS_VIEW: 'terms_view',
+    TERMS_ACCEPTED: 'terms_accepted',
+    TERMS_DECLINED: 'terms_declined',
     OPEN_APP_CLICK: 'open_app_click',
     TWITTER_CLICK: 'twitter_click',
     DOCUMENTATION_CLICK: 'documentation_click',
