@@ -10,6 +10,8 @@ import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
+import { toast } from 'react-toastify';
+import dismiss = toast.dismiss;
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -423,6 +425,33 @@ class LumClient {
             hash: broadcastResult.hash,
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
+    };
+
+    // DROPS
+    getDepositsAndWithdrawalsDrops = async (depositorAddress: string): Promise<null | AggregatedDepositModel[]> => {
+        if (this.client === null) {
+            return null;
+        }
+
+        let pageDeposits: Uint8Array | undefined = undefined;
+        const deposits: DepositModel[] = [];
+
+        while (true) {
+            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(depositorAddress, pageDeposits);
+
+            deposits.push(...resDeposits.deposits);
+
+            // If we have pagination key, we just patch it, and it will process in the next loop
+            if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
+                pageDeposits = resDeposits.pagination.nextKey;
+            } else {
+                break;
+            }
+        }
+
+        const aggregatedDeposits = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits);
+
+        return aggregatedDeposits;
     };
 }
 

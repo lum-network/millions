@@ -28,6 +28,7 @@ interface SetWalletDataPayload {
         pagesLoaded: number;
     };
     deposits?: AggregatedDepositModel[];
+    depositsDrops?: AggregatedDepositModel[];
     prizes?: Prize[];
 }
 
@@ -90,6 +91,7 @@ export const wallet = createModel<RootModel>()({
                         pagesLoaded: 1,
                     },
                     deposits: [],
+                    depositDrops: [],
                     prizes: [],
                 },
             };
@@ -636,6 +638,19 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimAndCompound') });
                 return null;
+            }
+        },
+
+        // DROPS
+        async getDepositsAndWithdrawalsDrops(address: string) {
+            try {
+                const res = await LumClient.getDepositsAndWithdrawalsDrops(address);
+
+                if (res) {
+                    dispatch.wallet.setLumWalletData({ depositsDrops: res });
+                }
+            } catch (e) {
+                console.warn(e);
             }
         },
     }),
