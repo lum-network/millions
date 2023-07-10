@@ -33,4 +33,5 @@ export const ANALYTICS_EVENTS = {
     LOGOUT_CLICK: 'logout_click',
     LOGOUT_CONFIRMED: 'logout_confirmed',
     LOGOUT_CANCELLED: 'logout_cancelled',
+    SIGN_IN: 'sign_in',
 };

@@ -189,6 +189,9 @@ const MainLayout = () => {
                             if (logoutModalRef.current) {
                                 logoutModalRef.current.hide();
                             }
+
+                            Firebase.signOut().finally(() => null);
+
                             setEnableAutoConnect(false);
                             store.dispatch({ type: LOGOUT });
                         }}

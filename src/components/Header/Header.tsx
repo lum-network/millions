@@ -84,6 +84,8 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     };
 
     const connectWallet = async () => {
+        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SIGN_IN);
+
         if (KeplrUtils.isKeplrInstalled()) {
             await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
             await dispatch.wallet.connectOtherWallets(null);
