@@ -10,10 +10,10 @@ import { CustomEase } from 'gsap/CustomEase';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import { Card, Lottie, Modal, Steps } from 'components';
-import { NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -551,6 +551,7 @@ const Deposit = () => {
                 blocker.reset();
             } else {
                 if (quitModalRef.current) {
+                    Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.QUIT_DEPOSIT_FLOW_MODAL_OPEN);
                     quitModalRef.current.toggle();
                 }
             }

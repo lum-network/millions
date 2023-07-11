@@ -49,4 +49,7 @@ export const ANALYTICS_EVENTS = {
     TRANSFER_OUT_CLICK: 'transfer_out_click',
     TRANSFER_OUT_CONFIRMED: 'transfer_out_confirmed',
     DEPOSIT_CLICK: 'deposit_click',
+    QUIT_DEPOSIT_FLOW_MODAL_OPEN: 'quit_deposit_flow_modal_open',
+    QUIT_DEPOSIT_FLOW_MODAL_CONFIRMED: 'quit_deposit_flow_modal_confirmed',
+    QUIT_DEPOSIT_FLOW_MODAL_CANCELLED: 'quit_deposit_flow_modal_cancelled',
 };
