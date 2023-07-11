@@ -4,7 +4,8 @@ import { Blocker } from '@remix-run/router';
 import Assets from 'assets';
 import { Button, Modal } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { I18n } from 'utils';
+import { Firebase, I18n } from 'utils';
+import { FirebaseConstants } from 'constant';
 
 const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<ModalHandlers>; blocker: Blocker }) => {
     return (
@@ -19,6 +20,9 @@ const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<Mod
                         if (modalRef && modalRef.current) {
                             modalRef.current.hide();
                         }
+
+                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.QUIT_DEPOSIT_FLOW_MODAL_CONFIRMED);
+
                         blocker.proceed?.();
                     }}
                 >
@@ -30,6 +34,9 @@ const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<Mod
                         if (modalRef.current) {
                             modalRef.current.hide();
                         }
+
+                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.QUIT_DEPOSIT_FLOW_MODAL_CANCELLED);
+
                         blocker.reset?.();
                     }}
                 >

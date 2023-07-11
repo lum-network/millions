@@ -11,11 +11,11 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
 import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
-import { ApiConstants, Breakpoints, NavigationConstants } from 'constant';
+import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, I18n, KeplrUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -129,6 +129,7 @@ const PoolDetails = () => {
                                       to: `${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`,
                                   })}
                             className='deposit-btn'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom: denom })}
                         >
                             {I18n.t('mySavings.deposit')}
                         </Button>
@@ -159,9 +160,10 @@ const PoolDetails = () => {
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={20} width={150} />
                         ) : (
-                            <>
-                                {pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0') : '--'} {denom.toUpperCase()}
-                            </>
+                            <div className='d-flex'>
+                                <SmallerDecimal nb={pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0.000000') : '--'} />
+                                &nbsp;{denom.toUpperCase()}
+                            </div>
                         )}
                     </div>
                     <div className='next-draw-container'>
