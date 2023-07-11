@@ -46,4 +46,7 @@ export const ANALYTICS_EVENTS = {
     LEAVE_POOL_CLICK: 'leave_pool_click',
     LEAVE_POOL_CONFIRMED: 'leave_pool_confirmed',
     LEAVE_POOL_SUCCESS: 'leave_pool_success',
+    TRANSFER_OUT_CLICK: 'transfer_out_click',
+    TRANSFER_OUT_CONFIRMED: 'transfer_out_confirmed',
+    DEPOSIT_CLICK: 'deposit_click',
 };

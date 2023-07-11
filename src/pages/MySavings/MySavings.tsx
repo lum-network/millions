@@ -109,6 +109,7 @@ const MySavings = () => {
                                         data-bs-target='#withdrawModal'
                                         data-bs-toggle='modal'
                                         onClick={async () => {
+                                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TRANSFER_OUT_CLICK);
                                             setAssetToTransferOut(asset.denom);
                                         }}
                                     >
@@ -119,6 +120,9 @@ const MySavings = () => {
                                     disabled={normalDenom === LumConstants.LumDenom && !pools.find((pool) => pool.nativeDenom === LumConstants.MicroLumDenom)}
                                     to={`${NavigationConstants.POOLS}/${normalDenom}`}
                                     className='flex-grow-1'
+                                    onClick={() => {
+                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom: normalDenom });
+                                    }}
                                 >
                                     {I18n.t('mySavings.deposit')}
                                 </Button>
