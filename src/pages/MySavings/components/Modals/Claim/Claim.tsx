@@ -10,11 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 
 import './Claim.scss';
@@ -149,6 +149,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const onClaim = async (compound: boolean) => {
         if (!prizes.length) {
             return;
+        }
+
+        if (compound) {
+            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_AND_COMPOUND_CONFIRMED);
+        } else {
+            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CONFIRMED);
         }
 
         setCurrentStep(currentStep + 1);
@@ -311,7 +317,17 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
                                                 </Button>
                                                 <hr />
-                                                <Button type='button' onClick={() => setClaimOnly(true)} outline loading={isLoading} disabled={isLoading} className='w-100'>
+                                                <Button
+                                                    type='button'
+                                                    onClick={() => {
+                                                        setClaimOnly(true);
+                                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CLICK);
+                                                    }}
+                                                    outline
+                                                    loading={isLoading}
+                                                    disabled={isLoading}
+                                                    className='w-100'
+                                                >
                                                     {I18n.t('mySavings.claimModal.claimMyPrizes')}
                                                 </Button>
                                             </div>

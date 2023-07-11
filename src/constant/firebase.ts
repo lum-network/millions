@@ -37,7 +37,13 @@ export const ANALYTICS_EVENTS = {
     BEST_PRIZE_CARD_CLICK: 'best_prize_card_click',
     LUCKIEST_WINNERS_CARD_CLICK: 'luckiest_winners_card_click',
     CLAIM_PRIZE_CLICK: 'claim_prize_click',
+    CLAIM_AND_COMPOUND_CONFIRMED: 'claim_and_compound_confirmed',
+    JUST_CLAIMED_CLICK: 'just_claimed_click',
+    JUST_CLAIMED_CONFIRMED: 'just_claimed_confirmed',
     BUY_LUM_CLICK: 'buy_lum_click',
     DEPOSITS_OPEN_DETAILS_CLICK: 'deposits_open_details_click',
     DEPOSITS_CLOSE_DETAILS_CLICK: 'deposits_close_details_click',
+    LEAVE_POOL_CLICK: 'leave_pool_click',
+    LEAVE_POOL_CONFIRMED: 'leave_pool_confirmed',
+    LEAVE_POOL_SUCCESS: 'leave_pool_success',
 };

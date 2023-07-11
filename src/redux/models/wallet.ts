@@ -5,7 +5,7 @@ import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
+import { DenomsConstants, FirebaseConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
 import { RootModel } from '.';
 
@@ -546,6 +546,12 @@ export const wallet = createModel<RootModel>()({
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
                     content: I18n.t('success.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }),
+                });
+
+                Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_SUCCESS, {
+                    pool_id: payload.poolId?.toString(),
+                    deposit_id: payload.depositId?.toString(),
+                    denom: payload.denom,
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });

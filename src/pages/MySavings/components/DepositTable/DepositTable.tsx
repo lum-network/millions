@@ -36,7 +36,21 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                         <img alt='Deposit drop' src={Assets.images.depositDrop} />
                     </div>
                 ) : (
-                    <Button textOnly onClick={() => onLeavePool(deposit as DepositModel)} data-bs-target='#leavePoolModal' data-bs-toggle='modal' className='h-100'>
+                    <Button
+                        textOnly
+                        onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_CLICK, {
+                                pool_id: deposit.poolId?.toString(),
+                                deposit_id: deposit.depositId?.toString(),
+                                amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0),
+                                denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
+                            });
+                            onLeavePool(deposit as DepositModel);
+                        }}
+                        data-bs-target='#leavePoolModal'
+                        data-bs-toggle='modal'
+                        className='h-100'
+                    >
                         {I18n.t('mySavings.leavePoolCta')}
                     </Button>
                 );
