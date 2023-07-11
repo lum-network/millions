@@ -5,12 +5,12 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import infoIcon from 'assets/images/info.svg';
 import keplrIcon from 'assets/images/keplr.svg';
 import { Button, Card, Header, Modal } from 'components';
-import { NavigationConstants, TERMS_VERSION } from 'constant';
+import { FirebaseConstants, NavigationConstants, TERMS_VERSION } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
-import { I18n, KeplrUtils, ToastUtils } from 'utils';
+import { Firebase, I18n, KeplrUtils, ToastUtils } from 'utils';
 
 import './MainLayout.scss';
 
@@ -57,6 +57,7 @@ const MainLayout = () => {
     useEffect(() => {
         if (location.pathname !== NavigationConstants.LANDING && (!approvedTermsVersion || Number(approvedTermsVersion) < TERMS_VERSION)) {
             if (termsModalRef.current) {
+                Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TERMS_VIEW, { version: TERMS_VERSION });
                 termsModalRef.current.show();
             }
 
@@ -171,6 +172,8 @@ const MainLayout = () => {
                         outline
                         className='w-100'
                         onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CANCELLED);
+
                             if (logoutModalRef.current) {
                                 logoutModalRef.current.hide();
                             }
@@ -181,9 +184,14 @@ const MainLayout = () => {
                     <Button
                         className='w-100 ms-4'
                         onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CONFIRMED);
+
                             if (logoutModalRef.current) {
                                 logoutModalRef.current.hide();
                             }
+
+                            Firebase.signOut().finally(() => null);
+
                             setEnableAutoConnect(false);
                             store.dispatch({ type: LOGOUT });
                         }}
@@ -342,6 +350,8 @@ const MainLayout = () => {
                                 termsModalRef.current.hide();
                             }
 
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TERMS_ACCEPTED, { version: TERMS_VERSION });
+
                             removeBackdrop();
 
                             localStorage.clear();
@@ -361,6 +371,8 @@ const MainLayout = () => {
                             if (termsModalRef.current) {
                                 termsModalRef.current.hide();
                             }
+
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TERMS_DECLINED, { version: TERMS_VERSION });
 
                             removeBackdrop();
                         }}
