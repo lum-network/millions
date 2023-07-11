@@ -52,4 +52,5 @@ export const ANALYTICS_EVENTS = {
     QUIT_DEPOSIT_FLOW_MODAL_OPEN: 'quit_deposit_flow_modal_open',
     QUIT_DEPOSIT_FLOW_MODAL_CONFIRMED: 'quit_deposit_flow_modal_confirmed',
     QUIT_DEPOSIT_FLOW_MODAL_CANCELLED: 'quit_deposit_flow_modal_cancelled',
+    DEPOSIT_FLOW: 'deposit_flow',
 };

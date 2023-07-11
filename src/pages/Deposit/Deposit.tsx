@@ -751,6 +751,13 @@ const Deposit = () => {
         }
     }, [currentStep]);
 
+    useEffect(() => {
+        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_FLOW, {
+            step: currentStep,
+            denom: denom,
+        });
+    }, [currentStep]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
