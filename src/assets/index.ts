@@ -1,3 +1,4 @@
+import add from './images/add.svg';
 import arrow from './images/arrow.svg';
 import bonded from './images/bonded.svg';
 import biggestPrizePoolPlaceholder from './images/biggest_prize_pool_placeholder.svg';
@@ -17,6 +18,7 @@ import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
 import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
+import download from './images/download.svg';
 import info from './images/info.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
@@ -28,6 +30,7 @@ import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
 import questionMark from './images/questionmark.svg';
+import remove from './images/remove.svg';
 import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
@@ -58,6 +61,7 @@ import zaki from './images/testimonials/zaki.png';
 
 const Assets = {
     images: {
+        add,
         arrow,
         bonded,
         biggestPrizePoolPlaceholder,
@@ -77,6 +81,7 @@ const Assets = {
         discordPlain,
         dollarIcon,
         downArrow,
+        download,
         info,
         keplr,
         landingArrow,
@@ -88,6 +93,7 @@ const Assets = {
         mintscanPurple,
         mySavings,
         questionMark,
+        remove,
         sponsor,
         star,
         success,

@@ -5,7 +5,7 @@ import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { getDenomFromIbc, getNormalDenom } from './denoms';
 import { ApiConstants } from 'constant';
-import { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
@@ -125,13 +125,13 @@ export const reduceDepositDropsByPoolIdAndDays = async (deposits: Partial<Deposi
             continue;
         }
 
-        const createdAt = new Dayjs(deposit.createdAt).format('YYYY-MM-DD');
+        const createdAt = dayjs(deposit.createdAt).format('YYYY-MM-DD');
 
         if (deposit.depositorAddress === deposit.winnerAddress) {
             continue;
         }
 
-        const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString() && new Dayjs(d.createdAt).format('YYYY-MM-DD') === createdAt);
+        const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString() && dayjs(d.createdAt).format('YYYY-MM-DD') === createdAt);
 
         if (
             existingDeposit &&

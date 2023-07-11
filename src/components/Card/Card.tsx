@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Card.scss';
 
-interface IProps {
+interface IProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     className?: string;
     withoutPadding?: boolean;
@@ -10,9 +10,9 @@ interface IProps {
     onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Card = ({ children, className, withoutPadding, flat, onClick }: IProps) => {
+const Card = ({ children, className, withoutPadding, flat, onClick, ...rest }: IProps) => {
     return (
-        <div className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'scale-hover'}`} onClick={onClick}>
+        <div className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'scale-hover'}`} onClick={onClick} {...rest}>
             {children}
         </div>
     );

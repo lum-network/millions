@@ -1,27 +1,24 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Navigate, useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useBeforeUnload, useParams, unstable_useBlocker as useBlocker } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import * as yup from 'yup';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 
-import Assets from 'assets';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { FirebaseConstants, NavigationConstants } from 'constant';
-import { Card, Lottie, Modal, Steps, QuitDepositModal, IbcTransferModal } from 'components';
+import Assets from 'assets';
+import { Steps, Card, Modal, QuitDepositModal, IbcTransferModal, Lottie } from 'components';
+import { NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { Error404 } from 'pages';
+import { Dispatch, RootState } from 'redux/store';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
-import { RootState, Dispatch } from 'redux/store';
-
-import DepositSteps from './components/DepositSteps/DepositSteps';
-import Error404 from '../404/404';
-
-import './Deposit.scss';
+import DepositSteps from './components/DepositDropSteps/DepositDropSteps';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
@@ -99,7 +96,7 @@ const Deposit = () => {
     const blocker = useBlocker(transferForm.dirty && currentStep < 2);
     const visibilityState = useVisibilityState();
 
-    const steps = I18n.t('deposit.steps', {
+    const steps = I18n.t('depositDrops.depositFlow.steps', {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
@@ -109,7 +106,6 @@ const Deposit = () => {
     const nextDrawAt = pool && pool.nextDrawAt ? pool.nextDrawAt.getTime() : now;
 
     const withinDepositDelta = (nextDrawAt - now) / 1000 < (depositDelta || 0);
-
     const cardTimeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
 
@@ -215,7 +211,6 @@ const Deposit = () => {
     const step2Timeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
         const ctaST = new SplitText('#depositFlow .step-2 .deposit-cta .deposit-cta-text', { type: 'words' });
-        const cardStepSubtitleST = new SplitText('#depositFlow .step-2 .card-step-subtitle', { type: 'lines' });
 
         tl.from(
             '#depositFlow .step-2 .card-step-title',
@@ -226,16 +221,23 @@ const Deposit = () => {
             '<0.1',
         )
             .from(
-                cardStepSubtitleST.lines,
+                '#depositFlow .step-2 .input-type-container',
                 {
                     opacity: 0,
                     y: 50,
-                    stagger: 0.1,
                 },
                 '<0.1',
             )
             .from(
-                '#depositFlow .step-2 .deposit-warning',
+                '#depositFlow .step-2 .csv-file-input',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+            .from(
+                '#depositFlow .step-2 .download-btn-container',
                 {
                     opacity: 0,
                     y: 50,
@@ -249,27 +251,15 @@ const Deposit = () => {
                     y: 50,
                 },
                 '<0.1',
-            );
-
-        if (pools.length > 1) {
-            tl.from(
-                '#depositFlow .step-2 .custom-select',
+            )
+            .from(
+                '#depositFlow .step-2 .fees-warning',
                 {
                     opacity: 0,
                     y: 50,
                 },
                 '<0.1',
-            );
-        }
-
-        tl.from(
-            '#depositFlow .step-2 .fees-warning',
-            {
-                opacity: 0,
-                y: 50,
-            },
-            '<0.1',
-        )
+            )
             .from(
                 '#depositFlow .step-2 .deposit-cta .deposit-cta-bg',
                 {
@@ -521,12 +511,12 @@ const Deposit = () => {
         }
     };
 
-    const onDeposit = async (poolToDeposit: PoolModel, depositAmount: string) => {
-        const maxAmount = Number(WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, lumWallet?.balances || []));
-        const depositAmountNumber = Number(depositAmount);
+    const onDepositDrop = async (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => {
+        const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, lumWallet?.balances || []));
+        const depositAmountNumber = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
 
         if (depositAmountNumber > maxAmount) {
-            const prev = depositAmount;
+            const prev = depositAmountNumber.toFixed(6);
             const next = (depositAmountNumber - maxAmount).toFixed(6);
 
             transferForm.setFieldValue('amount', next);
@@ -540,7 +530,7 @@ const Deposit = () => {
             return null;
         }
 
-        return await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
+        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback });
     };
 
     useEffect(() => {
@@ -549,7 +539,6 @@ const Deposit = () => {
                 blocker.reset();
             } else {
                 if (quitModalRef.current) {
-                    Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.QUIT_DEPOSIT_FLOW_MODAL_OPEN);
                     quitModalRef.current.toggle();
                 }
             }
@@ -749,31 +738,16 @@ const Deposit = () => {
         }
     }, [currentStep]);
 
-    useEffect(() => {
-        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_FLOW, {
-            step: currentStep,
-            denom: denom,
-        });
-    }, [currentStep]);
-
     if (pool === undefined) {
         return <Error404 />;
     }
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (!denom || !lumWallet || (denom !== 'lum' && !otherWallet)) {
-        return <Navigate to={NavigationConstants.HOME} />;
-    }
-
-    if (denom === LumConstants.LumDenom) {
-        steps.splice(0, 1);
-    }
-
     const isLastStep = currentStep >= steps.length;
 
     return (
-        <div id='depositFlow' ref={depositFlowContainerRef}>
+        <div id='depositFlow' ref={depositFlowContainerRef} className='deposit-container mt-3'>
             <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
                 {!isLastStep && (
                     <div className='col'>
@@ -790,9 +764,10 @@ const Deposit = () => {
                 <div className='col'>
                     <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
                         <DepositSteps
+                            isDepositDrop
                             transferForm={transferForm}
                             onNextStep={startTransition}
-                            onDeposit={onDeposit}
+                            onDepositDrop={onDepositDrop}
                             onFinishDeposit={(callback) => {
                                 const tl = gsap.timeline({
                                     ...GSAP_DEFAULT_CONFIG,
@@ -845,11 +820,11 @@ const Deposit = () => {
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
             <IbcTransferModal
                 modalRef={ibcModalRef}
-                denom={denom}
+                denom={denom || ''}
                 prevAmount={ibcModalPrevAmount}
                 nextAmount={ibcModalDepositAmount}
                 isLoading={isTransferring}
-                price={prices[denom]}
+                price={prices[denom || ''] || 1}
                 onConfirm={async () => {
                     const amount = transferForm.values.amount.toString();
 

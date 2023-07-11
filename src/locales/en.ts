@@ -58,7 +58,7 @@ export default {
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
-            lessThanMinDeposit: 'Amount must be equal to or greather than {{ minDeposit }} {{ denom }}',
+            lessThanMinDeposit: 'Amount must be equal to or greater than {{ minDeposit }} {{ denom }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
             generic: 'Failed to deposit to {{ denom }} pool',
@@ -81,6 +81,7 @@ export default {
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
+        multiDeposit: 'Successfully made {{ count }} deposits'
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -88,6 +89,7 @@ export default {
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
         claimAndCompound: 'Compounding prizes...',
+        multiDeposit: 'Depositing batch {{ index }}/{{ count }}...'
     },
     landing: {
         howItWorks: 'How it works',
@@ -519,5 +521,46 @@ export default {
             ctaFromPools: 'My Deposit drops',
             ctaFromDeposits: 'New Deposit drop',
         },
+        depositFlow: {
+            csv: 'CSV',
+            manual: 'Manual',
+            downloadTemplate: 'Download our CSV template',
+            addWinner: 'Add Another Winner',
+            removeWinner: 'Delete This Winner',
+            cta: 'Deposit Drop',
+            winnerAddress: 'Winner Address',
+            amount: 'Amount',
+            steps: [
+                {
+                    title: 'Transfer {{ denom }} to Lum Network',
+                    subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network'
+                },
+                {
+                    title: 'Make your Deposit Drop to the {{ denom }} Pool',
+                    subtitle: "Boost someone 's day!",
+                    cardTitle: 'Deposit Drop into {{ denom }} Pool',
+                }
+            ],
+            fileInputLabel: {
+                pending: 'Click or drag & drop to upload',
+                success: 'Your CSV has been uploaded',
+            },
+            batch: 'Transactions batch {{ count }}/{{ total }}',
+            batchTooltip: '',
+            fileInputSubLabel: {
+                pending: 'Only CSV file of 20 Mb max',
+                tooManyFileError: 'Too many files uploaded, we support only one file at a time.',
+                fileTooBigError: 'File is too large, we support only 20 Mb CSV files',
+                fileTypeError: 'Only CSV files are supported, try another file',
+                invalidFile: 'This CSV file is invalid. Please use our template below.',
+                invalidAddress: 'An address is invalid in your CSV, please check that everything is valid before processing',
+                invalidAmount: 'An amount provided is invalid, please check your CSV entries',
+                lessThanMinDeposit: 'An amount provided is less than the minimum deposit amount, please check your CSV entries',
+                success: '{{ walletCount }} unique wallets will receive a deposit drop.\nYou will have to sign {{ batchCount }} transactions',
+            },
+            manualInputsErrors: {
+                greaterThanAvailable: 'Total deposits amount is greater than your available balance',
+            }
+        }
     },
 };

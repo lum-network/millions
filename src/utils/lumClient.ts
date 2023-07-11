@@ -322,7 +322,7 @@ class LumClient {
         };
     };
 
-    multiDeposit = async (wallet: LumWallet, toDeposit: { pool: PoolModel; amount: string }[]) => {
+    multiDeposit = async (wallet: LumWallet, toDeposit: { pool: PoolModel; amount: string; winnerAddress?: string }[]) => {
         if (this.client === null) {
             return null;
         }
@@ -332,7 +332,7 @@ class LumClient {
 
         for (const deposit of toDeposit) {
             messages.push(
-                LumMessages.BuildMsgMillionsDeposit(deposit.pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
+                LumMessages.BuildMsgMillionsDeposit(deposit.pool.poolId, wallet.getAddress(), deposit.winnerAddress || wallet.getAddress(), false, {
                     amount: deposit.amount,
                     denom: deposit.pool.denom,
                 }),
@@ -340,7 +340,7 @@ class LumClient {
         }
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const fee = WalletUtils.buildTxFee('25000', (messages.length * 160000).toFixed(0));
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));

@@ -55,6 +55,15 @@ interface RetryDepositPayload {
     depositId: Long;
 }
 
+interface DepositDropPayload {
+    pool: PoolModel;
+    deposits: {
+        amount: string;
+        winnerAddress?: string;
+    }[];
+    onDepositCallback?: (batchNum: number) => void;
+}
+
 interface LeavePoolPayload {
     poolId: Long;
     denom: string;
@@ -499,6 +508,50 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', {
                     content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase() }),
+                });
+                return null;
+            }
+        },
+        async depositDrop(payload: DepositDropPayload, state) {
+            const { lumWallet } = state.wallet;
+            const { pool, deposits, onDepositCallback } = payload;
+
+            const LIMIT = 6;
+
+            const batchCount = Math.ceil(deposits.length / LIMIT);
+
+            const toastId = ToastUtils.showLoadingToast({
+                content: I18n.t(batchCount === 1 ? 'pending.deposit' : 'pending.multiDeposit', { index: 1, count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+            });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                for (let i = 0; i < batchCount; i++) {
+                    if (i > 0) {
+                        onDepositCallback?.(i + 1);
+                        ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.multiDeposit', { index: i + 1, count: batchCount }) });
+                    }
+
+                    const toDeposit = deposits.slice(i * LIMIT, (i + 1) * LIMIT).map((d) => ({ ...d, pool }));
+
+                    const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    }
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+
+                return true;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
                 });
                 return null;
             }

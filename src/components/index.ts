@@ -18,5 +18,7 @@ export { default as PoolSelect } from './PoolSelect/PoolSelect';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
+export { default as IbcTransferModal } from './Modals/IbcTransfer/IbcTransfer';
+export { default as QuitDepositModal } from './Modals/QuitDeposit/QuitDeposit';
 
 export * from './ToastContent/ToastContent';
