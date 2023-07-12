@@ -153,7 +153,7 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async connectWallet(payload: { provider: WalletProvider; silent: boolean }, state) {
+        async connectWallet(payload: { provider: WalletProvider; silent: boolean }) {
             const { silent, provider } = payload;
             const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
@@ -236,7 +236,8 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 try {
-                    await walletProvider.enable([chainId, ...state.pools.pools.filter((p) => !p.chainId.includes('test') && !p.chainId.includes('dev')).map((pool) => pool.chainId)]);
+                    await walletProvider.enable(chainId);
+
                     if (!walletProvider.getOfflineSignerAuto) {
                         throw new Error(I18n.t('errors.walletProvider.offlineSigner', { provider }));
                     }
@@ -318,7 +319,10 @@ export const wallet = createModel<RootModel>()({
                                 coinMinimalDenom: 'uatom',
                             },
                         });
+                    } else {
+                        await walletProvider.enable(pool.chainId);
                     }
+
                     const offlineSigner = await walletProvider.getOfflineSignerAuto(pool.chainId);
                     const accounts = await offlineSigner.getAccounts();
 
