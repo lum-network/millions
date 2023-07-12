@@ -325,7 +325,7 @@ const DepositDropStep = (
             </Card>
             {batch > 0 && batchTotal > 1 && (
                 <Card flat withoutPadding className='d-flex flex-row justify-content-center batch-card mt-4'>
-                    <div className='batch-progress' style={{ width: `calc(${batchProgress >= 100 ? 98 : batchProgress}% + 4px)` }} />
+                    <div className='batch-progress' style={{ width: `calc(${batchProgress}% + 4px)` }} />
                     <span data-tooltip-id='batch-tooltip' data-tooltip-html={I18n.t('depositDrops.depositFlow.batchTooltip')} className='me-2'>
                         <img className='batch-card-info-icon' src={Assets.images.info} alt='info' />
                         <Tooltip id='batch-tooltip' delay={2000} />
@@ -485,7 +485,7 @@ const DepositDropSteps = (props: Props) => {
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         balances={lumWallet?.balances || []}
                         onDepositDrop={async (pool, deposits, callback, startIndex) => {
-                            const totalDepositAmount = deposits.reduce((acc, deposit) => acc + Number(deposit.amount), 0);
+                            const totalDepositAmount = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
                             const res = await onDepositDrop(pool, deposits, callback, startIndex);
 
                             if (res) {

@@ -562,7 +562,6 @@ export const wallet = createModel<RootModel>()({
 
                 for (let i = startIndex; i < batchCount; i++) {
                     lastBatch = i;
-                    onDepositCallback?.(i + 1);
 
                     if (i > 0) {
                         ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.multiDeposit', { index: i + 1, count: batchCount }) });
@@ -574,6 +573,8 @@ export const wallet = createModel<RootModel>()({
 
                     if (!result || (result && result.error)) {
                         throw new Error(result?.error || undefined);
+                    } else {
+                        onDepositCallback?.(i + 1);
                     }
                 }
 
