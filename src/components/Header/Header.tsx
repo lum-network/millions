@@ -11,8 +11,8 @@ import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
-import { Firebase, I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
+import { Firebase, I18n } from 'utils';
+import { RootState } from 'redux/store';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 
 import ConnectButton from '../ConnectButton/ConnectButton';
