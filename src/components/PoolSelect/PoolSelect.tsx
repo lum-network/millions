@@ -13,6 +13,7 @@ interface Props {
     label?: string;
     readonly?: boolean;
     className?: string;
+    disabled?: boolean;
 }
 
 const PoolOption = (
@@ -71,7 +72,7 @@ const PoolValue = (
     );
 };
 
-const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading }: Props): JSX.Element => {
+const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
@@ -103,6 +104,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                     }}
                     isSearchable={false}
                     isClearable={false}
+                    isDisabled={disabled}
                     styles={{
                         control: (provided) => ({
                             ...provided,

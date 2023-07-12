@@ -54,7 +54,7 @@ const Pagination = ({ pagination, onPageChange, customPagination }: Props) => {
                 <li className='page-item active' aria-current='page'>
                     <span className='page-link'>{page}</span>
                 </li>
-                {winSizes.width > Breakpoints.MD && hasNextPage && (
+                {winSizes.width > Breakpoints.MD && hasNextPage && page + 1 < pagesTotal && (
                     <li className='page-item'>
                         <a onClick={() => onPageChange(page + 1)} className='page-link pointer'>
                             {page + 1}

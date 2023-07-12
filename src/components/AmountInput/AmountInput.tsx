@@ -56,7 +56,7 @@ const AmountInput = (props: Props) => {
                         {usdValue ? <p className='price-label mb-0 text-start'>${NumbersUtils.formatTo6digit(usdValue)}</p> : null}
                     </div>
                     {onMax ? (
-                        <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax}>
+                        <Button type='button' outline className='max-btn rounded-pill py-1 px-3 ms-2' onClick={onMax} disabled={inputProps?.disabled}>
                             MAX
                         </Button>
                     ) : null}

@@ -64,3 +64,29 @@
         }
     }
 }
+
+@include media-breakpoint-down(sm) {
+    #claimModal {
+        .card-title {
+            font-size: 22px;
+        }
+        .card-subtitle {
+            font-size: 24px;
+        }
+
+        .prize-card {
+            .denom-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .asset-amount {
+                font-size: 16px;
+
+                small {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}

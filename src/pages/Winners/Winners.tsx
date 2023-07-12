@@ -22,10 +22,11 @@ const Winners = () => {
     const latestPrizes = useSelector((state: RootState) => state.prizes.prizes);
     const metadataPrizes = useSelector((state: RootState) => state.prizes.metadata);
 
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
+    const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes({ page: page }).finally(() => null);
+        dispatch.prizes.fetchPrizes({ page: page - 1 }).finally(() => null);
     }, [page]);
 
     return (
@@ -59,7 +60,23 @@ const Winners = () => {
                         {I18n.t('luckiestWinners.latestWinners')} ({metadataPrizes.itemsTotal})
                     </h1>
                     <Card withoutPadding className='py-0 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 mt-2 mt-lg-4 glow-bg'>
-                        <LatestWinnersTable prizes={latestPrizes} metadata={metadataPrizes} onPageChange={setPage} />
+                        <LatestWinnersTable
+                            prizes={latestPrizes}
+                            metadata={
+                                metadataPrizes
+                                    ? {
+                                          ...metadataPrizes,
+                                          page: metadataPrizes.page + 1,
+                                      }
+                                    : undefined
+                            }
+                            visibleItem={smallTableVisibleItem}
+                            onItemChange={setSmallTableVisibleItem}
+                            onPageChange={(page, prev) => {
+                                setPage(page);
+                                setSmallTableVisibleItem(prev ? 4 : 0);
+                            }}
+                        />
                         <Lottie
                             className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
                             animationData={cosmonautWithRocket}

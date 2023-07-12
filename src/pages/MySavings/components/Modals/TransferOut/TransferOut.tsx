@@ -115,7 +115,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                     <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
-                <div className='col d-flex'>
+                <div className='col'>
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
                         <div className='h-100 d-flex flex-column text-center py-sm-4'>
                             <div className='mb-3 mb-sm-5 mb-lg-0'>

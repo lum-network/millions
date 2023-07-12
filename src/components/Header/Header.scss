@@ -58,6 +58,15 @@ header {
     }
 }
 
+.prize-dot {
+    width: 22px;
+    height: 22px;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: 0.5rem;
+    font-weight: 900;
+}
+
 .navlink {
     color: $color-primary;
     text-decoration: none;
@@ -93,10 +102,23 @@ header .background {
     background-color: $color-background;
 }
 
+header,
+.bm-menu {
+    ul {
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+}
+
 .bm-menu {
     background: $color-white;
     color: $color-primary;
     padding: 1.5rem 2rem;
+
+    .bm-item {
+        padding-left: 0;
+    }
 
     .close-btn {
         border: 0;
@@ -119,12 +141,12 @@ header .background {
     }
 
     .menu-header {
-        margin-bottom: 4rem;
-        
+        margin-bottom: 3rem;
+
         .logo {
             width: 162px;
             height: 56px;
-    
+
             @include media-breakpoint-down(lg) {
                 height: 50px;
                 width: 143px;

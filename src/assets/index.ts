@@ -23,6 +23,7 @@ import info from './images/info.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
+import leap from './images/leap.svg';
 import leavePool from './images/leave_pool.svg';
 import logo from './images/logo.svg';
 import logout from './images/logout.svg';
@@ -86,6 +87,7 @@ const Assets = {
         keplr,
         landingArrow,
         landingDoubleArrows,
+        leap,
         leavePool,
         logo,
         logout,

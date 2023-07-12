@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 
@@ -12,13 +12,13 @@ import './LatestWinnersTable.scss';
 
 interface IProps {
     prizes: PrizeModel[];
+    visibleItem: number;
+    onItemChange: (item: number) => void;
     metadata?: MetadataModel;
-    onPageChange?: (page: number) => void;
+    onPageChange?: (page: number, prev?: boolean) => void;
 }
 
-const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
-    const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
-
+const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onItemChange }: IProps) => {
     const winSizes = useWindowSize();
 
     const headers = I18n.t('luckiestWinners.winnersHeaders', { returnObjects: true });
@@ -51,6 +51,10 @@ const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
     };
 
     const renderSmallTableItem = (prize: PrizeModel) => {
+        if (prize === undefined) {
+            return;
+        }
+
         return (
             <div key={`prize-${prize.prizeId}`} className='d-flex flex-column mb-4'>
                 <div className='d-flex flex-column'>
@@ -96,20 +100,19 @@ const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
     const renderSmallTable = (prizes: PrizeModel[]) => {
         return (
             <div className='latest-winners-table py-3'>
-                {renderSmallTableItem(prizes[smallTableVisibleItem])}
+                {renderSmallTableItem(prizes[visibleItem])}
                 <div className='d-flex flex-row mt-4'>
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn'
-                        disabled={smallTableVisibleItem === 0 && !metadata?.hasPreviousPage}
+                        disabled={visibleItem === 0 && !metadata?.hasPreviousPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 0) {
+                            if (visibleItem === 0) {
                                 if (metadata && onPageChange) {
-                                    onPageChange(metadata.page - 1);
+                                    onPageChange(metadata.page - 1, true);
                                 }
-                                setSmallTableVisibleItem(4);
                             } else {
-                                setSmallTableVisibleItem(smallTableVisibleItem - 1);
+                                onItemChange(visibleItem - 1);
                             }
                         }}
                     >
@@ -118,15 +121,14 @@ const LatestWinnersTable = ({ prizes, metadata, onPageChange }: IProps) => {
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                        disabled={!metadata?.hasNextPage && smallTableVisibleItem === prizes.length - 1}
+                        disabled={!metadata?.hasNextPage && visibleItem === prizes.length - 1}
                         onClick={() => {
-                            if (smallTableVisibleItem === prizes.length - 1) {
+                            if (visibleItem === prizes.length - 1) {
                                 if (metadata && onPageChange) {
                                     onPageChange(metadata.page + 1);
                                 }
-                                setSmallTableVisibleItem(0);
                             } else {
-                                setSmallTableVisibleItem(smallTableVisibleItem + 1);
+                                onItemChange(visibleItem + 1);
                             }
                         }}
                     >

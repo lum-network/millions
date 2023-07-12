@@ -43,7 +43,7 @@ const DepositIbcTransfer = (props: Props) => {
     }
 
     return (
-        <div className='step-1'>
+        <div className={`step-1 ${disabled && 'disabled'}`}>
             <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
                 <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
@@ -51,7 +51,6 @@ const DepositIbcTransfer = (props: Props) => {
             <form onSubmit={form.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
                 <div className='w-100 mt-5'>
                     <AmountInput
-                        //disabled={disabled}
                         isLoading={isLoading}
                         label={I18n.t('withdraw.amountInput.label')}
                         sublabel={I18n.t('withdraw.amountInput.sublabel', {
@@ -68,6 +67,7 @@ const DepositIbcTransfer = (props: Props) => {
                             max: balances.length > 0 ? balances[0].amount : '0',
                             step: 'any',
                             lang: 'en',
+                            disabled,
                             placeholder: (100 / price).toFixed(6),
                             ...form.getFieldProps('amount'),
                             onChange: (e) => {
@@ -90,7 +90,7 @@ const DepositIbcTransfer = (props: Props) => {
                 <div className='mt-5'>
                     {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
                         <AssetsSelect
-                            //disabled={disabled}
+                            disabled={disabled}
                             isLoading={isLoading}
                             balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
                                 if (balances.length > 0) {
