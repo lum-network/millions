@@ -515,6 +515,7 @@ export default {
         depositDeltaHint:
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
+        faucetHint: 'You can use our <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">faucet</a> on Discord to get $LUM for your deposit.'
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
@@ -581,6 +582,12 @@ export default {
             },
             manualInputsErrors: {
                 greaterThanAvailable: 'Total deposits amount is greater than your available balance',
+            },
+            infoCards: {
+                deposit: {
+                    content: 'Tip:\nYour deposit operates on a no-loss principle and you can withdraw it whenever you like.',
+                    howItWorks: 'See how it works',
+                }
             }
         }
     },

@@ -25,13 +25,12 @@ const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.8
 const Deposit = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
+    const { otherWallets, lumWallet, prices, pools, pool, isTransferring } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,
         pool: poolId ? state.pools.pools.find((pool) => pool.poolId.toString() === poolId) : state.pools.pools.find((pool) => pool.nativeDenom === 'u' + denom),
-        depositDelta: state.pools.depositDelta,
         isTransferring: state.loading.effects.wallet.ibcTransfer,
     }));
 
@@ -102,10 +101,6 @@ const Deposit = () => {
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
     });
 
-    const now = Date.now();
-    const nextDrawAt = pool && pool.nextDrawAt ? pool.nextDrawAt.getTime() : now;
-
-    const withinDepositDelta = (nextDrawAt - now) / 1000 < (depositDelta || 0);
     const cardTimeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
 
@@ -511,7 +506,7 @@ const Deposit = () => {
         }
     };
 
-    const onDepositDrop = async (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => {
+    const onDepositDrop = async (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => {
         const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, lumWallet?.balances || []));
         const depositAmountNumber = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
 
@@ -530,7 +525,7 @@ const Deposit = () => {
             return null;
         }
 
-        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback });
+        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex });
     };
 
     useEffect(() => {
@@ -697,13 +692,12 @@ const Deposit = () => {
                 }
             });
 
-            if (withinDepositDelta) {
-                timeline.from('#depositFlow .deposit-delta-card', {
-                    y: 50,
-                    opacity: 0,
-                    duration: 0.8,
-                });
-            }
+            timeline.from('#depositFlow .deposit-delta-card', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+            });
 
             timeline.add(cardTimeline(), '<0.2');
 
@@ -753,12 +747,24 @@ const Deposit = () => {
                     <div className='col'>
                         <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                        {withinDepositDelta && (
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                                <img src={Assets.images.questionMark} alt='' />
-                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
-                            </Card>
-                        )}
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                            <img src={Assets.images.questionMark} alt='' />
+                            <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
+                                <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.content') }} />
+                                <a
+                                    className='text-center text-sm-start'
+                                    style={{ width: 'fit-content' }}
+                                    href={NavigationConstants.DEPOSITS_AND_WITHDRAWALS_DOC}
+                                    dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.howItWorks') }}
+                                />
+                            </div>
+                        </Card>
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                            <img src={Assets.images.faucet} alt='' />
+                            <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
+                                <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.faucetHint') }} />
+                            </div>
+                        </Card>
                     </div>
                 )}
                 <div className='col'>

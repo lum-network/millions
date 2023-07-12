@@ -66,6 +66,10 @@
         @include media-breakpoint-down(lg) {
             margin-right: 0
         }
+
+        a {
+            color: $color-primary;
+        }
     }
 }
 

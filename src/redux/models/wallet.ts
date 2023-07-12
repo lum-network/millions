@@ -60,6 +60,7 @@ interface DepositDropPayload {
         amount: string;
         winnerAddress?: string;
     }[];
+    startIndex: number;
     onDepositCallback?: (batchNum: number) => void;
 }
 
@@ -544,10 +545,10 @@ export const wallet = createModel<RootModel>()({
         },
         async depositDrop(payload: DepositDropPayload, state) {
             const { lumWallet } = state.wallet;
-            const { pool, deposits, onDepositCallback } = payload;
+            const { pool, startIndex, deposits, onDepositCallback } = payload;
 
             const LIMIT = 6;
-
+            let lastBatch = startIndex;
             const batchCount = Math.ceil(deposits.length / LIMIT);
 
             const toastId = ToastUtils.showLoadingToast({
@@ -559,9 +560,11 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                for (let i = 0; i < batchCount; i++) {
+                for (let i = startIndex; i < batchCount; i++) {
+                    lastBatch = i;
+                    onDepositCallback?.(i + 1);
+
                     if (i > 0) {
-                        onDepositCallback?.(i + 1);
                         ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.multiDeposit', { index: i + 1, count: batchCount }) });
                     }
 
@@ -580,6 +583,7 @@ export const wallet = createModel<RootModel>()({
 
                 return true;
             } catch (e) {
+                onDepositCallback?.(lastBatch);
                 ToastUtils.updateLoadingToast(toastId, 'error', {
                     content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
                 });

@@ -43,7 +43,7 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
-    onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => Promise<true | null>;
+    onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => Promise<true | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel | null;
@@ -60,33 +60,34 @@ type TxInfos = {
     numOfWallets: number;
 };
 
+type ManualInput = {
+    winnerAddress: string;
+    amount: string;
+    errors: Record<string, string>;
+};
+
+type DepositDrop = {
+    winnerAddress: string;
+    amount: string;
+};
+
 const DepositDropStep = (
     props: StepProps & {
-        onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => Promise<true | null>;
+        onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => Promise<true | null>;
     },
 ) => {
     const { currentPool, balances, title, disabled, onDepositDrop } = props;
 
     const [inputType, setInputType] = useState<'csv' | 'manual'>('csv');
 
-    const [manualInputs, setManualInputs] = useState<
-        {
-            winnerAddress: string;
-            amount: string;
-            errors: Record<string, string>;
-        }[]
-    >([]);
-    const [totalDepositAmount, setTotalDepositAmount] = useState(0);
+    const [manualInputs, setManualInputs] = useState<ManualInput[]>([]);
     const [csvError, setCsvError] = useState('');
-    const [depositDrops, setDepositDrops] = useState<
-        {
-            winnerAddress: string;
-            amount: string;
-        }[]
-    >([]);
 
-    const [batch, setBatch] = useState(1);
+    const [batch, setBatch] = useState(0);
     const [batchTotal, setBatchTotal] = useState(1);
+    const [totalDepositAmount, setTotalDepositAmount] = useState(0);
+
+    const [depositDrops, setDepositDrops] = useState<DepositDrop[]>([]);
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositDrop);
 
@@ -178,7 +179,8 @@ const DepositDropStep = (
     useEffect(() => {
         setDepositDrops([]);
         setTotalDepositAmount(0);
-
+        setCsvError('');
+        setBatch(0);
         setManualInputs(
             inputType === 'manual'
                 ? [
@@ -321,7 +323,7 @@ const DepositDropStep = (
                 </span>
                 {I18n.t('deposit.feesWarning')}
             </Card>
-            {batchTotal > 1 && (
+            {batch > 0 && batchTotal > 1 && (
                 <Card flat withoutPadding className='d-flex flex-row justify-content-center batch-card mt-4'>
                     <div className='batch-progress' style={{ width: `calc(${batchProgress >= 100 ? 98 : batchProgress}% + 4px)` }} />
                     <span data-tooltip-id='batch-tooltip' data-tooltip-html={I18n.t('depositDrops.depositFlow.batchTooltip')} className='me-2'>
@@ -345,12 +347,7 @@ const DepositDropStep = (
 
                     setBatchTotal(Math.ceil(drops.length / 6));
 
-                    const res = await onDepositDrop(currentPool, drops, (index) => setBatch(index));
-
-                    if (!res) {
-                        setBatch(1);
-                        setBatchTotal(1);
-                    }
+                    await onDepositDrop(currentPool, drops, (index) => setBatch(index), batch);
                 }}
                 disabled={
                     disabled ||
@@ -487,9 +484,9 @@ const DepositDropSteps = (props: Props) => {
                         disabled={!lumWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         balances={lumWallet?.balances || []}
-                        onDepositDrop={async (pool, deposits, callback) => {
+                        onDepositDrop={async (pool, deposits, callback, startIndex) => {
                             const totalDepositAmount = deposits.reduce((acc, deposit) => acc + Number(deposit.amount), 0);
-                            const res = await onDepositDrop(pool, deposits, callback);
+                            const res = await onDepositDrop(pool, deposits, callback, startIndex);
 
                             if (res) {
                                 onFinishDeposit(onNextStep);
