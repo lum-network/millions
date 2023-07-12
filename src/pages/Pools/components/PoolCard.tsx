@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 
 import { Button, Card, CountDown } from 'components';
-import { NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n, KeplrUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, KeplrUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
@@ -98,6 +98,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                               to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
                     className='deposit-cta w-100'
+                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >
                     {I18n.t('pools.cta')}
                 </Button>

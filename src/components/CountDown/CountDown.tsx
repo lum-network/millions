@@ -39,13 +39,7 @@ const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
 
         const [days, hours, minutes, seconds] = TimesUtils.getDaysHoursMinutesSeconds(remainingTime);
 
-        let formattedDays = days;
-
-        if (days === 1 && hours > 11) {
-            formattedDays = 2;
-        }
-
-        setDays(formattedDays);
+        setDays(days);
         setHours(hours);
         setMinutes(minutes);
         setSeconds(seconds);
@@ -83,7 +77,7 @@ const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
         <div>
             {!!days && (
                 <div>
-                    <span>{days}</span> <span>{I18n.t('countDown.days', { count: days })}</span>
+                    <span>{days}</span>&nbsp;<span>{I18n.t('countDown.days', { count: days })}</span> <span>{hours}</span>&nbsp;<span>{I18n.t('countDown.hours', { count: hours })}</span>
                 </div>
             )}
             {!days && (

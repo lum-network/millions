@@ -7,9 +7,10 @@ import * as yup from 'yup';
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Modal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase } from 'utils';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
+import { FirebaseConstants } from '../../../../../constant';
 
 interface Props {
     asset: string | null;
@@ -169,7 +170,13 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                         </span>
                                         {I18n.t('deposit.feesWarning')}
                                     </Card>
-                                    <Button type='submit' className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
+                                    <Button
+                                        type='submit'
+                                        className='w-100 mt-4'
+                                        disabled={isLoading}
+                                        loading={isLoading}
+                                        onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TRANSFER_OUT_CONFIRMED)}
+                                    >
                                         {I18n.t('mySavings.transferOutModal.cta')}
                                     </Button>
                                 </div>
