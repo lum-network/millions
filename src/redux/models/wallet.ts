@@ -1,7 +1,6 @@
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { Window as KeplrWindow } from '@keplr-wallet/types';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
@@ -153,15 +152,15 @@ export const wallet = createModel<RootModel>()({
             }
 
             if (!walletProvider.getOfflineSigner) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notInstalled') });
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notInstalled', { provider }) });
             } else if (!walletProvider.experimentalSuggestChain) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notLatest') });
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notLatest', { provider }) });
             } else {
                 const chainId = LumClient.getChainId();
                 const rpc = LumClient.getRpc();
 
                 if (!chainId || !rpc) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.network') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.network', { provider }) });
                     return;
                 }
 
@@ -218,16 +217,17 @@ export const wallet = createModel<RootModel>()({
                         ],
                         coinType: 118,
                         beta: chainId.includes('testnet'),
+                        features: ['ibc-transfer'],
                     });
                 } catch {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.networkAdd', { provider }) });
                     return;
                 }
 
                 try {
                     await walletProvider.enable([chainId, ...state.pools.pools.filter((p) => !p.chainId.includes('test') && !p.chainId.includes('dev')).map((pool) => pool.chainId)]);
                     if (!walletProvider.getOfflineSignerAuto) {
-                        throw new Error(I18n.t('errors.keplr.offlineSigner'));
+                        throw new Error(I18n.t('errors.walletProvider.offlineSigner', { provider }));
                     }
                     const lumOfflineSigner = await walletProvider.getOfflineSignerAuto(chainId);
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
@@ -242,7 +242,7 @@ export const wallet = createModel<RootModel>()({
                         Firebase.signInAnonymous().finally(() => null);
                     }
                 } catch (e) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.wallet', { provider }) });
                     throw e;
                 }
             }
@@ -442,9 +442,19 @@ export const wallet = createModel<RootModel>()({
                 if (!chainId) {
                     throw new Error(I18n.t('errors.client.chainId', { denom: normalDenom.toUpperCase() }));
                 }
+                const provider = WalletUtils.getAutoconnectProvider();
 
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
+                if (provider === null) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+                if (!walletProvider) {
+                    throw new Error(`${provider} is not available`);
+                }
+
+                const offlineSigner = await walletProvider.getOfflineSignerAuto(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 

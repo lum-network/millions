@@ -41,12 +41,12 @@ export default {
             required: '{{ field }} is required',
             invalid: 'Invalid {{ field }}',
         },
-        keplr: {
-            notInstalled: 'Please install keplr extension',
-            notLatest: 'Please use an up to date version of the Keplr extension',
+        walletProvider: {
+            notInstalled: 'Please install {{ provider }} extension',
+            notLatest: 'Please use an up to date version of the {{ provider }} extension',
             network: 'Failed to connect to the network',
-            networkAdd: 'Failed to add network to Keplr',
-            wallet: 'Failed to connect to Keplr wallet',
+            networkAdd: 'Failed to add network to {{ provider }}',
+            wallet: 'Failed to connect to {{ provider }} wallet',
             offlineSigner: 'Offline signer not found',
         },
         client: {
