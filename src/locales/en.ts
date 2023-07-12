@@ -545,6 +545,7 @@ export default {
                 pending: 'Click or drag & drop to upload',
                 success: 'Your CSV has been uploaded',
             },
+            depositLabel: 'Total amount of {{ denom }} to deposit in the Pool',
             batch: 'Transactions batch {{ count }}/{{ total }}',
             batchTooltip: '',
             fileInputSubLabel: {

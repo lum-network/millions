@@ -309,7 +309,7 @@ const DepositDropStep = (
             )}
             <div className='step2-input-container'>
                 <div className='d-flex flex-row justify-content-between align-items-baseline mt-4'>
-                    <label className='label text-start'>{I18n.t('deposit.depositLabel', { denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase() })}</label>
+                    <label className='label text-start'>{I18n.t('depositDrops.depositFlow.depositLabel', { denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase() })}</label>
                     {!isModifying ? (
                         <Button textOnly onClick={() => setIsModifying(true)}>
                             {I18n.t('common.edit')}
