@@ -5,17 +5,26 @@
         @include media-breakpoint-down(lg) {
             @include font-size(2rem);
         }
+        @include media-breakpoint-down(sm) {
+            @include font-size(1.5rem);
+        }
     }
 
     h2 {
         @include media-breakpoint-down(lg) {
             @include font-size(1.5rem);
         }
+        @include media-breakpoint-down(sm) {
+            @include font-size(1rem);
+        }
     }
 
     h4 {
         @include media-breakpoint-down(lg) {
             @include font-size(1.125rem);
+        }
+        @include media-breakpoint-down(sm) {
+            @include font-size(0.750rem);
         }
     }
 
@@ -51,7 +60,7 @@
         }
 
         .next-draw-container {
-            width: 200px;
+            width: 400px;
 
             .draw-in-progress {
                 font-size: 18px;

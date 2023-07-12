@@ -4,6 +4,7 @@ import { convertUnitNumber } from './numbers';
 import { Message } from '@lum-network/sdk-javascript/build/messages';
 import { AggregatedDepositModel } from 'models';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { AUTOCONNECT_STORAGE_KEY, WalletProvider } from 'constant';
 
 type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 
@@ -123,4 +124,12 @@ export const updatedBalances = (currentBalance?: LumTypes.Coin[], newBalance?: L
     });
 
     return balanceChanged;
+};
+
+export const storeAutoconnectKey = (provider: WalletProvider) => {
+    localStorage.setItem(AUTOCONNECT_STORAGE_KEY, provider);
+};
+
+export const getAutoconnectProvider = () => {
+    return localStorage.getItem(AUTOCONNECT_STORAGE_KEY) as WalletProvider | null;
 };

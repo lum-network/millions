@@ -84,10 +84,14 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
             </div>
             <div className='w-100'>
                 <Button
-                    disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
                     {...(!KeplrUtils.isKeplrInstalled()
                         ? {
                               'data-bs-target': '#get-keplr-modal',
+                              'data-bs-toggle': 'modal',
+                          }
+                        : lumWallet === null
+                        ? {
+                              'data-bs-target': '#choose-wallet-modal',
                               'data-bs-toggle': 'modal',
                           }
                         : {

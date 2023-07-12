@@ -15,6 +15,7 @@ interface Props {
     label?: string;
     readonly?: boolean;
     className?: string;
+    disabled?: boolean;
 }
 
 const AssetOption = (
@@ -74,7 +75,7 @@ const AssetValue = (
     );
 };
 
-const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className, isLoading }: Props): JSX.Element => {
+const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className, isLoading, disabled }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
@@ -106,6 +107,7 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                     }}
                     isSearchable={false}
                     isClearable={false}
+                    isDisabled={disabled}
                     styles={{
                         control: (provided) => ({
                             ...provided,

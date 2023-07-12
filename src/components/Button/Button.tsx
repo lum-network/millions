@@ -49,6 +49,7 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
                     : () => null
             }
             className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${className}`}
+            disabled={disabled}
             {...rest}
         >
             {loading ? <Loading /> : children}

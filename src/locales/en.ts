@@ -229,12 +229,22 @@ export default {
         },
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
+    leapKeystoreChange: 'Leap Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
-        description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        keplr: {
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.',
+        },
+        leap: {
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.<br />Mobile friendly',
+        },
         link: 'Learn more about Interchain wallets',
         later: "I'll come back later",
         download: 'Download Keplr for Chrome',
+    },
+    chooseWalletModal: {
+        keplr: 'Keplr Wallet',
+        leap: 'Leap Wallet'
     },
     logoutModal: {
         title: 'Are you sure you want\nto log out ?',
@@ -362,7 +372,7 @@ export default {
                     subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
                 },
             ],
-            cta: 'Transfer my available tokens',
+            cta: 'Transfer',
         },
         claimModal: {
             title: 'Cosmonaut,\nyour savings are blasting off like a rocketship 🚀',
@@ -371,6 +381,16 @@ export default {
                 {
                     title: 'Wonderful! Take a look at what you have won!',
                     subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws!\nOR Click on “Claim my prizes” to simply get your prizes',
+                },
+                {
+                    title: 'Confirm your claim in Keplr',
+                    subtitle: 'Accept the transaction to claim your prizes!',
+                },
+            ],
+            claimOnlySteps: [
+                {
+                    title: 'Wonderful! Take a look at what you have won!',
+                    subtitle: 'Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
                     title: 'Confirm your claim in Keplr',
