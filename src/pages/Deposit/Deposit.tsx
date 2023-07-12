@@ -812,14 +812,6 @@ const Deposit = () => {
                                     y: 0,
                                 });
                             }}
-                            onPrevStep={(prev, next) => {
-                                transferForm.setFieldValue('amount', next);
-                                setIbcModalPrevAmount(prev);
-                                setIbcModalDepositAmount(next);
-                                if (ibcModalRef.current) {
-                                    ibcModalRef.current.show();
-                                }
-                            }}
                             onTwitterShare={() => setShareState('sharing')}
                             currentStep={currentStep}
                             steps={steps}

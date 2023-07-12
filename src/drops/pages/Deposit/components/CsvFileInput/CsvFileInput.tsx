@@ -25,10 +25,11 @@ interface CsvFileInputProps {
     onInvalidCsv: (error: string) => void;
     minDepositAmount?: number;
     className?: string;
+    disabled: boolean;
 }
 
 const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
-    const { className, minDepositAmount, onValidCsv, onInvalidCsv } = props;
+    const { className, minDepositAmount, disabled, onValidCsv, onInvalidCsv } = props;
     const { t } = useTranslation();
 
     const [innerLabel, setInnerLabel] = useState(t('depositDrops.depositFlow.fileInputLabel.pending'));
@@ -42,6 +43,7 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
         maxFiles: 1,
         maxSize: 20000000,
         multiple: false,
+        disabled,
         onDropAccepted: (files) => {
             Papa.parse(files[0], {
                 header: true,

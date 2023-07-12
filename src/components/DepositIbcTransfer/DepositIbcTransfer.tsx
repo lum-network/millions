@@ -19,11 +19,12 @@ interface Props {
     subtitle: string;
     nonEmptyWallets: OtherWalletModel[];
     form: FormikProps<{ amount: string }>;
-    onTransfer: (amount: string) => void;
+    onTransfer?: (amount: string) => void;
+    disabled?: boolean;
 }
 
 const DepositIbcTransfer = (props: Props) => {
-    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, onTransfer } = props;
+    const { currentPool, balances, disabled, price, pools, form, nonEmptyWallets, title, subtitle, onTransfer } = props;
 
     const navigate = useNavigate();
 
@@ -50,6 +51,7 @@ const DepositIbcTransfer = (props: Props) => {
             <form onSubmit={form.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
                 <div className='w-100 mt-5'>
                     <AmountInput
+                        //disabled={disabled}
                         isLoading={isLoading}
                         label={I18n.t('withdraw.amountInput.label')}
                         sublabel={I18n.t('withdraw.amountInput.sublabel', {
@@ -88,6 +90,7 @@ const DepositIbcTransfer = (props: Props) => {
                 <div className='mt-5'>
                     {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
                         <AssetsSelect
+                            //disabled={disabled}
                             isLoading={isLoading}
                             balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
                                 if (balances.length > 0) {
@@ -134,9 +137,9 @@ const DepositIbcTransfer = (props: Props) => {
                     </Card>
                     <Button
                         type={isLoading ? 'button' : 'submit'}
-                        onClick={() => onTransfer(form.values.amount)}
+                        onClick={() => onTransfer?.(form.values.amount)}
                         className='position-relative deposit-cta w-100 mt-4'
-                        disabled={isLoading || !form.values.amount || !!(form.touched.amount && form.errors.amount)}
+                        disabled={disabled || isLoading || !form.values.amount || !!(form.touched.amount && form.errors.amount)}
                     >
                         <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
                         <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>

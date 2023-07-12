@@ -8,10 +8,10 @@ import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 import Assets from 'assets';
-import { AmountInput, Button, Card, SmallerDecimal, Tooltip } from 'components';
+import { Button, Card, SmallerDecimal, Tooltip } from 'components';
 import { NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import { RootState } from 'redux/store';
 
 import CsvFileInput from '../CsvFileInput/CsvFileInput';
@@ -26,6 +26,7 @@ interface StepProps {
     pools: PoolModel[];
     title: string;
     subtitle?: string;
+    disabled: boolean;
 }
 
 interface Props {
@@ -42,14 +43,12 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
-    onPrevStep: (prevAmount: string, nextAmount: string) => void;
     onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => Promise<true | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel | null;
     transferForm: FormikProps<{ amount: string }>;
     price: number;
-    isDepositDrop?: boolean;
 }
 
 type TxInfos = {
@@ -63,25 +62,13 @@ type TxInfos = {
 
 const DepositDropStep = (
     props: StepProps & {
-        amount: string;
         onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void) => Promise<true | null>;
-        initialAmount?: string;
-        onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
-    const { currentPool, price, balances, amount, initialAmount, title, onDepositDrop } = props;
-
-    const [depositAmount, setDepositAmount] = useState<string>(
-        initialAmount ? (NumbersUtils.convertUnitNumber(initialAmount) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6) : amount,
-    );
-    const [depositDrops, setDepositDrops] = useState<
-        {
-            winnerAddress: string;
-            amount: string;
-        }[]
-    >([]);
+    const { currentPool, balances, title, disabled, onDepositDrop } = props;
 
     const [inputType, setInputType] = useState<'csv' | 'manual'>('csv');
+
     const [manualInputs, setManualInputs] = useState<
         {
             winnerAddress: string;
@@ -89,23 +76,19 @@ const DepositDropStep = (
             errors: Record<string, string>;
         }[]
     >([]);
-    const [batch, setBatch] = useState(1);
-    const [batchTotal, setBatchTotal] = useState(0);
-    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
-    const [totalAmountError, setTotalAmountError] = useState('');
+    const [totalDepositAmount, setTotalDepositAmount] = useState(0);
     const [csvError, setCsvError] = useState('');
+    const [depositDrops, setDepositDrops] = useState<
+        {
+            winnerAddress: string;
+            amount: string;
+        }[]
+    >([]);
+
+    const [batch, setBatch] = useState(1);
+    const [batchTotal, setBatchTotal] = useState(1);
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositDrop);
-
-    const validateInput = (value: string) => {
-        const depositAmountNumber = Number(value);
-
-        if (Number.isNaN(depositAmountNumber)) {
-            setTotalAmountError(I18n.t('errors.generic.invalid', { field: 'deposit amount' }));
-        } else {
-            setTotalAmountError('');
-        }
-    };
 
     const validateInputs = (inputs: { amount: string; winnerAddress: string; errors: Record<string, string> }[]) => {
         let isValid = true;
@@ -128,6 +111,7 @@ const DepositDropStep = (
 
     const onValidCsv = useCallback((depositDrops: { amount: string; winnerAddress: string }[]) => {
         setDepositDrops([...depositDrops]);
+        setTotalDepositAmount(depositDrops.reduce((acc, drop) => NumbersUtils.convertUnitNumber(drop.amount) + acc, 0));
         setCsvError('');
     }, []);
 
@@ -163,7 +147,6 @@ const DepositDropStep = (
         input.amount = text;
 
         const amountToNumber = Number(text);
-        const cumulatedAmount = newInputs.reduce((acc, input, i) => (index === i ? 0 : Number(input.amount)) + acc, 0);
         const maxAmount = NumbersUtils.convertUnitNumber(balances.find((bal) => bal.denom === currentPool.nativeDenom)?.amount || '0');
         const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount);
 
@@ -183,20 +166,34 @@ const DepositDropStep = (
             delete input.errors.amount;
         }
 
-        if (!Number.isNaN(maxAmount) && amountToNumber + cumulatedAmount > maxAmount) {
-            setTotalAmountError(I18n.t('depositDrops.depositFlow.manualInputsErrors.greaterThanAvailable'));
-        } else {
-            setTotalAmountError('');
-        }
-
         setManualInputs([...newInputs]);
+
+        setTimeout(() => {
+            if (Object.keys(input.errors).length === 0) {
+                setTotalDepositAmount(manualInputs.reduce((acc, drop) => Number(drop.amount) + acc, 0));
+            }
+        }, 500);
     };
 
     useEffect(() => {
-        if (initialAmount) {
-            setDepositAmount((NumbersUtils.convertUnitNumber(initialAmount) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6));
-        }
-    }, [initialAmount]);
+        setDepositDrops([]);
+        setTotalDepositAmount(0);
+
+        setManualInputs(
+            inputType === 'manual'
+                ? [
+                      {
+                          winnerAddress: '',
+                          amount: '',
+                          errors: {},
+                      },
+                  ]
+                : [],
+        );
+    }, [inputType]);
+
+    const batchProgress = (batch / batchTotal) * 100;
+
     return (
         <div className='step-2'>
             <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
@@ -207,27 +204,14 @@ const DepositDropStep = (
                     <button className={`deposit-drop-input-type ${inputType === 'csv' ? 'active' : ''}`} disabled={inputType === 'csv'} onClick={() => setInputType('csv')}>
                         {I18n.t('depositDrops.depositFlow.csv')}
                     </button>
-                    <button
-                        className={`deposit-drop-input-type ${inputType === 'manual' ? 'active' : ''}`}
-                        disabled={inputType === 'manual'}
-                        onClick={() => {
-                            setInputType('manual');
-                            setManualInputs([
-                                {
-                                    winnerAddress: '',
-                                    amount: '',
-                                    errors: {},
-                                },
-                            ]);
-                        }}
-                    >
+                    <button className={`deposit-drop-input-type ${inputType === 'manual' ? 'active' : ''}`} disabled={inputType === 'manual'} onClick={() => setInputType('manual')}>
                         {I18n.t('depositDrops.depositFlow.manual')}
                     </button>
                 </div>
             </div>
             {inputType === 'csv' ? (
                 <>
-                    <CsvFileInput onValidCsv={onValidCsv} onInvalidCsv={onInvalidCsv} minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount)} />
+                    <CsvFileInput disabled={disabled} onValidCsv={onValidCsv} onInvalidCsv={onInvalidCsv} minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount)} />
                     <div className='download-btn-container'>
                         <a href={'/deposit_drop_template.csv'} target='_blank' className='download-csv-btn app-btn app-btn-outline w-100 mt-4' rel='noreferrer'>
                             <span>
@@ -245,6 +229,7 @@ const DepositDropStep = (
                                 <div className='d-flex flex-column'>
                                     <label className='text-start mb-2'>{I18n.t('depositDrops.depositFlow.winnerAddress')}</label>
                                     <input
+                                        disabled={disabled}
                                         className={`deposit-drop-address-input ${input.errors.winnerAddress && 'error'}`}
                                         spellCheck={false}
                                         value={manualInputs[index].winnerAddress || ''}
@@ -255,6 +240,7 @@ const DepositDropStep = (
                                 <div className={`input-container d-flex flex-column mt-5 ${input.errors.amount && 'error'}`}>
                                     <label className='text-start mb-2'>{I18n.t('depositDrops.depositFlow.amount')}</label>
                                     <input
+                                        disabled={disabled}
                                         className={`deposit-drop-amount-input ${input.errors.amount && 'error'}`}
                                         type='number'
                                         step='any'
@@ -267,10 +253,12 @@ const DepositDropStep = (
                                 </div>
                                 <Button
                                     outline
+                                    disabled={disabled}
                                     className='mt-5'
                                     onClick={() => {
                                         manualInputs.splice(index, 1);
 
+                                        setTotalDepositAmount(manualInputs.reduce((acc, drop) => Number(drop.amount) + acc, 0));
                                         setManualInputs([...manualInputs]);
                                     }}
                                 >
@@ -285,6 +273,7 @@ const DepositDropStep = (
                     {manualInputs.length < 5 && (
                         <Button
                             outline
+                            disabled={disabled}
                             className='mt-4 w-100'
                             onClick={() => {
                                 const newInputs = [
@@ -310,51 +299,20 @@ const DepositDropStep = (
             <div className='step2-input-container'>
                 <div className='d-flex flex-row justify-content-between align-items-baseline mt-4'>
                     <label className='label text-start'>{I18n.t('depositDrops.depositFlow.depositLabel', { denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase() })}</label>
-                    {!isModifying ? (
-                        <Button textOnly onClick={() => setIsModifying(true)}>
-                            {I18n.t('common.edit')}
-                        </Button>
-                    ) : (
-                        <label className='sublabel'>
-                            {I18n.t('withdraw.amountInput.sublabel', {
-                                amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === currentPool.nativeDenom)?.amount || '0')),
-                                denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
-                            })}
-                        </label>
-                    )}
+                    <label className='sublabel'>
+                        {I18n.t('withdraw.amountInput.sublabel', {
+                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === currentPool.nativeDenom)?.amount || '0')),
+                            denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
+                        })}
+                    </label>
                 </div>
-                {isModifying ? (
-                    <AmountInput
-                        isLoading={isLoading}
-                        className='mt-2'
-                        onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.nativeDenom === LumConstants.MicroLumDenom ? 1 : 0);
-                            setDepositAmount(amount);
-                        }}
-                        inputProps={{
-                            type: 'number',
-                            min: 0,
-                            value: Number(depositAmount) < 0 ? '0' : depositAmount,
-                            onChange: (e) => {
-                                setDepositAmount(e.target.value);
-                                validateInput(e.target.value);
-                            },
-                            max: balances.length > 0 ? balances[0].amount : '0',
-                            step: 'any',
-                            lang: 'en',
-                        }}
-                        price={price}
-                    />
-                ) : (
-                    <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
-                        <div className='asset-info d-flex flex-row'>
-                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(currentPool.nativeDenom))} className='me-3' alt='denom' />
-                            <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</span>
-                        </div>
-                        <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
-                    </Card>
-                )}
-                {totalAmountError ? <p className='error-message mb-0 mt-2 text-start'>{totalAmountError}</p> : null}
+                <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
+                    <div className='asset-info d-flex flex-row'>
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(currentPool.nativeDenom))} className='me-3' alt='denom' />
+                        <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</span>
+                    </div>
+                    <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(totalDepositAmount)} />}</div>
+                </Card>
             </div>
             <Card flat withoutPadding className='fees-warning mt-4'>
                 <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
@@ -365,7 +323,7 @@ const DepositDropStep = (
             </Card>
             {batchTotal > 1 && (
                 <Card flat withoutPadding className='d-flex flex-row justify-content-center batch-card mt-4'>
-                    <div className='batch-progress' style={{ width: `calc(${(batch / batchTotal) * 100}% + 4px)` }} />
+                    <div className='batch-progress' style={{ width: `calc(${batchProgress >= 100 ? 98 : batchProgress}% + 4px)` }} />
                     <span data-tooltip-id='batch-tooltip' data-tooltip-html={I18n.t('depositDrops.depositFlow.batchTooltip')} className='me-2'>
                         <img className='batch-card-info-icon' src={Assets.images.info} alt='info' />
                         <Tooltip id='batch-tooltip' delay={2000} />
@@ -391,13 +349,13 @@ const DepositDropStep = (
 
                     if (!res) {
                         setBatch(1);
-                        setBatchTotal(0);
+                        setBatchTotal(1);
                     }
                 }}
                 disabled={
+                    disabled ||
                     (inputType === 'csv' && (!!csvError || depositDrops.length === 0)) ||
                     (inputType === 'manual' && (manualInputs.length === 0 || !validateInputs(manualInputs))) ||
-                    !!totalAmountError ||
                     isLoading
                 }
                 className='deposit-cta w-100 position-relative mt-4'
@@ -498,33 +456,26 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
 };
 
 const DepositDropSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onDepositDrop, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
-    const [amount, setAmount] = useState('');
+    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onDepositDrop, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
-    const [initialAmount, setInitialAmount] = useState('0');
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
         setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
     }, [otherWallets, currentPool]);
 
-    useEffect(() => {
-        const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-        setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
-    }, [lumWallet]);
-
     return (
         <div id='depositDropFlow' className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
             <div className='card-content'>
                 {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
                     <DepositIbcTransfer
+                        disabled={!lumWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
                         currentPool={currentPool}
                         form={transferForm}
-                        onTransfer={(amount) => setAmount(amount)}
                         price={price}
                         pools={pools}
                         balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
@@ -533,10 +484,9 @@ const DepositDropSteps = (props: Props) => {
                 )}
                 {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
                     <DepositDropStep
+                        disabled={!lumWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         balances={lumWallet?.balances || []}
-                        initialAmount={initialAmount}
-                        amount={amount}
                         onDepositDrop={async (pool, deposits, callback) => {
                             const totalDepositAmount = deposits.reduce((acc, deposit) => acc + Number(deposit.amount), 0);
                             const res = await onDepositDrop(pool, deposits, callback);
@@ -558,7 +508,6 @@ const DepositDropSteps = (props: Props) => {
                         currentPool={currentPool}
                         pools={pools}
                         price={price}
-                        onPrevStep={onPrevStep}
                     />
                 )}
                 {currentStep === steps.length && txInfos && (

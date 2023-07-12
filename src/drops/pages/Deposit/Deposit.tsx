@@ -18,7 +18,7 @@ import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
-import DepositSteps from './components/DepositDropSteps/DepositDropSteps';
+import DepositDropSteps from './components/DepositDropSteps/DepositDropSteps';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
@@ -763,8 +763,7 @@ const Deposit = () => {
                 )}
                 <div className='col'>
                     <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
-                        <DepositSteps
-                            isDepositDrop
+                        <DepositDropSteps
                             transferForm={transferForm}
                             onNextStep={startTransition}
                             onDepositDrop={onDepositDrop}
@@ -786,14 +785,6 @@ const Deposit = () => {
                                 }).set('#depositFlow .deposit-flow-container', {
                                     y: 0,
                                 });
-                            }}
-                            onPrevStep={(prev, next) => {
-                                transferForm.setFieldValue('amount', next);
-                                setIbcModalPrevAmount(prev);
-                                setIbcModalDepositAmount(next);
-                                if (ibcModalRef.current) {
-                                    ibcModalRef.current.show();
-                                }
                             }}
                             onTwitterShare={() => setShareState('sharing')}
                             currentStep={currentStep}
