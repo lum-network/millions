@@ -233,10 +233,10 @@ export default {
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         keplr: {
-            description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.',
         },
         leap: {
-            description: 'You need an Interchain wallet to use Cosmos Millions.<br />Leap is a good alternative',
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.<br />Mobile friendly',
         },
         link: 'Learn more about Interchain wallets',
         later: "I'll come back later",
