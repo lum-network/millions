@@ -139,12 +139,13 @@ const DepositDropStep = (
             return;
         }
 
+        input.winnerAddress = text;
+
         if (!LumUtils.isAddressValid(text)) {
             input.errors = {
                 winnerAddress: I18n.t('errors.generic.invalid', { field: 'lum address' }),
             };
         } else {
-            input.winnerAddress = text;
             delete input.errors.winnerAddress;
         }
 
