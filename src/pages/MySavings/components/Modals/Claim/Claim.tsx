@@ -14,7 +14,7 @@ import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 
 import './Claim.scss';
@@ -258,6 +258,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     const steps = I18n.t(blockedCompound ? 'mySavings.claimModal.claimOnlySteps' : 'mySavings.claimModal.steps', {
         returnObjects: true,
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     return (

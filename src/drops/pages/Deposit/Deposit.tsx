@@ -525,7 +525,10 @@ const Deposit = () => {
             return null;
         }
 
-        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex });
+        const LIMIT = 6;
+        const batchCount = Math.ceil(deposits.length / LIMIT);
+
+        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex, batchCount });
     };
 
     useEffect(() => {

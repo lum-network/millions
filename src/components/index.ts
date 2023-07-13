@@ -20,5 +20,6 @@ export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
 export { default as IbcTransferModal } from './Modals/IbcTransfer/IbcTransfer';
 export { default as QuitDepositModal } from './Modals/QuitDeposit/QuitDeposit';
+export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
 
 export * from './ToastContent/ToastContent';

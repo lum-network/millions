@@ -160,12 +160,6 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                         <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
                             <NavLink to={NavigationConstants.DROPS_MY_DEPOSITS} className={({ isActive }) => `navlink position-relative ${isActive ? 'active' : ''}`}>
                                 {I18n.t('depositDrops.myDeposits.title')}
-                                {prizes && prizes.length > 3 && (
-                                    <div
-                                        className='position-absolute top-0 start-100 rounded-circle'
-                                        style={{ width: 15, height: 15, backgroundColor: '#FA7676', transform: 'translate(-50%, -40%)' }}
-                                    />
-                                )}
                             </NavLink>
                         </li>
                     )}

@@ -1,50 +1,69 @@
-import Assets from 'assets';
-import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
-import { DepositModel } from 'models';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Assets from 'assets';
+import { Button, Card, Modal, TransactionBatchProgress, SmallerDecimal, Steps, Tooltip } from 'components';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
-import { FirebaseConstants } from 'constant';
+import { DepositModel } from 'models';
 
-import './LeavePool.scss';
+import './CancelDropModal.scss';
 
-interface Props {
-    deposit: DepositModel | null;
-}
-
-const LeavePool = ({ deposit }: Props) => {
+const CancelDropModal = ({ deposits }: { deposits?: DepositModel[] }) => {
     const [currentStep, setCurrentStep] = useState(1);
+    const [batch, setBatch] = useState(0);
+    const [batchTotal, setBatchTotal] = useState(1);
+
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
+    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.cancelDrop);
+    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposits && deposits.length > 0 ? p.poolId.eq(deposits[0]?.poolId) : undefined)));
+
     const dispatch = useDispatch<Dispatch>();
-
-    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId.eq(deposit?.poolId) : undefined)));
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.leavePool);
-
-    const steps = I18n.t('mySavings.leavePoolModal.steps', {
+    const steps = I18n.t('depositDrops.cancelDropModal.steps', {
         returnObjects: true,
         provider: WalletUtils.getAutoconnectProvider(),
     });
 
-    const onLeavePool = async () => {
-        if (!deposit) {
+    const depositsTotalAmount = deposits ? deposits.reduce((acc, deposit) => NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') + acc, 0) : 0;
+
+    useEffect(() => {
+        const handler = () => {
+            setCurrentStep(1);
+        };
+
+        const cancelDropModal = document.getElementById('cancelDropModal');
+
+        if (cancelDropModal) {
+            cancelDropModal.addEventListener('hidden.bs.modal', handler);
+        }
+
+        return () => {
+            if (cancelDropModal) {
+                cancelDropModal.removeEventListener('hidden.bs.modal', handler);
+            }
+        };
+    }, []);
+
+    const onCancelDrop = async () => {
+        if (!pool || !deposits || deposits.length === 0) {
             return;
         }
 
-        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_CONFIRMED, {
-            pool_id: deposit.poolId?.toString(),
-            deposit_id: deposit.depositId?.toString(),
-            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0),
-            denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
+        const LIMIT = 6;
+        const batchCount = Math.ceil(deposits.length / LIMIT);
+
+        setBatchTotal(batchCount);
+
+        const res = await dispatch.wallet.cancelDrop({
+            deposits,
+            pool,
+            onCancelCallback: (index) => setBatch(index),
+            startIndex: batch,
+            batchCount,
         });
 
-        const res = await dispatch.wallet.leavePool({
-            poolId: deposit.poolId,
-            depositId: deposit.depositId,
-            denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
-        });
-
-        if (!res || (res && res.error)) {
+        if (!res) {
             setCurrentStep(1);
         } else {
             setCurrentStep(currentStep + 1);
@@ -54,29 +73,11 @@ const LeavePool = ({ deposit }: Props) => {
         }
     };
 
-    useEffect(() => {
-        const handler = () => {
-            setCurrentStep(1);
-        };
-
-        const leavePoolModal = document.getElementById('leavePoolModal');
-
-        if (leavePoolModal) {
-            leavePoolModal.addEventListener('hidden.bs.modal', handler);
-        }
-
-        return () => {
-            if (leavePoolModal) {
-                leavePoolModal.removeEventListener('hidden.bs.modal', handler);
-            }
-        };
-    }, []);
-
     return (
-        <Modal id='leavePoolModal' ref={modalRef} modalWidth={1080}>
+        <Modal id='cancelDropModal' ref={modalRef} modalWidth={1080}>
             <div className='row row-cols-1 row-cols-lg-2'>
                 <div className='col text-start'>
-                    <h1 className='steps-title'>{I18n.t('mySavings.leavePoolModal.title')}</h1>
+                    <h1 className='steps-title'>{I18n.t('depositDrops.cancelDropModal.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
                 <div className='col'>
@@ -102,11 +103,17 @@ const LeavePool = ({ deposit }: Props) => {
                                 <div className='w-100 mt-4'>
                                     <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
                                         <div className='asset-info d-flex flex-row'>
-                                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(deposit?.amount?.denom || ''))} className='me-3' alt='denom' />
-                                            <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(deposit?.amount?.denom || '').toUpperCase()}</span>
+                                            <img
+                                                src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(deposits && deposits[0] && deposits[0].amount ? deposits[0]?.amount.denom : ''))}
+                                                className='me-3'
+                                                alt='denom'
+                                            />
+                                            <span className='d-none d-sm-block'>
+                                                {DenomsUtils.getNormalDenom(deposits && deposits[0] && deposits[0].amount ? deposits[0]?.amount.denom : '').toUpperCase()}
+                                            </span>
                                         </div>
                                         <div className='deposit-amount'>
-                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0'))} />
+                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositsTotalAmount)} />
                                         </div>
                                     </Card>
                                 </div>
@@ -118,16 +125,17 @@ const LeavePool = ({ deposit }: Props) => {
                                         </span>
                                         {I18n.t('deposit.feesWarning')}
                                     </Card>
+                                    {batch > 0 && batchTotal > 1 && <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mt-4' />}
                                     <Button
                                         type='submit'
                                         onClick={() => {
-                                            onLeavePool().finally(() => null);
+                                            onCancelDrop().finally(() => null);
                                         }}
                                         className='w-100 mt-4'
                                         disabled={isLoading}
                                         loading={isLoading}
                                     >
-                                        {I18n.t('mySavings.leavePoolModal.cta')}
+                                        {I18n.t('depositDrops.cancelDropModal.cta')}
                                     </Button>
                                 </div>
                             </div>
@@ -139,4 +147,4 @@ const LeavePool = ({ deposit }: Props) => {
     );
 };
 
-export default LeavePool;
+export default CancelDropModal;

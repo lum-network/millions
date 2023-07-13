@@ -451,6 +451,40 @@ class LumClient {
 
         return aggregatedDeposits;
     };
+
+    cancelDepositDrop = async (wallet: LumWallet, deposits: DepositModel[]) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Build transaction message
+        const messages = [];
+
+        for (const deposit of deposits) {
+            messages.push(LumMessages.BuildMsgWithdrawDeposit(deposit.poolId, deposit.depositId, wallet.getAddress(), wallet.getAddress()));
+        }
+
+        // Define fees
+        const fee = WalletUtils.buildTxFee('25000', (400000 + messages.length * 120000).toFixed(0));
+
+        // Create the transaction document
+        const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
+
+        // Sign and broadcast the transaction using the client
+        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+
+        return {
+            hash: broadcastResult.hash,
+            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+        };
+    };
 }
 
 export default LumClient.Instance;

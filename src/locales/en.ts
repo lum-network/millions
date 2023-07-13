@@ -81,7 +81,9 @@ export default {
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
-        multiDeposit: 'Successfully made {{ count }} deposits'
+        multiDeposit: 'Successfully made {{ count }} deposits',
+        cancelDrop: 'Successfully cancelled your deposit drop',
+        cancelDropMulti: 'Successfully cancelled your deposit drops'
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -89,7 +91,9 @@ export default {
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
         claimAndCompound: 'Compounding prizes...',
-        multiDeposit: 'Depositing batch {{ index }}/{{ count }}...'
+        multiDeposit: 'Depositing batch {{ index }}/{{ count }}...',
+        cancelDrop: 'Cancelling deposit drops...',
+        cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...'
     },
     landing: {
         howItWorks: 'How it works',
@@ -246,7 +250,7 @@ export default {
     },
     chooseWalletModal: {
         keplr: 'Keplr Wallet',
-        leap: 'Leap Wallet'
+        leap: 'Leap Wallet',
     },
     logoutModal: {
         title: 'Are you sure you want\nto log out ?',
@@ -371,7 +375,7 @@ export default {
                 },
                 {
                     title: 'Select the tokens to transfer',
-                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your {{ provider }} wallet',
                 },
             ],
             cta: 'Transfer',
@@ -385,7 +389,7 @@ export default {
                     subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws!\nOR Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -395,7 +399,7 @@ export default {
                     subtitle: 'Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -436,7 +440,7 @@ export default {
                 },
                 {
                     title: 'Select the savings to redeem',
-                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your {{ provider }} wallet',
                 },
             ],
             warnings: {
@@ -515,7 +519,7 @@ export default {
         depositDeltaHint:
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
-        faucetHint: 'You can use our <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">faucet</a> on Discord to get $LUM for your deposit.'
+        faucetHint: 'You can use our <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">faucet</a> on Discord to get $LUM for your deposit.',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
@@ -554,13 +558,13 @@ export default {
             steps: [
                 {
                     title: 'Transfer {{ denom }} to Lum Network',
-                    subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network'
+                    subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
                 },
                 {
                     title: 'Make your Deposit Drop to the {{ denom }} Pool',
                     subtitle: "Boost someone 's day!",
                     cardTitle: 'Deposit Drop into {{ denom }} Pool',
-                }
+                },
             ],
             fileInputLabel: {
                 pending: 'Click or drag & drop to upload',
@@ -587,8 +591,24 @@ export default {
                 deposit: {
                     content: 'Tip:\nYour deposit operates on a no-loss principle and you can withdraw it whenever you like.',
                     howItWorks: 'See how it works',
-                }
-            }
-        }
+                },
+            },
+        },
+        cancelDropModal: {
+            title: 'Is it time to end the boosted chances, Cosmonaut?',
+            steps: [
+                {
+                    title: 'Choose the pool you want to leave',
+                    subtitle: 'Redeem your savings',
+                },
+                {
+                    title: 'Select the deposit drop to redeem',
+                    subtitle: 'Select the savings you want to redeem and accept the transaction on your {{ provider }} wallet',
+                    cardTitle: 'Cancel Deposit Drop',
+                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period',
+                },
+            ],
+            cta: 'Cancel Deposit Drop'
+        },
     },
 };

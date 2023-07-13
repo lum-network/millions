@@ -1,0 +1,20 @@
+@import 'src/styles/main';
+
+#cancelDropModal {
+    .card-step-subtitle {
+        a {
+            color: $color-grey;
+        }
+    }
+    .warnings {
+        p {
+            color: $color-failure;
+            font-size: 16px;
+        }
+
+        .app-card {
+            background-color: $color-failure-light;
+            font-size: 14px;
+        }
+    }
+}

@@ -5,7 +5,7 @@ import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, DepositModel } from 'models';
 import { RootModel } from '.';
 
 interface IbcTransferPayload {
@@ -27,7 +27,7 @@ interface SetWalletDataPayload {
         pagesLoaded: number;
     };
     deposits?: AggregatedDepositModel[];
-    depositsDrops?: AggregatedDepositModel[];
+    depositDrops?: AggregatedDepositModel[];
     prizes?: Prize[];
 }
 
@@ -61,6 +61,7 @@ interface DepositDropPayload {
         winnerAddress?: string;
     }[];
     startIndex: number;
+    batchCount: number;
     onDepositCallback?: (batchNum: number) => void;
 }
 
@@ -68,6 +69,14 @@ interface LeavePoolPayload {
     poolId: Long;
     denom: string;
     depositId: Long;
+}
+
+interface CancelDropPayload {
+    pool: PoolModel;
+    deposits: DepositModel[];
+    startIndex: number;
+    batchCount: number;
+    onCancelCallback?: (batchNum: number) => void;
 }
 
 interface WalletState {
@@ -114,6 +123,7 @@ export const wallet = createModel<RootModel>()({
                         balances: payload.balances || state.lumWallet.balances,
                         activities: payload.activities || state.lumWallet.activities,
                         deposits: payload.deposits || state.lumWallet.deposits,
+                        depositDrops: payload.depositDrops || state.lumWallet.depositDrops,
                         prizes: payload.prizes || state.lumWallet.prizes,
                     },
                 }),
@@ -543,54 +553,6 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async depositDrop(payload: DepositDropPayload, state) {
-            const { lumWallet } = state.wallet;
-            const { pool, startIndex, deposits, onDepositCallback } = payload;
-
-            const LIMIT = 6;
-            let lastBatch = startIndex;
-            const batchCount = Math.ceil(deposits.length / LIMIT);
-
-            const toastId = ToastUtils.showLoadingToast({
-                content: I18n.t(batchCount === 1 ? 'pending.deposit' : 'pending.multiDeposit', { index: 1, count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
-            });
-
-            try {
-                if (!lumWallet) {
-                    throw new Error(I18n.t('errors.client.noWalletConnected'));
-                }
-
-                for (let i = startIndex; i < batchCount; i++) {
-                    lastBatch = i;
-
-                    if (i > 0) {
-                        ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.multiDeposit', { index: i + 1, count: batchCount }) });
-                    }
-
-                    const toDeposit = deposits.slice(i * LIMIT, (i + 1) * LIMIT).map((d) => ({ ...d, pool }));
-
-                    const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
-
-                    if (!result || (result && result.error)) {
-                        throw new Error(result?.error || undefined);
-                    } else {
-                        onDepositCallback?.(i + 1);
-                    }
-                }
-
-                ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
-                });
-
-                return true;
-            } catch (e) {
-                onDepositCallback?.(lastBatch);
-                ToastUtils.updateLoadingToast(toastId, 'error', {
-                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
-                });
-                return null;
-            }
-        },
         async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
@@ -743,10 +705,108 @@ export const wallet = createModel<RootModel>()({
                 const res = await LumClient.getDepositsAndWithdrawalsDrops(address);
 
                 if (res) {
-                    dispatch.wallet.setLumWalletData({ depositsDrops: res });
+                    dispatch.wallet.setLumWalletData({ depositDrops: res });
                 }
             } catch (e) {
                 console.warn(e);
+            }
+        },
+        async depositDrop(payload: DepositDropPayload, state) {
+            const { lumWallet } = state.wallet;
+            const { pool, startIndex, deposits, onDepositCallback, batchCount } = payload;
+
+            const LIMIT = 6;
+            let lastBatch = startIndex;
+
+            const toastId = ToastUtils.showLoadingToast({
+                content: I18n.t(batchCount === 1 ? 'pending.deposit' : 'pending.multiDeposit', { index: 1, count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+            });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                for (let i = startIndex; i < batchCount; i++) {
+                    lastBatch = i;
+
+                    if (i > 0) {
+                        ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.multiDeposit', { index: i + 1, count: batchCount }) });
+                    }
+
+                    const toDeposit = deposits.slice(i * LIMIT, (i + 1) * LIMIT).map((d) => ({ ...d, pool }));
+
+                    const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    } else {
+                        onDepositCallback?.(i + 1);
+                    }
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+
+                return true;
+            } catch (e) {
+                onDepositCallback?.(lastBatch);
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+                return null;
+            }
+        },
+        async cancelDrop(payload: CancelDropPayload, state) {
+            const { lumWallet } = state.wallet;
+            const { pool, startIndex, deposits, batchCount, onCancelCallback } = payload;
+
+            const LIMIT = 6;
+            let lastBatch = startIndex;
+
+            const toastId = ToastUtils.showLoadingToast({
+                content: I18n.t(batchCount === 1 ? 'pending.cancelDrop' : 'pending.cancelDropMulti', {
+                    index: 1,
+                    count: batchCount,
+                    denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
+                }),
+            });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                for (let i = startIndex; i < batchCount; i++) {
+                    lastBatch = i;
+
+                    if (i > 0) {
+                        ToastUtils.updateToastContent(toastId, { content: I18n.t('pending.cancelDropMulti', { index: i + 1, count: batchCount }) });
+                    }
+
+                    const toCancel = deposits.slice(i * LIMIT, (i + 1) * LIMIT);
+
+                    const result = await LumClient.cancelDepositDrop(lumWallet.innerWallet, toCancel);
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    } else {
+                        onCancelCallback?.(i + 1);
+                    }
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: I18n.t(batchCount === 1 ? 'success.cancelDrop' : 'success.cancelDropMulti', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+
+                return true;
+            } catch (e) {
+                onCancelCallback?.(lastBatch);
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+                return null;
             }
         },
     }),

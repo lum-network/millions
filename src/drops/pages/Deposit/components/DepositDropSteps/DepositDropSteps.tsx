@@ -8,7 +8,7 @@ import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 import Assets from 'assets';
-import { Button, Card, SmallerDecimal, Tooltip } from 'components';
+import { Button, Card, TransactionBatchProgress, SmallerDecimal, Tooltip } from 'components';
 import { NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
@@ -194,8 +194,6 @@ const DepositDropStep = (
         );
     }, [inputType]);
 
-    const batchProgress = (batch / batchTotal) * 100;
-
     return (
         <div className='step-2'>
             <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
@@ -323,16 +321,7 @@ const DepositDropStep = (
                 </span>
                 {I18n.t('deposit.feesWarning')}
             </Card>
-            {batch > 0 && batchTotal > 1 && (
-                <Card flat withoutPadding className='d-flex flex-row justify-content-center batch-card mt-4'>
-                    <div className='batch-progress' style={{ width: `calc(${batchProgress}% + 4px)` }} />
-                    <span data-tooltip-id='batch-tooltip' data-tooltip-html={I18n.t('depositDrops.depositFlow.batchTooltip')} className='me-2'>
-                        <img className='batch-card-info-icon' src={Assets.images.info} alt='info' />
-                        <Tooltip id='batch-tooltip' delay={2000} />
-                    </span>
-                    <div style={{ zIndex: 2 }}>{I18n.t('depositDrops.depositFlow.batch', { count: batch, total: batchTotal })}</div>
-                </Card>
-            )}
+            {batch > 0 && batchTotal > 1 && <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mt-4' />}
             <Button
                 type='button'
                 onClick={async () => {
