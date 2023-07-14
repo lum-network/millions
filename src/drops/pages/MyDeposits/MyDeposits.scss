@@ -19,5 +19,47 @@
             line-height: normal;
             text-transform: uppercase;
         }
+
+        .deposit-drop-amount {
+            font-size: 18px;
+            font-weight: 400;
+            color: $color-black;
+        }
+
+        .deposit-drop-amount-denom {
+            font-size: 18px;
+            font-weight: 400;
+            color: $color-primary;
+            text-transform: uppercase;
+            line-height: 18px;
+        }
+
+        .deposit-drop-usd-amount {
+            font-weight: 300;
+            font-size: 12px;
+            color: $color-dark-grey;
+        }
+    }
+
+    .deposit-drop-state {
+        width: fit-content;
+        padding: 7px 14px;
+
+        box-shadow: 0 4px 23px #f1edff;
+
+        background: #8c8c8c;
+        color: white;
+
+        font-size: 12px;
+        &.success {
+            background: $color-success;
+        }
+
+        &.failure {
+            background: $color-failure;
+        }
+        &.pending {
+            font-size: 10px;
+        }
     }
 }

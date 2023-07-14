@@ -83,7 +83,7 @@ export default {
         logOut: 'You have been logged out.',
         multiDeposit: 'Successfully made {{ count }} deposits',
         cancelDrop: 'Successfully cancelled your deposit drop',
-        cancelDropMulti: 'Successfully cancelled your deposit drops'
+        cancelDropMulti: 'Successfully cancelled your deposit drops',
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -93,7 +93,7 @@ export default {
         claimAndCompound: 'Compounding prizes...',
         multiDeposit: 'Depositing batch {{ index }}/{{ count }}...',
         cancelDrop: 'Cancelling deposit drops...',
-        cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...'
+        cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...',
     },
     landing: {
         howItWorks: 'How it works',
@@ -536,6 +536,11 @@ export default {
             title: 'My Deposit Drops',
             depositDrops_one: 'Deposit Drop',
             depositDrops_other: 'Deposit Drops',
+            wallet_one: 'Wallet',
+            wallet_other: 'Wallets',
+            activeSince_one: 'Active since {{ count }} day',
+            activeSince_other: 'Active since {{ count }} days',
+            seeAll: 'See all',
         },
         pools: {
             title: 'Deposit Drops Tool',
@@ -610,7 +615,7 @@ export default {
                     cardSubtitle: 'Redeem your savings is submitted to an unbonding period',
                 },
             ],
-            cta: 'Cancel Deposit Drop'
+            cta: 'Cancel Deposit Drop',
         },
     },
 };
