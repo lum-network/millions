@@ -4,7 +4,7 @@ import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-n
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants } from 'constant';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, DepositModel } from 'models';
 import { RootModel } from '.';
 
@@ -259,7 +259,12 @@ export const wallet = createModel<RootModel>()({
 
                         WalletUtils.storeAutoconnectKey(provider);
 
-                        await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
+                        if (location.pathname.includes(NavigationConstants.DROPS)) {
+                            await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true, drops: true });
+                        } else {
+                            await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
+                        }
+
                         if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
 
                         Firebase.signInAnonymous().finally(() => null);
@@ -361,20 +366,30 @@ export const wallet = createModel<RootModel>()({
                 console.warn((e as Error).message);
             }
         },
-        async reloadWalletInfos({ address, force = true }: { address: string; force?: boolean }, state) {
+        async reloadWalletInfos({ address, force = true, drops = false }: { address: string; force?: boolean; drops?: boolean }, state) {
             if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 3) {
                 return;
             }
 
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
-            await dispatch.stats.fetchStats();
+            if (!drops) {
+                await dispatch.stats.fetchStats();
+            }
             await dispatch.pools.fetchPools();
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
-            await dispatch.wallet.getPrizes(address);
+            if (!drops) {
+                await dispatch.wallet.getPrizes(address);
+            }
             await dispatch.wallet.getActivities({ address, reset: true });
-            await dispatch.wallet.getDepositsAndWithdrawals(address);
+            if (!drops) {
+                await dispatch.wallet.getDepositsAndWithdrawals(address);
+            }
+
+            if (drops) {
+                await dispatch.wallet.getDepositsAndWithdrawalsDrops(address);
+            }
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {

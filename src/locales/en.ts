@@ -534,6 +534,8 @@ export default {
     depositDrops: {
         myDeposits: {
             title: 'My Deposit Drops',
+            depositDrops_one: 'Deposit Drop',
+            depositDrops_other: 'Deposit Drops',
         },
         pools: {
             title: 'Deposit Drops Tool',

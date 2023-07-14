@@ -1,0 +1,23 @@
+@import 'src/styles/main';
+
+.drops-my-deposits {
+    .drops-card {
+        background-color: $color-primary-light;
+        border-radius: 8px;
+
+        .deposit-drop-title {
+            font-size: 18px;
+            color: $color-primary;
+            font-weight: 400;
+        }
+
+        .deposit-drop-date {
+            color: $color-black;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            text-transform: uppercase;
+        }
+    }
+}
