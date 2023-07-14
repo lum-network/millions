@@ -6,7 +6,6 @@ import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
-import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
 
