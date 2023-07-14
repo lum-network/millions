@@ -6,7 +6,6 @@ import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
-import Skeleton from 'react-loading-skeleton';
 
 import Assets from 'assets';
 
@@ -169,7 +168,7 @@ const DepositStep = (
                             <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
                             <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}</span>
                         </div>
-                        <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
+                        <div className='deposit-amount'>{<SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
                     </Card>
                 )}
             </div>
