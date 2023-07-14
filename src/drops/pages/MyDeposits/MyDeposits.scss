@@ -4,6 +4,9 @@
     .drops-card {
         background-color: $color-primary-light;
         border-radius: 8px;
+        &:not(:last-child) {
+            margin-bottom: 24px;
+        }
 
         .deposit-drop-title {
             font-size: 18px;

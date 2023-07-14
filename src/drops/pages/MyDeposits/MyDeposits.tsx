@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import { DepositDropsCard } from 'drops/components';
-import { Button, Card, SmallerDecimal } from 'components';
+import { Button, Card, Modal, SmallerDecimal } from 'components';
 import { NavigationConstants } from 'constant';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
@@ -9,12 +9,17 @@ import { AggregatedDepositModel } from 'models';
 import Assets from 'assets';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
+import DropsDetailsModal from './components/Modals/DropsDetailsModal/DropsDetailsModal';
 
 import './MyDeposits.scss';
 
 const MyDeposits = () => {
     const depositDrops = useSelector((state: RootState) => state.wallet?.lumWallet?.depositDrops);
     const prices = useSelector((state: RootState) => state.stats?.prices);
+
+    const dropsDetailsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
+    const [selectedDepositDrop, setSelectedDepositDrop] = useState<AggregatedDepositModel | null>(null);
 
     console.log('depositDrops', depositDrops);
 
@@ -44,10 +49,20 @@ const MyDeposits = () => {
                     <span>{`${drop.deposits.length} ${I18n.t('depositDrops.myDeposits.wallet', { count: drop.deposits.length })}`}</span>
                 </div>
                 <div className='col-12 col-xl-2'>
-                    <div className='deposit-drop-state rounded-pill text-nowrap success'>{I18n.t('depositDrops.myDeposits.activeSince', { count: dayjs(drop.createdAt).day() })}</div>
+                    <div className='deposit-drop-state rounded-pill text-nowrap success'>{I18n.t('depositDrops.myDeposits.activeSince', { count: dayjs().diff(dayjs(drop.createdAt), 'day') })}</div>
                 </div>
                 <div className='d-flex col-12 col-xl-2 justify-content-end'>
-                    <Button outline>{I18n.t('depositDrops.myDeposits.seeAll')}</Button>
+                    <Button
+                        onClick={() => {
+                            if (drop.deposits.length > 0) {
+                                setSelectedDepositDrop(drop);
+                                dropsDetailsModalRef.current?.show();
+                            }
+                        }}
+                        outline
+                    >
+                        {I18n.t('depositDrops.myDeposits.seeAll')}
+                    </Button>
                 </div>
             </div>
         );
@@ -58,6 +73,7 @@ const MyDeposits = () => {
             <h2 className='mb-5'>{I18n.t('depositDrops.myDeposits.title')}</h2>
             {depositDrops && depositDrops.length ? <Card className='mb-5'>{depositDrops.map((drop, index) => renderDepositDrop(drop, index))}</Card> : null}
             <DepositDropsCard cta={I18n.t('depositDrops.card.ctaFromDeposits')} link={NavigationConstants.DROPS_POOLS} />
+            <DropsDetailsModal drops={selectedDepositDrop} poolDenom={DenomsUtils.getNormalDenom(selectedDepositDrop?.amount?.denom || '')} prices={prices} modalRef={dropsDetailsModalRef} />
         </div>
     );
 };

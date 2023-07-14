@@ -538,6 +538,7 @@ export default {
             depositDrops_other: 'Deposit Drops',
             wallet_one: 'Wallet',
             wallet_other: 'Wallets',
+            activeSince_zero: 'Active since today',
             activeSince_one: 'Active since {{ count }} day',
             activeSince_other: 'Active since {{ count }} days',
             seeAll: 'See all',
