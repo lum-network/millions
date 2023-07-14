@@ -42,7 +42,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                             <img height={50} width={50} src={DenomsUtils.getIconFromDenom(am.denom.toLowerCase())} alt={am.denom} />
                             <div className='d-flex flex-column ms-3'>
                                 <div className='deposit-amount text-start'>
-                                    {am.amount} {DenomsUtils.getNormalDenom(am.denom).toUpperCase()}
+                                    <SmallerDecimal nb={am.amount} /> {DenomsUtils.getNormalDenom(am.denom).toUpperCase()}
                                 </div>
                                 <small className='deposit-infos text-start'>
                                     {numeral(am.amount)
@@ -165,7 +165,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                     amount.push({
                         amount: numeral(
                             prizes.filter((p) => p.amount?.denom === prize.amount?.denom).reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0),
-                        ).format('0,0'),
+                        ).format('0,0.000000'),
                         denom: DenomsUtils.getNormalDenom(prize.amount?.denom || ''),
                     });
                 }
