@@ -18,7 +18,7 @@ const MyDeposits = () => {
 
     const renderDepositDrop = (drop: AggregatedDepositModel, index: number) => {
         return (
-            <div className='drops-card p-4'>
+            <div key={index} className='drops-card p-4'>
                 <div className='d-flex'>
                     <img width={40} height={40} alt='deposit drop' src={Assets.images.depositDrop} />
                     <div className='ms-3 d-flex flex-column'>
