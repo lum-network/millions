@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Skeleton from 'react-loading-skeleton';
 import { FormikProps } from 'formik';
 import numeral from 'numeral';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
@@ -311,7 +310,9 @@ const DepositDropStep = (
                         <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(currentPool.nativeDenom))} className='me-3' alt='denom' />
                         <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</span>
                     </div>
-                    <div className='deposit-amount'>{isLoading ? <Skeleton width={20} /> : <SmallerDecimal nb={NumbersUtils.formatTo6digit(totalDepositAmount)} />}</div>
+                    <div className='deposit-amount'>
+                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(totalDepositAmount)} />
+                    </div>
                 </Card>
             </div>
             <Card flat withoutPadding className='fees-warning mt-4'>
@@ -373,7 +374,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                                 {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
                             </div>
                             <small className='deposit-infos text-start'>
-                                {numeral(txInfos.amount).multiply(price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })}
+                                {numeral(txInfos.amount).multiply(price).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: txInfos.poolId })} - {txInfos.numOfWallets} Wallets
                             </small>
                         </div>
                     </div>
