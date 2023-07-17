@@ -21,8 +21,6 @@ const MyDeposits = () => {
 
     const [selectedDepositDrop, setSelectedDepositDrop] = useState<AggregatedDepositModel | null>(null);
 
-    console.log('depositDrops', depositDrops);
-
     const renderDepositDrop = (drop: AggregatedDepositModel, index: number) => {
         const usdPrice = NumbersUtils.convertUnitNumber(drop.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(drop.amount?.denom || '')] || 0;
 
