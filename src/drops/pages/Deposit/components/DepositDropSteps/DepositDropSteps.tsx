@@ -426,8 +426,8 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                     onClick={() => {
                         window.open(
                             `${NavigationConstants.TWEET_URL}?text=${encodeURI(
-                                I18n.t('deposit.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
-                            )}`,
+                                I18n.t('depositDrops.depositFlow.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
+                            ).replaceAll('#', '%23')}`,
                             '_blank',
                         );
                         onTwitterShare();
