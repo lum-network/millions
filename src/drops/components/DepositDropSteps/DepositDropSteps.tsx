@@ -7,7 +7,7 @@ import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 
 import Assets from 'assets';
-import { Button, Card, TransactionBatchProgress, SmallerDecimal, Tooltip } from 'components';
+import { Button, Card, TransactionBatchProgress, SmallerDecimal, Tooltip, DepositIbcTransfer } from 'components';
 import { NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
@@ -16,7 +16,6 @@ import { RootState } from 'redux/store';
 import CsvFileInput from '../CsvFileInput/CsvFileInput';
 
 import './DepositDropSteps.scss';
-import DepositIbcTransfer from 'components/DepositIbcTransfer/DepositIbcTransfer';
 
 interface StepProps {
     currentPool: PoolModel;

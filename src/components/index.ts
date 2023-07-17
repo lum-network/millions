@@ -21,5 +21,6 @@ export { default as Pagination } from './Pagination/Pagination';
 export { default as IbcTransferModal } from './Modals/IbcTransfer/IbcTransfer';
 export { default as QuitDepositModal } from './Modals/QuitDeposit/QuitDeposit';
 export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
+export { default as DepositIbcTransfer } from './DepositIbcTransfer/DepositIbcTransfer';
 
 export * from './ToastContent/ToastContent';

@@ -3,7 +3,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, Location } from '
 import { Firebase } from 'utils';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { HomePage, MySavingsPage, PoolsPage, DepositPage, LandingPage, Error404, Winners, PoolDetailsPage } from 'pages';
-import { DropsMyDepositsPage, DropsPoolsPage, DepositPage as DepositDropPage } from 'drops/pages';
+import { DropsMyDepositsPage, DropsPoolsPage } from 'drops/pages';
 import { MainLayout } from 'layout';
 
 export const RouteListener = ({ location }: { location: Location }): JSX.Element | null => {
@@ -20,8 +20,8 @@ export const router = createBrowserRouter(
             <Route path={NavigationConstants.HOME} element={<HomePage />} />
             <Route path={NavigationConstants.WINNERS} element={<Winners />} />
             <Route path={NavigationConstants.POOLS} element={<PoolsPage />} />
-            <Route path={`${NavigationConstants.POOLS}/:denom/:poolId`} element={<DepositPage />} />
-            <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage />} />
+            <Route path={`${NavigationConstants.POOLS}/:denom/:poolId`} element={<DepositPage isDrop={false} />} />
+            <Route path={`${NavigationConstants.POOLS}/:denom`} element={<DepositPage isDrop={false} />} />
             <Route path={`${NavigationConstants.POOL_DETAILS}/:denom`} element={<PoolDetailsPage />} />
             <Route path={`${NavigationConstants.POOL_DETAILS}/:denom/:poolId`} element={<PoolDetailsPage />} />
             <Route path={NavigationConstants.MY_SAVINGS} element={<MySavingsPage />} />
@@ -30,8 +30,8 @@ export const router = createBrowserRouter(
                 <Route path={NavigationConstants.DROPS} element={<DropsPoolsPage />} />
                 <Route path={NavigationConstants.DROPS_POOLS} element={<DropsPoolsPage />} />
                 <Route path={NavigationConstants.DROPS_MY_DEPOSITS} element={<DropsMyDepositsPage />} />
-                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom/:poolId`} element={<DepositDropPage />} />
-                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom`} element={<DepositDropPage />} />
+                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom/:poolId`} element={<DepositPage isDrop />} />
+                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom`} element={<DepositPage isDrop={false} />} />
             </Route>
             <Route path='*' element={<Error404 />} />
         </Route>,

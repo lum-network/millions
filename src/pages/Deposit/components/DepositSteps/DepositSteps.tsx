@@ -10,11 +10,9 @@ import { RootState } from 'redux/store';
 import Assets from 'assets';
 
 import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
-import { AmountInput, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
+import { AmountInput, Button, Card, PoolSelect, SmallerDecimal, Tooltip, DepositIbcTransfer } from 'components';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
-
-import DepositIbcTransfer from '../../../../components/DepositIbcTransfer/DepositIbcTransfer';
 
 import './DepositSteps.scss';
 

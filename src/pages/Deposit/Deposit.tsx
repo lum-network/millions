@@ -12,6 +12,7 @@ import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { Card, Lottie, Modal, Steps, QuitDepositModal, IbcTransferModal } from 'components';
+import { DepositDropSteps } from 'drops/components';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
@@ -25,7 +26,7 @@ import './Deposit.scss';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
-const Deposit = () => {
+const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
 
     const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
@@ -40,7 +41,11 @@ const Deposit = () => {
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(
-        existsInLumBalances && denom !== LumConstants.LumDenom && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
+        existsInLumBalances &&
+            denom !== LumConstants.LumDenom &&
+            ((!isDrop && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0')) || isDrop)
+            ? 1
+            : 0,
     );
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
@@ -101,7 +106,7 @@ const Deposit = () => {
     const blocker = useBlocker(transferForm.dirty && currentStep < 2);
     const visibilityState = useVisibilityState();
 
-    const steps = I18n.t('deposit.steps', {
+    const steps = I18n.t(isDrop ? 'depositDrops.depositFlow.steps' : 'deposit.steps', {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
@@ -217,7 +222,6 @@ const Deposit = () => {
     const step2Timeline = () => {
         const tl = gsap.timeline(GSAP_DEFAULT_CONFIG);
         const ctaST = new SplitText('#depositFlow .step-2 .deposit-cta .deposit-cta-text', { type: 'words' });
-        const cardStepSubtitleST = new SplitText('#depositFlow .step-2 .card-step-subtitle', { type: 'lines' });
 
         tl.from(
             '#depositFlow .step-2 .card-step-title',
@@ -226,8 +230,37 @@ const Deposit = () => {
                 y: 50,
             },
             '<0.1',
-        )
-            .from(
+        );
+
+        if (isDrop) {
+            tl.from(
+                '#depositFlow .step-2 .input-type-container',
+                {
+                    opacity: 0,
+                    y: 50,
+                },
+                '<0.1',
+            )
+                .from(
+                    '#depositFlow .step-2 .csv-file-input',
+                    {
+                        opacity: 0,
+                        y: 50,
+                    },
+                    '<0.1',
+                )
+                .from(
+                    '#depositFlow .step-2 .download-btn-container',
+                    {
+                        opacity: 0,
+                        y: 50,
+                    },
+                    '<0.1',
+                );
+        } else {
+            const cardStepSubtitleST = new SplitText('#depositFlow .step-2 .card-step-subtitle', { type: 'lines' });
+
+            tl.from(
                 cardStepSubtitleST.lines,
                 {
                     opacity: 0,
@@ -235,25 +268,26 @@ const Deposit = () => {
                     stagger: 0.1,
                 },
                 '<0.1',
-            )
-            .from(
+            ).from(
                 '#depositFlow .step-2 .deposit-warning',
                 {
                     opacity: 0,
                     y: 50,
                 },
                 '<0.1',
-            )
-            .from(
-                '#depositFlow .step-2 .step2-input-container',
-                {
-                    opacity: 0,
-                    y: 50,
-                },
-                '<0.1',
             );
+        }
 
-        if (pools.length > 1) {
+        tl.from(
+            '#depositFlow .step-2 .step2-input-container',
+            {
+                opacity: 0,
+                y: 50,
+            },
+            '<0.1',
+        );
+
+        if (!isDrop && pools.length > 1) {
             tl.from(
                 '#depositFlow .step-2 .custom-select',
                 {
@@ -545,6 +579,31 @@ const Deposit = () => {
         return await dispatch.wallet.depositToPool({ pool: poolToDeposit, amount: depositAmount });
     };
 
+    const onDepositDrop = async (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => {
+        const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, lumWallet?.balances || []));
+        const depositAmountNumber = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
+
+        if (depositAmountNumber > maxAmount) {
+            const prev = depositAmountNumber.toFixed(6);
+            const next = (depositAmountNumber - maxAmount).toFixed(6);
+
+            transferForm.setFieldValue('amount', next);
+            setIbcModalPrevAmount(prev);
+            setIbcModalDepositAmount(next);
+
+            if (ibcModalRef.current) {
+                ibcModalRef.current.show();
+            }
+
+            return null;
+        }
+
+        const LIMIT = 6;
+        const batchCount = Math.ceil(deposits.length / LIMIT);
+
+        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex, batchCount });
+    };
+
     useEffect(() => {
         if (blocker.state === 'blocked') {
             if (!transferForm.dirty) {
@@ -710,13 +769,12 @@ const Deposit = () => {
                 }
             });
 
-            if (withinDepositDelta) {
-                timeline.from('#depositFlow .deposit-delta-card', {
-                    y: 50,
-                    opacity: 0,
-                    duration: 0.8,
-                });
-            }
+            timeline.from('#depositFlow .deposit-delta-card', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+            });
 
             timeline.add(cardTimeline(), '<0.2');
 
@@ -755,6 +813,7 @@ const Deposit = () => {
         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_FLOW, {
             step: currentStep,
             denom: denom,
+            is_drop: isDrop,
         });
     }, [currentStep]);
 
@@ -770,6 +829,38 @@ const Deposit = () => {
 
     const isLastStep = currentStep >= steps.length;
 
+    const depositComponentCommonProps = {
+        transferForm,
+        onNextStep: startTransition,
+        onFinishDeposit: (callback: () => void) => {
+            const tl = gsap.timeline({
+                ...GSAP_DEFAULT_CONFIG,
+                onComplete: () => {
+                    callback();
+                    gsap.set('#depositFlow .deposit-flow-container', {
+                        opacity: 1,
+                        delay: 0.2,
+                    });
+                },
+            });
+
+            tl.to('#depositFlow .deposit-flow-container', {
+                opacity: 0,
+                y: -50,
+            }).set('#depositFlow .deposit-flow-container', {
+                y: 0,
+            });
+        },
+        onTwitterShare: () => setShareState('sharing'),
+        currentStep,
+        steps,
+        pools: pools.filter((pool) => pool.nativeDenom === 'u' + denom),
+        currentPool: pool,
+        price: prices?.[denom || ''] || 0,
+        lumWallet,
+        otherWallets,
+    };
+
     return (
         <div id='depositFlow' ref={depositFlowContainerRef}>
             <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
@@ -777,48 +868,36 @@ const Deposit = () => {
                     <div className='col'>
                         <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                        {withinDepositDelta && (
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                            <img src={Assets.images.faucet} alt='' />
+                            <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
+                                <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.faucetHint') }} />
+                            </div>
+                        </Card>
+                        {isDrop ? (
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                                <img src={Assets.images.questionMark} alt='' />
+                                <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
+                                    <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.content') }} />
+                                    <a
+                                        className='text-center text-sm-start'
+                                        style={{ width: 'fit-content' }}
+                                        href={NavigationConstants.DEPOSITS_AND_WITHDRAWALS_DOC}
+                                        dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.howItWorks') }}
+                                    />
+                                </div>
+                            </Card>
+                        ) : withinDepositDelta ? (
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
                                 <img src={Assets.images.questionMark} alt='' />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
                             </Card>
-                        )}
+                        ) : null}
                     </div>
                 )}
                 <div className='col'>
                     <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
-                        <DepositSteps
-                            transferForm={transferForm}
-                            onNextStep={startTransition}
-                            onDeposit={onDeposit}
-                            onFinishDeposit={(callback) => {
-                                const tl = gsap.timeline({
-                                    ...GSAP_DEFAULT_CONFIG,
-                                    onComplete: () => {
-                                        callback();
-                                        gsap.set('#depositFlow .deposit-flow-container', {
-                                            opacity: 1,
-                                            delay: 0.2,
-                                        });
-                                    },
-                                });
-
-                                tl.to('#depositFlow .deposit-flow-container', {
-                                    opacity: 0,
-                                    y: -50,
-                                }).set('#depositFlow .deposit-flow-container', {
-                                    y: 0,
-                                });
-                            }}
-                            onTwitterShare={() => setShareState('sharing')}
-                            currentStep={currentStep}
-                            steps={steps}
-                            pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}
-                            currentPool={pool}
-                            price={prices?.[denom || ''] || 0}
-                            lumWallet={lumWallet}
-                            otherWallets={otherWallets}
-                        />
+                        {isDrop ? <DepositDropSteps {...depositComponentCommonProps} onDepositDrop={onDepositDrop} /> : <DepositSteps {...depositComponentCommonProps} onDeposit={onDeposit} />}
                         {isLastStep && (
                             <Lottie
                                 className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
