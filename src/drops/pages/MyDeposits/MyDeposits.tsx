@@ -1,25 +1,62 @@
-import React, { useRef, useState } from 'react';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
-import { DepositDropsCard } from 'drops/components';
-import { Button, Card, Modal, SmallerDecimal } from 'components';
-import { NavigationConstants } from 'constant';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { useSelector } from 'react-redux';
-import { RootState } from 'redux/store';
-import { AggregatedDepositModel } from 'models';
-import Assets from 'assets';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
+
+import Assets from 'assets';
+
+import { Button, Card, Modal, SmallerDecimal } from 'components';
+import { NavigationConstants } from 'constant';
+import { DepositDropsCard } from 'drops/components';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { RootState } from 'redux/store';
+import { AggregatedDepositModel, DepositModel } from 'models';
+
 import DropsDetailsModal from './components/Modals/DropsDetailsModal/DropsDetailsModal';
+import EditDepositModal from './components/Modals/EditDepositModal/EditDepositModal';
+import CancelDropModal from './components/Modals/CancelDropModal/CancelDropModal';
 
 import './MyDeposits.scss';
 
 const MyDeposits = () => {
+    const [selectedDeposit, setSelectedDeposit] = useState<DepositModel | null>(null);
+    const [selectedDepositDrop, setSelectedDepositDrop] = useState<AggregatedDepositModel | null>(null);
+    const dropsDetailsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+
     const depositDrops = useSelector((state: RootState) => state.wallet?.lumWallet?.depositDrops);
     const prices = useSelector((state: RootState) => state.stats?.prices);
 
-    const dropsDetailsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    useEffect(() => {
+        const handler = () => {
+            setSelectedDeposit(null);
+        };
 
-    const [selectedDepositDrop, setSelectedDepositDrop] = useState<AggregatedDepositModel | null>(null);
+        const cancelDropModal = document.getElementById('cancelDropModal');
+        const editDepositModal = document.getElementById('editDepositModal');
+
+        if (cancelDropModal) {
+            cancelDropModal.addEventListener('hidden.bs.modal', handler);
+        }
+
+        if (editDepositModal) {
+            editDepositModal.addEventListener('hidden.bs.modal', handler);
+        }
+
+        return () => {
+            if (cancelDropModal) {
+                cancelDropModal.removeEventListener('hidden.bs.modal', handler);
+            }
+
+            if (editDepositModal) {
+                editDepositModal.removeEventListener('hidden.bs.modal', handler);
+            }
+        };
+    }, []);
+
+    const onAction = (deposit: DepositModel) => {
+        setSelectedDeposit(deposit);
+    };
 
     const renderDepositDrop = (drop: AggregatedDepositModel, index: number) => {
         const usdPrice = NumbersUtils.convertUnitNumber(drop.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(drop.amount?.denom || '')] || 0;
@@ -71,7 +108,16 @@ const MyDeposits = () => {
             <h2 className='mb-5'>{I18n.t('depositDrops.myDeposits.title')}</h2>
             {depositDrops && depositDrops.length ? <Card className='mb-5'>{depositDrops.map((drop, index) => renderDepositDrop(drop, index))}</Card> : null}
             <DepositDropsCard cta={I18n.t('depositDrops.card.ctaFromDeposits')} link={NavigationConstants.DROPS_POOLS} />
-            <DropsDetailsModal drops={selectedDepositDrop} poolDenom={DenomsUtils.getNormalDenom(selectedDepositDrop?.amount?.denom || '')} prices={prices} modalRef={dropsDetailsModalRef} />
+            <DropsDetailsModal
+                drops={selectedDepositDrop}
+                poolDenom={DenomsUtils.getNormalDenom(selectedDepositDrop?.amount?.denom || '')}
+                prices={prices}
+                modalRef={dropsDetailsModalRef}
+                onEdit={onAction}
+                onCancel={onAction}
+            />
+            <EditDepositModal deposit={selectedDeposit} />
+            <CancelDropModal deposits={selectedDeposit ? [selectedDeposit] : (selectedDepositDrop?.deposits as DepositModel[] | undefined)} />
         </div>
     );
 };

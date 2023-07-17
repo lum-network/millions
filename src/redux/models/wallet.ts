@@ -824,5 +824,35 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
+        async editDrop(payload: { pool: PoolModel; deposit: DepositModel; newWinnerAddress: string }, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { lumWallet } = state.wallet;
+            const { pool, deposit, newWinnerAddress } = payload;
+
+            const toastId = ToastUtils.showLoadingToast({
+                content: I18n.t('pending.editDrop'),
+            });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                const res = await LumClient.editDeposit(lumWallet.innerWallet, deposit, newWinnerAddress);
+
+                if (!res || (res && res.error)) {
+                    throw new Error(res?.error || undefined);
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', { content: I18n.t('success.editDrop') });
+
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                return res;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                });
+                return null;
+            }
+        },
     }),
 });

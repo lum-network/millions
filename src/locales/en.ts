@@ -84,6 +84,7 @@ export default {
         multiDeposit: 'Successfully made {{ count }} deposits',
         cancelDrop: 'Successfully cancelled your deposit drop',
         cancelDropMulti: 'Successfully cancelled your deposit drops',
+        editDrop: 'Successfully edited your deposit drop'
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -94,6 +95,7 @@ export default {
         multiDeposit: 'Depositing batch {{ index }}/{{ count }}...',
         cancelDrop: 'Cancelling deposit drops...',
         cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...',
+        editDrop: 'Editing your deposit drop...'
     },
     landing: {
         howItWorks: 'How it works',
@@ -619,5 +621,21 @@ export default {
             ],
             cta: 'Cancel Deposit Drop',
         },
+        editDropModal: {
+            cta: 'Edit Deposit',
+            title: 'Need to change the lucky winner for your Deposit Drop ?',
+            steps: [
+                {
+                    title: 'Edit your Deposit Drop',
+                    subtitle: 'Enter the address of the lucky winner to profit from your deposit',
+                    cardTitle: '',
+                    cardSubtitle: ''
+                },
+                {
+                    title: 'Confirm the transaction on {{ provider }}',
+                    subtitle: 'Update the winner address of your Deposit Drop\nand accept the transaction on your {{ provider }} wallet',
+                }
+            ]
+        }
     },
 };

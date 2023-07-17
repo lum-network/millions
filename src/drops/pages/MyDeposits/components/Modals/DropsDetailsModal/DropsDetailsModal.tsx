@@ -1,30 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 
 import Assets from 'assets';
-import { Modal, SmallerDecimal, Table } from 'components';
+import { Modal, SmallerDecimal, Table, Button } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
-import { AggregatedDepositModel } from 'models';
+import { AggregatedDepositModel, DepositModel } from 'models';
 
 import './DropsDetailsModal.scss';
 
-const DrawDetails = ({
-    drops,
-    poolDenom,
-    prices,
-    modalRef,
-}: {
+interface Props {
     drops: AggregatedDepositModel | null;
     poolDenom: string;
     prices: { [key: string]: number };
     modalRef: React.RefObject<ModalHandlers>;
-}) => {
+    onEdit: (deposit: DepositModel) => void;
+    onCancel?: (deposit: DepositModel) => void;
+}
+
+const DrawDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: Props) => {
     const [dropsPage, setDropsPage] = useState(1);
 
+    useEffect(() => {
+        const handler = () => {
+            setDropsPage(1);
+        };
+
+        const dropsDetailsModal = document.getElementById('dropsDetailsModal');
+
+        if (dropsDetailsModal) {
+            dropsDetailsModal.addEventListener('hidden.bs.modal', handler);
+        }
+
+        return () => {
+            if (dropsDetailsModal) {
+                dropsDetailsModal.removeEventListener('hidden.bs.modal', handler);
+            }
+        };
+    }, []);
+
     return (
-        <Modal id='dropsDetailsModal' ref={modalRef} modalWidth={700}>
+        <Modal id='dropsDetailsModal' ref={modalRef} modalWidth={800}>
             {drops ? (
                 <div className='d-flex flex-column align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
@@ -44,7 +61,7 @@ const DrawDetails = ({
                         </div>
                         <div className='mt-2 date'>{dayjs(drops.createdAt).format('ll')}</div>
                     </div>
-                    <div className='w-100 draw-winners-table-container'>
+                    <div className='w-100 draw-winners-table-container position-relative'>
                         <Table
                             className='draw-winners-table'
                             onPageChange={(page) => setDropsPage(page)}
@@ -77,9 +94,31 @@ const DrawDetails = ({
                                             </small>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div className='d-flex flex-row align-items-center justify-content-end'>
+                                            <Button textOnly data-bs-dismiss='modal' data-bs-toggle='modal' data-bs-target='#cancelDropModal' onClick={() => onCancel?.(drop as DepositModel)}>
+                                                <span className='me-2'>
+                                                    <img src={Assets.images.cancel} alt='' />
+                                                </span>
+                                                <div style={{ textDecoration: 'underline' }}>Cancel</div>
+                                            </Button>
+                                            <Button className='ms-3' data-bs-dismiss='modal' data-bs-toggle='modal' data-bs-target='#editDepositModal' onClick={() => onEdit(drop as DepositModel)}>
+                                                <span className='me-2'>
+                                                    <img src={Assets.images.edit} alt='' />
+                                                </span>
+                                                Edit
+                                            </Button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </Table>
+                        <Button textOnly style={{ position: 'absolute', bottom: '1.75rem', left: 0 }} data-bs-dismiss='modal' data-bs-toggle='modal' data-bs-target='#cancelDropModal'>
+                            <span className='me-2'>
+                                <img src={Assets.images.cancel} alt='' />
+                            </span>
+                            <div style={{ textDecoration: 'underline' }}>Cancel All</div>
+                        </Button>
                     </div>
                 </div>
             ) : null}

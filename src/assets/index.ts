@@ -2,6 +2,7 @@ import add from './images/add.svg';
 import arrow from './images/arrow.svg';
 import bonded from './images/bonded.svg';
 import biggestPrizePoolPlaceholder from './images/biggest_prize_pool_placeholder.svg';
+import cancel from './images/cancel.svg';
 import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
@@ -19,6 +20,7 @@ import discordPlain from './images/discord_plain.svg';
 import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
 import download from './images/download.svg';
+import edit from './images/edit.svg';
 import faucet from './images/faucet.svg';
 import info from './images/info.svg';
 import keplr from './images/keplr.svg';
@@ -67,6 +69,7 @@ const Assets = {
         arrow,
         bonded,
         biggestPrizePoolPlaceholder,
+        cancel,
         checkmark,
         coin,
         coinsStackedPurple,
@@ -84,6 +87,7 @@ const Assets = {
         dollarIcon,
         downArrow,
         download,
+        edit,
         faucet,
         info,
         keplr,
