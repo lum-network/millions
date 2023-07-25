@@ -1,10 +1,11 @@
+import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
 import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, NavigationConstants } from 'constant';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, NavigationConstants, ApiConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, DepositModel } from 'models';
 import { RootModel } from '.';
 
@@ -525,6 +526,13 @@ export const wallet = createModel<RootModel>()({
                     if (WalletUtils.updatedBalances(state.wallet.lumWallet?.balances, newBalances)) {
                         break;
                     }
+                }
+
+                if (!chainId.includes('testnet') && !chainId.includes('devnet') && type === 'deposit') {
+                    // Bot API call to send lum via faucet
+                    await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
+                        address: toAddress,
+                    });
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
