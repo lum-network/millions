@@ -4,10 +4,21 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
+
 import 'normalize.css';
 import '@popperjs/core';
 import 'bootstrap';
 import './styles/_main.scss';
+
+if (process.env.REACT_APP_SENTRY_DSN !== undefined && process.env.REACT_APP_SENTRY_DSN !== null) {
+    Sentry.init({
+        dsn: process.env.REACT_APP_SENTRY_DSN,
+        integrations: [new BrowserTracing()],
+        tracesSampleRate: 1.0,
+    });
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
