@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { FormikProps } from 'formik';
 import numeral from 'numeral';
 import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 
 import Assets from 'assets';
 import { Button, Card, TransactionBatchProgress, SmallerDecimal, Tooltip, DepositIbcTransfer } from 'components';

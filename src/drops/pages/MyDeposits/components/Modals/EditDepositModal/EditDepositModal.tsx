@@ -17,7 +17,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
     const [addressError, setAddressError] = useState('');
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.cancelDrop);
+    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.editDrop);
     const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId.eq(deposit.poolId) : undefined)));
 
     const dispatch = useDispatch<Dispatch>();
@@ -55,6 +55,8 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
 
         if (newAddress && !LumUtils.isAddressValid(newAddress)) {
             setAddressError(I18n.t('errors.generic.invalid', { field: 'lum address' }));
+        } else if (newAddress === deposit?.winnerAddress) {
+            setAddressError(I18n.t('depositDrops.editDropModal.sameAddressError'));
         } else {
             setAddressError('');
         }
@@ -130,7 +132,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
                                             onEditDeposit().finally(() => null);
                                         }}
                                         className='w-100 mt-4'
-                                        disabled={isLoading}
+                                        disabled={!!addressError || isLoading}
                                         loading={isLoading}
                                     >
                                         {I18n.t('depositDrops.editDropModal.cta')}

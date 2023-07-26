@@ -16,6 +16,19 @@ $utilities: map-merge(
     )
 );
 
+$utilities: map-merge(
+    $utilities,
+    (
+        'width':
+            map-merge(
+                map-get($utilities, 'width'),
+                (
+                    responsive: true,
+                )
+            ),
+    )
+);
+
 @import '~bootstrap/scss/utilities/api';
 
 html body {
@@ -94,7 +107,7 @@ input[type='checkbox'] {
     position: relative;
 
     &:before {
-        content: "";
+        content: '';
         display: block;
         position: absolute;
         width: 20px;
@@ -107,7 +120,7 @@ input[type='checkbox'] {
     }
 
     &:checked:before {
-        content: "";
+        content: '';
         display: block;
         position: absolute;
         width: 20px;
@@ -119,7 +132,7 @@ input[type='checkbox'] {
     }
 
     &:checked:after {
-        content: "";
+        content: '';
         display: block;
         width: 6px;
         height: 10px;

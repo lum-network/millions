@@ -624,6 +624,7 @@ export default {
         editDropModal: {
             cta: 'Edit Deposit',
             title: 'Need to change the lucky winner for your Deposit Drop ?',
+            sameAddressError: 'You cannot edit your deposit with the same winner address',
             steps: [
                 {
                     title: 'Edit your Deposit Drop',

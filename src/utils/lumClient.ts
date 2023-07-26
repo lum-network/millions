@@ -1,6 +1,6 @@
 import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
@@ -8,8 +8,8 @@ import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
-import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -492,13 +492,13 @@ class LumClient {
         }
 
         // Build transaction message
-        //const message = LumMessages.BuildMsg;
+        const message = LumMessages.BuildMsgMillionsDepositEdit(depositToEdit.poolId, depositToEdit.depositId, wallet.getAddress(), newWinnerAddress);
 
         // Define fees
         const fee = WalletUtils.buildTxFee('25000', '500000');
 
         // Create the transaction document
-        /* const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
 
         if (!doc) {
             return null;
@@ -513,10 +513,6 @@ class LumClient {
         return {
             hash: broadcastResult.hash,
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
-        }; */
-        return {
-            error: 'Not implemented yet',
-            hash: new Uint8Array(),
         };
     };
 }

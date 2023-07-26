@@ -1,5 +1,5 @@
 import React from 'react';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 

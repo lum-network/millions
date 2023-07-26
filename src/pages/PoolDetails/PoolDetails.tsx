@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
+import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 
 import Assets from 'assets';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';

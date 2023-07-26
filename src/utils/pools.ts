@@ -1,8 +1,8 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { biggerCoin, convertUnitNumber } from './numbers';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { getDenomFromIbc, getNormalDenom } from './denoms';
 import { ApiConstants } from 'constant';
 import dayjs from 'dayjs';
