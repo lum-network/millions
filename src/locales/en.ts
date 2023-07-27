@@ -244,7 +244,7 @@ export default {
     },
     chooseWalletModal: {
         keplr: 'Keplr Wallet',
-        leap: 'Leap Wallet'
+        leap: 'Leap Wallet',
     },
     logoutModal: {
         title: 'Are you sure you want\nto log out ?',

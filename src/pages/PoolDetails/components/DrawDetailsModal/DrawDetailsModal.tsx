@@ -85,10 +85,12 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                         </td>
                                         <td className='text-md-end'>
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
-                                                <div className='amount text-nowrap'>{numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] || 0)).format('$0,0[.]00')}</div>
-                                                <small className='usd-price'>
-                                                    {numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} {poolDenom.toUpperCase()}
-                                                </small>
+                                                <div className='amount text-nowrap'>
+                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] || 0)).format('$0,0[.]00')} />
+                                                </div>
+                                                <span className='usd-price'>
+                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} /> {poolDenom.toUpperCase()}
+                                                </span>
                                             </div>
                                         </td>
                                     </tr>
