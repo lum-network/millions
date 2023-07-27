@@ -37,12 +37,20 @@ html body {
 
 .Toastify__toast-container {
     width: 485px;
+
+    @include media-breakpoint-down(sm) {
+        width: 95%;
+    }
 }
 
 .Toastify__toast {
     border-radius: 12px !important;
     align-items: center;
     padding: 32px !important;
+
+    @include media-breakpoint-down(sm) {
+        padding: 16px !important;
+    }
 }
 
 .Toastify__spinner,
@@ -50,6 +58,18 @@ html body {
     width: 56px;
     height: 56px;
     object-fit: contain;
+
+    @include media-breakpoint-down(sm) {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+.Toastify__toast-container--bottom-left {
+    @include media-breakpoint-down(sm) {
+        left: 0.5em !important;
+        bottom: 0.5em !important;
+    }
 }
 
 .scale-hover {

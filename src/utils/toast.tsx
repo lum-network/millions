@@ -10,7 +10,7 @@ import infoIcon from 'assets/images/info.svg';
 
 export const showErrorToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.error(<ToastContent {...content} />, {
-        icon: () => <img alt='warning' src={warningIcon} width='56' height='56' />,
+        icon: () => <img alt='warning' src={warningIcon} />,
         closeButton: false,
         ...options,
     });
@@ -18,7 +18,7 @@ export const showErrorToast = (content: ToastContentProps, options?: ToastOption
 
 export const showSuccessToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.success(<ToastContent {...content} />, {
-        icon: () => <img alt='success' src={successIcon} width='56' height='56' />,
+        icon: () => <img alt='success' src={successIcon} />,
         closeButton: false,
         ...options,
     });
@@ -26,7 +26,7 @@ export const showSuccessToast = (content: ToastContentProps, options?: ToastOpti
 
 export const showInfoToast = (content: ToastContentProps, options?: ToastOptions): void => {
     toast.info(<ToastContent {...content} />, {
-        icon: () => <img alt='Cosmos Millions logo' src={infoIcon} width='56' height='56' />,
+        icon: () => <img alt='Cosmos Millions logo' src={infoIcon} />,
         closeButton: false,
         ...options,
     });
@@ -42,7 +42,7 @@ export const showLoadingToast = (content: ToastContentProps, options?: ToastOpti
 export const updateLoadingToast = (toastId: Id, type: TypeOptions, content: ToastContentProps, options?: ToastOptions): void => {
     toast.update(toastId, {
         render: <ToastContent {...content} />,
-        icon: () => <img alt={type === 'success' ? 'success' : 'warning'} src={type === 'success' ? successIcon : warningIcon} width='56' height='56' />,
+        icon: () => <img alt={type === 'success' ? 'success' : 'warning'} src={type === 'success' ? successIcon : warningIcon} />,
         type,
         isLoading: false,
         autoClose: 5000,
