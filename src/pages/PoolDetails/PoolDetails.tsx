@@ -555,6 +555,11 @@ const PoolDetails = () => {
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
                                                         <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
+                                                        <div className='draw-token'>
+                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
+                                                            &nbsp;
+                                                            {denom.toUpperCase()}
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             );
