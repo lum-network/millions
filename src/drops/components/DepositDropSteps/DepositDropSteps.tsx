@@ -412,11 +412,11 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                navigate(NavigationConstants.MY_SAVINGS);
+                                navigate(NavigationConstants.DROPS_MY_DEPOSITS);
                             }}
                         >
-                            <img src={Assets.images.mySavings} alt='My savings' className='me-3' />
-                            {I18n.t('deposit.goToMySavings')}
+                            <img src={Assets.images.depositDrop} alt='My Deposit Drops' className='me-3' />
+                            {I18n.t('depositDrops.depositFlow.shareStepCard.goToMyDrops')}
                         </Card>
                     </div>
                 </div>

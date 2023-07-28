@@ -113,7 +113,13 @@ const DrawDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: P
                                 </tr>
                             ))}
                         </Table>
-                        <Button textOnly style={{ position: 'absolute', bottom: '1.75rem', left: 0 }} data-bs-dismiss='modal' data-bs-toggle='modal' data-bs-target='#cancelDropModal'>
+                        <Button
+                            textOnly
+                            style={{ position: 'absolute', bottom: drops.deposits.length > 5 ? '1.75rem' : '-1rem', left: 0 }}
+                            data-bs-dismiss='modal'
+                            data-bs-toggle='modal'
+                            data-bs-target='#cancelDropModal'
+                        >
                             <span className='me-2'>
                                 <img src={Assets.images.cancel} alt='' />
                             </span>

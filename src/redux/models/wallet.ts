@@ -769,7 +769,11 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
+                    content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', {
+                        count: batchCount,
+                        denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
+                        amount: deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0),
+                    }),
                 });
 
                 return true;

@@ -603,7 +603,10 @@ export default {
                     howItWorks: 'See how it works',
                 },
             },
-            shareTwitterContent: 'Boosted a Cosmonaut @cosmosmillions savings with a deposit drop! 🎁 🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} {{ denom }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com' 
+            shareTwitterContent: 'Boosted a Cosmonaut @cosmosmillions savings with a deposit drop! 🎁 🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} {{ denom }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com' ,
+            shareStepCard: {
+                goToMyDrops: 'Go to\nMy Deposit Drops'
+            }
         },
         cancelDropModal: {
             title: 'Is it time to end the boosted chances, Cosmonaut?',
