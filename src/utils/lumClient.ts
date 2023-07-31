@@ -165,7 +165,7 @@ class LumClient {
             }
         } catch {}
 
-        const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits);
+        const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits, true);
 
         return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedWithdrawals];
     };

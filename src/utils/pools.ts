@@ -51,7 +51,7 @@ export const getWinningChances = (inputAmount: number, pool: PoolModel, prices?:
     return estimated;
 };
 
-export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[]) => {
+export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[], drops?: boolean) => {
     const aggregatedDeposits: AggregatedDepositModel[] = [];
 
     for (const deposit of deposits) {
@@ -61,7 +61,7 @@ export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[]) 
             continue;
         }
 
-        if (deposit.depositorAddress !== deposit.winnerAddress) {
+        if (!drops && deposit.depositorAddress !== deposit.winnerAddress) {
             continue;
         }
 
