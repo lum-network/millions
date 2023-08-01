@@ -2216,10 +2216,10 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@lum-network/sdk-javascript@^0.8.7":
-  version "0.8.7"
-  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-0.8.7.tgz#3032ffcfa004c2330cf42b9da3dd0dbcde528404"
-  integrity sha512-ghC+G0UADTkR6PrXmcVmx3E4OJpwS6SIr/YvfBrss4A1TdNQbDdOD5OxeZ56i5hy9tIvD/HeaMOU/RWBawidqA==
+"@lum-network/sdk-javascript@^0.8.8":
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-0.8.8.tgz#3ea8ae952178bb1f78c9176a1795965c916e4a5e"
+  integrity sha512-wxHL9Od1Mr9GgcNH7hjxqNNS8PUmmDNKQlaKJdAOAIrUUWkYne/X1ocz2zS2+1jZaUYxE7Z4cYWWFHlrJDRizg==
   dependencies:
     "@cosmjs/amino" "0.31.0"
     "@cosmjs/crypto" "0.31.0"
