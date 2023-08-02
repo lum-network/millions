@@ -9,7 +9,7 @@ import { Card } from 'components';
 
 import './CsvFileInput.scss';
 
-const isValidRow = (info: unknown): info is string[] => {
+const isValidRow = (info: unknown): info is [string, string] => {
     return !!(Array.isArray(info) && info[0] && info[1]);
 };
 
