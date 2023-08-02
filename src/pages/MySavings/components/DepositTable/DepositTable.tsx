@@ -162,7 +162,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                                 </div>
                             </div>
                             <div className='col-12 col-md-2'>
-                                <div className={`deposit-state rounded-pill success mt-3 mt-md-0`}>
+                                <div className={`deposit-state rounded-pill ${deposit.state === DepositState.DEPOSIT_STATE_SUCCESS ? 'success' : ''} mt-3 mt-md-0`}>
                                     {I18n.t('mySavings.depositStates', { returnObjects: true })[deposit.isWithdrawing ? 5 : deposit.state || DepositState.DEPOSIT_STATE_FAILURE]}
                                 </div>
                             </div>
