@@ -19,7 +19,7 @@ interface Props {
     onCancel?: (deposit: DepositModel) => void;
 }
 
-const DrawDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: Props) => {
+const DropsDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: Props) => {
     const [dropsPage, setDropsPage] = useState(1);
 
     useEffect(() => {
@@ -132,4 +132,4 @@ const DrawDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: P
     );
 };
 
-export default DrawDetails;
+export default DropsDetails;
