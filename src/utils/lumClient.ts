@@ -449,6 +449,13 @@ class LumClient {
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits);
 
+        aggregatedDeposits.sort((a, b) => {
+            const aHeight = a.createdAtHeight?.toNumber() || 0;
+            const bHeight = b.createdAtHeight?.toNumber() || 0;
+
+            return bHeight - aHeight;
+        });
+
         return aggregatedDeposits;
     };
 
