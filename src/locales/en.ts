@@ -589,9 +589,10 @@ export default {
                 fileTooBigError: 'File is too large, we support only 20 Mb CSV files',
                 fileTypeError: 'Only CSV files are supported, try another file',
                 invalidFile: 'This CSV file is invalid. Please use our template below.',
-                invalidAddress: 'An address is invalid in your CSV, please check that everything is valid before processing',
-                invalidAmount: 'An amount provided is invalid, please check your CSV entries',
-                lessThanMinDeposit: 'An amount provided is less than the minimum deposit amount, please check your CSV entries',
+                invalidRow: 'The row {{ row }} of your CSV file is invalid. Please use our template below.',
+                invalidAddress: 'The address provided at row {{ row }} in your CSV is invalid, please check that everything is valid before processing',
+                invalidAmount: 'The amount provided at row {{ row }} is invalid, please check your CSV entries',
+                lessThanMinDeposit: 'The amount provided at row {{ row }} is less than the minimum deposit amount, please check your CSV entries',
                 success: '{{ walletCount }} unique wallets will receive a deposit drop.\nYou will have to sign {{ batchCount }} transactions',
             },
             manualInputsErrors: {

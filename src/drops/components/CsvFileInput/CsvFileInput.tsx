@@ -9,15 +9,8 @@ import { Card } from 'components';
 
 import './CsvFileInput.scss';
 
-type ValidCSVRow = { amount: string; winner_address: string };
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function hasOwnProperty<X extends {}, Y extends PropertyKey>(obj: X, prop: Y): obj is X & Record<Y, unknown> {
-    return Object.hasOwnProperty.call(obj, prop);
-}
-
-const isValidRow = (info: unknown): info is ValidCSVRow => {
-    return !!(info && hasOwnProperty(info, 'amount') && hasOwnProperty(info, 'winner_address'));
+const isValidRow = (info: unknown): info is string[] => {
+    return !!(Array.isArray(info) && info[0] && info[1]);
 };
 
 interface CsvFileInputProps {
@@ -46,38 +39,48 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
         disabled,
         onDropAccepted: (files) => {
             Papa.parse(files[0], {
-                header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
-                    const drops = [];
+                    const drops: {
+                        amount: string;
+                        winnerAddress: string;
+                    }[] = [];
                     let error = '';
 
-                    for (const r of results.data) {
+                    const data = results.data;
+                    data.splice(0, 1);
+
+                    for (let i = 0; i < data.length; i++) {
+                        const r = data[i];
+
                         if (!isValidRow(r)) {
-                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidFile');
+                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidRow', { row: i + 1 });
                             break;
                         }
 
-                        if (!LumUtils.isAddressValid(r.winner_address, 'lum')) {
-                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidAddress');
-                            break;
-                        }
+                        const amount = r[0];
+                        const winnerAddress = r[1];
 
-                        const amountToNumber = Number(r.amount);
+                        const amountToNumber = Number(amount);
 
                         if (Number.isNaN(amountToNumber)) {
-                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidAmount');
+                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidAmount', { row: i + 1 });
                             break;
                         }
 
                         if (amountToNumber < (minDepositAmount || 0)) {
-                            error = t('depositDrops.depositFlow.fileInputSubLabel.lessThanMinDeposit');
+                            error = t('depositDrops.depositFlow.fileInputSubLabel.lessThanMinDeposit', { row: i + 1 });
+                            break;
+                        }
+
+                        if (!LumUtils.isAddressValid(winnerAddress, 'lum')) {
+                            error = t('depositDrops.depositFlow.fileInputSubLabel.invalidAddress', { row: i + 1 });
                             break;
                         }
 
                         drops.push({
-                            amount: LumUtils.convertUnit({ amount: r.amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
-                            winnerAddress: r.winner_address,
+                            amount: LumUtils.convertUnit({ amount: amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
+                            winnerAddress,
                         });
                     }
 
@@ -133,7 +136,7 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
                         <img width={14} height={14} src={status === 'accepted' ? Assets.images.claim : Assets.images.download} className='file-input-icon' />
                     </div>
                     <label className='mt-3 mb-2 label'>{innerLabel}</label>
-                    <label className='sublabel'>{innerSubLabel}</label>
+                    <label className='sublabel text-center mx-4'>{innerSubLabel}</label>
                 </div>
             </Card>
         </div>
