@@ -776,6 +776,7 @@ export const wallet = createModel<RootModel>()({
                     }),
                 });
 
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true, drops: true });
                 return true;
             } catch (e) {
                 onDepositCallback?.(lastBatch);
@@ -827,6 +828,7 @@ export const wallet = createModel<RootModel>()({
                     content: I18n.t(batchCount === 1 ? 'success.cancelDrop' : 'success.cancelDropMulti', { count: batchCount, denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),
                 });
 
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true, drops: true });
                 return true;
             } catch (e) {
                 onCancelCallback?.(lastBatch);
@@ -857,7 +859,7 @@ export const wallet = createModel<RootModel>()({
 
                 ToastUtils.updateLoadingToast(toastId, 'success', { content: I18n.t('success.editDrop') });
 
-                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true, drops: true });
                 return res;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', {
