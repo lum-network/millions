@@ -135,7 +135,7 @@ class LumClient {
             withdrawalsToDeposit.push({
                 poolId: withdrawal.poolId,
                 amount: withdrawal.amount,
-                depositId: withdrawal.withdrawalId,
+                depositId: withdrawal.depositId,
                 depositorAddress: withdrawal.depositorAddress,
                 isWithdrawing: true,
                 isDepositDrop: false,
