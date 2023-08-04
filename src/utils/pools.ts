@@ -5,6 +5,7 @@ import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { getDenomFromIbc, getNormalDenom } from './denoms';
 import { ApiConstants } from 'constant';
+import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/withdrawal';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
@@ -67,7 +68,7 @@ export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[], 
 
         const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString());
 
-        if (existingDeposit && deposit.state === DepositState.DEPOSIT_STATE_SUCCESS) {
+        if (existingDeposit && (deposit.state === DepositState.DEPOSIT_STATE_SUCCESS || (deposit.isWithdrawing && deposit.withdrawalState === WithdrawalState.WITHDRAWAL_STATE_ICA_UNBONDING))) {
             existingDeposit.deposits.push({
                 ...deposit,
                 amount: deposit.amount

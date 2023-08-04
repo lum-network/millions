@@ -9,7 +9,8 @@ import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
-import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
+import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
+import { Withdrawal } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/withdrawal';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -127,11 +128,25 @@ class LumClient {
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
 
-        const resWithdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
+        let pageWithdrawals: Uint8Array | undefined = undefined;
+        const withdrawals: Withdrawal[] = [];
+
+        while (true) {
+            const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
+
+            withdrawals.push(...resWithdrawals.withdrawals);
+
+            // If we have pagination key, we just patch it, and it will process in the next loop
+            if (resWithdrawals.pagination && resWithdrawals.pagination.nextKey && resWithdrawals.pagination.nextKey.length) {
+                pageWithdrawals = resWithdrawals.pagination.nextKey;
+            } else {
+                break;
+            }
+        }
 
         const withdrawalsToDeposit: Partial<DepositModel>[] = [];
 
-        for (const withdrawal of resWithdrawals.withdrawals) {
+        for (const withdrawal of withdrawals) {
             withdrawalsToDeposit.push({
                 poolId: withdrawal.poolId,
                 amount: withdrawal.amount,
@@ -142,6 +157,7 @@ class LumClient {
                 createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
                 winnerAddress: withdrawal.toAddress,
+                withdrawalState: withdrawal.state,
             });
         }
 

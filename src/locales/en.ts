@@ -411,7 +411,8 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error'],
+        withdrawalStates: ['Unspecified', 'Undelegate', 'Unbonding', 'IBC Transfer', 'Failure'],
         depositError: {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
