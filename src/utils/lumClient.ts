@@ -1,6 +1,6 @@
 import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
@@ -8,9 +8,9 @@ import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
-import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/query';
-import { Withdrawal } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/withdrawal';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
+import { Withdrawal } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -206,11 +206,15 @@ class LumClient {
         let totalCount: number | null = null;
 
         const query = LumUtils.searchTxByTags([
-            { key: 'message.module', value: 'millions' },
+            // { key: 'message.module', value: 'millions' },
+            // { key: 'message.action', value: '/lum.network.millions.MsgClaimPrize' },
             { key: 'transfer.sender', value: address },
         ]);
 
         const res = await this.client.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' });
+
+        console.log(res);
+        console.log(await formatTxs(res.txs, true));
 
         if (page === 1) {
             totalCount = res.totalCount;

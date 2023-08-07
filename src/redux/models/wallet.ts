@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
+import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';

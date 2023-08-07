@@ -35,7 +35,11 @@ const TransactionsTable = ({
     const renderRow = (transaction: TransactionModel, index: number) => {
         const price = prices?.[DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || '')];
 
-        const { type, icon } = TransactionsUtils.getTxTypeAndIcon(transaction);
+        const { type, icon, ignore } = TransactionsUtils.getTxTypeAndIcon(transaction);
+
+        if (ignore) {
+            return null;
+        }
 
         return (
             <tr key={`transaction-${transaction.hash}-${index}`}>
@@ -83,7 +87,11 @@ const TransactionsTable = ({
         const renderItem = (transaction: TransactionModel, index: number) => {
             const price = prices?.[DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || '')];
 
-            const { type, icon } = TransactionsUtils.getTxTypeAndIcon(transaction);
+            const { type, icon, ignore } = TransactionsUtils.getTxTypeAndIcon(transaction);
+
+            if (ignore) {
+                return null;
+            }
 
             return (
                 <div key={`transaction-${index}`} className='d-flex flex-column mb-4'>

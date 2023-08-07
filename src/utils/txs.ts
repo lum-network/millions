@@ -170,6 +170,7 @@ export const sortByBlockHeightDesc = (txs: TransactionModel[]): TransactionModel
 export const getTxTypeAndIcon = (transaction: TransactionModel) => {
     let type = '';
     let icon = '';
+    let ignore = false;
 
     switch (transaction.messages[0]) {
         case LumMessages.MsgMillionsDepositUrl:
@@ -184,10 +185,14 @@ export const getTxTypeAndIcon = (transaction: TransactionModel) => {
             type = I18n.t('mySavings.transactionTypes.claimPrize');
             icon = Assets.images.trophyPurple;
             break;
+
+        default:
+            ignore = true;
     }
 
     return {
         type,
         icon,
+        ignore,
     };
 };
