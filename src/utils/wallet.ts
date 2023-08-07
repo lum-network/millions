@@ -3,7 +3,7 @@ import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
 import { Message } from '@lum-network/sdk-javascript/build/messages';
 import { AggregatedDepositModel } from 'models';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { AUTOCONNECT_STORAGE_KEY, WalletProvider } from 'constant';
 
 type Fee = { amount: { amount: string; denom: string }[]; gas: string };

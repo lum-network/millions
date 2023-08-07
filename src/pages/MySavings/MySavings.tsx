@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import numeral from 'numeral';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
