@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
@@ -6,16 +6,18 @@ import numeral from 'numeral';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
-import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, StringsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -26,6 +28,69 @@ import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
+
+const ITEMS = [
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+    {
+        amount: { amount: '1000', denom: 'atom' },
+        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+    },
+];
 
 const MySavings = () => {
     const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, alreadySeenConfetti } = useSelector((state: RootState) => ({
@@ -46,8 +111,11 @@ const MySavings = () => {
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
+    const [leaderboardItems, setLeaderboardItems] = useState([...ITEMS]);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const containerRef = useRef(null);
+    const tl = useRef<gsap.core.Timeline>();
 
     const winSizes = useWindowSize();
 
@@ -74,6 +142,59 @@ const MySavings = () => {
             confettis(5000);
         }
     }, [prizesToClaim]);
+
+    useLayoutEffect(() => {
+        const refreshST = () => {
+            ScrollTrigger.refresh();
+        };
+
+        const ctx = gsap.context(() => {
+            const scrollTrigger: ScrollTrigger.Vars = {
+                trigger: '.leaderboard-table',
+                start: 'top+=120px bottom',
+                end: 'max',
+                toggleActions: 'play none none reset',
+                invalidateOnRefresh: true,
+            };
+
+            tl.current = gsap
+                .timeline()
+                .to('.user-rank', {
+                    scrollTrigger,
+                    position: 'fixed',
+                    bottom: '2rem',
+                })
+                .set('leaderboard-card', { position: 'static', scrollTrigger }, '+=0');
+
+            const myCollapsibles = document.getElementsByClassName('collapsible');
+
+            for (const el of myCollapsibles) {
+                el.addEventListener('shown.bs.collapse', refreshST);
+                el.addEventListener('hidden.bs.collapse', refreshST);
+            }
+        }, containerRef);
+
+        return () => {
+            ctx.revert();
+
+            const myCollapsibles = document.getElementsByClassName('collapsible');
+
+            for (const el of myCollapsibles) {
+                el.removeEventListener('shown.bs.collapse', refreshST);
+                el.removeEventListener('hidden.bs.collapse', refreshST);
+            }
+        };
+    }, [isReloadingInfos]);
+
+    useLayoutEffect(() => {
+        const leaderboardEl = document.querySelector('.leaderboard-table');
+
+        if (leaderboardEl) {
+            gsap.set('.user-rank', {
+                width: leaderboardEl.clientWidth,
+            });
+        }
+    }, [winSizes.width]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -186,7 +307,7 @@ const MySavings = () => {
     }
 
     return (
-        <div className='my-savings-container mt-3 mt-lg-5'>
+        <div className='my-savings-container mt-3 mt-lg-5' ref={containerRef}>
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
@@ -396,6 +517,47 @@ const MySavings = () => {
                             </Card>
                         </div>
                     </div>
+                </div>
+                <div className='col-12 col-lg-8 col-xxl-9'>
+                    <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
+                        <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                        <PoolSelect
+                            className='pool-select'
+                            backgroundColor='#F4F4F4'
+                            value={pools[0].poolId.toString()}
+                            pools={pools}
+                            options={pools.map((pool) => ({
+                                value: pool.poolId.toString(),
+                                label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
+                            }))}
+                            onChange={() => {
+                                // do nothing
+                            }}
+                        />
+                    </div>
+                    <Card className='leaderboard-card position-relative'>
+                        <div className='user-rank me d-flex flex-row justify-content-between align-items-center'>
+                            <div className='d-flex flex-row align-items-center'>
+                                <div className='me-3 rank'>#19</div>
+                                <div className='address'>{StringsUtils.trunc(lumWallet?.address, 3)}</div>
+                            </div>
+                            <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                <div className='crypto-amount me-3'>
+                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit('100')} /> {'ATOM'}
+                                </div>
+                                <div className='usd-amount'>
+                                    $<SmallerDecimal nb={NumbersUtils.formatTo6digit(Number('100') * 1.982)} />
+                                </div>
+                            </div>
+                        </div>
+                        <Leaderboard
+                            items={leaderboardItems}
+                            onBottomReached={() => {
+                                leaderboardItems.push(...ITEMS);
+                                setLeaderboardItems([...leaderboardItems]);
+                            }}
+                        />
+                    </Card>
                 </div>
             </div>
             <TransferOutModal

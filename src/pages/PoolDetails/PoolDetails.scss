@@ -294,6 +294,10 @@
         color: $color-primary;
     }
 
+    .leaderboard-card {
+        padding: 10px 32px;
+    }
+
     @include media-breakpoint-down(md) {
         .table {
             border-spacing: 0;

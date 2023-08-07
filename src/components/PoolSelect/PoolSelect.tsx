@@ -14,6 +14,7 @@ interface Props {
     readonly?: boolean;
     className?: string;
     disabled?: boolean;
+    backgroundColor?: string;
 }
 
 const PoolOption = (
@@ -72,7 +73,7 @@ const PoolValue = (
     );
 };
 
-const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled }: Props): JSX.Element => {
+const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled, backgroundColor = '#FFF' }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
@@ -118,6 +119,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                             textAlign: 'left',
                             color: '#5634DE',
                             fontSize: 22,
+                            backgroundColor,
                         }),
                         option: (provided, state) => ({
                             ...provided,

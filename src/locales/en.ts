@@ -319,6 +319,8 @@ export default {
             nextPool: 'Any prize amount not won during a draw will be rolled over and added to the prize pool for subsequent draws.',
             tryBtn: 'Try your chances',
         },
+        leaderboardCta: 'See more',
+        leaderboardNotConnectedCta: 'Log in to see more'
     },
     mySavings: {
         title: 'My Savings',
@@ -327,6 +329,7 @@ export default {
         claim: 'Claim',
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',
+        depositorsRanking: 'Depositors ranking',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {

@@ -10,7 +10,7 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
@@ -340,6 +340,150 @@ const PoolDetails = () => {
                                 </div>
                             </Card>
                         </div>
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='col-12'>
+                        <h2 className='mt-4 mt-lg-5 mb-2 mb-lg-4'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                        <Card flat withoutPadding className='leaderboard-card'>
+                            <Leaderboard
+                                whiteCards
+                                limit={5}
+                                items={[
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                    {
+                                        amount: { amount: '1000', denom: 'atom' },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                    },
+                                ]}
+                            />
+                            <hr />
+                            <Leaderboard
+                                whiteCards
+                                items={[
+                                    {
+                                        amount: {
+                                            amount: '1000',
+                                            denom: 'atom',
+                                        },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                        rank: 135,
+                                    },
+                                    {
+                                        amount: {
+                                            amount: '1000',
+                                            denom: 'atom',
+                                        },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                        me: true,
+                                        rank: 136,
+                                    },
+                                    {
+                                        amount: {
+                                            amount: '1000',
+                                            denom: 'atom',
+                                        },
+                                        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
+                                        rank: 137,
+                                    },
+                                ]}
+                            />
+                            <Button
+                                className='mx-auto mb-4'
+                                style={{
+                                    width: 'fit-content',
+                                }}
+                                {...(!lumWallet
+                                    ? {
+                                          'data-bs-toggle': 'modal',
+                                          'data-bs-target': !KeplrUtils.isKeplrInstalled() ? '#get-keplr-modal' : '#choose-wallet-modal',
+                                      }
+                                    : {
+                                          to: NavigationConstants.MY_SAVINGS,
+                                      })}
+                            >
+                                {I18n.t(lumWallet ? 'poolDetails.leaderboardCta' : 'poolDetails.leaderboardNotConnectedCta')}
+                            </Button>
+                        </Card>
                     </div>
                 </div>
                 <div className='row position-relative'>
