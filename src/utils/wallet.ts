@@ -117,13 +117,11 @@ export const updatedBalances = (currentBalance?: LumTypes.Coin[], newBalance?: L
         return true;
     }
 
-    const balanceChanged = currentBalance.some((balance) => {
+    return currentBalance.some((balance) => {
         const newBalanceAmount = newBalance.find((b) => b.denom === balance.denom)?.amount;
 
         return newBalanceAmount !== balance.amount;
     });
-
-    return balanceChanged;
 };
 
 export const storeAutoconnectKey = (provider: WalletProvider) => {
