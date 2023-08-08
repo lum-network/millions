@@ -6,6 +6,7 @@ export interface DepositModel extends MillionsDeposit {
     isDepositDrop?: boolean;
     unbondingEndAt?: Date;
     withdrawalState?: WithdrawalState;
+    withdrawalCanBeRetried?: boolean;
 }
 
 export interface AggregatedDepositModel extends Partial<DepositModel> {

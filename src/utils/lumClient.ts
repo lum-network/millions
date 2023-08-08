@@ -10,7 +10,7 @@ import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
-import { Withdrawal } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
+import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -158,6 +158,7 @@ class LumClient {
                 unbondingEndAt: withdrawal.unbondingEndsAt,
                 winnerAddress: withdrawal.toAddress,
                 withdrawalState: withdrawal.state,
+                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER,
             });
         }
 
