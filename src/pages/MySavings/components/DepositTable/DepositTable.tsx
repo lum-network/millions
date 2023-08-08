@@ -3,7 +3,7 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-networ
 import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/withdrawal';
 import numeral from 'numeral';
 
-import { Button, Collapsible, SmallerDecimal } from 'components';
+import { Button, Collapsible, SmallerDecimal, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
@@ -116,6 +116,12 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry }: 
                             <h3 className='mb-0'>
                                 <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
                                 {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
+                                {deposit.isSponsor && (
+                                    <span data-tooltip-id={`deposit-${deposit.depositId?.toString() || index}-sponsor`} data-tooltip-html={I18n.t('mySavings.sponsorHint')} className='ms-2'>
+                                        <img src={Assets.images.sponsor} width='20' height='20' alt='sponsor' className='mb-1' />
+                                        <Tooltip id={`deposit-${deposit.depositId?.toString() || index}-sponsor`} />
+                                    </span>
+                                )}
                             </h3>
                             <p className='mb-0'>
                                 {numeral(usdPrice).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} -{' '}
