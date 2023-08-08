@@ -446,6 +446,7 @@ export default {
             },
             cta: 'Leave pool',
         },
+        sponsorHint: 'Sponsorship deposit, it will not be eligible for draws but will increase the prize pool.',
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
