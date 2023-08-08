@@ -604,7 +604,7 @@ export const wallet = createModel<RootModel>()({
         async leavePoolRetry(payload: LeavePoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Retrying withdrawal #${payload.depositId.toNumber()} to pool #${payload.poolId.toNumber()}` });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }) });
 
             try {
                 if (!lumWallet) {
@@ -618,7 +618,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully retried withdrawal #${payload.depositId.toNumber()} to pool #${payload.depositId.toNumber()}`,
+                    content: I18n.t('success.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }),
                 });
 
                 Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_RETRY_SUCCESS, {
@@ -630,7 +630,9 @@ export const wallet = createModel<RootModel>()({
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry withdrawal #${payload.depositId.toNumber()}` });
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }),
+                });
                 return null;
             }
         },
