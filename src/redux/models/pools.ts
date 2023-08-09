@@ -1,12 +1,13 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
-import { PoolModel } from 'models';
+import { DrawModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
+import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -62,7 +63,7 @@ export const pools = createModel<RootModel>()({
                             continue;
                         }
 
-                        const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+                        const draws = await dispatch.pools.getPoolDraws({ poolId: pool.poolId, nativeDenom: pool.nativeDenom });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -176,12 +177,21 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws(poolId: Long) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
+                const draws: DrawModel[] = [];
 
                 if (res) {
-                    return res;
+                    for (const draw of res) {
+                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+
+                        if (marketData && marketData.length) {
+                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        }
+                    }
+
+                    return draws;
                 }
             } catch {}
         },
