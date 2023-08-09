@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import numeral from 'numeral';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
@@ -296,6 +296,9 @@ const MySavings = () => {
                                         prices={prices}
                                         onLeavePool={(deposit) => setDepositToLeave(deposit)}
                                         onDepositRetry={(deposit) => dispatch.wallet.retryDeposit({ poolId: deposit.poolId, depositId: deposit.depositId })}
+                                        onWithdrawalRetry={(deposit) =>
+                                            dispatch.wallet.leavePoolRetry({ poolId: deposit.poolId, depositId: deposit.depositId, denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || '') })
+                                        }
                                     />
                                 </Card>
                             </>
