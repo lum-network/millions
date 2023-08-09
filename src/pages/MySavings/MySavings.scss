@@ -222,50 +222,9 @@
         }
     }
 
-    .leaderboard-card {
+    .leaderboard {
         animation: unset;
         opacity: 1;
-
-        .leaderboard-table {
-            @include media-breakpoint-up(xl) {
-                margin-top: -1.5rem;
-            }
-
-            @include media-breakpoint-down(xl) {
-                margin-top: -0.75rem;
-            }
-        }
-
-    }
-    
-    div.me {
-        position: absolute;
-        background-color: $color-primary;
-        border-radius: 15px;
-        padding: 14px 16px;
-        z-index: 2;
-
-        .address {
-            color: $color-white;
-        } 
-
-        .rank {
-            border-radius: 7px;
-            padding: 7px 8px;
-            width: fit-content;
-    
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-            background-color: $color-white;
-            color: $color-primary;
-        }
-
-        .crypto-amount,
-        .usd-amount {
-            color: $color-white;
-        }
     }
 
     #withdrawModal {

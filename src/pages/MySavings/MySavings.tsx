@@ -16,8 +16,8 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
-import { DepositModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, StringsUtils } from 'utils';
+import { DepositModel, LeaderboardItemModel } from 'models';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -29,89 +29,31 @@ import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 
 import './MySavings.scss';
 
-const ITEMS = [
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-    {
-        amount: { amount: '1000', denom: 'atom' },
-        address: 'lum12azcy6aqwx85sy7d88za7czhdemsgz6vc8y4rs',
-    },
-];
-
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, alreadySeenConfetti } = useSelector((state: RootState) => ({
-        lumWallet: state.wallet.lumWallet,
-        otherWallets: state.wallet.otherWallets,
-        balances: state.wallet.lumWallet?.balances,
-        activities: state.wallet.lumWallet?.activities,
-        deposits: state.wallet.lumWallet?.deposits,
-        prizes: state.wallet.lumWallet?.prizes,
-        prices: state.stats.prices,
-        pools: state.pools.pools,
-        isTransferring: state.loading.effects.wallet.ibcTransfer,
-        isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
-        alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-    }));
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti } = useSelector(
+        (state: RootState) => ({
+            lumWallet: state.wallet.lumWallet,
+            otherWallets: state.wallet.otherWallets,
+            balances: state.wallet.lumWallet?.balances,
+            activities: state.wallet.lumWallet?.activities,
+            deposits: state.wallet.lumWallet?.deposits,
+            prizes: state.wallet.lumWallet?.prizes,
+            prices: state.stats.prices,
+            pools: state.pools.pools,
+            isTransferring: state.loading.effects.wallet.ibcTransfer,
+            isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
+            isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
+            alreadySeenConfetti: state.prizes.alreadySeenConfetti,
+        }),
+    );
 
     const dispatch = useDispatch<Dispatch>();
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardItems, setLeaderboardItems] = useState([...ITEMS]);
+    const [leaderboardSelectedPool, setLeaderboardSelectedPool] = useState(pools[0]);
+    const [leaderboardPage, setLeaderboardPage] = useState(0);
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const containerRef = useRef(null);
@@ -121,6 +63,20 @@ const MySavings = () => {
 
     const totalBalancePrice = balances ? numeral(WalletUtils.getTotalBalanceFromDeposits(deposits, prices)).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
+
+    useEffect(() => {
+        const getLeaderboardUserRank = async () => {
+            if (leaderboardSelectedPool && lumWallet) {
+                const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardSelectedPool.poolId);
+
+                if (userRankItems) {
+                    setUserRankItems([...userRankItems]);
+                }
+            }
+        };
+
+        getLeaderboardUserRank();
+    }, []);
 
     useEffect(() => {
         const page = activities?.currentPage;
@@ -143,28 +99,36 @@ const MySavings = () => {
         }
     }, [prizesToClaim]);
 
-    useLayoutEffect(() => {
+    /* useLayoutEffect(() => {
         const refreshST = () => {
             ScrollTrigger.refresh();
         };
 
         const ctx = gsap.context(() => {
+            const leaderboardEl = document.querySelector('.my-savings-container .leaderboard .leaderboard-rank');
+
             const scrollTrigger: ScrollTrigger.Vars = {
-                trigger: '.leaderboard-table',
+                trigger: '.my-savings-container .leaderboard',
                 start: 'top+=120px bottom',
                 end: 'max',
                 toggleActions: 'play none none reset',
                 invalidateOnRefresh: true,
+                markers: true,
             };
 
             tl.current = gsap
                 .timeline()
-                .to('.user-rank', {
-                    scrollTrigger,
-                    position: 'fixed',
-                    bottom: '2rem',
-                })
-                .set('leaderboard-card', { position: 'static', scrollTrigger }, '+=0');
+                .set('.my-savings-container .leaderboard', { position: 'static', scrollTrigger })
+                .to(
+                    '.my-savings-container .leaderboard .leaderboard-rank.user-rank.animated',
+                    {
+                        scrollTrigger,
+                        position: 'fixed',
+                        bottom: '2rem',
+                        width: leaderboardEl?.clientWidth || 'auto',
+                    },
+                    '+=0',
+                );
 
             const myCollapsibles = document.getElementsByClassName('collapsible');
 
@@ -187,14 +151,14 @@ const MySavings = () => {
     }, [isReloadingInfos]);
 
     useLayoutEffect(() => {
-        const leaderboardEl = document.querySelector('.leaderboard-table');
+        const leaderboardEl = document.querySelector('.my-savings-container .leaderboard .leaderboard-rank');
 
         if (leaderboardEl) {
-            gsap.set('.user-rank', {
+            gsap.set('.my-savings-container .leaderboard .user-rank.animated', {
                 width: leaderboardEl.clientWidth,
             });
         }
-    }, [winSizes.width]);
+    }, [winSizes.width]); */
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -524,40 +488,43 @@ const MySavings = () => {
                         <PoolSelect
                             className='pool-select'
                             backgroundColor='#F4F4F4'
-                            value={pools[0].poolId.toString()}
+                            value={leaderboardSelectedPool.poolId.toString()}
                             pools={pools}
                             options={pools.map((pool) => ({
                                 value: pool.poolId.toString(),
                                 label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
                             }))}
-                            onChange={() => {
-                                // do nothing
+                            onChange={(value) => {
+                                const pool = pools.find((p) => p.poolId.eq(value));
+
+                                if (pool) {
+                                    setLeaderboardSelectedPool(pool);
+                                }
                             }}
                         />
                     </div>
-                    <Card className='leaderboard-card position-relative'>
-                        <div className='user-rank me d-flex flex-row justify-content-between align-items-center'>
-                            <div className='d-flex flex-row align-items-center'>
-                                <div className='me-3 rank'>#19</div>
-                                <div className='address'>{StringsUtils.trunc(lumWallet?.address, 3)}</div>
-                            </div>
-                            <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
-                                <div className='crypto-amount me-3'>
-                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit('100')} /> {'ATOM'}
-                                </div>
-                                <div className='usd-amount'>
-                                    $<SmallerDecimal nb={NumbersUtils.formatTo6digit(Number('100') * 1.982)} />
-                                </div>
-                            </div>
-                        </div>
-                        <Leaderboard
-                            items={leaderboardItems}
-                            onBottomReached={() => {
-                                leaderboardItems.push(...ITEMS);
-                                setLeaderboardItems([...leaderboardItems]);
-                            }}
-                        />
-                    </Card>
+                    <Leaderboard
+                        items={leaderboardSelectedPool.leaderboard.items}
+                        enableAnimation
+                        userRank={
+                            userRankItems
+                                ? {
+                                      ...userRankItems[1],
+                                      prev: userRankItems[0],
+                                      next: userRankItems[2],
+                                  }
+                                : undefined
+                        }
+                        price={prices[DenomsUtils.getNormalDenom(leaderboardSelectedPool.nativeDenom)]}
+                        hasMore={!leaderboardSelectedPool.leaderboard.fullyLoaded}
+                        onBottomReached={() => {
+                            if (isLoadingNextLeaderboardPage) {
+                                return;
+                            }
+                            setLeaderboardPage(leaderboardPage + 1);
+                            dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardSelectedPool.poolId, page: leaderboardPage + 1, limit: 15 });
+                        }}
+                    />
                 </div>
             </div>
             <TransferOutModal

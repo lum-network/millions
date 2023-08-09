@@ -24,7 +24,7 @@
             @include font-size(1.125rem);
         }
         @include media-breakpoint-down(sm) {
-            @include font-size(0.750rem);
+            @include font-size(0.75rem);
         }
     }
 
@@ -294,54 +294,52 @@
         color: $color-primary;
     }
 
-    .leaderboard-card {
-        padding: 10px 32px;
-    }
-
     @include media-breakpoint-down(md) {
-        .table {
-            border-spacing: 0;
-        }
-
-        .table thead {
-            display: none;
-        }
-
-        .table tr,
-        .table tr td {
-            display: block;
-        }
-
-        .table tbody tr:not(:first-child) {
-            margin-top: 24px;
-        }
-
-        .table tbody tr:last-child {
-            margin-bottom: 24px;
-        }
-
-        .table tbody tr td {
-            padding: 1.5rem 1.5rem;
-            text-align: left;
-            vertical-align: middle;
-            &:first-child {
-                border-top-right-radius: 15px;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
+        .prize-distribution-card {
+            .table {
+                border-spacing: 0;
             }
-            &:last-child {
-                border-top-right-radius: 0;
-                border-bottom-left-radius: 15px;
-                border-bottom-right-radius: 15px;
-            }
-        }
 
-        .table td:before {
-            content: attr(data-label);
-            float: left;
-            text-align: start;
-            margin-right: 5rem;
-            font-size: 18px;
+            .table thead {
+                display: none;
+            }
+
+            .table tr,
+            .table tr td {
+                display: block;
+            }
+
+            .table tbody tr:not(:first-child) {
+                margin-top: 24px;
+            }
+
+            .table tbody tr:last-child {
+                margin-bottom: 24px;
+            }
+
+            .table tbody tr td {
+                padding: 1.5rem 1.5rem;
+                text-align: left;
+                vertical-align: middle;
+                &:first-child {
+                    border-top-right-radius: 15px;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+                &:last-child {
+                    border-top-right-radius: 0;
+                    border-bottom-left-radius: 15px;
+                    border-bottom-right-radius: 15px;
+                }
+            }
+
+            .table td:before {
+                content: attr(data-label);
+                float: left;
+                text-align: start;
+                margin-right: 5rem;
+                font-size: 18px;
+            }
         }
 
         .draws-history-card {

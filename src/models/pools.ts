@@ -1,6 +1,6 @@
 import { Pool } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { BalanceModel } from './index';
+import { BalanceModel, LeaderboardItemModel } from './index';
 import { Draw } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/draw';
 
 export interface PoolInternalInfosModel {
@@ -20,6 +20,10 @@ export interface PoolModel extends Pool {
     prizes?: Prize[];
     draws?: Draw[];
     nextDrawAt?: Date;
+    leaderboard: {
+        items: LeaderboardItemModel[];
+        fullyLoaded: boolean;
+    };
     currentPrizeToWin: BalanceModel | null;
     estimatedPrizeToWin: BalanceModel | null;
     apy: number;

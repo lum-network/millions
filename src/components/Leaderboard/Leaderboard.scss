@@ -1,10 +1,15 @@
 @import 'src/styles/main';
 
 .leaderboard {
+    padding: 40px 40px;
+
+    @include media-breakpoint-down(md) {
+        overflow: visible;
+        padding: 0;
+    }
+
     @mixin me {
-        td {
-            background-color: $color-primary;
-        }
+        background-color: $color-primary;
 
         .address {
             color: $color-white;
@@ -21,12 +26,19 @@
         }
     }
 
-    .table tbody tr td {
+    .leaderboard-rank {
+        background-color: $color-primary-light;
         padding: 14px 16px;
+        border-radius: 8px;
+
+        &:not(:last-child) {
+            margin-bottom: 1rem;
+        }
     }
 
-    .table tbody tr.white-bg td {
+    .leaderboard-rank.white-bg {
         background-color: $color-white;
+        box-shadow: 0px 4px 23px 0px #f1edff;
     }
 
     .address {
@@ -77,6 +89,11 @@
 
     .deposit-more-btn {
         position: absolute;
+        width: fit-content;
+        white-space: nowrap;
+        top: 22%;
+        right: 1.25rem;
+        z-index: 3;
         opacity: 0;
         padding: 7px 18px;
         &:hover {
@@ -84,20 +101,43 @@
         }
     }
 
-    .table tbody tr.me,
-    div.me {
+    .leaderboard-rank.me {
         @include me;
     }
 
     div.me {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin-top: 1.5rem;
         background-color: $color-primary;
-        border-radius: 15px;
+        border-radius: 8px;
         padding: 14px 16px;
         z-index: 2;
+        margin-bottom: 1rem;
+
+        &.animated {
+            position: absolute;
+            margin-bottom: unset;
+            width: calc(100% - 80px);
+
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        padding: 0px;
+
+        .rank,
+        .address,
+        .deposit-more-btn {
+            font-size: 12px;
+        }
+
+        .usd-amount {
+            font-size: 16px;
+        }
+
+        .crypto-amount {
+            font-size: 11px;
+        }
     }
 }

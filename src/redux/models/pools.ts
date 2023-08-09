@@ -7,6 +7,7 @@ import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
+import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -63,6 +64,7 @@ export const pools = createModel<RootModel>()({
                         }
 
                         const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+                        const leaderboard = await dispatch.pools.getLeaderboard({ poolId: pool.poolId, limit: 15 });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -74,6 +76,10 @@ export const pools = createModel<RootModel>()({
                             apy: 0,
                             draws,
                             nextDrawAt,
+                            leaderboard: {
+                                items: leaderboard || [],
+                                fullyLoaded: false,
+                            },
                             currentPrizeToWin: null,
                             estimatedPrizeToWin: null,
                         });
@@ -216,6 +222,34 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setDepositDelta(depositDelta);
                 }
             } catch {}
+        },
+        async getLeaderboard(payload: { poolId: Long; limit?: number }) {
+            try {
+                const [res] = await LumApi.fetchLeaderboard(payload.poolId.toString(), payload.limit);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
+        },
+        async getNextLeaderboardPage(payload: { poolId: Long; page: number; limit?: number }, state) {
+            const { poolId, page, limit } = payload;
+
+            const pools = [...state.pools.pools];
+            const pool = pools.find((p) => p.poolId.eq(poolId));
+
+            if (pool) {
+                try {
+                    const [res] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
+
+                    pool.leaderboard.items.push(...res);
+
+                    dispatch.pools.setPools(pools);
+                } catch {
+                    pool.leaderboard.fullyLoaded = true;
+                    dispatch.pools.setPools(pools);
+                }
+            }
         },
     }),
 });
