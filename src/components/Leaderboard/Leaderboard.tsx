@@ -13,6 +13,7 @@ import './Leaderboard.scss';
 interface Props {
     items: LeaderboardItemModel[];
     price: number | undefined;
+    poolId: string;
     hasMore?: boolean;
     lumWallet?: LumWalletModel | null;
     totalDeposited?: number | null;
@@ -29,7 +30,7 @@ interface Props {
 }
 
 const Leaderboard = (props: Props) => {
-    const { items, className, limit, lumWallet, price, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
+    const { items, className, limit, lumWallet, price, poolId, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
 
     const { width: windowWidth } = useWindowSize();
 
@@ -148,6 +149,9 @@ const Leaderboard = (props: Props) => {
                           }
                         : {
                               to: NavigationConstants.MY_SAVINGS,
+                              locationState: {
+                                  leaderboardPoolId: poolId,
+                              },
                           })}
                 >
                     {I18n.t(lumWallet ? 'leaderboardCta' : 'leaderboardNotConnectedCta')}

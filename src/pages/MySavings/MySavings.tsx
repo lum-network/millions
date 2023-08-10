@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
@@ -47,11 +47,14 @@ const MySavings = () => {
         }),
     );
 
+    const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPool, setLeaderboardSelectedPool] = useState(pools[0]);
+    const [leaderboardSelectedPool, setLeaderboardSelectedPool] = useState(
+        location.state?.leaderboardPoolId ? pools.find((p) => p.poolId.eq(location.state?.leaderboardPoolId)) || pools[0] : pools[0],
+    );
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
@@ -518,6 +521,7 @@ const MySavings = () => {
                                   }
                                 : undefined
                         }
+                        poolId={leaderboardSelectedPool.poolId.toString()}
                         price={prices[DenomsUtils.getNormalDenom(leaderboardSelectedPool.nativeDenom)]}
                         hasMore={!leaderboardSelectedPool.leaderboard.fullyLoaded}
                         onBottomReached={() => {

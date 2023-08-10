@@ -363,6 +363,7 @@ const PoolDetails = () => {
                             <Leaderboard
                                 flat
                                 items={pool.leaderboard.items}
+                                poolId={pool.poolId.toString()}
                                 limit={5}
                                 withSeeMoreBtn
                                 lumWallet={lumWallet}
