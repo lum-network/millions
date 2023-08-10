@@ -151,6 +151,7 @@ class LumClient {
                 poolId: withdrawal.poolId,
                 amount: withdrawal.amount,
                 depositId: withdrawal.depositId,
+                withdrawalId: withdrawal.withdrawalId,
                 depositorAddress: withdrawal.depositorAddress,
                 isWithdrawing: true,
                 isDepositDrop: false,
