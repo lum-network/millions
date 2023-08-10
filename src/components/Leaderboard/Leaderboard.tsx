@@ -86,13 +86,13 @@ const Leaderboard = (props: Props) => {
                     <div className='crypto-amount me-3'>
                         <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, 3)} /> {DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase()}
                     </div>
-                    {price && (
+                    {price ? (
                         <div className='usd-amount'>
                             $<SmallerDecimal nb={NumbersUtils.formatTo6digit(amount * price)} />
                         </div>
-                    )}
+                    ) : null}
                 </div>
-                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && (
+                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank ? (
                     <Button
                         className='deposit-more-btn'
                         to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${poolId}`}
@@ -102,7 +102,7 @@ const Leaderboard = (props: Props) => {
                     >
                         {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalDeposited), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
                     </Button>
-                )}
+                ) : null}
             </div>
         );
     };
