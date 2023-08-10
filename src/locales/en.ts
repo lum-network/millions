@@ -72,7 +72,7 @@ export default {
         leavePool: 'Failed to leave {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Failed to claim prizes',
         claimAndCompound: 'Failed to compound prizes',
-        withdrawalRetry: 'Failed to retry withdrawal #{{ depositId }} to pool #{{ poolId }}',
+        withdrawalRetry: 'Failed to retry withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     success: {
         wallet: 'Successfully connected',
@@ -82,7 +82,7 @@ export default {
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
-        withdrawalRetry: 'Successfully retried withdrawal #{{ depositId }} to pool #{{ poolId }}',
+        withdrawalRetry: 'Successfully retried withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -90,7 +90,7 @@ export default {
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
         claimAndCompound: 'Compounding prizes...',
-        withdrawalRetry: 'Retrying withdrawal #{{ depositId }} to pool #{{ poolId }}',
+        withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     landing: {
         howItWorks: 'How it works',

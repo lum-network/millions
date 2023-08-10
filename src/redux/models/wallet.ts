@@ -61,6 +61,12 @@ interface LeavePoolPayload {
     depositId: Long;
 }
 
+interface LeavePoolRetryPayload {
+    poolId: Long;
+    denom: string;
+    withdrawalId: Long;
+}
+
 interface WalletState {
     lumWallet: LumWalletModel | null;
     otherWallets: {
@@ -615,29 +621,29 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async leavePoolRetry(payload: LeavePoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async leavePoolRetry(payload: LeavePoolRetryPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }) });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }) });
 
             try {
                 if (!lumWallet) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                const result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: I18n.t('success.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }),
+                    content: I18n.t('success.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }),
                 });
 
                 Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_RETRY_SUCCESS, {
-                    pool_id: payload.poolId?.toString(),
-                    deposit_id: payload.depositId?.toString(),
+                    pool_id: payload.poolId.toString(),
+                    deposit_id: payload.withdrawalId.toString(),
                     denom: payload.denom,
                 });
 
@@ -645,7 +651,7 @@ export const wallet = createModel<RootModel>()({
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', {
-                    content: (e as Error).message || I18n.t('errors.withdrawalRetry', { depositId: payload.depositId.toString(), poolId: payload.poolId.toString() }),
+                    content: (e as Error).message || I18n.t('errors.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }),
                 });
                 return null;
             }

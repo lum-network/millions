@@ -384,9 +384,15 @@ const MySavings = () => {
                                         prices={prices}
                                         onLeavePool={(deposit) => setDepositToLeave(deposit)}
                                         onDepositRetry={(deposit) => dispatch.wallet.retryDeposit({ poolId: deposit.poolId, depositId: deposit.depositId })}
-                                        onWithdrawalRetry={(deposit) =>
-                                            dispatch.wallet.leavePoolRetry({ poolId: deposit.poolId, depositId: deposit.depositId, denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || '') })
-                                        }
+                                        onWithdrawalRetry={(deposit) => {
+                                            if (deposit.withdrawalId) {
+                                                dispatch.wallet.leavePoolRetry({
+                                                    poolId: deposit.poolId,
+                                                    withdrawalId: deposit.withdrawalId,
+                                                    denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
+                                                });
+                                            }
+                                        }}
                                     />
                                 </Card>
                             </>
