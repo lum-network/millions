@@ -7,6 +7,7 @@ import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { LeaderboardItemModel, LumWalletModel } from 'models';
 import { DenomsUtils, I18n, KeplrUtils, NumbersUtils, StringsUtils } from 'utils';
+import numeral from 'numeral';
 
 import './Leaderboard.scss';
 
@@ -85,7 +86,7 @@ const Leaderboard = (props: Props) => {
                     </div>
                     {price ? (
                         <div className='usd-amount'>
-                            $<SmallerDecimal nb={NumbersUtils.formatTo6digit(amount * price)} />
+                            $<SmallerDecimal nb={numeral(amount * price).format('0,0.00')} />
                         </div>
                     ) : null}
                 </div>
