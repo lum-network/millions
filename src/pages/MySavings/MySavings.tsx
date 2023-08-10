@@ -67,7 +67,7 @@ const MySavings = () => {
     const winSizes = useWindowSize();
 
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
-    const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
+    const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
 
