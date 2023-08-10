@@ -17,7 +17,7 @@ import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, 
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase /* , StringsUtils */ } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase /* StringsUtils */ } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -60,6 +60,8 @@ const MySavings = () => {
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const leaderboardSectionRef = useRef<HTMLDivElement>(null);
+
     const tl = useRef<gsap.core.Timeline>();
 
     const winSizes = useWindowSize();
@@ -81,6 +83,10 @@ const MySavings = () => {
         };
 
         getLeaderboardUserRank();
+
+        if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
+            leaderboardSectionRef.current.scrollIntoView();
+        }
     }, []);
 
     useEffect(() => {
@@ -493,7 +499,7 @@ const MySavings = () => {
                     </div>
                 </div>
                 {leaderboardSelectedPool.leaderboard.items.length > 0 && (
-                    <div className='col-12 col-lg-8 col-xxl-9 position-relative'>
+                    <div ref={leaderboardSectionRef} className='col-12 col-lg-8 col-xxl-9 position-relative'>
                         <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
                             <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
                             <PoolSelect
@@ -540,6 +546,7 @@ const MySavings = () => {
                         ) */}
                         <Leaderboard
                             items={leaderboardSelectedPool.leaderboard.items}
+                            enableAnimation
                             userRank={
                                 userRankItems
                                     ? {
@@ -556,8 +563,8 @@ const MySavings = () => {
                                 if (isLoadingNextLeaderboardPage) {
                                     return;
                                 }
-                                setLeaderboardPage(leaderboardPage + 1);
                                 dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardSelectedPool.poolId, page: leaderboardPage + 1, limit: 15 });
+                                setLeaderboardPage(leaderboardPage + 1);
                             }}
                             lumWallet={lumWallet}
                             totalDeposited={totalDepositedCrypto}

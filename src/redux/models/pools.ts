@@ -249,15 +249,16 @@ export const pools = createModel<RootModel>()({
 
             if (pool) {
                 try {
-                    const [res] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
+                    const [res, metadata] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
 
                     pool.leaderboard.items.push(...res);
 
+                    if (!metadata.hasNextPage) {
+                        pool.leaderboard.fullyLoaded = true;
+                    }
+
                     dispatch.pools.setPools(pools);
-                } catch {
-                    pool.leaderboard.fullyLoaded = true;
-                    dispatch.pools.setPools(pools);
-                }
+                } catch {}
             }
         },
     }),

@@ -54,7 +54,9 @@ const PoolDetails = () => {
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
         dispatch.prizes.getStats(denom || '');
+    }, [poolId, denom]);
 
+    useEffect(() => {
         const getLeaderboard = async () => {
             if (pool && lumWallet) {
                 const userRankItems = await dispatch.wallet.getLeaderboardRank(pool.poolId);
@@ -62,11 +64,13 @@ const PoolDetails = () => {
                 if (userRankItems) {
                     setUserRankItems([...userRankItems]);
                 }
+            } else {
+                setUserRankItems(undefined);
             }
         };
 
         getLeaderboard();
-    }, [poolId, denom]);
+    }, [lumWallet]);
 
     useEffect(() => {
         if (pool) {
