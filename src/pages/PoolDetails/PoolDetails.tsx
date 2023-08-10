@@ -594,7 +594,9 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
+                                                        <SmallerDecimal
+                                                            nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (draw.usdTokenValue || prices[denom] || 0)).format('$0,0[.]00')}
+                                                        />
                                                         <div className='draw-token'>
                                                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
                                                             &nbsp;

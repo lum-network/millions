@@ -1,7 +1,7 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
-import { PoolModel } from 'models';
+import { DrawModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
@@ -63,7 +63,7 @@ export const pools = createModel<RootModel>()({
                             continue;
                         }
 
-                        const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+                        const draws = await dispatch.pools.getPoolDraws({ poolId: pool.poolId, nativeDenom: pool.nativeDenom });
                         const leaderboard = await dispatch.pools.getLeaderboard({ poolId: pool.poolId, limit: 15 });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
@@ -182,12 +182,21 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws(poolId: Long) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
+                const draws: DrawModel[] = [];
 
                 if (res) {
-                    return res;
+                    for (const draw of res) {
+                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+
+                        if (marketData && marketData.length) {
+                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        }
+                    }
+
+                    return draws;
                 }
             } catch {}
         },
