@@ -10,17 +10,18 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
 import './PoolDetails.scss';
+import { LeaderboardItemModel } from 'models';
 
 const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
@@ -46,6 +47,7 @@ const PoolDetails = () => {
     const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -53,6 +55,22 @@ const PoolDetails = () => {
         dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
         dispatch.prizes.getStats(denom || '');
     }, [poolId, denom]);
+
+    useEffect(() => {
+        const getLeaderboard = async () => {
+            if (pool && lumWallet) {
+                const userRankItems = await dispatch.wallet.getLeaderboardRank(pool.poolId);
+
+                if (userRankItems) {
+                    setUserRankItems([...userRankItems]);
+                }
+            } else {
+                setUserRankItems(undefined);
+            }
+        };
+
+        getLeaderboard();
+    }, [lumWallet]);
 
     useEffect(() => {
         if (pool) {
@@ -342,6 +360,32 @@ const PoolDetails = () => {
                         </div>
                     </div>
                 </div>
+                {pool.leaderboard && (
+                    <div className='row'>
+                        <div className='col-12 overflow-visible'>
+                            <h2 className='mt-4 mt-lg-5 mb-2 mb-lg-4'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                            <Leaderboard
+                                flat
+                                items={pool.leaderboard.items}
+                                poolId={pool.poolId.toString()}
+                                limit={5}
+                                withSeeMoreBtn
+                                lumWallet={lumWallet}
+                                price={prices[denom || '']}
+                                totalDeposited={WalletUtils.getTotalBalanceFromDeposits(lumWallet?.deposits)}
+                                userRank={
+                                    userRankItems
+                                        ? {
+                                              ...userRankItems[1],
+                                              prev: userRankItems[0],
+                                              next: userRankItems[2],
+                                          }
+                                        : undefined
+                                }
+                            />
+                        </div>
+                    </div>
+                )}
                 <div className='row position-relative'>
                     <div className='col-12 col-xl-4'>
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.users.title')}</h2>

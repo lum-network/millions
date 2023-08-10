@@ -113,3 +113,11 @@ export const reduceDepositsByPoolId = async (deposits: Partial<DepositModel>[], 
 
     return aggregatedDeposits;
 };
+
+export const getPoolByPoolId = (pools: PoolModel[], poolId: string) => {
+    if (!pools || pools.length === 0) {
+        return undefined;
+    }
+
+    return pools.find((p) => p.poolId.eq(poolId));
+};

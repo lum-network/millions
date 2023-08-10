@@ -330,6 +330,7 @@ export default {
         claim: 'Claim',
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',
+        depositorsRanking: 'Depositors ranking',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {
@@ -528,5 +529,10 @@ export default {
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
         },
+    },
+    leaderboard: {
+        cta: 'See More',
+        notConnectedCta: 'Log in to see more',
+        depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
     },
 };

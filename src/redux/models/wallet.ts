@@ -6,8 +6,9 @@ import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
+import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
+import { LumApi } from 'api';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -430,6 +431,19 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 console.warn(e);
             }
+        },
+        async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
+            if (!state.wallet.lumWallet) {
+                return null;
+            }
+
+            try {
+                const [res] = await LumApi.fetchLeaderboardUserRank(poolId.toString(), state.wallet.lumWallet.address);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
         },
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;

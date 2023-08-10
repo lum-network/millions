@@ -17,11 +17,12 @@ interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     className?: string;
 }
 
-const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, ...rest }: IProps) => {
+const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, style, ...rest }: IProps) => {
     if (to) {
         return (
             <Link
                 to={disabled ? '#' : to}
+                type='button'
                 state={locationState}
                 onClick={
                     !loading && !disabled
@@ -32,6 +33,7 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
                         : () => null
                 }
                 className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}
+                style={style}
             >
                 {loading ? <Loading /> : children}
             </Link>

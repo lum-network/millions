@@ -1,21 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
-import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal } from 'components';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
-import { DepositModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase } from 'utils';
+import { DepositModel, LeaderboardItemModel } from 'models';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, /* StringsUtils, */ PoolsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -28,31 +30,70 @@ import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
 import './MySavings.scss';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, alreadySeenConfetti } = useSelector((state: RootState) => ({
-        lumWallet: state.wallet.lumWallet,
-        otherWallets: state.wallet.otherWallets,
-        balances: state.wallet.lumWallet?.balances,
-        activities: state.wallet.lumWallet?.activities,
-        deposits: state.wallet.lumWallet?.deposits,
-        prizes: state.wallet.lumWallet?.prizes,
-        prices: state.stats.prices,
-        pools: state.pools.pools,
-        isTransferring: state.loading.effects.wallet.ibcTransfer,
-        isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
-        alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-    }));
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti } = useSelector(
+        (state: RootState) => ({
+            lumWallet: state.wallet.lumWallet,
+            otherWallets: state.wallet.otherWallets,
+            balances: state.wallet.lumWallet?.balances,
+            activities: state.wallet.lumWallet?.activities,
+            deposits: state.wallet.lumWallet?.deposits,
+            prizes: state.wallet.lumWallet?.prizes,
+            prices: state.stats.prices,
+            pools: state.pools.pools,
+            isTransferring: state.loading.effects.wallet.ibcTransfer,
+            isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
+            isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
+            alreadySeenConfetti: state.prizes.alreadySeenConfetti,
+        }),
+    );
 
+    const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId : null);
+    const [leaderboardPage, setLeaderboardPage] = useState(0);
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const leaderboardSectionRef = useRef<HTMLDivElement>(null);
+
+    const tl = useRef<gsap.core.Timeline>();
 
     const winSizes = useWindowSize();
 
-    const totalBalancePrice = balances ? numeral(WalletUtils.getTotalBalanceFromDeposits(deposits, prices)).format('$0,0[.]00') : '';
+    const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
+    const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
+    const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
+    const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
+
+    useEffect(() => {
+        const getLeaderboardUserRank = async () => {
+            if (leaderboardPool && lumWallet) {
+                const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardPool.poolId);
+
+                if (userRankItems) {
+                    setUserRankItems([...userRankItems]);
+                }
+            }
+        };
+
+        getLeaderboardUserRank();
+
+        if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
+            leaderboardSectionRef.current.scrollIntoView();
+        }
+    }, [leaderboardPool]);
+
+    useEffect(() => {
+        if (pools && pools.length > 0) {
+            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId);
+            ScrollTrigger.refresh();
+        }
+    }, [pools]);
 
     useEffect(() => {
         const page = activities?.currentPage;
@@ -74,6 +115,65 @@ const MySavings = () => {
             confettis(5000);
         }
     }, [prizesToClaim]);
+
+    useLayoutEffect(() => {
+        ScrollTrigger.normalizeScroll(true);
+
+        const refreshST = () => {
+            ScrollTrigger.refresh();
+        };
+
+        const ctx = gsap.context(() => {
+            const leaderboardEl = document.querySelector('#my-savings .leaderboard');
+
+            const scrollTrigger: ScrollTrigger.Vars = {
+                trigger: leaderboardEl,
+                start: 'top+=120px bottom',
+                end: 'max',
+                toggleActions: 'play none none reset',
+                invalidateOnRefresh: true,
+                markers: true,
+            };
+
+            tl.current = gsap.timeline().set(leaderboardEl, { position: 'static', scrollTrigger }).to(
+                '#my-savings .user-rank.animated',
+                {
+                    position: 'fixed',
+                    bottom: '2rem',
+                    scrollTrigger,
+                },
+                '+=0',
+            );
+
+            const myCollapsibles = document.getElementsByClassName('collapsible');
+
+            for (const el of myCollapsibles) {
+                el.addEventListener('shown.bs.collapse', refreshST);
+                el.addEventListener('hidden.bs.collapse', refreshST);
+            }
+        }, containerRef);
+
+        return () => {
+            ctx.revert();
+
+            const myCollapsibles = document.getElementsByClassName('collapsible');
+
+            for (const el of myCollapsibles) {
+                el.removeEventListener('shown.bs.collapse', refreshST);
+                el.removeEventListener('hidden.bs.collapse', refreshST);
+            }
+        };
+    }, []);
+
+    useLayoutEffect(() => {
+        const leaderboardEl = document.querySelector('#my-savings .leaderboard .leaderboard-rank');
+
+        if (leaderboardEl) {
+            gsap.set('#my-savings .user-rank.animated', {
+                width: leaderboardEl.clientWidth,
+            });
+        }
+    }, [winSizes.width]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -186,7 +286,7 @@ const MySavings = () => {
     }
 
     return (
-        <div className='my-savings-container mt-3 mt-lg-5'>
+        <div id='my-savings' className='my-savings-container mt-3 mt-lg-5' ref={containerRef}>
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
@@ -406,6 +506,75 @@ const MySavings = () => {
                         </div>
                     </div>
                 </div>
+                {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
+                    <div ref={leaderboardSectionRef} className='col-12 col-lg-8 col-xxl-9 position-relative'>
+                        <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
+                            <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                            <PoolSelect
+                                className='pool-select'
+                                backgroundColor='#F4F4F4'
+                                value={leaderboardPool.poolId.toString()}
+                                pools={pools}
+                                options={pools.map((pool) => ({
+                                    value: pool.poolId.toString(),
+                                    label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
+                                }))}
+                                onChange={(value) => {
+                                    setLeaderboardSelectedPoolId(value);
+                                }}
+                            />
+                        </div>
+                        {/* userRankItems && userRankItems[1] && (
+                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <div className='me-3 rank'>#{userRankItems[1].rank}</div>
+                                    <div className='address'>{StringsUtils.trunc(userRankItems[1].address, winSizes.width < Breakpoints.SM ? 3 : 6)}</div>
+                                </div>
+                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                    <div className='crypto-amount me-3'>
+                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRankItems[1].amount))} />{' '}
+                                        {DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom).toUpperCase()}
+                                    </div>
+                                    {prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)] && (
+                                        <div className='usd-amount'>
+                                            $
+                                            <SmallerDecimal
+                                                nb={NumbersUtils.formatTo6digit(
+                                                    NumbersUtils.convertUnitNumber(userRankItems[1].amount) * prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)],
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) */}
+                        <Leaderboard
+                            items={leaderboardPool.leaderboard.items}
+                            enableAnimation
+                            userRank={
+                                userRankItems
+                                    ? {
+                                          ...userRankItems[1],
+                                          prev: userRankItems[0],
+                                          next: userRankItems[2],
+                                      }
+                                    : undefined
+                            }
+                            poolId={leaderboardPool.poolId.toString()}
+                            price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
+                            hasMore={!isLoadingNextLeaderboardPage && !leaderboardPool.leaderboard.fullyLoaded}
+                            onBottomReached={() => {
+                                if (isLoadingNextLeaderboardPage) {
+                                    return;
+                                }
+                                dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage + 1, limit: 15 });
+                                setLeaderboardPage(leaderboardPage + 1);
+                            }}
+                            lumWallet={lumWallet}
+                            totalDeposited={totalDepositedCrypto}
+                        />
+                    </div>
+                )}
             </div>
             <TransferOutModal
                 modalRef={transferOutModalRef}

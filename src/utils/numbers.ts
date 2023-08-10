@@ -28,7 +28,7 @@ export const formatUnit = (coin: LumTypes.Coin, moreDecimal?: boolean): string =
     return numeral(LumUtils.convertUnit(coin, LumConstants.LumDenom)).format(moreDecimal ? '0,0.[000000]' : '0,0.[000]');
 };
 
-export const formatTo6digit = (number: number | string): string => {
+export const formatTo6digit = (number: number | string, digits = 6): string => {
     if (typeof number === 'string') {
         number = Number(number);
 
@@ -37,7 +37,13 @@ export const formatTo6digit = (number: number | string): string => {
         }
     }
 
-    return number > 0 ? numeral(number).format('0,0[.]000000') : '0';
+    let digitsFormat = '';
+
+    for (let i = 0; i < digits; i++) {
+        digitsFormat += '0';
+    }
+
+    return number > 0 ? numeral(number).format(`0,0[.]${digitsFormat}`) : '0';
 };
 
 export const biggerCoin = (coin1: LumTypes.Coin, coin2: LumTypes.Coin, prices: { [key: string]: number }): LumTypes.Coin => {

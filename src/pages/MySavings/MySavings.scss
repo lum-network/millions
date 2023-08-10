@@ -221,7 +221,12 @@
             color: $color-black;
         }
     }
- 
+
+    .leaderboard {
+        animation: unset;
+        opacity: 1;
+    }
+
     #withdrawModal {
         .withdraw-title {
             font-size: 24px;
