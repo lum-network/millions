@@ -132,7 +132,7 @@ const MySavings = () => {
                 end: 'max',
                 toggleActions: 'play none none reset',
                 invalidateOnRefresh: true,
-                markers: true,
+                //markers: true,
             };
 
             tl.current = gsap.timeline().set(leaderboardEl, { position: 'static', scrollTrigger }).to(
