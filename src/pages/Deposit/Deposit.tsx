@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
+import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -9,6 +9,7 @@ import { CustomEase } from 'gsap/CustomEase';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
+import Assets from 'assets';
 import { Card, Lottie, Modal, Steps } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
@@ -23,12 +24,12 @@ import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
 
 import './Deposit.scss';
-import Assets from 'assets';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
 const Deposit = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
+    const location = useLocation();
 
     const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
@@ -64,7 +65,7 @@ const Deposit = () => {
 
     const transferForm = useFormik({
         initialValues: {
-            amount: '',
+            amount: location.state?.amountToDeposit || '',
         },
         validationSchema: yup.object().shape({
             amount: yup
@@ -828,6 +829,7 @@ const Deposit = () => {
                             price={prices?.[denom || ''] || 0}
                             lumWallet={lumWallet}
                             otherWallets={otherWallets}
+                            amountFromLocationState={location.state?.amountToDeposit}
                         />
                         {isLastStep && (
                             <Lottie

@@ -530,6 +530,9 @@ export default {
             cta: 'Deposit in Pool',
         },
     },
-    leaderboardCta: 'See more',
-    leaderboardNotConnectedCta: 'Log in to see more',
+    leaderboard: {
+        cta: 'See More',
+        notConnectedCta: 'Log in to see more',
+        depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
+    },
 };

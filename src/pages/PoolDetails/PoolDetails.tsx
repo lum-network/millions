@@ -368,7 +368,7 @@ const PoolDetails = () => {
                                 withSeeMoreBtn
                                 lumWallet={lumWallet}
                                 price={prices[denom || '']}
-                                totalDeposited={WalletUtils.getTotalBalanceFromDeposits(lumWallet?.deposits, prices)}
+                                totalDeposited={WalletUtils.getTotalBalanceFromDeposits(lumWallet?.deposits)}
                                 userRank={
                                     userRankItems
                                         ? {

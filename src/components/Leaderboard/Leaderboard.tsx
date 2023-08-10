@@ -18,8 +18,8 @@ interface Props {
     lumWallet?: LumWalletModel | null;
     totalDeposited?: number | null;
     userRank?: LeaderboardItemModel & {
-        prev?: LeaderboardItemModel;
-        next?: LeaderboardItemModel;
+        prev?: LeaderboardItemModel | null;
+        next?: LeaderboardItemModel | null;
     };
     withSeeMoreBtn?: boolean;
     flat?: boolean;
@@ -55,15 +55,13 @@ const Leaderboard = (props: Props) => {
         }
     }
 
-    const LeaderboardContainer = ({ children }: { children: React.ReactNode }) => {
-        const leaderboardContainerClassName = `leaderboard ${className} ${enableAnimation && 'position-relative'}`;
-
+    const LeaderboardContainer = ({ children, containerClassName }: { children: React.ReactNode; containerClassName: string }) => {
         if (isMobile || windowWidth < Breakpoints.MD) {
-            return <div className={leaderboardContainerClassName}>{children}</div>;
+            return <div className={containerClassName}>{children}</div>;
         }
 
         return (
-            <Card flat={flat} withoutPadding className={leaderboardContainerClassName}>
+            <Card flat={flat} withoutPadding className={containerClassName}>
                 {children}
             </Card>
         );
@@ -95,8 +93,14 @@ const Leaderboard = (props: Props) => {
                     )}
                 </div>
                 {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && (
-                    <Button className='deposit-more-btn'>
-                        Deposit {Math.ceil(amount - totalDeposited / (price || 1)) + 1} {DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase()} to take his place
+                    <Button
+                        className='deposit-more-btn'
+                        to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${poolId}`}
+                        locationState={{
+                            amountToDeposit: Math.ceil(amount - totalDeposited),
+                        }}
+                    >
+                        {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalDeposited), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
                     </Button>
                 )}
             </div>
@@ -104,9 +108,9 @@ const Leaderboard = (props: Props) => {
     };
 
     return (
-        <LeaderboardContainer>
-            {((enableAnimation && userRank) || (windowWidth < Breakpoints.MD && userRank)) && (
-                <div className={`user-rank leaderboard-rank ${enableAnimation && 'animated'} me d-flex flex-row justify-content-between align-items-center`}>
+        <LeaderboardContainer containerClassName={`leaderboard ${className} ${enableAnimation && 'position-relative'}`}>
+            {!enableAnimation && windowWidth < Breakpoints.MD && userRank && (
+                <div className={`user-rank leaderboard-rank me d-flex flex-row justify-content-between align-items-center`}>
                     <div className='d-flex flex-row align-items-center'>
                         <div className='me-3 rank'>#{userRank.rank}</div>
                         <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
@@ -154,7 +158,7 @@ const Leaderboard = (props: Props) => {
                               },
                           })}
                 >
-                    {I18n.t(lumWallet ? 'leaderboardCta' : 'leaderboardNotConnectedCta')}
+                    {I18n.t(lumWallet ? 'leaderboard.cta' : 'leaderboard.notConnectedCta')}
                 </Button>
             )}
         </LeaderboardContainer>

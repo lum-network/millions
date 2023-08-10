@@ -47,6 +47,7 @@ interface Props {
     lumWallet: LumWalletModel | null;
     transferForm: FormikProps<{ amount: string }>;
     price: number;
+    amountFromLocationState?: number;
 }
 
 type TxInfos = {
@@ -433,12 +434,12 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onPrevStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, amountFromLocationState, onNextStep, onPrevStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
-    const [initialAmount, setInitialAmount] = useState('0');
+    const [initialAmount, setInitialAmount] = useState(amountFromLocationState ? amountFromLocationState.toFixed() : '0');
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
@@ -446,8 +447,10 @@ const DepositSteps = (props: Props) => {
     }, [otherWallets, currentPool]);
 
     useEffect(() => {
-        const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-        setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
+        if (!amountFromLocationState) {
+            const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
+            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
+        }
     }, [lumWallet]);
 
     return (

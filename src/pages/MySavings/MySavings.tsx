@@ -17,7 +17,7 @@ import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, 
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase /* , StringsUtils */ } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -59,12 +59,14 @@ const MySavings = () => {
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const tl = useRef<gsap.core.Timeline>();
 
     const winSizes = useWindowSize();
 
-    const totalBalancePrice = balances ? numeral(WalletUtils.getTotalBalanceFromDeposits(deposits, prices)).format('$0,0[.]00') : '';
+    const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
+    const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
+    const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
 
     useEffect(() => {
@@ -102,36 +104,32 @@ const MySavings = () => {
         }
     }, [prizesToClaim]);
 
-    /* useLayoutEffect(() => {
+    useLayoutEffect(() => {
         const refreshST = () => {
             ScrollTrigger.refresh();
         };
 
         const ctx = gsap.context(() => {
-            const leaderboardEl = document.querySelector('.my-savings-container .leaderboard .leaderboard-rank');
+            const leaderboardEl = document.querySelector('#my-savings .leaderboard');
 
             const scrollTrigger: ScrollTrigger.Vars = {
-                trigger: '.my-savings-container .leaderboard',
+                trigger: leaderboardEl,
                 start: 'top+=120px bottom',
                 end: 'max',
                 toggleActions: 'play none none reset',
                 invalidateOnRefresh: true,
-                markers: true,
+                //markers: true,
             };
 
-            tl.current = gsap
-                .timeline()
-                .set('.my-savings-container .leaderboard', { position: 'static', scrollTrigger })
-                .to(
-                    '.my-savings-container .leaderboard .leaderboard-rank.user-rank.animated',
-                    {
-                        scrollTrigger,
-                        position: 'fixed',
-                        bottom: '2rem',
-                        width: leaderboardEl?.clientWidth || 'auto',
-                    },
-                    '+=0',
-                );
+            tl.current = gsap.timeline().set(leaderboardEl, { position: 'static', scrollTrigger }).to(
+                '#my-savings .user-rank.animated',
+                {
+                    position: 'fixed',
+                    bottom: '2rem',
+                    scrollTrigger,
+                },
+                '+=0',
+            );
 
             const myCollapsibles = document.getElementsByClassName('collapsible');
 
@@ -151,17 +149,17 @@ const MySavings = () => {
                 el.removeEventListener('hidden.bs.collapse', refreshST);
             }
         };
-    }, [isReloadingInfos]);
+    }, []);
 
     useLayoutEffect(() => {
-        const leaderboardEl = document.querySelector('.my-savings-container .leaderboard .leaderboard-rank');
+        const leaderboardEl = document.querySelector('#my-savings .leaderboard .leaderboard-rank');
 
         if (leaderboardEl) {
-            gsap.set('.my-savings-container .leaderboard .user-rank.animated', {
+            gsap.set('#my-savings .user-rank.animated', {
                 width: leaderboardEl.clientWidth,
             });
         }
-    }, [winSizes.width]); */
+    }, [winSizes.width]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -274,7 +272,7 @@ const MySavings = () => {
     }
 
     return (
-        <div className='my-savings-container mt-3 mt-lg-5' ref={containerRef}>
+        <div id='my-savings' className='my-savings-container mt-3 mt-lg-5' ref={containerRef}>
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
@@ -494,51 +492,78 @@ const MySavings = () => {
                         </div>
                     </div>
                 </div>
-                <div className='col-12 col-lg-8 col-xxl-9'>
-                    <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
-                        <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
-                        <PoolSelect
-                            className='pool-select'
-                            backgroundColor='#F4F4F4'
-                            value={leaderboardSelectedPool.poolId.toString()}
-                            pools={pools}
-                            options={pools.map((pool) => ({
-                                value: pool.poolId.toString(),
-                                label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
-                            }))}
-                            onChange={(value) => {
-                                const pool = pools.find((p) => p.poolId.eq(value));
+                {leaderboardSelectedPool.leaderboard.items.length > 0 && (
+                    <div className='col-12 col-lg-8 col-xxl-9 position-relative'>
+                        <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
+                            <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                            <PoolSelect
+                                className='pool-select'
+                                backgroundColor='#F4F4F4'
+                                value={leaderboardSelectedPool.poolId.toString()}
+                                pools={pools}
+                                options={pools.map((pool) => ({
+                                    value: pool.poolId.toString(),
+                                    label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
+                                }))}
+                                onChange={(value) => {
+                                    const pool = pools.find((p) => p.poolId.eq(value));
 
-                                if (pool) {
-                                    setLeaderboardSelectedPool(pool);
+                                    if (pool) {
+                                        setLeaderboardSelectedPool(pool);
+                                    }
+                                }}
+                            />
+                        </div>
+                        {/* userRankItems && userRankItems[1] && (
+                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <div className='me-3 rank'>#{userRankItems[1].rank}</div>
+                                    <div className='address'>{StringsUtils.trunc(userRankItems[1].address, winSizes.width < Breakpoints.SM ? 3 : 6)}</div>
+                                </div>
+                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                    <div className='crypto-amount me-3'>
+                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRankItems[1].amount))} />{' '}
+                                        {DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom).toUpperCase()}
+                                    </div>
+                                    {prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)] && (
+                                        <div className='usd-amount'>
+                                            $
+                                            <SmallerDecimal
+                                                nb={NumbersUtils.formatTo6digit(
+                                                    NumbersUtils.convertUnitNumber(userRankItems[1].amount) * prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)],
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) */}
+                        <Leaderboard
+                            items={leaderboardSelectedPool.leaderboard.items}
+                            userRank={
+                                userRankItems
+                                    ? {
+                                          ...userRankItems[1],
+                                          prev: userRankItems[0],
+                                          next: userRankItems[2],
+                                      }
+                                    : undefined
+                            }
+                            poolId={leaderboardSelectedPool.poolId.toString()}
+                            price={prices[DenomsUtils.getNormalDenom(leaderboardSelectedPool.nativeDenom)]}
+                            hasMore={!leaderboardSelectedPool.leaderboard.fullyLoaded}
+                            onBottomReached={() => {
+                                if (isLoadingNextLeaderboardPage) {
+                                    return;
                                 }
+                                setLeaderboardPage(leaderboardPage + 1);
+                                dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardSelectedPool.poolId, page: leaderboardPage + 1, limit: 15 });
                             }}
+                            lumWallet={lumWallet}
+                            totalDeposited={totalDepositedCrypto}
                         />
                     </div>
-                    <Leaderboard
-                        items={leaderboardSelectedPool.leaderboard.items}
-                        enableAnimation
-                        userRank={
-                            userRankItems
-                                ? {
-                                      ...userRankItems[1],
-                                      prev: userRankItems[0],
-                                      next: userRankItems[2],
-                                  }
-                                : undefined
-                        }
-                        poolId={leaderboardSelectedPool.poolId.toString()}
-                        price={prices[DenomsUtils.getNormalDenom(leaderboardSelectedPool.nativeDenom)]}
-                        hasMore={!leaderboardSelectedPool.leaderboard.fullyLoaded}
-                        onBottomReached={() => {
-                            if (isLoadingNextLeaderboardPage) {
-                                return;
-                            }
-                            setLeaderboardPage(leaderboardPage + 1);
-                            dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardSelectedPool.poolId, page: leaderboardPage + 1, limit: 15 });
-                        }}
-                    />
-                </div>
+                )}
             </div>
             <TransferOutModal
                 modalRef={transferOutModalRef}

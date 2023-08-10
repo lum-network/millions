@@ -1,5 +1,23 @@
 @import 'src/styles/main';
 
+@mixin me {
+    background-color: $color-primary;
+
+    .address {
+        color: $color-white;
+    }
+
+    .rank {
+        background-color: $color-white;
+        color: $color-primary;
+    }
+
+    .crypto-amount,
+    .usd-amount {
+        color: $color-white;
+    }
+}
+
 .leaderboard {
     padding: 40px 40px;
 
@@ -8,37 +26,55 @@
         padding: 0;
     }
 
-    @mixin me {
-        background-color: $color-primary;
+    @include media-breakpoint-down(sm) {
+        padding: 0px;
 
-        .address {
-            color: $color-white;
+        .rank,
+        .address,
+        .deposit-more-btn {
+            font-size: 12px;
         }
 
-        .rank {
-            background-color: $color-white;
-            color: $color-primary;
-        }
-
-        .crypto-amount,
         .usd-amount {
-            color: $color-white;
+            font-size: 16px;
+        }
+
+        .crypto-amount {
+            font-size: 11px;
         }
     }
+}
 
-    .leaderboard-rank {
-        background-color: $color-primary-light;
-        padding: 14px 16px;
-        border-radius: 8px;
+.leaderboard-rank {
+    background-color: $color-primary-light;
+    padding: 14px 16px;
+    border-radius: 8px;
 
-        &:not(:last-child) {
-            margin-bottom: 1rem;
-        }
+    &:not(:last-child) {
+        margin-bottom: 1rem;
     }
 
-    .leaderboard-rank.white-bg {
+    &.white-bg {
         background-color: $color-white;
         box-shadow: 0px 4px 23px 0px #f1edff;
+    }
+
+    &.me {
+        @include me;
+
+        margin-bottom: 1rem;
+
+        &.animated {
+            z-index: 2;
+            position: absolute;
+            margin-top: 40px;
+            margin-left: 40px;
+            margin-bottom: unset;
+            width: calc(100% - 80px);
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
     }
 
     .address {
@@ -101,31 +137,7 @@
         }
     }
 
-    .leaderboard-rank.me {
-        @include me;
-    }
-
-    div.me {
-        background-color: $color-primary;
-        border-radius: 8px;
-        padding: 14px 16px;
-        z-index: 2;
-        margin-bottom: 1rem;
-
-        &.animated {
-            position: absolute;
-            margin-bottom: unset;
-            width: calc(100% - 80px);
-
-            @include media-breakpoint-down(md) {
-                width: 100%;
-            }
-        }
-    }
-
     @include media-breakpoint-down(sm) {
-        padding: 0px;
-
         .rank,
         .address,
         .deposit-more-btn {
