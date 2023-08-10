@@ -2,7 +2,7 @@ import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
 import { DrawModel, PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
@@ -245,9 +245,9 @@ export const pools = createModel<RootModel>()({
             const { poolId, page, limit } = payload;
 
             const pools = [...state.pools.pools];
-            const pool = pools.find((p) => p.poolId.eq(poolId));
+            const pool = PoolsUtils.getPoolByPoolId(pools, poolId.toString());
 
-            if (pool) {
+            if (pool && !pool.leaderboard.fullyLoaded) {
                 try {
                     const [res, metadata] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
 

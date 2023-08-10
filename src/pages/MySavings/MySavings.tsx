@@ -17,7 +17,7 @@ import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, 
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase /* StringsUtils */ } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, /* StringsUtils, */ PoolsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -52,9 +52,7 @@ const MySavings = () => {
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPool, setLeaderboardSelectedPool] = useState(
-        location.state?.leaderboardPoolId ? pools.find((p) => p.poolId.eq(location.state?.leaderboardPoolId)) || pools[0] : pools[0],
-    );
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
@@ -70,11 +68,12 @@ const MySavings = () => {
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
     const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
+    const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {
-            if (leaderboardSelectedPool && lumWallet) {
-                const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardSelectedPool.poolId);
+            if (leaderboardPool && lumWallet) {
+                const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardPool.poolId);
 
                 if (userRankItems) {
                     setUserRankItems([...userRankItems]);
@@ -87,7 +86,14 @@ const MySavings = () => {
         if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
             leaderboardSectionRef.current.scrollIntoView();
         }
-    }, []);
+    }, [leaderboardPool]);
+
+    useEffect(() => {
+        if (pools && pools.length > 0) {
+            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId);
+            ScrollTrigger.refresh();
+        }
+    }, [pools]);
 
     useEffect(() => {
         const page = activities?.currentPage;
@@ -111,6 +117,8 @@ const MySavings = () => {
     }, [prizesToClaim]);
 
     useLayoutEffect(() => {
+        ScrollTrigger.normalizeScroll(true);
+
         const refreshST = () => {
             ScrollTrigger.refresh();
         };
@@ -124,7 +132,7 @@ const MySavings = () => {
                 end: 'max',
                 toggleActions: 'play none none reset',
                 invalidateOnRefresh: true,
-                //markers: true,
+                markers: true,
             };
 
             tl.current = gsap.timeline().set(leaderboardEl, { position: 'static', scrollTrigger }).to(
@@ -498,25 +506,21 @@ const MySavings = () => {
                         </div>
                     </div>
                 </div>
-                {leaderboardSelectedPool.leaderboard.items.length > 0 && (
+                {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
                     <div ref={leaderboardSectionRef} className='col-12 col-lg-8 col-xxl-9 position-relative'>
                         <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
                             <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
                             <PoolSelect
                                 className='pool-select'
                                 backgroundColor='#F4F4F4'
-                                value={leaderboardSelectedPool.poolId.toString()}
+                                value={leaderboardPool.poolId.toString()}
                                 pools={pools}
                                 options={pools.map((pool) => ({
                                     value: pool.poolId.toString(),
                                     label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
                                 }))}
                                 onChange={(value) => {
-                                    const pool = pools.find((p) => p.poolId.eq(value));
-
-                                    if (pool) {
-                                        setLeaderboardSelectedPool(pool);
-                                    }
+                                    setLeaderboardSelectedPoolId(value);
                                 }}
                             />
                         </div>
@@ -545,7 +549,7 @@ const MySavings = () => {
                             </div>
                         ) */}
                         <Leaderboard
-                            items={leaderboardSelectedPool.leaderboard.items}
+                            items={leaderboardPool.leaderboard.items}
                             enableAnimation
                             userRank={
                                 userRankItems
@@ -556,14 +560,14 @@ const MySavings = () => {
                                       }
                                     : undefined
                             }
-                            poolId={leaderboardSelectedPool.poolId.toString()}
-                            price={prices[DenomsUtils.getNormalDenom(leaderboardSelectedPool.nativeDenom)]}
-                            hasMore={!leaderboardSelectedPool.leaderboard.fullyLoaded}
+                            poolId={leaderboardPool.poolId.toString()}
+                            price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
+                            hasMore={!isLoadingNextLeaderboardPage && !leaderboardPool.leaderboard.fullyLoaded}
                             onBottomReached={() => {
                                 if (isLoadingNextLeaderboardPage) {
                                     return;
                                 }
-                                dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardSelectedPool.poolId, page: leaderboardPage + 1, limit: 15 });
+                                dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage + 1, limit: 15 });
                                 setLeaderboardPage(leaderboardPage + 1);
                             }}
                             lumWallet={lumWallet}

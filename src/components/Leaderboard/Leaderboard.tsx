@@ -1,6 +1,6 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import { Button, Card, Loading, SmallerDecimal } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
@@ -34,8 +34,6 @@ const Leaderboard = (props: Props) => {
 
     const { width: windowWidth } = useWindowSize();
 
-    const list = limit ? items.slice(0, limit) : items;
-
     const userRankList: LeaderboardItemModel[] = [];
 
     if (userRank) {
@@ -68,7 +66,6 @@ const Leaderboard = (props: Props) => {
     };
 
     const renderRow = (item: LeaderboardItemModel, index: number) => {
-        const rank = item.rank || index + 1;
         const amount = NumbersUtils.convertUnitNumber(item.amount);
 
         return (
@@ -79,7 +76,7 @@ const Leaderboard = (props: Props) => {
                 }`}
             >
                 <div className='d-flex flex-row align-items-center'>
-                    <div className={'me-3 rank' + ' ' + (rank === 1 ? 'first' : rank === 2 ? 'second' : rank === 3 ? 'third' : '')}>#{rank}</div>
+                    <div className={'me-3 rank' + ' ' + (item.rank === 1 ? 'first' : item.rank === 2 ? 'second' : item.rank === 3 ? 'third' : '')}>#{item.rank}</div>
                     <div className='address'>{StringsUtils.trunc(item.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
                 </div>
                 <div className='position-relative overflow-visible d-flex flex-row align-items-center justify-content-end'>
@@ -128,11 +125,11 @@ const Leaderboard = (props: Props) => {
                 </div>
             )}
             {onBottomReached ? (
-                <InfiniteScroll dataLength={limit || items.length} hasMore={hasMore || false} next={onBottomReached} loader={<Loading />}>
-                    {list.map(renderRow)}
+                <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />}>
+                    {(limit ? items.slice(0, limit) : items).map(renderRow)}
                 </InfiniteScroll>
             ) : (
-                list.map(renderRow)
+                (limit ? items.slice(0, limit) : items).map(renderRow)
             )}
             {!enableAnimation && windowWidth > Breakpoints.MD && userRank && (
                 <>

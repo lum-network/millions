@@ -19,10 +19,10 @@
 }
 
 .leaderboard {
+    overflow: auto;
     padding: 40px 40px;
 
     @include media-breakpoint-down(md) {
-        overflow: visible;
         padding: 0;
     }
 
