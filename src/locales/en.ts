@@ -415,7 +415,7 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Deposit error'],
         withdrawalStates: ['Unspecified', 'Undelegate', 'Unbonding', 'IBC Transfer', 'Withdrawal error', 'Pending withdrawal'],
         depositError: {
             title: 'Deposit error',
