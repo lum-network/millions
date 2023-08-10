@@ -6,7 +6,7 @@ import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
-import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/pool';
+import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
 import { LumApi } from 'api';
 
 interface PoolsState {

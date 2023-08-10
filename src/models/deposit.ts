@@ -1,9 +1,12 @@
-import { Deposit as MillionsDeposit } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/deposit';
+import { Deposit as MillionsDeposit } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 export interface DepositModel extends MillionsDeposit {
     isWithdrawing?: boolean;
     isDepositDrop?: boolean;
     unbondingEndAt?: Date;
+    withdrawalState?: WithdrawalState;
+    withdrawalCanBeRetried?: boolean;
 }
 
 export interface AggregatedDepositModel extends Partial<DepositModel> {

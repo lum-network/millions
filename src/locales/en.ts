@@ -72,6 +72,7 @@ export default {
         leavePool: 'Failed to leave {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Failed to claim prizes',
         claimAndCompound: 'Failed to compound prizes',
+        withdrawalRetry: 'Failed to retry withdrawal #{{ depositId }} to pool #{{ poolId }}',
     },
     success: {
         wallet: 'Successfully connected',
@@ -81,6 +82,7 @@ export default {
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
+        withdrawalRetry: 'Successfully retried withdrawal #{{ depositId }} to pool #{{ poolId }}',
     },
     pending: {
         ibcTransfer: 'Transferring...',
@@ -88,6 +90,7 @@ export default {
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
         claimAndCompound: 'Compounding prizes...',
+        withdrawalRetry: 'Retrying withdrawal #{{ depositId }} to pool #{{ poolId }}',
     },
     landing: {
         howItWorks: 'How it works',
@@ -412,7 +415,8 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error'],
+        withdrawalStates: ['Unspecified', 'Undelegate', 'Unbonding', 'IBC Transfer', 'Withdrawal error', 'Pending withdrawal'],
         depositError: {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
@@ -446,6 +450,7 @@ export default {
             },
             cta: 'Leave pool',
         },
+        sponsorHint: 'Sponsorship deposit, it will not be eligible for draws but will increase the prize pool.',
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
