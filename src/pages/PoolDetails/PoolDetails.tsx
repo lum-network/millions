@@ -16,12 +16,12 @@ import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
+import { LeaderboardItemModel } from 'models';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
 
 import './PoolDetails.scss';
-import { LeaderboardItemModel } from 'models';
 
 const PoolDetails = () => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();

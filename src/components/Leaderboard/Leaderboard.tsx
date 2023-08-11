@@ -90,7 +90,7 @@ const Leaderboard = (props: Props) => {
                         </div>
                     ) : null}
                 </div>
-                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank ? (
+                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) === totalDeposited ? (
                     <Button
                         className='deposit-more-btn'
                         to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${poolId}`}
@@ -100,6 +100,9 @@ const Leaderboard = (props: Props) => {
                     >
                         {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalDeposited), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
                     </Button>
+                ) : null}
+                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
+                    <Button className='deposit-more-btn'>{I18n.t('leaderboard.newRanking')}</Button>
                 ) : null}
             </div>
         );
