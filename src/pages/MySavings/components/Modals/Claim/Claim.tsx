@@ -350,24 +350,23 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
-                                                {!blockedCompound && (
-                                                    <>
-                                                        <Button
-                                                            type='button'
-                                                            onClick={() => {
-                                                                onClaim(true);
-                                                            }}
-                                                            className='w-100'
-                                                            disabled={isLoading}
-                                                            loading={isLoading}
-                                                        >
-                                                            <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
-                                                            {I18n.t('mySavings.claimModal.claimAndCompound')}
-                                                            <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
-                                                        </Button>
-                                                        <hr />
-                                                    </>
-                                                )}
+                                                <span data-tooltip-id='claim-and-compound-hint' data-tooltip-html={I18n.t('mySavings.claimModal.claimAndCompoundHint')} className='ms-2 mb-2'>
+                                                    <Button
+                                                        type='button'
+                                                        onClick={() => {
+                                                            onClaim(true);
+                                                        }}
+                                                        className='w-100'
+                                                        disabled={isLoading || blockedCompound}
+                                                        loading={isLoading}
+                                                    >
+                                                        <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
+                                                        {I18n.t('mySavings.claimModal.claimAndCompound')}
+                                                        <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
+                                                    </Button>
+                                                    {blockedCompound ? <Tooltip id='claim-and-compound-hint' /> : null}
+                                                </span>
+                                                <hr />
                                                 <Button
                                                     type='button'
                                                     onClick={() => {
