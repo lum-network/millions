@@ -273,8 +273,9 @@ export default {
         tvl: 'TVL:',
         apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
+        viewDetails: 'Chance to win',
         drawEndAt: 'Next draw in:',
-        poolId: 'Pool #{{ poolId }}',
+        poolId: 'Pool',
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
