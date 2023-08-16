@@ -315,7 +315,7 @@ export default {
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Prizes', 'Prize Value'],
+            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize Value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',
