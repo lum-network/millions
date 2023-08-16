@@ -75,7 +75,11 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                 </div>
             </div>
             <div className='w-100'>
-                <Button to={`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`} outline>
+                <Button
+                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.VIEW_DETAILS_CLICK, { denom, pool_id: poolId })}
+                    to={`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`}
+                    outline
+                >
                     {I18n.t('pools.viewDetails')}
                 </Button>
                 <Button
