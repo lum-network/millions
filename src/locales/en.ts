@@ -402,6 +402,7 @@ export default {
                 },
             ],
             claimAndCompound: 'CLAIM & COMPOUND',
+            claimAndCompoundHint: "You can't compound your prizes if you have less than the minimum deposit.",
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
             shareTitle: 'Spread the word!',
