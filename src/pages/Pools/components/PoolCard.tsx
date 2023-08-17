@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 
@@ -24,19 +23,12 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
 
-    const navigate = useNavigate();
-
     const [drawInProgress, setDrawInProgress] = useState(false);
 
     const price = prices?.[denom];
 
     return (
-        <Card
-            className='pool-card-container glow-bg'
-            onClick={() => {
-                navigate(`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`);
-            }}
-        >
+        <Card className='pool-card-container glow-bg'>
             <div className='prize-container'>
                 <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
                 <div className='d-flex flex-column align-items-start ms-3'>
@@ -84,6 +76,13 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
             </div>
             <div className='w-100'>
                 <Button
+                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.VIEW_DETAILS_CLICK, { denom, pool_id: poolId })}
+                    to={`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`}
+                    outline
+                >
+                    {I18n.t('pools.viewDetails')}
+                </Button>
+                <Button
                     {...(!KeplrUtils.isKeplrInstalled()
                         ? {
                               'data-bs-target': '#get-keplr-modal',
@@ -97,7 +96,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                         : {
                               to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
-                    className='deposit-cta w-100'
+                    className='deposit-cta w-100 mt-3'
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >
                     {I18n.t('pools.cta')}

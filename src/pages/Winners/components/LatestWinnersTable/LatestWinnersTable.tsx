@@ -32,7 +32,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                     </span>
                     {StringsUtils.trunc(prize.winnerAddress)}
                     <span className='prize-infos ms-3'>
-                        ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} {I18n.t('pools.poolId', { poolId: prize.poolId }).toUpperCase()} -{' '}
+                        ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} {I18n.t('pools.poolId').toUpperCase()} -{' '}
                         {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId }).toUpperCase()}
                     </span>
                     <span className='date ms-3'>{dayjs(prize.createdAt).format('D MMM YYYY')}</span>

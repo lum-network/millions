@@ -273,8 +273,9 @@ export default {
         tvl: 'TVL:',
         apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
+        viewDetails: 'Chance to win',
         drawEndAt: 'Next draw in:',
-        poolId: 'Pool #{{ poolId }}',
+        poolId: 'Pool',
     },
     poolDetails: {
         myDeposits: 'My {{ denom }} deposits',
@@ -314,7 +315,7 @@ export default {
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Prizes', 'Prize Value'],
+            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize Value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',

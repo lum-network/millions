@@ -69,7 +69,7 @@ const PoolDetails = () => {
             }
         };
 
-        getLeaderboard();
+        getLeaderboard().finally(() => null);
     }, [lumWallet]);
 
     useEffect(() => {
@@ -585,9 +585,6 @@ const PoolDetails = () => {
                                                     }}
                                                     className='scale-hover'
                                                 >
-                                                    <td data-label={drawHistoryHeaders[0]}>
-                                                        <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.poolId.toString()}</div>
-                                                    </td>
                                                     <td data-label={drawHistoryHeaders[1]}>
                                                         <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.drawId.toString()}</div>
                                                     </td>

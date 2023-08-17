@@ -127,7 +127,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                                 )}
                             </h3>
                             <p className='mb-0'>
-                                {numeral(usdPrice).format('$0,0[.]00')} - {I18n.t('pools.poolId', { poolId: deposit.poolId?.toString() || '' })} -{' '}
+                                {numeral(usdPrice).format('$0,0[.]00')} - {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()} {I18n.t('pools.poolId')} -{' '}
                                 {I18n.t('deposit.depositId', { depositId: deposit.depositId?.toString() || '' })}
                             </p>
                         </div>
