@@ -370,8 +370,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 <Button
                                                     type='button'
                                                     onClick={() => {
-                                                        setClaimOnly(true);
                                                         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CLICK);
+                                                        if (blockedCompound) {
+                                                            onClaim(false).finally(() => null);
+                                                            return;
+                                                        }
+                                                        setClaimOnly(true);
                                                     }}
                                                     outline
                                                     loading={isLoading}
