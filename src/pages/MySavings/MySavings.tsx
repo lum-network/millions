@@ -13,7 +13,7 @@ import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
-import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect } from 'components';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
@@ -508,8 +508,14 @@ const MySavings = () => {
                 </div>
                 {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
                     <div ref={leaderboardSectionRef} className='col-12 col-lg-8 col-xxl-9 position-relative'>
-                        <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
-                            <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                        <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
+                            <div className='d-flex align-items-center'>
+                                <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                                <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='depositor-ranking-hint' />
+                                </span>
+                            </div>
                             <PoolSelect
                                 className='pool-select'
                                 backgroundColor='#F4F4F4'

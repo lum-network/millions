@@ -533,6 +533,7 @@ export default {
         },
     },
     leaderboard: {
+        hint: 'The depositors ranking is updated every hour',
         cta: 'See More',
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
