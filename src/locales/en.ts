@@ -331,7 +331,7 @@ export default {
         claim: 'Claim',
         claimPrize: 'Claim prize',
         deposit: 'Deposit in Pool',
-        depositorsRanking: 'Depositors ranking',
+        depositorsRanking: 'Depositors Ranking',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {
@@ -533,6 +533,7 @@ export default {
         },
     },
     leaderboard: {
+        hint: 'The depositors ranking is updated every hour',
         cta: 'See More',
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
