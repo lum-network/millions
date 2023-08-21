@@ -193,6 +193,8 @@ export const pools = createModel<RootModel>()({
 
                         if (marketData && marketData.length) {
                             draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        } else {
+                            draws.push({ ...draw });
                         }
                     }
 
