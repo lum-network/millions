@@ -298,7 +298,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 <img src={Assets.images.trophy} alt='Trophy' className='d-none d-sm-block me-3' />
                                                 {I18n.t('mySavings.claimModal.cardTitle')}
                                             </div>
-                                            <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center mt-2'>
+                                            <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center'>
                                                 <img src={Assets.images.yellowStar} alt='Star' className='me-2' width='25' />$
                                                 {numeral(
                                                     prizes.reduce(
@@ -312,14 +312,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                             </div>
                                         </div>
                                         <div className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
-                                            <div className='w-100 mt-3'>
+                                            <div className='w-100 mt-1 scrollable'>
                                                 {prizes.map((prize, index) =>
                                                     prize.amount ? (
-                                                        <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-4' : ''}`}>
+                                                        <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-3' : ''}`}>
                                                             <div className='d-flex flex-column flex-sm-row align-items-sm-end justify-content-between text-start mb-2'>
-                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
-                                                                <br />
-                                                                {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -{' '}
+                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} -{' '}
                                                                 {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId.toString() })}
                                                                 <div className='date'>{dayjs(prize.createdAt).format('dddd, MMMM D h:mm A')}</div>
                                                             </div>
