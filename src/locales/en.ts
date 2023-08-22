@@ -290,13 +290,13 @@ export default {
             deposits: 'Cosmonauts Deposits',
         },
         winners: {
-            title: 'Winners In Numbers',
+            title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
             totalPoolPrizes: "Total pool's prizes",
             bestPrizeWon: 'Largest prize won',
         },
         users: {
-            title: 'Users In Numbers',
+            title: 'Users in Numbers',
             deposit: 'Average deposit',
             currentDraw: 'Unique depositors',
         },
