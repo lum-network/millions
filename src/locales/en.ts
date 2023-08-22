@@ -33,8 +33,8 @@ export default {
         next: 'Next',
     },
     collapsible: {
-        closeDetails: 'Close&nbsp;details',
-        openDetails: 'Open&nbsp;details',
+        closeDetails: 'Close&nbsp;Details',
+        openDetails: 'Open&nbsp;Details',
     },
     errors: {
         generic: {
@@ -93,16 +93,16 @@ export default {
         withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     landing: {
-        howItWorks: 'How it works',
+        howItWorks: 'How It Works',
         documentation: 'Documentation',
         faq: 'FAQ',
-        openTheApp: 'Open the app',
+        openTheApp: 'Open The App',
         saving: {
             title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
-            biggestPrizeToWin: 'Biggest prize to win',
+            biggestPrizeToWin: 'Biggest Prize To Win',
         },
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
@@ -112,7 +112,7 @@ export default {
             p4: 'Experience a secure and innovative saving method without compromising on excitement!',
         },
         winners: {
-            title: 'How it Works',
+            title: 'How It Works',
             p1: 'Deposit\nyour assets',
             p2: 'You are eligible for all the next\nprizes automatically ',
             p3: 'You win! Cash out or compound your prize to boost your chances of earning more next time!',
@@ -278,31 +278,31 @@ export default {
         poolId: 'Pool',
     },
     poolDetails: {
-        myDeposits: 'My {{ denom }} deposits',
+        myDeposits: 'My {{ denom }} Deposits',
         prizePool: 'Estimated Prize',
         prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the current TVL. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',
         tvlDetails: {
-            title: 'Total Value Locked details',
+            title: 'Total Value Locked Details',
             sponsor: 'Sponsorship',
             deposits: 'Cosmonauts Deposits',
         },
         winners: {
-            title: 'Winners in Numbers',
+            title: 'Winners In Numbers',
             totalPrizes: 'Total prizes won',
             totalPoolPrizes: "Total pool's prizes",
             bestPrizeWon: 'Largest prize won',
         },
         users: {
-            title: 'Users in Numbers',
-            deposit: 'Average Deposit',
-            currentDraw: 'Unique Depositors',
+            title: 'Users In Numbers',
+            deposit: 'Average deposit',
+            currentDraw: 'Unique depositors',
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: ['Prize Value', 'Number of prizes', 'Chance to win'],
+            tableHeaders: ['Prize value', 'Number of prizes', 'Chance to win'],
             hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
         },
         winningChances: {
@@ -315,7 +315,7 @@ export default {
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize Value'],
+            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',
@@ -327,9 +327,9 @@ export default {
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
-        totalBalance: 'Total deposits',
+        totalBalance: 'Total Deposits',
         claim: 'Claim',
-        claimPrize: 'Claim prize',
+        claimPrize: 'Claim Prize',
         deposit: 'Deposit in Pool',
         depositorsRanking: 'Depositors Ranking',
         withdraw: 'Transfer out',
@@ -534,7 +534,7 @@ export default {
     },
     leaderboard: {
         hint: 'The depositors ranking is updated every hour',
-        cta: 'See More',
+        cta: 'See more',
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
         newRanking: 'You new ranking will be displayed in a few minutes',
