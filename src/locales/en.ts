@@ -33,8 +33,8 @@ export default {
         next: 'Next',
     },
     collapsible: {
-        closeDetails: 'Close&nbsp;Details',
-        openDetails: 'Open&nbsp;Details',
+        closeDetails: 'Close&nbsp;details',
+        openDetails: 'Open&nbsp;details',
     },
     errors: {
         generic: {
@@ -93,16 +93,16 @@ export default {
         withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     landing: {
-        howItWorks: 'How It Works',
+        howItWorks: 'How it Works',
         documentation: 'Documentation',
         faq: 'FAQ',
-        openTheApp: 'Open The App',
+        openTheApp: 'Open the App',
         saving: {
             title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
-            biggestPrizeToWin: 'Biggest Prize To Win',
+            biggestPrizeToWin: 'Biggest Prize to Win',
         },
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
@@ -112,7 +112,7 @@ export default {
             p4: 'Experience a secure and innovative saving method without compromising on excitement!',
         },
         winners: {
-            title: 'How It Works',
+            title: 'How it Works',
             p1: 'Deposit\nyour assets',
             p2: 'You are eligible for all the next\nprizes automatically ',
             p3: 'You win! Cash out or compound your prize to boost your chances of earning more next time!',
