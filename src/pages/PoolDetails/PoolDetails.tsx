@@ -360,7 +360,7 @@ const PoolDetails = () => {
                         </div>
                     </div>
                 </div>
-                {pool.leaderboard && (
+                {pool.leaderboard.items.length > 0 && (
                     <div className='row'>
                         <div className='col-12 overflow-visible'>
                             <div className='d-flex align-items-center mt-4 mt-lg-5 mb-2 mb-lg-4'>
