@@ -94,7 +94,7 @@ const MySavings = () => {
     }, [pools]);
 
     useEffect(() => {
-        if (leaderboardPool) {
+        if (leaderboardPool && leaderboardPage > 0) {
             dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage, limit: 15 });
         }
     }, [leaderboardPage]);

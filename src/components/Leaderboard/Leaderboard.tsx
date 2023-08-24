@@ -68,7 +68,7 @@ const Leaderboard = (props: Props) => {
                         id: 'user-rank-trigger',
                         trigger: userCard,
                         start: 'bottom+=30px bottom',
-                        end: 'bottom+=70px bottom',
+                        end: 'bottom-=70px bottom',
                         endTrigger: containerRef.current,
                         pin: true,
                         pinSpacing: false,
