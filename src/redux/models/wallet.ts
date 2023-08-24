@@ -386,7 +386,7 @@ export const wallet = createModel<RootModel>()({
                 if (res) {
                     const txs = [...(payload.reset ? [] : state.wallet.lumWallet?.activities.result || []), ...res.activities];
 
-                    const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 30) : state.wallet.lumWallet?.activities.pagesTotal || 0;
+                    const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 5) : state.wallet.lumWallet?.activities.pagesTotal || 0;
 
                     dispatch.wallet.setLumWalletData({
                         activities: {

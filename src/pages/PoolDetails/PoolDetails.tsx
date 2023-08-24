@@ -360,10 +360,16 @@ const PoolDetails = () => {
                         </div>
                     </div>
                 </div>
-                {pool.leaderboard && (
+                {pool.leaderboard.items.length > 0 && (
                     <div className='row'>
                         <div className='col-12 overflow-visible'>
-                            <h2 className='mt-4 mt-lg-5 mb-2 mb-lg-4'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                            <div className='d-flex align-items-center mt-4 mt-lg-5 mb-2 mb-lg-4'>
+                                <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                                <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
+                                    <img src={Assets.images.info} alt='info' />
+                                    <Tooltip id='depositor-ranking-hint' />
+                                </span>
+                            </div>
                             <Leaderboard
                                 flat
                                 items={pool.leaderboard.items}

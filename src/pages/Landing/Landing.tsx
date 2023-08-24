@@ -201,7 +201,7 @@ const Landing = () => {
                         </div>
                         <div style={{ flex: 2 }}>
                             <BestPrizeCard
-                                title={'ATOM pool TVL'}
+                                title={'ATOM Pool TVL'}
                                 biggestPrize={pools && pools.length ? { amount: NumbersUtils.convertUnitNumber(pools[0].tvlAmount), denom: 'uatom' } : null}
                                 poolId='2'
                             />
