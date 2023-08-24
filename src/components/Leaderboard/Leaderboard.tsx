@@ -61,12 +61,13 @@ const Leaderboard = (props: Props) => {
         if (enableAnimation) {
             const ctx = gsap.context((self) => {
                 const userCard = self.selector?.('.leaderboard-rank.animated');
+                const otherRanksCards = document.querySelectorAll('.leaderboard-rank:not(.user-rank)');
 
                 if (userCard) {
                     const scrollTriggerConfig: ScrollTrigger.Vars = {
                         id: 'user-rank-trigger',
                         trigger: userCard,
-                        start: 'bottom+=100px bottom',
+                        start: 'bottom+=30px bottom',
                         end: 'bottom+=70px bottom',
                         endTrigger: containerRef.current,
                         pin: true,
@@ -76,6 +77,43 @@ const Leaderboard = (props: Props) => {
                     tl.current = gsap.timeline({
                         scrollTrigger: scrollTriggerConfig,
                     });
+
+                    const otherCardsTl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: otherRanksCards[0],
+                            start: 'top bottom',
+                            end: 'bottom+=200px bottom',
+                            scrub: true,
+                        },
+                    });
+
+                    for (const otherCard of otherRanksCards) {
+                        otherCardsTl.add(
+                            gsap.fromTo(
+                                otherCard,
+                                {
+                                    y: 0,
+                                },
+                                {
+                                    y: -75,
+                                },
+                            ),
+                            '<',
+                        );
+                    }
+
+                    otherCardsTl.fromTo(
+                        otherRanksCards[0],
+                        {
+                            zIndex: 1,
+                            opacity: 0,
+                        },
+                        {
+                            zIndex: 3,
+                            opacity: 1,
+                        },
+                        '-=.2',
+                    );
                 }
             }, containerRef);
 
@@ -164,7 +202,6 @@ const Leaderboard = (props: Props) => {
             )}
             {onBottomReached ? (
                 <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />} className='position-relative'>
-                    {(limit ? items.slice(0, limit) : items).map(renderRow)}
                     {enableAnimation && userRank ? (
                         <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
                             <div className='d-flex flex-row align-items-center'>
@@ -185,6 +222,7 @@ const Leaderboard = (props: Props) => {
                             </div>
                         </div>
                     ) : null}
+                    {(limit ? items.slice(0, limit) : items).map(renderRow)}
                 </InfiniteScroll>
             ) : (
                 (limit ? items.slice(0, limit) : items).map(renderRow)
