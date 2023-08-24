@@ -6,7 +6,6 @@ import numeral from 'numeral';
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
@@ -17,7 +16,7 @@ import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, 
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, /* StringsUtils, */ PoolsUtils } from 'utils';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -57,10 +56,7 @@ const MySavings = () => {
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const leaderboardSectionRef = useRef<HTMLDivElement>(null);
-
-    const tl = useRef<gsap.core.Timeline>();
 
     const winSizes = useWindowSize();
 
@@ -81,12 +77,14 @@ const MySavings = () => {
             }
         };
 
-        getLeaderboardUserRank();
+        if (!isReloadingInfos) {
+            getLeaderboardUserRank();
+        }
 
         if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
             leaderboardSectionRef.current.scrollIntoView();
         }
-    }, [leaderboardPool]);
+    }, [isReloadingInfos, leaderboardPool, lumWallet]);
 
     useEffect(() => {
         if (pools && pools.length > 0) {
@@ -94,6 +92,12 @@ const MySavings = () => {
             ScrollTrigger.refresh();
         }
     }, [pools]);
+
+    useEffect(() => {
+        if (leaderboardPool) {
+            dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage, limit: 15 });
+        }
+    }, [leaderboardPage]);
 
     useEffect(() => {
         const page = activities?.currentPage;
@@ -117,45 +121,18 @@ const MySavings = () => {
     }, [prizesToClaim]);
 
     useLayoutEffect(() => {
-        ScrollTrigger.normalizeScroll(true);
-
         const refreshST = () => {
             ScrollTrigger.refresh();
         };
 
-        const ctx = gsap.context(() => {
-            const leaderboardEl = document.querySelector('#my-savings .leaderboard');
+        const myCollapsibles = document.getElementsByClassName('collapsible');
 
-            const scrollTrigger: ScrollTrigger.Vars = {
-                trigger: leaderboardEl,
-                start: 'top+=120px bottom',
-                end: 'max',
-                toggleActions: 'play none none reset',
-                invalidateOnRefresh: true,
-                //markers: true,
-            };
-
-            tl.current = gsap.timeline().set(leaderboardEl, { position: 'static', scrollTrigger }).to(
-                '#my-savings .user-rank.animated',
-                {
-                    position: 'fixed',
-                    bottom: '2rem',
-                    scrollTrigger,
-                },
-                '+=0',
-            );
-
-            const myCollapsibles = document.getElementsByClassName('collapsible');
-
-            for (const el of myCollapsibles) {
-                el.addEventListener('shown.bs.collapse', refreshST);
-                el.addEventListener('hidden.bs.collapse', refreshST);
-            }
-        }, containerRef);
+        for (const el of myCollapsibles) {
+            el.addEventListener('shown.bs.collapse', refreshST);
+            el.addEventListener('hidden.bs.collapse', refreshST);
+        }
 
         return () => {
-            ctx.revert();
-
             const myCollapsibles = document.getElementsByClassName('collapsible');
 
             for (const el of myCollapsibles) {
@@ -164,16 +141,6 @@ const MySavings = () => {
             }
         };
     }, []);
-
-    useLayoutEffect(() => {
-        const leaderboardEl = document.querySelector('#my-savings .leaderboard .leaderboard-rank');
-
-        if (leaderboardEl) {
-            gsap.set('#my-savings .user-rank.animated', {
-                width: leaderboardEl.clientWidth,
-            });
-        }
-    }, [winSizes.width]);
 
     const renderAsset = (asset: LumTypes.Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -286,7 +253,7 @@ const MySavings = () => {
     }
 
     return (
-        <div id='my-savings' className='my-savings-container mt-3 mt-lg-5' ref={containerRef}>
+        <div id='my-savings' className='my-savings-container mt-3 mt-lg-5'>
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
@@ -443,8 +410,8 @@ const MySavings = () => {
                                 </Card>
                             </>
                         ) : null}
-                        {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
-                            <div ref={leaderboardSectionRef} className='position-relative'>
+                        {leaderboardPool && leaderboardPool.leaderboard?.items.length ? (
+                            <div ref={leaderboardSectionRef} className='leaderboard-section'>
                                 <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
                                     <div className='d-flex align-items-center'>
                                         <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
@@ -467,30 +434,6 @@ const MySavings = () => {
                                         }}
                                     />
                                 </div>
-                                {/* userRankItems && userRankItems[1] && (
-                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
-                                <div className='d-flex flex-row align-items-center'>
-                                    <div className='me-3 rank'>#{userRankItems[1].rank}</div>
-                                    <div className='address'>{StringsUtils.trunc(userRankItems[1].address, winSizes.width < Breakpoints.SM ? 3 : 6)}</div>
-                                </div>
-                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
-                                    <div className='crypto-amount me-3'>
-                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRankItems[1].amount))} />{' '}
-                                        {DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom).toUpperCase()}
-                                    </div>
-                                    {prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)] && (
-                                        <div className='usd-amount'>
-                                            $
-                                            <SmallerDecimal
-                                                nb={NumbersUtils.formatTo6digit(
-                                                    NumbersUtils.convertUnitNumber(userRankItems[1].amount) * prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)],
-                                                )}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ) */}
                                 <Leaderboard
                                     items={leaderboardPool.leaderboard.items}
                                     enableAnimation
@@ -505,19 +448,18 @@ const MySavings = () => {
                                     }
                                     poolId={leaderboardPool.poolId.toString()}
                                     price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
-                                    hasMore={!isLoadingNextLeaderboardPage && !leaderboardPool.leaderboard.fullyLoaded}
-                                    onBottomReached={() => {
+                                    hasMore={!leaderboardPool.leaderboard.fullyLoaded}
+                                    onBottomReached={async () => {
                                         if (isLoadingNextLeaderboardPage) {
                                             return;
                                         }
-                                        dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage + 1, limit: 15 });
                                         setLeaderboardPage(leaderboardPage + 1);
                                     }}
                                     lumWallet={lumWallet}
                                     totalDeposited={totalDepositedCrypto}
                                 />
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
                 <div className='col-12 col-lg-4 col-xxl-3 position-sticky top-0'>

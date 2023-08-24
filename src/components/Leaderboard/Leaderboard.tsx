@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
 import InfiniteScroll from 'react-infinite-scroller';
+import { gsap } from 'gsap';
 
 import { Button, Card, Loading, SmallerDecimal } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
@@ -34,6 +35,8 @@ const Leaderboard = (props: Props) => {
     const { items, className, limit, lumWallet, price, poolId, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
 
     const { width: windowWidth } = useWindowSize();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const tl = useRef<gsap.core.Timeline>();
 
     const userRankList: LeaderboardItemModel[] = [];
 
@@ -54,13 +57,43 @@ const Leaderboard = (props: Props) => {
         }
     }
 
+    useLayoutEffect(() => {
+        if (enableAnimation) {
+            const ctx = gsap.context((self) => {
+                const userCard = self.selector?.('.leaderboard-rank.animated');
+
+                if (userCard) {
+                    const scrollTriggerConfig: ScrollTrigger.Vars = {
+                        id: 'user-rank-trigger',
+                        trigger: userCard,
+                        start: 'bottom+=100px bottom',
+                        end: 'bottom+=70px bottom',
+                        endTrigger: containerRef.current,
+                        pin: true,
+                        pinSpacing: false,
+                    };
+
+                    tl.current = gsap.timeline({
+                        scrollTrigger: scrollTriggerConfig,
+                    });
+                }
+            }, containerRef);
+
+            return () => ctx.revert();
+        }
+    }, [userRank]);
+
     const LeaderboardContainer = ({ children, containerClassName }: { children: React.ReactNode; containerClassName: string }) => {
         if (isMobile || windowWidth < Breakpoints.MD) {
-            return <div className={containerClassName}>{children}</div>;
+            return (
+                <div className={containerClassName} ref={containerRef}>
+                    {children}
+                </div>
+            );
         }
 
         return (
-            <Card flat={flat} withoutPadding className={containerClassName}>
+            <Card flat={flat} withoutPadding className={containerClassName} ref={containerRef}>
                 {children}
             </Card>
         );
@@ -68,6 +101,7 @@ const Leaderboard = (props: Props) => {
 
     const renderRow = (item: LeaderboardItemModel, index: number) => {
         const amount = NumbersUtils.convertUnitNumber(item.amount);
+        const totalUserDeposits = userRank ? NumbersUtils.convertUnitNumber(userRank.amount) : null;
 
         return (
             <div
@@ -90,15 +124,15 @@ const Leaderboard = (props: Props) => {
                         </div>
                     ) : null}
                 </div>
-                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) === totalDeposited ? (
+                {!(lumWallet && item.address === lumWallet.address) && userRank && userRank.rank > item.rank && totalUserDeposits ? (
                     <Button
                         className='deposit-more-btn'
                         to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${poolId}`}
                         locationState={{
-                            amountToDeposit: Math.ceil(amount - totalDeposited),
+                            amountToDeposit: Math.ceil(amount - totalUserDeposits),
                         }}
                     >
-                        {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalDeposited), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
+                        {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalUserDeposits), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
                     </Button>
                 ) : null}
                 {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
@@ -129,8 +163,28 @@ const Leaderboard = (props: Props) => {
                 </div>
             )}
             {onBottomReached ? (
-                <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />}>
+                <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />} className='position-relative'>
                     {(limit ? items.slice(0, limit) : items).map(renderRow)}
+                    {enableAnimation && userRank ? (
+                        <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                            <div className='d-flex flex-row align-items-center'>
+                                <div className='me-3 rank'>#{userRank.rank}</div>
+                                <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
+                            </div>
+                            <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                <div className='crypto-amount me-3'>
+                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount))} />{' '}
+                                    {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
+                                </div>
+                                {price ? (
+                                    <div className='usd-amount'>
+                                        $
+                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount) * price)} />
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+                    ) : null}
                 </InfiniteScroll>
             ) : (
                 (limit ? items.slice(0, limit) : items).map(renderRow)
