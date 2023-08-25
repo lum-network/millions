@@ -188,6 +188,8 @@
     }
 
     .prize-to-claim {
+        overflow-y: scroll;
+        height: 200px;
         .denom-icon {
             width: 40px;
             height: 40px;

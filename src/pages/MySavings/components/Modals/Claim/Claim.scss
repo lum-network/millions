@@ -1,9 +1,6 @@
 @import 'src/styles/main';
 
 #claimModal {
-
-    max-height: 90vh;
-
     .modal-content.last-step {
         background-color: $color-white;
     }
@@ -67,7 +64,7 @@
     }
 
     .scrollable {
-        max-height: min(500px, 60vh);
+        max-height: min(300px, 60vh);
         overflow-y: scroll;
     }
 }

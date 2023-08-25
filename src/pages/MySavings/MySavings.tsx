@@ -67,7 +67,6 @@ const MySavings = () => {
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
-    const prizesToClaim = prizes;
     const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
 
     useEffect(() => {
@@ -110,14 +109,14 @@ const MySavings = () => {
     }, [isReloadingInfos]);
 
     useEffect(() => {
-        if (prizesToClaim && prizesToClaim.length && !alreadySeenConfetti) {
+        if (prizes && prizes.length && !alreadySeenConfetti) {
             dispatch.prizes.seenConfetti();
             confettis(5000);
         }
-    }, [prizesToClaim]);
+    }, [prizes]);
 
     useLayoutEffect(() => {
-        ScrollTrigger.normalizeScroll(true);
+        //ScrollTrigger.normalizeScroll(true);
 
         const refreshST = () => {
             ScrollTrigger.refresh();
@@ -294,7 +293,7 @@ const MySavings = () => {
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
                 </Card>
             ) : null}
-            {prizesToClaim && prizesToClaim.length > 0 ? (
+            {prizes && prizes.length > 0 ? (
                 <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
                     <div className='d-flex flex-column flex-md-row align-items-md-center'>
                         <div className='d-flex flex-row align-items-center'>
@@ -352,9 +351,9 @@ const MySavings = () => {
                                 </h2>
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                                        {prizes && prizes.length > 0 ? (
                                             <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
+                                                {prizes.map(renderPrizeToClaim)}
                                                 <Button
                                                     className='my-savings-cta mt-4'
                                                     data-bs-toggle='modal'
@@ -449,42 +448,43 @@ const MySavings = () => {
                     <div className='row'>
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
-                                <h2>
-                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                                    {I18n.t('mySavings.claimPrize')}
-                                </h2>
+                                <div className='d-flex flex-row align-items-center mb-2'>
+                                    <h2 className='mb-0'>
+                                        <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                        {I18n.t('mySavings.claimPrize')}
+                                    </h2>
+                                    {prizes && prizes.length > 3 ? <div className='prize-dot rounded-circle d-flex align-items-center justify-content-center ms-2'>{prizes.length}</div> : null}
+                                </div>
                                 <Card className='glow-bg'>
-                                    <div className='d-flex flex-column prize-to-claim'>
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
-                                            <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button
-                                                    className='my-savings-cta mt-4'
-                                                    data-bs-toggle='modal'
-                                                    data-bs-target='#claimModal'
-                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
-                                                >
-                                                    {I18n.t('mySavings.claim')}
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie
-                                                    className='cosmonaut-with-balloons'
-                                                    animationData={cosmonautWithBalloons}
-                                                    segments={[
-                                                        [0, 30],
-                                                        [30, 128],
-                                                    ]}
-                                                />
-                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
-                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
-                                                    {I18n.t('mySavings.deposit')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
+                                    {prizes && prizes.length > 0 ? (
+                                        <>
+                                            <div className='prize-to-claim'>{prizes.map(renderPrizeToClaim)}</div>
+                                            <Button
+                                                className='my-savings-cta mt-4'
+                                                data-bs-toggle='modal'
+                                                data-bs-target='#claimModal'
+                                                onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                                            >
+                                                {I18n.t('mySavings.claim')}
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <div className='d-flex flex-column align-items-center justify-content-center text-center'>
+                                            <Lottie
+                                                className='cosmonaut-with-balloons'
+                                                animationData={cosmonautWithBalloons}
+                                                segments={[
+                                                    [0, 30],
+                                                    [30, 128],
+                                                ]}
+                                            />
+                                            <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
+                                            <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
+                                            <Button to={NavigationConstants.POOLS} className='mt-4'>
+                                                {I18n.t('mySavings.deposit')}
+                                            </Button>
+                                        </div>
+                                    )}
                                 </Card>
                             </div>
                         ) : null}
@@ -586,7 +586,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} pools={pools} />}
+            <ClaimModal prizes={prizes || []} prices={prices} pools={pools} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

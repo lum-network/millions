@@ -31,6 +31,8 @@ export default {
         loading: 'Loading...',
         prev: 'Prev',
         next: 'Next',
+        batchProgress: 'Transactions batch {{ count }}/{{ total }}',
+        batchTooltip: '',
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',

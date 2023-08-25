@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import Assets from 'assets';
-import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchProgress } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
@@ -129,6 +129,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [shareInfos, setShareInfos] = useState<ShareInfos | null>(null);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
+    const [batch, setBatch] = useState(0);
+    const [batchTotal, setBatchTotal] = useState(-1);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -149,9 +151,21 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CONFIRMED);
         }
 
+        const LIMIT = 6;
+        const batchCount = Math.ceil(prizes.length / LIMIT);
+
+        setBatchTotal(batchCount);
         setCurrentStep(currentStep + 1);
 
-        const res = await (compound ? dispatch.wallet.claimAndCompoundPrizes(prizes) : dispatch.wallet.claimPrizes(prizes));
+        const onBatchComplete = (batch: number) => {
+            setBatch(batch);
+        };
+
+        const payload = { prizes, batch, batchTotal: batchCount, onBatchComplete };
+
+        const action = compound ? dispatch.wallet.claimAndCompoundPrizes : dispatch.wallet.claimPrizes;
+
+        const res = await action(payload);
 
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep);
@@ -220,6 +234,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setClaimOnly(false);
             setShareInfos(null);
             setShareState(null);
+            setBatchTotal(-1);
+            setBatch(0);
         };
 
         const claimModal = document.getElementById('claimModal');
@@ -282,6 +298,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                         <Card flat withoutPadding className='fees-warning p-4 my-4'>
                                             {I18n.t('mySavings.claimOnlyModal.info')}
                                         </Card>
+                                        {batchTotal > 1 ? <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mb-4' /> : null}
                                         <div className='d-flex flex-column align-items-stretch'>
                                             <Button type='button' outline onClick={() => onClaim(false)} loading={isLoading} disabled={isLoading} className='w-100 me-3'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimBtn')}
@@ -348,6 +365,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
+                                                {batchTotal > 1 ? <TransactionBatchProgress batch={batch} batchTotal={batchTotal} /> : null}
                                                 <span data-tooltip-id='claim-and-compound-hint' data-tooltip-html={I18n.t('mySavings.claimModal.claimAndCompoundHint')} className='ms-2 mb-2'>
                                                     <Button
                                                         type='button'
