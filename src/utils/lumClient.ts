@@ -203,7 +203,7 @@ class LumClient {
             return null;
         }
 
-        const LIMIT = 30;
+        const LIMIT = 5;
 
         let totalCount: number | null = null;
 

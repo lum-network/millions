@@ -191,11 +191,11 @@ export const pools = createModel<RootModel>()({
                     for (const draw of res) {
                         const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
 
-                        draws.push({
-                            ...draw,
-                            usdTokenValue:
-                                marketData && marketData.length ? marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined : undefined,
-                        });
+                        if (marketData && marketData.length) {
+                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        } else {
+                            draws.push({ ...draw });
+                        }
                     }
 
                     return draws;

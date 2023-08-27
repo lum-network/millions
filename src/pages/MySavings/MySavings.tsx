@@ -13,7 +13,7 @@ import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
-import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect } from 'components';
+import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
@@ -426,7 +426,7 @@ const MySavings = () => {
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5  glow-bg'>
                                     <TransactionsTable
-                                        transactions={activities.result.slice((activities.currentPage - 1) * 30, (activities.currentPage - 1) * 30 + 30)}
+                                        transactions={activities.result.slice((activities.currentPage - 1) * 5, (activities.currentPage - 1) * 5 + 5)}
                                         pagination={
                                             activities.pagesTotal > 1
                                                 ? {
@@ -442,9 +442,84 @@ const MySavings = () => {
                                 </Card>
                             </>
                         ) : null}
+                        {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
+                            <div ref={leaderboardSectionRef} className='position-relative'>
+                                <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
+                                    <div className='d-flex align-items-center'>
+                                        <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                                        <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
+                                            <img src={Assets.images.info} alt='info' />
+                                            <Tooltip id='depositor-ranking-hint' />
+                                        </span>
+                                    </div>
+                                    <PoolSelect
+                                        className='pool-select'
+                                        backgroundColor='#F4F4F4'
+                                        value={leaderboardPool.poolId.toString()}
+                                        pools={pools}
+                                        options={pools.map((pool) => ({
+                                            value: pool.poolId.toString(),
+                                            label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
+                                        }))}
+                                        onChange={(value) => {
+                                            setLeaderboardSelectedPoolId(value);
+                                        }}
+                                    />
+                                </div>
+                                {/* userRankItems && userRankItems[1] && (
+                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <div className='me-3 rank'>#{userRankItems[1].rank}</div>
+                                    <div className='address'>{StringsUtils.trunc(userRankItems[1].address, winSizes.width < Breakpoints.SM ? 3 : 6)}</div>
+                                </div>
+                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                    <div className='crypto-amount me-3'>
+                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRankItems[1].amount))} />{' '}
+                                        {DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom).toUpperCase()}
+                                    </div>
+                                    {prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)] && (
+                                        <div className='usd-amount'>
+                                            $
+                                            <SmallerDecimal
+                                                nb={NumbersUtils.formatTo6digit(
+                                                    NumbersUtils.convertUnitNumber(userRankItems[1].amount) * prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)],
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) */}
+                                <Leaderboard
+                                    items={leaderboardPool.leaderboard.items}
+                                    enableAnimation
+                                    userRank={
+                                        userRankItems
+                                            ? {
+                                                  ...userRankItems[1],
+                                                  prev: userRankItems[0],
+                                                  next: userRankItems[2],
+                                              }
+                                            : undefined
+                                    }
+                                    poolId={leaderboardPool.poolId.toString()}
+                                    price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
+                                    hasMore={!isLoadingNextLeaderboardPage && !leaderboardPool.leaderboard.fullyLoaded}
+                                    onBottomReached={() => {
+                                        if (isLoadingNextLeaderboardPage) {
+                                            return;
+                                        }
+                                        dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage + 1, limit: 15 });
+                                        setLeaderboardPage(leaderboardPage + 1);
+                                    }}
+                                    lumWallet={lumWallet}
+                                    totalDeposited={totalDepositedCrypto}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className='col-12 col-lg-4 col-xxl-3'>
+                <div className='col-12 col-lg-4 col-xxl-3 position-sticky top-0'>
                     <div className='row'>
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
@@ -506,75 +581,6 @@ const MySavings = () => {
                         </div>
                     </div>
                 </div>
-                {leaderboardPool && leaderboardPool.leaderboard?.items.length > 0 && (
-                    <div ref={leaderboardSectionRef} className='col-12 col-lg-8 col-xxl-9 position-relative'>
-                        <div className='mt-5 mb-3 d-flex flex-row align-items-end justify-content-between'>
-                            <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
-                            <PoolSelect
-                                className='pool-select'
-                                backgroundColor='#F4F4F4'
-                                value={leaderboardPool.poolId.toString()}
-                                pools={pools}
-                                options={pools.map((pool) => ({
-                                    value: pool.poolId.toString(),
-                                    label: `${DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()} - ${I18n.t('pools.poolId', { poolId: pool.poolId.toString() })}`,
-                                }))}
-                                onChange={(value) => {
-                                    setLeaderboardSelectedPoolId(value);
-                                }}
-                            />
-                        </div>
-                        {/* userRankItems && userRankItems[1] && (
-                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
-                                <div className='d-flex flex-row align-items-center'>
-                                    <div className='me-3 rank'>#{userRankItems[1].rank}</div>
-                                    <div className='address'>{StringsUtils.trunc(userRankItems[1].address, winSizes.width < Breakpoints.SM ? 3 : 6)}</div>
-                                </div>
-                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
-                                    <div className='crypto-amount me-3'>
-                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRankItems[1].amount))} />{' '}
-                                        {DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom).toUpperCase()}
-                                    </div>
-                                    {prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)] && (
-                                        <div className='usd-amount'>
-                                            $
-                                            <SmallerDecimal
-                                                nb={NumbersUtils.formatTo6digit(
-                                                    NumbersUtils.convertUnitNumber(userRankItems[1].amount) * prices[DenomsUtils.getNormalDenom(userRankItems[1].nativeDenom)],
-                                                )}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ) */}
-                        <Leaderboard
-                            items={leaderboardPool.leaderboard.items}
-                            enableAnimation
-                            userRank={
-                                userRankItems
-                                    ? {
-                                          ...userRankItems[1],
-                                          prev: userRankItems[0],
-                                          next: userRankItems[2],
-                                      }
-                                    : undefined
-                            }
-                            poolId={leaderboardPool.poolId.toString()}
-                            price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
-                            hasMore={!isLoadingNextLeaderboardPage && !leaderboardPool.leaderboard.fullyLoaded}
-                            onBottomReached={() => {
-                                if (isLoadingNextLeaderboardPage) {
-                                    return;
-                                }
-                                dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage + 1, limit: 15 });
-                                setLeaderboardPage(leaderboardPage + 1);
-                            }}
-                            lumWallet={lumWallet}
-                            totalDeposited={totalDepositedCrypto}
-                        />
-                    </div>
-                )}
             </div>
             <TransferOutModal
                 modalRef={transferOutModalRef}
