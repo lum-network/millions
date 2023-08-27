@@ -14,7 +14,7 @@ import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 
 import './Claim.scss';
@@ -169,6 +169,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep);
+            setBatch(0);
+            setBatchTotal(0);
         } else {
             const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
             const amount: LumTypes.Coin[] = [];
@@ -274,6 +276,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     const steps = I18n.t(blockedCompound ? 'mySavings.claimModal.claimOnlySteps' : 'mySavings.claimModal.steps', {
         returnObjects: true,
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     return (

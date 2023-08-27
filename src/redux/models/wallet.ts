@@ -668,9 +668,11 @@ export const wallet = createModel<RootModel>()({
 
             const { prizes, batch, batchTotal, onBatchComplete } = payload;
 
+            let prizesToClaim = [...prizes];
+
             const LIMIT = 6;
 
-            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.claimPrize') });
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t(batchTotal > 1 ? 'pending.claimPrize' : 'pending.claimPrize', { count: 1, total: batchTotal }) });
 
             let lastBatch = 0;
 
@@ -684,24 +686,32 @@ export const wallet = createModel<RootModel>()({
                 for (let i = batch; i < batchTotal; i++) {
                     lastBatch = i;
 
-                    const toClaim = prizes.slice(0, LIMIT);
+                    if (i > 0) {
+                        ToastUtils.updateToastContent(toastId, {
+                            content: I18n.t('pending.claimPrizeBatch', { count: i + 1, total: batchTotal }),
+                        });
+                    }
+
+                    const toClaim = prizesToClaim.slice(0, LIMIT);
 
                     result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
 
                     if (!result || (result && result.error)) {
                         throw new Error(result?.error || undefined);
                     } else {
+                        const newPrizes = prizesToClaim.slice(toClaim.length);
+                        prizesToClaim = [...newPrizes];
+
                         dispatch.wallet.setLumWalletData({
-                            prizes: prizes.slice(-toClaim.length),
+                            prizes: [...newPrizes],
                         });
                         onBatchComplete(i + 1);
                     }
-
-                    ToastUtils.updateLoadingToast(toastId, 'success', {
-                        content: I18n.t('success.claimPrize'),
-                    });
                 }
 
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: I18n.t('success.claimPrize'),
+                });
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {

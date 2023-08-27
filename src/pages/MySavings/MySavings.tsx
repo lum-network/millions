@@ -52,7 +52,7 @@ const MySavings = () => {
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
@@ -67,7 +67,7 @@ const MySavings = () => {
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
-    const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
+    const leaderboardPool = leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {

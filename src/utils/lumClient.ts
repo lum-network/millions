@@ -452,7 +452,7 @@ class LumClient {
         }
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const fee = WalletUtils.buildTxFee('25000', (400000 + messages.length * 120000).toFixed(0));
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
