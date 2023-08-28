@@ -329,9 +329,13 @@ export default {
         assets: 'Available Assets',
         totalBalance: 'Total Deposits',
         claim: 'Claim',
+        claimAll: 'Claim All',
         claimPrize: 'Claim Prize',
+        prizesHistory: 'Prizes History',
         deposit: 'Deposit in Pool',
         depositorsRanking: 'Depositors Ranking',
+        getMorePrizes: 'Get more by depositing',
+        mySavingStreak: 'My Saving Streak',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {

@@ -348,20 +348,16 @@ const MySavings = () => {
                             <div className='mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                                    {I18n.t('mySavings.claimPrize')}
+                                    {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
+                                        {/*TODO: List all prizes amounts*/}
                                         {prizesToClaim && prizesToClaim.length > 0 ? (
                                             <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button
-                                                    className='my-savings-cta mt-4'
-                                                    data-bs-toggle='modal'
-                                                    data-bs-target='#claimModal'
-                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
-                                                >
-                                                    {I18n.t('mySavings.claim')}
+                                                {/*TODO: List all prizes amounts*/}
+                                                <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
+                                                    {I18n.t('mySavings.getMorePrizes')}
                                                 </Button>
                                             </>
                                         ) : (
@@ -422,6 +418,22 @@ const MySavings = () => {
                                 </div>
                             )}
                         </Card>
+                        {true ? (
+                            <>
+                                <div className='mt-5 p-2 d-flex align-items-center justify-content-between'>
+                                    <h2>
+                                        <img src={Assets.images.trophyPurple} alt='Trophy' className='me-3 mb-1' width='28' />
+                                        {I18n.t('mySavings.prizesHistory')}
+                                    </h2>
+                                    <Button data-bs-toggle='modal' data-bs-target='#claimModal' onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}>
+                                        {I18n.t('mySavings.claimAll')}
+                                    </Button>
+                                </div>
+                                <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                    test
+                                </Card>
+                            </>
+                        ) : null}
                         {activities && activities.result.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
@@ -530,16 +542,12 @@ const MySavings = () => {
                                 </h2>
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
+                                        {/*TODO: List all prizes amounts*/}
                                         {prizesToClaim && prizesToClaim.length > 0 ? (
                                             <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button
-                                                    className='my-savings-cta mt-4'
-                                                    data-bs-toggle='modal'
-                                                    data-bs-target='#claimModal'
-                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
-                                                >
-                                                    {I18n.t('mySavings.claim')}
+                                                {/*TODO: List all prizes amounts*/}
+                                                <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
+                                                    {I18n.t('mySavings.getMorePrizes')}
                                                 </Button>
                                             </>
                                         ) : (

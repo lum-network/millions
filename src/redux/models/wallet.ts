@@ -358,7 +358,8 @@ export const wallet = createModel<RootModel>()({
             await dispatch.pools.fetchPools();
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
-            await dispatch.wallet.getPrizes(address);
+            await dispatch.wallet.getPendingPrizes(address);
+            await dispatch.wallet.getHistoryPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
@@ -412,7 +413,7 @@ export const wallet = createModel<RootModel>()({
                 console.warn(e);
             }
         },
-        async getPrizes(address: string) {
+        async getPendingPrizes(address: string) {
             try {
                 const res = await LumClient.getWalletPrizes(address);
 
@@ -431,6 +432,11 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 console.warn(e);
             }
+        },
+        async getHistoryPrizes(address: string) {
+            const [res] = await LumApi.fetchPrizesByAddress(address);
+
+            console.log(res);
         },
         async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
             if (!state.wallet.lumWallet) {
