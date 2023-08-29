@@ -50,6 +50,13 @@ interface DepositToPoolPayload {
     pool: PoolModel;
 }
 
+interface ClaimPrizesPayload {
+    prizes: Prize[];
+    batchTotal: number;
+    batch: number;
+    onBatchComplete: (batch: number) => void;
+}
+
 interface RetryDepositPayload {
     poolId: Long;
     depositId: Long;
@@ -662,34 +669,65 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async claimPrizes(payload: Prize[], state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.claimPrize') });
+            const { prizes, batch, batchTotal, onBatchComplete } = payload;
+
+            let prizesToClaim = [...prizes];
+
+            const LIMIT = 6;
+
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t(batchTotal > 1 ? 'pending.claimPrize' : 'pending.claimPrize', { count: 1, total: batchTotal }) });
+
+            let lastBatch = 0;
 
             try {
                 if (!lumWallet) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.claimPrizes(lumWallet.innerWallet, payload);
+                let result = null;
 
-                if (!result || (result && result.error)) {
-                    throw new Error(result?.error || undefined);
+                for (let i = batch; i < batchTotal; i++) {
+                    lastBatch = i;
+
+                    if (i > 0) {
+                        ToastUtils.updateToastContent(toastId, {
+                            content: I18n.t('pending.claimPrizeBatch', { count: i + 1, total: batchTotal }),
+                        });
+                    }
+
+                    const toClaim = prizesToClaim.slice(0, LIMIT);
+
+                    result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    } else {
+                        const newPrizes = prizesToClaim.slice(toClaim.length);
+                        prizesToClaim = [...newPrizes];
+
+                        dispatch.wallet.setLumWalletData({
+                            prizes: [...newPrizes],
+                        });
+                        onBatchComplete(i + 1);
+                    }
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
                     content: I18n.t('success.claimPrize'),
                 });
-
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
+                onBatchComplete(lastBatch);
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimPrize') });
                 return null;
             }
         },
-        async claimAndCompoundPrizes(payload: Prize[], state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimAndCompoundPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { prizes } = payload;
             const claimRes = await dispatch.wallet.claimPrizes(payload);
 
             if (!claimRes || (claimRes && claimRes.error)) {
@@ -701,7 +739,7 @@ export const wallet = createModel<RootModel>()({
                 pool: PoolModel;
             }[] = [];
 
-            for (const prize of payload) {
+            for (const prize of prizes) {
                 if (!prize.amount) continue;
 
                 const existingItemIndex = toDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));

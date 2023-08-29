@@ -52,7 +52,7 @@ const MySavings = () => {
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
@@ -67,8 +67,7 @@ const MySavings = () => {
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
-    const prizesToClaim = prizes;
-    const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
+    const leaderboardPool = leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {
@@ -110,14 +109,14 @@ const MySavings = () => {
     }, [isReloadingInfos]);
 
     useEffect(() => {
-        if (prizesToClaim && prizesToClaim.length && !alreadySeenConfetti) {
+        if (prizes && prizes.length && !alreadySeenConfetti) {
             dispatch.prizes.seenConfetti();
             confettis(5000);
         }
-    }, [prizesToClaim]);
+    }, [prizes]);
 
     useLayoutEffect(() => {
-        ScrollTrigger.normalizeScroll(true);
+        //ScrollTrigger.normalizeScroll(true);
 
         const refreshST = () => {
             ScrollTrigger.refresh();
@@ -294,7 +293,7 @@ const MySavings = () => {
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
                 </Card>
             ) : null}
-            {prizesToClaim && prizesToClaim.length > 0 ? (
+            {prizes && prizes.length > 0 ? (
                 <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
                     <div className='d-flex flex-column flex-md-row align-items-md-center'>
                         <div className='d-flex flex-row align-items-center'>
@@ -353,7 +352,7 @@ const MySavings = () => {
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
                                         {/*TODO: List all prizes amounts*/}
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                                        {prizes && prizes.length > 0 ? (
                                             <>
                                                 {/*TODO: List all prizes amounts*/}
                                                 <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
@@ -543,7 +542,7 @@ const MySavings = () => {
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
                                         {/*TODO: List all prizes amounts*/}
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
+                                        {prizes && prizes.length > 0 ? (
                                             <>
                                                 {/*TODO: List all prizes amounts*/}
                                                 <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
@@ -600,7 +599,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} pools={pools} />}
+            <ClaimModal prizes={prizes || []} prices={prices} pools={pools} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

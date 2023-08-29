@@ -18,6 +18,7 @@ export { default as PoolSelect } from './PoolSelect/PoolSelect';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
-export { default as Leaderboard } from './Leaderboard/Leaderboard';
+export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
 
+export { default as Leaderboard } from './Leaderboard/Leaderboard';
 export * from './ToastContent/ToastContent';
