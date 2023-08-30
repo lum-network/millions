@@ -420,7 +420,7 @@ export const wallet = createModel<RootModel>()({
                 console.warn(e);
             }
         },
-        async fetchPrizes(address: string, state) {
+        async fetchPrizes(address: string) {
             try {
                 const prizesToClaim = await LumClient.getWalletPrizes(address);
                 let prizesToClaimSorted: PrizeModel[] = [];
