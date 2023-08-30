@@ -222,9 +222,11 @@
         }
     }
 
-    .leaderboard {
-        animation: unset;
-        opacity: 1;
+    .leaderboard-section {
+        .leaderboard {
+            animation: unset;
+            opacity: 1;
+        }
     }
 
     #withdrawModal {
