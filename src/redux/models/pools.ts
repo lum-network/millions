@@ -92,6 +92,7 @@ export const pools = createModel<RootModel>()({
                             nextDrawAt,
                             leaderboard: {
                                 items: leaderboard || [],
+                                page: 0,
                                 fullyLoaded: false,
                             },
                             currentPrizeToWin: null,
@@ -285,6 +286,7 @@ export const pools = createModel<RootModel>()({
                     const [res, metadata] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
 
                     pool.leaderboard.items.push(...res);
+                    pool.leaderboard.page = page;
 
                     if (!metadata.hasNextPage) {
                         pool.leaderboard.fullyLoaded = true;

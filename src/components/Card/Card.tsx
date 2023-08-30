@@ -8,12 +8,12 @@ interface IProps extends React.BaseHTMLAttributes<HTMLDivElement> {
     onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Card = ({ children, className, withoutPadding, flat, onClick, ...rest }: IProps) => {
+const Card = React.forwardRef<HTMLDivElement, IProps>(function Card({ children, className, withoutPadding, flat, onClick, ...rest }, ref) {
     return (
-        <div {...rest} className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'scale-hover'}`} onClick={onClick}>
+        <div {...rest} ref={ref} className={`${withoutPadding ? '' : 'p-4 p-xl-5'} app-card ${flat && 'flat'} ${className} ${onClick && 'scale-hover'}`} onClick={onClick}>
             {children}
         </div>
     );
-};
+});
 
 export default Card;

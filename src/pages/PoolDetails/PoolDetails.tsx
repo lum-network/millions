@@ -380,7 +380,7 @@ const PoolDetails = () => {
                                 price={prices[denom || '']}
                                 totalDeposited={WalletUtils.getTotalBalanceFromDeposits(lumWallet?.deposits)}
                                 userRank={
-                                    userRankItems
+                                    userRankItems && userRankItems[1].rank > 4
                                         ? {
                                               ...userRankItems[1],
                                               prev: userRankItems[0],

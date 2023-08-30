@@ -19,7 +19,7 @@
 }
 
 .leaderboard {
-    overflow: auto;
+    overflow: visible;
     padding: 40px 40px;
 
     @include media-breakpoint-down(md) {
@@ -66,14 +66,6 @@
 
         &.animated {
             z-index: 2;
-            position: absolute;
-            margin-top: 40px;
-            margin-left: 40px;
-            margin-bottom: unset;
-            width: calc(100% - 80px);
-            @include media-breakpoint-down(md) {
-                width: 100%;
-            }
         }
     }
 

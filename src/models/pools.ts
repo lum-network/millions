@@ -26,6 +26,7 @@ export interface PoolModel extends Pool {
     nextDrawAt?: Date;
     leaderboard: {
         items: LeaderboardItemModel[];
+        page: number;
         fullyLoaded: boolean;
     };
     currentPrizeToWin: BalanceModel | null;
