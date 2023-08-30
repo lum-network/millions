@@ -154,7 +154,7 @@ const Leaderboard = (props: Props) => {
                 </div>
                 <div className='position-relative overflow-visible d-flex flex-row align-items-center justify-content-end'>
                     <div className='crypto-amount me-3'>
-                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, 3)} /> {DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase()}
+                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, windowWidth < Breakpoints.MD ? 3 : 6)} /> {DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase()}
                     </div>
                     {price ? (
                         <div className='usd-amount'>
@@ -190,11 +190,11 @@ const Leaderboard = (props: Props) => {
                     </div>
                     <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
                         <div className='crypto-amount me-3'>
-                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount))} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
+                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), 3)} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
                         </div>
                         {price && (
                             <div className='usd-amount'>
-                                $<SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount) * price)} />
+                                $<SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
                             </div>
                         )}
                     </div>
@@ -210,13 +210,13 @@ const Leaderboard = (props: Props) => {
                             </div>
                             <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
                                 <div className='crypto-amount me-3'>
-                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount))} />{' '}
+                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), windowWidth < Breakpoints.MD ? 3 : 6)} />{' '}
                                     {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
                                 </div>
                                 {price ? (
                                     <div className='usd-amount'>
                                         $
-                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount) * price)} />
+                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
                                     </div>
                                 ) : null}
                             </div>
