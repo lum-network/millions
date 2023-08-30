@@ -276,7 +276,7 @@ export default {
         tvl: 'TVL:',
         apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
-        viewDetails: 'Chance to win',
+        viewDetails: 'My chances to win',
         drawEndAt: 'Next draw in:',
         poolId: 'Pool',
     },

@@ -14,7 +14,7 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
-import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants, PrizesConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, /* StringsUtils, */ PoolsUtils } from 'utils';
@@ -68,6 +68,7 @@ const MySavings = () => {
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
     const leaderboardPool = leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
+    const prizesToClaim = prizes && prizes.filter((prize) => prize.state === PrizesConstants.PrizeState.PENDING);
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {
@@ -109,11 +110,11 @@ const MySavings = () => {
     }, [isReloadingInfos]);
 
     useEffect(() => {
-        if (prizes && prizes.length && !alreadySeenConfetti) {
+        if (prizesToClaim && prizesToClaim.length && !alreadySeenConfetti) {
             dispatch.prizes.seenConfetti();
             confettis(5000);
         }
-    }, [prizes]);
+    }, [prizesToClaim]);
 
     useLayoutEffect(() => {
         //ScrollTrigger.normalizeScroll(true);
@@ -293,7 +294,7 @@ const MySavings = () => {
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
                 </Card>
             ) : null}
-            {prizes && prizes.length > 0 ? (
+            {prizesToClaim && prizesToClaim.length > 0 ? (
                 <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
                     <div className='d-flex flex-column flex-md-row align-items-md-center'>
                         <div className='d-flex flex-row align-items-center'>
@@ -417,16 +418,18 @@ const MySavings = () => {
                                 </div>
                             )}
                         </Card>
-                        {true ? (
+                        {prizes && prizes.length ? (
                             <>
                                 <div className='mt-5 p-2 d-flex align-items-center justify-content-between'>
                                     <h2>
                                         <img src={Assets.images.trophyPurple} alt='Trophy' className='me-3 mb-1' width='28' />
                                         {I18n.t('mySavings.prizesHistory')}
                                     </h2>
-                                    <Button data-bs-toggle='modal' data-bs-target='#claimModal' onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}>
-                                        {I18n.t('mySavings.claimAll')}
-                                    </Button>
+                                    {prizesToClaim && prizesToClaim.length ? (
+                                        <Button data-bs-toggle='modal' data-bs-target='#claimModal' onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}>
+                                            {I18n.t('mySavings.claimAll')}
+                                        </Button>
+                                    ) : null}
                                 </div>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     test
@@ -537,7 +540,7 @@ const MySavings = () => {
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                                    {I18n.t('mySavings.claimPrize')}
+                                    {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
                                 <Card className='glow-bg'>
                                     <div className='d-flex flex-column prize-to-claim'>
@@ -545,7 +548,7 @@ const MySavings = () => {
                                         {prizes && prizes.length > 0 ? (
                                             <>
                                                 {/*TODO: List all prizes amounts*/}
-                                                <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
+                                                <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS}>
                                                     {I18n.t('mySavings.getMorePrizes')}
                                                 </Button>
                                             </>
@@ -599,7 +602,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            <ClaimModal prizes={prizes || []} prices={prices} pools={pools} />
+            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

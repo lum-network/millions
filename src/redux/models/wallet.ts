@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
+import { DenomsUtils, Firebase, I18n, KeplrUtils, LumClient, NumbersUtils, ToastUtils, WalletClient, WalletUtils } from 'utils';
+import { ApiConstants, DenomsConstants, FirebaseConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, PrizesConstants } from 'constant';
+import { AggregatedDepositModel, LeaderboardItemModel, LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
+import dayjs from 'dayjs';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -29,7 +30,7 @@ interface SetWalletDataPayload {
         pagesLoaded: number;
     };
     deposits?: AggregatedDepositModel[];
-    prizes?: Prize[];
+    prizes?: PrizeModel[];
 }
 
 interface GetActivitiesPayload {
@@ -51,7 +52,7 @@ interface DepositToPoolPayload {
 }
 
 interface ClaimPrizesPayload {
-    prizes: Prize[];
+    prizes: PrizeModel[];
     batchTotal: number;
     batch: number;
     onBatchComplete: (batch: number) => void;
@@ -362,11 +363,10 @@ export const wallet = createModel<RootModel>()({
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
             await dispatch.stats.fetchStats();
-            await dispatch.pools.fetchPools();
+            await dispatch.pools.fetchPools(null);
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
-            await dispatch.wallet.getPendingPrizes(address);
-            await dispatch.wallet.getHistoryPrizes(address);
+            await dispatch.wallet.fetchPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
@@ -420,30 +420,55 @@ export const wallet = createModel<RootModel>()({
                 console.warn(e);
             }
         },
-        async getPendingPrizes(address: string) {
+        async fetchPrizes(address: string, state) {
             try {
-                const res = await LumClient.getWalletPrizes(address);
+                const prizesToClaim = await LumClient.getWalletPrizes(address);
+                let prizesToClaimSorted: PrizeModel[] = [];
 
-                if (res) {
+                if (prizesToClaim) {
+                    prizesToClaimSorted = prizesToClaim.prizes
+                        .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
+                        .sort((a, b) => {
+                            const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
+                            const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
+
+                            return bAmount - aAmount;
+                        })
+                        .map((prize) => ({
+                            ...prize,
+                            drawId: prize.drawId.toNumber(),
+                            poolId: prize.poolId.toNumber(),
+                            prizeId: prize.prizeId.toNumber(),
+                            createdAtHeight: prize.createdAtHeight.toNumber(),
+                            updatedAtHeight: prize.updatedAtHeight.toNumber(),
+                            amount: {
+                                amount: Number(prize.amount?.amount || '0'),
+                                denom: prize.amount?.denom ?? '',
+                            },
+                            id: `${prize.poolId}-${prize.drawId}-${prize.prizeId}`,
+                            state: PrizesConstants.PrizeState.PENDING,
+                        }));
+
                     dispatch.wallet.setLumWalletData({
-                        prizes: res.prizes
-                            .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
-                            .sort((a, b) => {
-                                const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
-                                const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
-
-                                return bAmount - aAmount;
-                            }),
+                        prizes: prizesToClaimSorted,
                     });
+                }
+
+                const [prizesHistory] = await LumApi.fetchPrizesByAddress(address);
+
+                for (const historyPrize of prizesHistory) {
+                    const prize = prizesToClaimSorted.find((prize) => prize.id === historyPrize.id);
+
+                    if (!prize) {
+                        prizesToClaimSorted.push({
+                            ...historyPrize,
+                            state: dayjs(historyPrize.expiresAt).isBefore(dayjs()) ? PrizesConstants.PrizeState.EXPIRED : PrizesConstants.PrizeState.CLAIMED,
+                        });
+                    }
                 }
             } catch (e) {
                 console.warn(e);
             }
-        },
-        async getHistoryPrizes(address: string) {
-            const [res] = await LumApi.fetchPrizesByAddress(address);
-
-            console.log(res);
         },
         async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
             if (!state.wallet.lumWallet) {
@@ -749,7 +774,7 @@ export const wallet = createModel<RootModel>()({
                     if (!pool) continue;
 
                     toDeposit.push({
-                        amount: prize.amount.amount,
+                        amount: prize.amount.amount.toPrecision(),
                         pool,
                     });
                 } else {

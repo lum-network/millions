@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +11,7 @@ import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchPr
 import { ModalHandlers } from 'components/Modal/Modal';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
-import { PoolModel } from 'models';
+import { PoolModel, PrizeModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
@@ -20,7 +19,7 @@ import { confettis } from 'utils/confetti';
 import './Claim.scss';
 
 interface Props {
-    prizes: Prize[];
+    prizes: PrizeModel[];
     prices: { [key: string]: number };
     pools: PoolModel[];
 }
@@ -217,7 +216,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                     pool,
                 });
             } else {
-                prizesToDeposit[existingItemIndex].amount = (Number(prizesToDeposit[existingItemIndex].amount) + Number(prize.amount.amount)).toFixed();
+                prizesToDeposit[existingItemIndex].amount = prizesToDeposit[existingItemIndex].amount + prize.amount.amount;
             }
         }
 
@@ -255,7 +254,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     const blockCompound = (
         toDeposit: {
-            amount: string;
+            amount: number;
             pool: PoolModel;
         }[],
     ) => {

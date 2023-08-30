@@ -1,5 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { BalanceModel } from './index';
+import { PrizesConstants } from 'constant';
 
 @Exclude()
 class PrizeModel {
@@ -29,7 +30,9 @@ class PrizeModel {
     amount!: BalanceModel;
 
     @Expose({ name: 'usd_token_value' })
-    usdTokenValue!: number;
+    usdTokenValue?: number;
+
+    state!: PrizesConstants.PrizeState;
 
     @Expose({ name: 'expires_at' })
     expiresAt?: Date;

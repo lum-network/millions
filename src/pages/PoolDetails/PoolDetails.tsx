@@ -426,7 +426,11 @@ const PoolDetails = () => {
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
                                             $
-                                            {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
+                                            {numeral(
+                                                NumbersUtils.convertUnitNumber(
+                                                    biggestPrizes && biggestPrizes.length && biggestPrizes[0].usdTokenValue ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0,
+                                                ),
+                                            )
                                                 .format('0,0')
                                                 .toUpperCase()}
                                         </div>
@@ -451,7 +455,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue}
+                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}
@@ -481,20 +485,12 @@ const PoolDetails = () => {
                                                 <label>{drawHistoryHeaders[0]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='d-flex align-items-center justify-content-center index-container'>
-                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.poolId.toString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[1]}</label>
-                                                <div className='stat-bg-white'>
-                                                    <div className='d-flex align-items-center justify-content-center index-container'>
                                                         #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[2]}</label>
+                                                <label>{drawHistoryHeaders[1]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='draw-date'>
                                                         {dayjs(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
@@ -502,11 +498,11 @@ const PoolDetails = () => {
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[3]}</label>
+                                                <label>{drawHistoryHeaders[2]}</label>
                                                 <div className='stat-bg-white'>{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[4]}</label>
+                                                <label>{drawHistoryHeaders[3]}</label>
                                                 <div className='stat-bg-white'>
                                                     <SmallerDecimal
                                                         nb={numeral(

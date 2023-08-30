@@ -2,7 +2,7 @@ import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } f
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import Long from 'long';
-import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
+import { AggregatedDepositModel, DepositModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
@@ -439,7 +439,7 @@ class LumClient {
         };
     };
 
-    claimPrizes = async (wallet: LumWallet, prizes: Prize[]) => {
+    claimPrizes = async (wallet: LumWallet, prizes: PrizeModel[]) => {
         if (this.client === null) {
             return null;
         }
@@ -448,7 +448,7 @@ class LumClient {
         const messages = [];
 
         for (const prize of prizes) {
-            messages.push(LumMessages.BuildMsgClaimPrize(prize.poolId, prize.drawId, prize.prizeId, wallet.getAddress()));
+            messages.push(LumMessages.BuildMsgClaimPrize(Long.fromNumber(prize.poolId), Long.fromNumber(prize.drawId), Long.fromNumber(prize.prizeId), wallet.getAddress()));
         }
 
         // Define fees
