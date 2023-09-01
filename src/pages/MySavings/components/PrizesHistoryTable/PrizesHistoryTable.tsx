@@ -58,9 +58,9 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
                     <div className='d-flex flex-column justify-content-center tx-amount'>
                         <div className='amount text-nowrap'>
                             {prize.amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount), 3)} /> : '--'}
-                            <span className='denom ms-2'>{DenomsUtils.getNormalDenom(prize.amount.denom || 'ulum').toUpperCase()}</span>
+                            <span className='denom ms-2'>{DenomsUtils.getNormalDenom(prize.amount.denom || '').toUpperCase()}</span>
                         </div>
-                        {price && <small className='usd-price'>{numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * price).format('$0,0[.]00')}</small>}
+                        {price && <small className='usd-price'>{numeral(amount * (prize.usdTokenValue || price)).format('$0,0[.]00')}</small>}
                     </div>
                 </td>
             </tr>
