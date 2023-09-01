@@ -17,6 +17,15 @@ export default {
         seconds_one: 'Sec',
         seconds_other: 'Sec',
     },
+    tags: {
+        claimed: 'Claimed',
+        unclaimed: 'To be claimed',
+        expired: 'Expired',
+        expiredTooltip: 'Sorry but this Prize has expired and its amount has been returned to the future Prize Pool. You have 30 days to claim a Prize once it is won.',
+        success: 'Success',
+        unbonding: 'Unbonding',
+        deposit: 'Deposit in progress',
+    },
     common: {
         continue: 'Continue',
         cancel: 'Cancel',
@@ -335,6 +344,7 @@ export default {
         claimAll: 'Claim All',
         claimPrize: 'Claim Prize',
         prizesHistory: 'Prizes History',
+        prizeWon: 'Prize Won',
         deposit: 'Deposit in Pool',
         depositorsRanking: 'Depositors Ranking',
         getMorePrizes: 'Get more by depositing',

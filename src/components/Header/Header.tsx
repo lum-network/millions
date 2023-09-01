@@ -175,7 +175,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.MY_SAVINGS_CLICK)}
                         >
                             {I18n.t('mySavings.title')}
-                            {prizesPendingLength && (
+                            {!!prizesPendingLength && (
                                 <div
                                     className='prize-dot position-absolute top-0 start-100 rounded-circle d-flex align-items-center justify-content-center'
                                     style={{ transform: 'translate(20%, -50%)' }}

@@ -17,14 +17,15 @@ interface Props {
     };
     customPagination?: string;
     onPageChange?: (page: number) => void;
+    smallPadding?: boolean;
 }
-const Table = ({ children, customPagination, className, pagination, onPageChange, headers, responsive = true }: Props) => {
+const Table = ({ children, customPagination, className, pagination, onPageChange, headers, smallPadding, responsive = true }: Props) => {
     const limitLeft = headers ? headers.length / 2 : 0;
 
     return (
         <>
             <div className={`${responsive ? 'table-responsive' : ''} ${className}`}>
-                <table className='table table-borderless mb-0'>
+                <table className={`table table-borderless mb-0 ${smallPadding ? 'small-padding' : null}`}>
                     {headers && (
                         <thead>
                             <tr>

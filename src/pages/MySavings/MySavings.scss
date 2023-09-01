@@ -155,20 +155,20 @@
         }
     }
 
+    .expiration-date {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 12px;
+        color: #fa7676;
+    }
+
     .asset-amount {
         color: $color-primary;
         font-size: 24px;
         font-weight: 400;
         letter-spacing: 0;
         text-align: left;
-
-        .expiration-date {
-            font-style: normal;
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 12px;
-            color: #fa7676;
-        }
 
         small {
             font-size: 16px;

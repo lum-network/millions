@@ -25,6 +25,7 @@ import TransactionsTable from './components/TransationsTable/TransactionsTable';
 import ClaimModal from './components/Modals/Claim/Claim';
 import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
+import PrizesHistoryTable from './components/PrizesHistoryTable/PrizesHistoryTable';
 
 import './MySavings.scss';
 
@@ -54,6 +55,7 @@ const MySavings = () => {
     const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const leaderboardSectionRef = useRef<HTMLDivElement>(null);
@@ -399,7 +401,20 @@ const MySavings = () => {
                                     ) : null}
                                 </div>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
-                                    test
+                                    <PrizesHistoryTable
+                                        prizes={prizes.slice((prizesHistoryPage - 1) * 5, (prizesHistoryPage - 1) * 5 + 5)}
+                                        pagination={
+                                            prizes.length > 5
+                                                ? {
+                                                      page: prizesHistoryPage,
+                                                      pagesTotal: Math.ceil(prizes.length / 5),
+                                                      hasNextPage: prizesHistoryPage < Math.ceil(prizes.length / 5),
+                                                      hasPreviousPage: prizesHistoryPage > 1,
+                                                  }
+                                                : undefined
+                                        }
+                                        onPageChange={setPrizesHistoryPage}
+                                    />
                                 </Card>
                             </>
                         ) : null}
