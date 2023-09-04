@@ -95,7 +95,7 @@ const MySavings = () => {
 
     useEffect(() => {
         if (leaderboardPool && leaderboardPage > 0) {
-            dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage, limit: 15 });
+            dispatch.pools.getNextLeaderboardPage({ poolId: leaderboardPool.poolId, page: leaderboardPage, limit: 50 });
         }
     }, [leaderboardPage]);
 
@@ -436,7 +436,7 @@ const MySavings = () => {
                                 </div>
                                 <Leaderboard
                                     items={leaderboardPool.leaderboard.items}
-                                    enableAnimation
+                                    enableAnimation={!!userRankItems}
                                     userRank={
                                         userRankItems
                                             ? {

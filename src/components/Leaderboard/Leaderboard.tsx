@@ -61,15 +61,16 @@ const Leaderboard = (props: Props) => {
         if (enableAnimation) {
             const ctx = gsap.context((self) => {
                 const userCard = self.selector?.('.leaderboard-rank.animated');
+                const otherUserCard = document.querySelectorAll('.leaderboard-rank.me:not(.animated)');
                 const otherRanksCards = document.querySelectorAll('.leaderboard-rank:not(.user-rank)');
 
                 if (userCard) {
                     const scrollTriggerConfig: ScrollTrigger.Vars = {
                         id: 'user-rank-trigger',
                         trigger: userCard,
-                        start: 'bottom+=30px bottom',
-                        end: () => `bottom${windowWidth > Breakpoints.MD ? '' : '+=35px'} bottom`,
-                        endTrigger: containerRef.current,
+                        start: () => 'bottom+=30px bottom',
+                        end: () => (otherUserCard ? 'bottom-=47.5px bottom' : `bottom${windowWidth > Breakpoints.MD ? '' : '+=35px'} bottom`),
+                        endTrigger: otherUserCard ? otherUserCard : containerRef.current,
                         pin: true,
                         pinSpacing: false,
                     };
@@ -119,7 +120,7 @@ const Leaderboard = (props: Props) => {
 
             return () => ctx.revert();
         }
-    }, [userRank]);
+    }, [userRank, items]);
 
     const LeaderboardContainer = ({ children, containerClassName }: { children: React.ReactNode; containerClassName: string }) => {
         if (isMobile || windowWidth < Breakpoints.MD) {
@@ -181,7 +182,7 @@ const Leaderboard = (props: Props) => {
     };
 
     return (
-        <LeaderboardContainer containerClassName={`leaderboard ${className} ${enableAnimation && 'position-relative'}`}>
+        <LeaderboardContainer containerClassName={`leaderboard ${enableAnimation && 'position-relative with-anim'} ${className}`}>
             {!enableAnimation && windowWidth < Breakpoints.MD && userRank && (
                 <div className={`user-rank leaderboard-rank me d-flex flex-row justify-content-between align-items-center`}>
                     <div className='d-flex flex-row align-items-center'>

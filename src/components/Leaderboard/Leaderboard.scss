@@ -20,14 +20,18 @@
 
 .leaderboard {
     overflow: visible;
-    padding: 40px 40px;
+    padding: 40px;
+
+    &.with-anim {
+        padding-bottom: 0px;
+    }
 
     @include media-breakpoint-down(md) {
         padding: 0;
     }
 
     @include media-breakpoint-down(sm) {
-        padding: 0px;
+        padding: 0;
 
         .rank,
         .address,
