@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Firebase, I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
+import { Firebase, I18n, WalletProvidersUtils, StringsUtils, ToastUtils } from 'utils';
 import { FirebaseConstants } from 'constant';
 
 import Button from '../Button/Button';
@@ -39,7 +39,7 @@ const ConnectButton = ({ address, onClick }: { address: string | undefined; onCl
         <Button
             outline
             data-bs-toggle='modal'
-            data-bs-target={!KeplrUtils.isKeplrInstalled() ? '#get-keplr-modal' : '#choose-wallet-modal'}
+            data-bs-target={WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal'}
             className='w-100'
             onClick={() => {
                 Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SIGN_IN);

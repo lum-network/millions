@@ -15,6 +15,7 @@ export const MINTSCAN = 'https://mintscan.io';
 export const TWEET_URL = 'https://twitter.com/intent/tweet';
 export const KEPLR_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap';
 export const LEAP_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/leap-cosmos-wallet/fcfcfllfndlomdhbehjjcoimbgofdncg';
+export const COSMOSTATION_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/cosmostation-wallet/fpkhgmpbidmiogeglndfbkegfdlnajnf';
 export const LEAP_DEEPLINK = 'https://leapcosmoswallet.page.link/4FQqpcNVJtTEb7yC8';
 export const BUY_LUM = 'https://app.osmosis.zone/?from=ATOM&to=LUM';
 

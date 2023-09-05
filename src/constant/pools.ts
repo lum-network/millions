@@ -17,3 +17,5 @@ export const POOLS: {
         illustration: Assets.chains.atomIllustration,
     },
 };
+
+export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'gaia-devnet', 'lum-network-testnet-2'];
