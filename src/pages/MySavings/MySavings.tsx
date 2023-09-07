@@ -1,9 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -30,8 +28,8 @@ import PrizesHistoryTable from './components/PrizesHistoryTable/PrizesHistoryTab
 import './MySavings.scss';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti } = useSelector(
-        (state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti, totalPrizesWon } =
+        useSelector((state: RootState) => ({
             lumWallet: state.wallet.lumWallet,
             otherWallets: state.wallet.otherWallets,
             balances: state.wallet.lumWallet?.balances,
@@ -44,8 +42,8 @@ const MySavings = () => {
             isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
             isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
             alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-        }),
-    );
+            totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
+        }));
 
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
@@ -229,23 +227,51 @@ const MySavings = () => {
         );
     };
 
-    const renderPrizeToClaim = (prize: Prize, index: number) => {
-        if (!prize.amount) {
-            return null;
-        }
-
-        const amount = Number(NumbersUtils.convertUnitNumber(prize.amount.amount));
-
+    const renderTotalPrizesWon = (): JSX.Element => {
         return (
-            <div className={`d-flex flex-row align-items-center ${index > 0 ? 'mt-4' : ''}`} key={`prize-to-claim-${index}`}>
-                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
-                <div className='d-flex flex-column asset-amount'>
-                    <span>
-                        <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
-                        {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
-                    </span>
-                    {prize.expiresAt ? <p className='expiration-date mb-0'>{I18n.t('mySavings.prizeExpiration', { expiration: dayjs(prize.expiresAt).fromNow() })}</p> : null}
-                </div>
+            <div className='d-flex flex-column prize-to-claim'>
+                {totalPrizesWon && Object.keys(totalPrizesWon).length > 0 ? (
+                    <>
+                        {Object.entries(totalPrizesWon).map(([denom, amount]) => {
+                            const icon = DenomsUtils.getIconFromDenom(denom);
+                            const normalDenom = DenomsUtils.getNormalDenom(denom);
+                            const price = prices?.[normalDenom];
+
+                            return (
+                                <div className='d-flex flex-row align-items-center justify-content-between mb-3' key={denom}>
+                                    <div className='d-flex flex-row align-items-center'>
+                                        {icon ? <img src={icon} alt={`${denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                                        <div className='d-flex flex-column asset-amount'>
+                                            <span>
+                                                <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                                            </span>
+                                            <p className='p-0 m-0 subtitle'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS}>
+                            {I18n.t('mySavings.getMorePrizes')}
+                        </Button>
+                    </>
+                ) : (
+                    <div className='d-flex flex-column align-items-center justify-content-center text-center'>
+                        <Lottie
+                            className='cosmonaut-with-balloons'
+                            animationData={cosmonautWithBalloons}
+                            segments={[
+                                [0, 30],
+                                [30, 128],
+                            ]}
+                        />
+                        <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
+                        <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
+                        <Button to={NavigationConstants.POOLS} className='mt-4'>
+                            {I18n.t('mySavings.deposit')}
+                        </Button>
+                    </div>
+                )}
             </div>
         );
     };
@@ -319,35 +345,7 @@ const MySavings = () => {
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
                                     {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
-                                <Card className='glow-bg'>
-                                    <div className='d-flex flex-column prize-to-claim'>
-                                        {/*TODO: List all prizes amounts*/}
-                                        {prizes && prizes.length > 0 ? (
-                                            <>
-                                                {/*TODO: List all prizes amounts*/}
-                                                <Button className='my-savings-cta mt-4' to={NavigationConstants.POOLS}>
-                                                    {I18n.t('mySavings.getMorePrizes')}
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie
-                                                    className='cosmonaut-with-balloons'
-                                                    animationData={cosmonautWithBalloons}
-                                                    segments={[
-                                                        [0, 30],
-                                                        [30, 128],
-                                                    ]}
-                                                />
-                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
-                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
-                                                    {I18n.t('mySavings.deposit')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Card>
+                                <Card className='glow-bg'>{renderTotalPrizesWon()}</Card>
                             </div>
                         ) : null}
 
@@ -499,35 +497,7 @@ const MySavings = () => {
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
                                     {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
-                                <Card className='glow-bg'>
-                                    <div className='d-flex flex-column prize-to-claim'>
-                                        {/*TODO: List all prizes amounts*/}
-                                        {prizes && prizes.length > 0 ? (
-                                            <>
-                                                {/*TODO: List all prizes amounts*/}
-                                                <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS}>
-                                                    {I18n.t('mySavings.getMorePrizes')}
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie
-                                                    className='cosmonaut-with-balloons'
-                                                    animationData={cosmonautWithBalloons}
-                                                    segments={[
-                                                        [0, 30],
-                                                        [30, 128],
-                                                    ]}
-                                                />
-                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
-                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
-                                                    {I18n.t('mySavings.deposit')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Card>
+                                <Card className='glow-bg'>{renderTotalPrizesWon()}</Card>
                             </div>
                         ) : null}
                         <div className='col-12 col-md-6 col-lg-12 mt-5'>

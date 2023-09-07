@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
 import { DenomsUtils, Firebase, I18n, KeplrUtils, LumClient, NumbersUtils, ToastUtils, WalletClient, WalletUtils } from 'utils';
@@ -31,6 +30,7 @@ interface SetWalletDataPayload {
     };
     deposits?: AggregatedDepositModel[];
     prizes?: PrizeModel[];
+    totalPrizesWon?: { [denom: string]: number };
 }
 
 interface GetActivitiesPayload {
@@ -81,6 +81,7 @@ interface WalletState {
         [denom: string]: OtherWalletModel;
     };
     autoReloadTimestamp: number;
+    prizesMutex: boolean;
 }
 
 export const wallet = createModel<RootModel>()({
@@ -89,6 +90,7 @@ export const wallet = createModel<RootModel>()({
         lumWallet: null,
         otherWallets: {},
         autoReloadTimestamp: 0,
+        prizesMutex: false,
     } as WalletState,
     reducers: {
         signInLum(state, payload: LumWallet): WalletState {
@@ -106,6 +108,7 @@ export const wallet = createModel<RootModel>()({
                     },
                     deposits: [],
                     prizes: [],
+                    totalPrizesWon: {},
                 },
             };
         },
@@ -119,6 +122,7 @@ export const wallet = createModel<RootModel>()({
                         activities: payload.activities || state.lumWallet.activities,
                         deposits: payload.deposits || state.lumWallet.deposits,
                         prizes: payload.prizes || state.lumWallet.prizes,
+                        totalPrizesWon: payload.totalPrizesWon || state.lumWallet.totalPrizesWon,
                     },
                 }),
             };
@@ -154,6 +158,12 @@ export const wallet = createModel<RootModel>()({
             return {
                 ...state,
                 autoReloadTimestamp: payload,
+            };
+        },
+        setPrizesMutex(state, payload: boolean): WalletState {
+            return {
+                ...state,
+                prizesMutex: payload,
             };
         },
     },
@@ -420,14 +430,19 @@ export const wallet = createModel<RootModel>()({
                 console.warn(e);
             }
         },
-        async fetchPrizes(address: string) {
+        async fetchPrizes(address: string, state) {
+            if (state.wallet.prizesMutex) {
+                return;
+            }
+
+            dispatch.wallet.setPrizesMutex(true);
+
             try {
                 const prizesToClaim = await LumClient.getWalletPrizes(address);
                 let prizesToClaimSorted: PrizeModel[] = [];
 
                 if (prizesToClaim) {
                     prizesToClaimSorted = prizesToClaim.prizes
-                        // .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
                         .sort((a, b) => {
                             const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
                             const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
@@ -467,11 +482,28 @@ export const wallet = createModel<RootModel>()({
                     }
                 }
 
+                const totalPrizesWon: { [denom: string]: number } = {};
+
+                for (const prize of prizesToClaimSorted) {
+                    if (prize.state !== PrizesConstants.PrizeState.CLAIMED) {
+                        continue;
+                    }
+
+                    if (totalPrizesWon[prize.amount.denom]) {
+                        totalPrizesWon[prize.amount.denom] += NumbersUtils.convertUnitNumber(prize.amount.amount);
+                    } else {
+                        totalPrizesWon[prize.amount.denom] = NumbersUtils.convertUnitNumber(prize.amount.amount);
+                    }
+                }
+
                 dispatch.wallet.setLumWalletData({
                     prizes: prizesToClaimSorted,
+                    totalPrizesWon,
                 });
             } catch (e) {
                 console.warn(e);
+            } finally {
+                dispatch.wallet.setPrizesMutex(false);
             }
         },
         async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {

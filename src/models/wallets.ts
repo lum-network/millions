@@ -15,6 +15,7 @@ export interface LumWalletModel {
     };
     deposits: AggregatedDepositModel[];
     prizes: PrizeModel[];
+    totalPrizesWon: { [denom: string]: number };
 }
 
 export interface OtherWalletModel {

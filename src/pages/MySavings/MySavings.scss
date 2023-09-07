@@ -178,6 +178,11 @@
             color: $color-primary;
         }
 
+        .subtitle {
+            color: $color-black;
+            font-size: 14px;
+        }
+
         @include media-breakpoint-only(lg) {
             font-size: 20px;
         }
