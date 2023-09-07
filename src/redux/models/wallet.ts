@@ -427,7 +427,7 @@ export const wallet = createModel<RootModel>()({
 
                 if (prizesToClaim) {
                     prizesToClaimSorted = prizesToClaim.prizes
-                        .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
+                        // .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
                         .sort((a, b) => {
                             const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
                             const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
@@ -466,6 +466,10 @@ export const wallet = createModel<RootModel>()({
                         });
                     }
                 }
+
+                dispatch.wallet.setLumWalletData({
+                    prizes: prizesToClaimSorted,
+                });
             } catch (e) {
                 console.warn(e);
             }

@@ -33,6 +33,8 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
             case PrizesConstants.PrizeState.CLAIMED:
                 tagType = TagsConstants.Types.CLAIMED;
                 break;
+            case PrizesConstants.PrizeState.EXPIRED:
+                tagType = TagsConstants.Types.EXPIRED;
         }
 
         return (

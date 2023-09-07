@@ -2,6 +2,8 @@ import React from 'react';
 
 import { TagsConstants } from 'constant';
 import { I18n } from 'utils';
+import Assets from 'assets';
+import { Tooltip } from '../index';
 
 import './Tag.scss';
 
@@ -28,7 +30,17 @@ const Tag = ({ type }: IProps) => {
             break;
     }
 
-    return <div className={`tag rounded-pill ${classNameType}`}>{wordType}</div>;
+    return (
+        <div className={`tag rounded-pill ${classNameType}`}>
+            {wordType}
+            {type === TagsConstants.Types.EXPIRED && (
+                <span data-tooltip-id='expired-tag' data-tooltip-html={I18n.t('tags.expiredTooltip')} className='ms-2 mb-1'>
+                    <img src={Assets.images.infoWhite} alt='info' width={15} height={15} />
+                    <Tooltip id='expired-tag' />
+                </span>
+            )}
+        </div>
+    );
 };
 
 export default Tag;

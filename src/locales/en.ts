@@ -21,7 +21,7 @@ export default {
         claimed: 'Claimed',
         unclaimed: 'To be claimed',
         expired: 'Expired',
-        expiredTooltip: 'Sorry but this Prize has expired and its amount has been returned to the future Prize Pool. You have 30 days to claim a Prize once it is won.',
+        expiredTooltip: 'This Prize has expired and its amount has been returned to the future Prize Pool. You have 30 days to claim a Prize once it is won.',
         success: 'Success',
         unbonding: 'Unbonding',
         deposit: 'Deposit in progress',
