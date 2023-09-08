@@ -18,6 +18,7 @@ export const app = createModel<RootModel>()({
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.pools.getDepositDelta();
             await dispatch.prizes.fetchBiggestPrizes();
+            await dispatch.prizes.fetchBiggestAprPrizes();
 
             dispatch.app.SET_INITIALIZED(true);
         },

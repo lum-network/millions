@@ -1,30 +1,53 @@
 @import 'src/styles/main';
 
 .luckiest-winner-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    background-color: $color-white;
-    border-radius: 12px;
-    padding: 2rem;
+    width: 280px;
 
-    h2 {
+    @include media-breakpoint-down(md) {
+        width: 240px;
+    }
+
+    .title {
+        color: $color-primary;
+        font-size: 12px;
+    }
+
+    .value {
         color: $color-black;
+        font-size: 14px;
+
+        .amount {
+            color: $color-primary;
+            font-size: 15px;
+        }
     }
 
-    small {
-        font-weight: 300;
+    .separator {
+        border-top: 1px solid rgba(86,52,222,.3);
     }
 
-    .luckiest-winner-address-btn {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: $color-black;
-    }
-}
+    .rank {
+        background-color: $color-primary;
+        color: $color-white;
+        border-radius: 7px;
+        padding: 7px 8px;
+        width: fit-content;
 
-.luckiest-winner-card:not(:first-child) {
-    margin-left: 1.5rem;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+
+        &.first {
+            background-color: #ffba20;
+        }
+
+        &.second {
+            background-color: #93949b;
+        }
+
+        &.third {
+            background-color: #c07a50;
+        }
+    }
 }

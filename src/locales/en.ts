@@ -531,6 +531,12 @@ export default {
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
         },
+        card: {
+            apr: 'APR',
+            pool: 'Pool',
+            deposit: 'Deposit',
+            win: 'Win',
+        }
     },
     leaderboard: {
         hint: 'The depositors ranking is updated every hour',

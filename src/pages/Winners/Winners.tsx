@@ -18,7 +18,7 @@ import './Winners.scss';
 const Winners = () => {
     const dispatch = useDispatch<Dispatch>();
 
-    const biggestPrizes = useSelector((state: RootState) => state.prizes.biggestPrizes);
+    const biggestAprPrizes = useSelector((state: RootState) => state.prizes.biggestAprPrizes);
     const latestPrizes = useSelector((state: RootState) => state.prizes.prizes);
     const metadataPrizes = useSelector((state: RootState) => state.prizes.metadata);
 
@@ -32,11 +32,11 @@ const Winners = () => {
     return (
         <div className='luckiest-winners-container mt-3 mt-lg-5'>
             <h1 className='mb-0'>{I18n.t('luckiestWinners.title')}</h1>
-            <div className='row gy-4 py-2 py-lg-4'>
-                {biggestPrizes.length > 0 ? (
-                    biggestPrizes.map((prize, index) => (
-                        <div className='col-12 col-sm-6 col-lg-3' key={`winner-${index}`}>
-                            <LuckiestWinnerCard prize={prize} />
+            <div className='cards-list py-3'>
+                {biggestAprPrizes.length > 0 ? (
+                    biggestAprPrizes.map((prize, index) => (
+                        <div className='me-xl-4 me-3' key={`winner-${index}`}>
+                            <LuckiestWinnerCard prize={prize} rank={index + 1} />
                         </div>
                     ))
                 ) : (
