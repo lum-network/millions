@@ -167,7 +167,7 @@ export default {
                 {
                     title: 'How can I participate?',
                     answer:
-                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr or a Leap Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
                         'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
                         'Check the <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
