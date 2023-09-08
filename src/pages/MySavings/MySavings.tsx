@@ -400,7 +400,11 @@ const MySavings = () => {
                                 </div>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
                                     <PrizesHistoryTable
-                                        prizes={prizes.slice((prizesHistoryPage - 1) * 5, (prizesHistoryPage - 1) * 5 + 5)}
+                                        prizes={
+                                            winSizes.width < Breakpoints.MD || (winSizes.width > Breakpoints.LG && winSizes.width < Breakpoints.XL)
+                                                ? prizes
+                                                : prizes.slice((prizesHistoryPage - 1) * 5, (prizesHistoryPage - 1) * 5 + 5)
+                                        }
                                         pagination={
                                             prizes.length > 5
                                                 ? {

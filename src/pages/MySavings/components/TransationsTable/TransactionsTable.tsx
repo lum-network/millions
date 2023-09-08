@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
-import { TransactionModel } from 'models';
+import { MetadataModel, TransactionModel } from 'models';
 import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils, TransactionsUtils } from 'utils';
 
@@ -17,12 +17,7 @@ const TransactionsTable = ({
     onPageChange,
 }: {
     transactions: TransactionModel[];
-    pagination?: {
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-        pagesTotal: number;
-        page: number;
-    };
+    pagination?: Omit<MetadataModel, 'itemsCount' | 'itemsTotal' | 'limit'>;
     onPageChange: (page: number) => void;
 }) => {
     const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
@@ -128,7 +123,7 @@ const TransactionsTable = ({
 
         return (
             <div className='transactions-table py-3'>
-                {renderItem(transactions[((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem)}
+                {renderItem(transactions[((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem)}
                 <div className='d-flex flex-row mt-4'>
                     <button
                         type='button'
@@ -139,7 +134,7 @@ const TransactionsTable = ({
                                 if (pagination) {
                                     onPageChange(pagination.page - 1);
                                 }
-                                setSmallTableVisibleItem(29);
+                                setSmallTableVisibleItem(4);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem - 1);
                             }
@@ -150,9 +145,9 @@ const TransactionsTable = ({
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                        disabled={((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem === transactions.length - 1}
+                        disabled={((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem === transactions.length - 1}
                         onClick={() => {
-                            if (smallTableVisibleItem === 29) {
+                            if (smallTableVisibleItem === 4) {
                                 if (pagination) {
                                     onPageChange(pagination.page + 1);
                                 }
