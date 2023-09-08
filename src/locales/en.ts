@@ -536,7 +536,7 @@ export default {
             pool: 'Pool',
             deposit: 'Deposit',
             win: 'Win',
-        }
+        },
     },
     leaderboard: {
         hint: 'The depositors ranking is updated every hour',

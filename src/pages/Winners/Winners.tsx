@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { I18n } from 'utils';
 
-import { Button, Card, Lottie } from 'components';
+import { ArrowButton, Button, Card, Lottie } from 'components';
 import { NavigationConstants } from 'constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, Dispatch } from 'redux/store';
@@ -25,14 +25,40 @@ const Winners = () => {
     const [page, setPage] = useState(1);
     const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    const scrollLeft = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({
+                left: -350,
+                behavior: 'smooth',
+            });
+        }
+    };
+
+    const scrollRight = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({
+                left: 350,
+                behavior: 'smooth',
+            });
+        }
+    };
+
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: page - 1 }).finally(() => null);
     }, [page]);
 
     return (
         <div className='luckiest-winners-container mt-3 mt-lg-5'>
-            <h1 className='mb-0'>{I18n.t('luckiestWinners.title')}</h1>
-            <div className='cards-list py-3'>
+            <div className='d-flex justify-content-between align-items-center'>
+                <h1 className='mb-0'>{I18n.t('luckiestWinners.title')}</h1>
+                <div className='d-flex'>
+                    <ArrowButton className='me-3' onClick={scrollLeft} direction='left' />
+                    <ArrowButton onClick={scrollRight} direction='right' />
+                </div>
+            </div>
+            <div className='cards-list py-3' ref={containerRef}>
                 {biggestAprPrizes.length > 0 ? (
                     biggestAprPrizes.map((prize, index) => (
                         <div className='me-xl-4 me-3' key={`winner-${index}`}>
