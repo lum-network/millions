@@ -2,10 +2,10 @@ import React from 'react';
 import numeral from 'numeral';
 
 import Assets from 'assets';
-import { Button, SmallerDecimal, Card } from 'components';
+import { SmallerDecimal, Card } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
-import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
-import { BiggestAprPrizeModel, PrizeModel } from 'models';
+import { DenomsUtils, I18n, StringsUtils } from 'utils';
+import { BiggestAprPrizeModel } from 'models';
 import { useWindowSize } from 'hooks';
 import { RootState } from 'redux/store';
 import { useSelector } from 'react-redux';
