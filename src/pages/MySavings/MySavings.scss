@@ -13,6 +13,12 @@
         }
     }
 
+    .side-bar {
+        position: sticky;
+        height: 100%;
+        top: 180px;
+    }
+
     .balance-card {
         height: 100%;
         background-color: $color-primary;
