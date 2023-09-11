@@ -74,7 +74,7 @@ const Collapsible = (props: Props) => {
                             ) : (
                                 <span className='me-3' dangerouslySetInnerHTML={{ __html: I18n.t('collapsible.openDetails') }} />
                             ))}
-                        <img src={Assets.images.arrow} alt='arrow' />
+                        <img src={Assets.images.arrow} alt='arrow' className='purple-filter' />
                     </div>
                 )}
             </div>

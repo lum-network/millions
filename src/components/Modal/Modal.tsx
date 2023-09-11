@@ -1,6 +1,8 @@
 import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { Modal as BootstrapModal } from 'bootstrap';
 
+import { useColorScheme } from 'hooks';
+
 import './Modal.scss';
 
 interface IProps {
@@ -25,6 +27,7 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, IProps> = (props, ref
 
     const modalRef = useRef<HTMLDivElement>(null);
     const bootstrapModalRef = useRef<BootstrapModal>();
+    const { isDark } = useColorScheme();
 
     useEffect(() => {
         if (modalRef.current) {
@@ -74,7 +77,7 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, IProps> = (props, ref
                             data-bs-target={id}
                             aria-label='Close'
                         >
-                            <div className='btn-close' />
+                            <div className={`btn-close ${isDark ? 'btn-close-white' : ''}`} />
                         </button>
                     )}
                     <div className={`modal-body p-0 ${bodyClassName}`}>{children}</div>

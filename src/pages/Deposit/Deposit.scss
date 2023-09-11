@@ -1,7 +1,7 @@
 @import 'src/styles/main';
 
 .steps-title {
-    color: $color-black;
+    color: var(--color-black);
     margin-bottom: 4rem;
     
     @include media-breakpoint-down(sm) {
@@ -42,7 +42,7 @@
 
 #depositFlow {
     .deposit-step-card {
-        background-color: $color-white;
+        background-color: var(--color-white);
         border-radius: 12px;
         position: relative;
     }
@@ -57,7 +57,7 @@
         padding: 2.25rem 1.75rem;
         
         div {
-            color: $color-primary;
+            color: var(--color-primary);
             font-weight: 350;
             font-size: 14px;
             line-height: 17px;
@@ -73,7 +73,7 @@
 #ibcTransferModal,
 #depositDeltaModal {
     h3 {
-        color: $color-black;
+        color: var(--color-black);
     }
 }
 
@@ -83,6 +83,7 @@
         font-weight: 300;
         font-size: 16px;
         line-height: 19px;
+        color: var(--color-black);
     }
 
     .amount-label {
@@ -90,6 +91,8 @@
         font-size: 12px;
         line-height: 16px;
         margin-bottom: 0.5rem;
+        color: var(--color-black);
+        color: var(--color-black);
     }
 
     .amount-container {
@@ -101,19 +104,19 @@
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        background-color: $color-primary;
+        background-color: var(--color-primary);
         img {
             filter: brightness(0) invert(1);
         }
     }
 
     .crypto-price {
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     .fiat-price {
         font-size: 14px;
         font-weight: 300;
-        color: $color-dark-grey;
+        color: var(--color-dark-grey);
     }
 }

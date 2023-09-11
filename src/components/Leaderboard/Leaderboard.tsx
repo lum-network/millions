@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 
 import { Button, Card, Loading, SmallerDecimal } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
-import { useWindowSize } from 'hooks';
+import { useColorScheme, useWindowSize } from 'hooks';
 import { LeaderboardItemModel, LumWalletModel } from 'models';
 import { DenomsUtils, I18n, KeplrUtils, NumbersUtils, StringsUtils } from 'utils';
 import numeral from 'numeral';
@@ -35,6 +35,8 @@ const Leaderboard = (props: Props) => {
     const { items, className, limit, lumWallet, price, poolId, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
 
     const { width: windowWidth } = useWindowSize();
+    const { isDark } = useColorScheme();
+
     const containerRef = useRef<HTMLDivElement>(null);
     const tl = useRef<gsap.core.Timeline>();
 
@@ -145,8 +147,8 @@ const Leaderboard = (props: Props) => {
         return (
             <div
                 key={`depositor-rank-${index}`}
-                className={`position-relative d-flex flex-row align-items-center justify-content-between leaderboard-rank ${
-                    item.address === lumWallet?.address ? 'me' : flat || isMobile || windowWidth < Breakpoints.MD ? 'white-bg' : ''
+                className={`position-relative d-flex flex-row align-items-center justify-content-between leaderboard-rank ${flat ? 'flat' : ''} ${isDark ? 'dark' : ''} ${
+                    item.address === lumWallet?.address ? 'me' : !isDark && (isMobile || windowWidth < Breakpoints.MD) ? 'white-bg' : ''
                 }`}
             >
                 <div className='d-flex flex-row align-items-center'>

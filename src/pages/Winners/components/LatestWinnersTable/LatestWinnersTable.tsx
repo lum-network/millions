@@ -28,7 +28,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
             <tr className='d-block d-lg-table-row' key={`winner-${prize.poolId}-${prize.drawId}-${prize.prizeId}`}>
                 <td className='align-middle py-3 px-4 winner-infos'>
                     <span className='me-3'>
-                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt={prize.amount.denom} width='38' height='38' />
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt={prize.amount.denom} width='38' height='38' className='no-filter' />
                     </span>
                     {StringsUtils.trunc(prize.winnerAddress)}
                     <span className='prize-infos ms-3'>

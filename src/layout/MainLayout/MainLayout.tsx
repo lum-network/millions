@@ -131,7 +131,7 @@ const MainLayout = () => {
                     <main className='h-100'>
                         {appLoading ? (
                             <div className='d-flex justify-content-center align-items-center h-75'>
-                                <div className='spinner-border' style={{ width: '3rem', height: '3rem', color: '#5634DE' }} role='status'>
+                                <div className='spinner-border' role='status'>
                                     <span className='visually-hidden'>{I18n.t('common.loading')}</span>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@ const MainLayout = () => {
                     </main>
                 </div>
             </div>
-            <Modal id='get-keplr-modal' contentClassName='bg-white' withCloseButton={false}>
+            <Modal id='get-keplr-modal' withCloseButton={false}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
                 {!isMobile && (
@@ -156,7 +156,7 @@ const MainLayout = () => {
                         }}
                         data-bs-dismiss='modal'
                     >
-                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                         <div className='d-flex flex-column align-items-start text-start'>
                             <p
                                 dangerouslySetInnerHTML={{
@@ -178,7 +178,7 @@ const MainLayout = () => {
                     }}
                     data-bs-dismiss='modal'
                 >
-                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <p
                             dangerouslySetInnerHTML={{
@@ -191,7 +191,7 @@ const MainLayout = () => {
                     </div>
                 </Card>
             </Modal>
-            <Modal id='choose-wallet-modal' contentClassName='bg-white' withCloseButton={false}>
+            <Modal id='choose-wallet-modal' withCloseButton={false}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
                 {!isMobile && (
@@ -204,7 +204,7 @@ const MainLayout = () => {
                         }}
                         data-bs-dismiss='modal'
                     >
-                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <img src={keplrIcon} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                         <div className='d-flex flex-column align-items-start text-start'>
                             <h2
                                 dangerouslySetInnerHTML={{
@@ -226,7 +226,7 @@ const MainLayout = () => {
                     }}
                     data-bs-dismiss='modal'
                 >
-                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                    <img src={leapIcon} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <h2
                             dangerouslySetInnerHTML={{
@@ -239,7 +239,7 @@ const MainLayout = () => {
                     </div>
                 </Card>
             </Modal>
-            <Modal id='logout-modal' contentClassName='bg-white' ref={logoutModalRef}>
+            <Modal id='logout-modal' ref={logoutModalRef}>
                 <img src={infoIcon} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('logoutModal.title')}</h3>
                 <div className='d-flex flex-row align-self-stretch justify-content-between'>
@@ -270,6 +270,7 @@ const MainLayout = () => {
                             setEnableAutoConnect(false);
                             store.dispatch({ type: LOGOUT });
                         }}
+                        forcePurple
                     >
                         {I18n.t('logoutModal.logoutBtn')}
                     </Button>
@@ -413,7 +414,7 @@ const MainLayout = () => {
                         affiliates, or any other individual or entity involved in the operation of the Cosmos Millions Interface.
                     </p>
                 </div>
-                <div className='d-flex my-4'>
+                <div className='d-flex my-4 terms-checkbox'>
                     <input onChange={(value) => setTermsChecked(value.target.checked)} type='checkbox' className='me-3' /> {I18n.t('termsModal.checkbox')}
                 </div>
                 <div className='d-flex flex-row'>
@@ -435,6 +436,7 @@ const MainLayout = () => {
 
                             setEnableAutoConnect(true);
                         }}
+                        forcePurple
                     >
                         {I18n.t('termsModal.cta')}
                     </Button>

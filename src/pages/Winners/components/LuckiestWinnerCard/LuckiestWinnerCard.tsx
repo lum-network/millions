@@ -16,7 +16,7 @@ interface IProps {
 const LuckiestWinnerCard = ({ prize }: IProps) => {
     return (
         <div className='luckiest-winner-card glow-bg h-100'>
-            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt='winner-coin-icon' width='64' height='64' />
+            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt='winner-coin-icon' width='64' height='64' className='no-filter' />
             <div className='d-flex flex-column align-items-center mt-3'>
                 <h2 className='mb-0'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * prize.usdTokenValue).format('0,0')}</h2>
                 <small className='text-center'>

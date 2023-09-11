@@ -11,7 +11,7 @@
         font-weight: 400;
         font-size: 18px;
         line-height: 22px;
-        color: $color-black;
+        color: var(--color-black);
 
         display: flex;
         justify-content: space-between;
@@ -28,7 +28,7 @@
 
     .collapsible-content {
         margin-top: 24px;
-        color: $color-black;
+        color: var(--color-black);
         font-style: normal;
         font-weight: 300;
         font-size: 16px;
@@ -51,12 +51,12 @@
         }
 
         &.with-button-border {
-            border: 2px solid $color-primary;
+            border: 2px solid var(--color-purple);
             border-radius: 12px;
             padding: 8px 18px;
             font-size: 14px;
             line-height: 17px;
-            color: $color-primary;
+            color: var(--color-purple);
             width: unset;
         }
 

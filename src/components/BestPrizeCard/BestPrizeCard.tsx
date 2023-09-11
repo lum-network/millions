@@ -75,14 +75,14 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                                 </div>
                             </>
                         ) : (
-                            <img alt='Prize pool placeholeder' src={Assets.images.biggestPrizePoolPlaceholder} className='mt-2 mt-sm-3 mt-md-4' />
+                            <img alt='Prize pool placeholeder' src={Assets.images.biggestPrizePoolPlaceholder} className='mt-2 mt-sm-3 mt-md-4 no-filter' />
                         )}
                     </div>
                 </div>
                 {countdownTo && (
                     <div className='d-flex flex-column flex-sm-row align-items-center justify-content-between w-100 best-prize-countdown'>
                         <div className='network mt-4 mt-sm-0'>
-                            <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
+                            <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} className='no-filter' />
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                         </div>
                         <div className='mt-4 mt-sm-0'>

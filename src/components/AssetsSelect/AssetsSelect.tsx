@@ -2,6 +2,8 @@ import { SmallerDecimal } from 'components';
 import React, { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import Select, { GroupBase, OptionProps, components, SingleValueProps } from 'react-select';
+
+import { useColorScheme } from 'hooks';
 import { DenomsUtils, NumbersUtils } from 'utils';
 
 import './AssetsSelect.scss';
@@ -41,7 +43,7 @@ const AssetOption = (
         <components.Option {...rest}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2' />} {props.data.label}
+                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2 no-filter' />} {props.data.label}
                 </div>
                 {balance && <SmallerDecimal className='asset-amount' nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount))} />}
             </div>
@@ -68,7 +70,7 @@ const AssetValue = (
         <components.SingleValue {...props}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {icon && <img src={icon} className='value-asset-icon me-3' />} {props.data.label}
+                    {icon && <img src={icon} className='value-asset-icon me-3 no-filter' />} {props.data.label}
                 </div>
             </div>
         </components.SingleValue>
@@ -77,6 +79,15 @@ const AssetValue = (
 
 const AssetsSelect = ({ balances, options, onChange, value, readonly, label, className, isLoading, disabled }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
+    const [colorBg, setColorBg] = useState(getComputedStyle(document.body).getPropertyValue('--color-white'));
+    const [colorText, setColorText] = useState(getComputedStyle(document.body).getPropertyValue('--color-primary'));
+
+    const { isDark } = useColorScheme();
+
+    useEffect(() => {
+        setColorBg(getComputedStyle(document.body).getPropertyValue('--color-white'));
+        setColorText(getComputedStyle(document.body).getPropertyValue('--color-primary'));
+    }, [isDark]);
 
     useEffect(() => {
         setSelectedOptionLabel(options.find((opt) => opt.value === value)?.label || '');
@@ -109,6 +120,10 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                     isClearable={false}
                     isDisabled={disabled}
                     styles={{
+                        menu: (provided) => ({
+                            ...provided,
+                            backgroundColor: colorBg,
+                        }),
                         control: (provided) => ({
                             ...provided,
                             borderRadius: 12,
@@ -120,20 +135,21 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                             paddingBottom: '0.75rem',
                             textTransform: 'uppercase',
                             textAlign: 'left',
-                            color: '#5634DE',
+                            color: colorText,
                             fontSize: 22,
+                            backgroundColor: colorBg,
                         }),
                         option: (provided, state) => ({
                             ...provided,
                             textTransform: 'uppercase',
-                            color: '#5634DE',
+                            color: colorText,
                             textAlign: 'left',
-                            backgroundColor: state.isFocused ? 'rgba(86, 52, 222, 0.2)' : state.isSelected ? '#F1EDFF' : '#fff',
+                            backgroundColor: state.isFocused ? (isDark ? '#9277FF' : 'rgba(86, 52, 222, 0.2)') : state.isSelected ? (isDark ? '#482673' : '#F1EDFF') : colorBg,
                             fontSize: 22,
                         }),
                         dropdownIndicator: (provided) => ({
                             ...provided,
-                            color: '#5634DE',
+                            color: colorText,
                         }),
                         indicatorSeparator: (provided) => ({
                             ...provided,
@@ -141,7 +157,7 @@ const AssetsSelect = ({ balances, options, onChange, value, readonly, label, cla
                         }),
                         singleValue: (provided) => ({
                             ...provided,
-                            color: '#5634DE',
+                            color: colorText,
                         }),
                         valueContainer: (provided) => ({
                             ...provided,

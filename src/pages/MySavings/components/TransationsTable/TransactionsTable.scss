@@ -30,27 +30,27 @@
     }
 
     .msg-count-badge {
-        background-color: $color-primary;
-        color: $color-primary-light;
+        background-color: var(--color-primary);
+        color: var(--color-primary-light);
         font-size: 12px;
         max-height: 24px;
     }
 
     .tx-amount {
-        color: $color-black;
+        color: var(--color-black);
         .denom {
-            color: $color-primary;
+            color: var(--color-primary);
         }
     }
 
     .usd-price {
         font-size: 12px;
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 200;
     }
 
     .tx-height {
-        color: $color-primary;
+        color: var(--color-primary);
         opacity: 0.8;
         text-decoration: none;
         font-size: 14px;
@@ -60,12 +60,12 @@
     }
 
     label {
-        color: $color-primary;
+        color: var(--color-primary);
         margin-bottom: 0.25rem;
     }
 
     .table-item {
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         border-radius: 12px;
         padding: 14px 22px;
     }
@@ -73,14 +73,14 @@
     .selectable-btn {
         background-color: transparent;
         border-radius: 12px;
-        border: 2.5px solid $color-primary;
-        color: $color-primary;
+        border: 2.5px solid var(--color-primary);
+        color: var(--color-primary);
 
         &:not(:disabled) {
             &:hover,
             &.active {
-                background-color: $color-primary;
-                color: $color-white;
+                background-color: var(--color-primary);
+                color: var(--color-white);
             }
         }
 
@@ -136,7 +136,7 @@
             content: attr(data-label);
             margin-top: 0.375rem;
             float: left;
-            color: $color-primary;
+            color: var(--color-primary);
             font-size: 18px;
         }
     }

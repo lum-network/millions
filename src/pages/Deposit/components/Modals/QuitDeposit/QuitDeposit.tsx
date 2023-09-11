@@ -39,6 +39,7 @@ const QuitDepositModal = ({ modalRef, blocker }: { modalRef: React.RefObject<Mod
 
                         blocker.reset?.();
                     }}
+                    forcePurple
                 >
                     {I18n.t('deposit.quitModal.cancel')}
                 </Button>

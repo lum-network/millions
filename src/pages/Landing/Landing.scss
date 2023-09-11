@@ -8,7 +8,7 @@
         font-weight: 400;
         font-size: 65px;
         line-height: 80px;
-        color: $color-primary;
+        color: var(--color-primary);
 
         @include media-breakpoint-down(xxl) {
             font-size: 55px;
@@ -26,7 +26,7 @@
         font-weight: 400;
         font-size: 42px;
         line-height: 50px;
-        color: $color-primary;
+        color: var(--color-primary);
 
         @include media-breakpoint-down(md) {
             font-size: 38px;
@@ -39,12 +39,12 @@
         font-weight: 300;
         font-size: 18px;
         line-height: 22px;
-        color: $color-black;
+        color: var(--color-black);
         margin-bottom: 24px;
     }
 
     .text-flat-card {
-        color: $color-primary;
+        color: var(--color-primary);
         margin-bottom: 0;
     }
 
@@ -107,10 +107,13 @@
             width: 150px;
             height: 150px;
             border-radius: 12px;
-            background-color: $color-primary;
+            background-color: var(--color-primary);
             display: flex;
             justify-content: center;
 
+            &.square-dark {
+                background-color: var(--color-primary-light);
+            }
             .cosmonaut-coin {
                 position: absolute;
                 top: -45px;
@@ -187,7 +190,7 @@
                     font-size: 32px;
                     line-height: 38px;
                     text-align: center;
-                    color: $color-primary;
+                    color: var(--color-primary);
                     margin: 40px 0;
                 }
             }
@@ -206,8 +209,8 @@
             font-weight: 400;
             font-size: 25px;
             line-height: 30px;
-            background-color: $color-primary;
-            color: $color-white;
+            background-color: var(--color-purple);
+            color: white;
             margin: 24px 0;
 
             @include media-breakpoint-down(xl) {
@@ -224,7 +227,7 @@
             font-size: 16px;
             line-height: 19px;
             text-align: center;
-            color: $color-black;
+            color: var(--color-black);
 
             @include media-breakpoint-down(xl) {
                 position: unset;
@@ -253,7 +256,7 @@
             font-weight: 400;
             font-size: 20px;
             line-height: 23px;
-            color: $color-primary;
+            color: var(--color-primary);
         }
 
         .tvl-value {
@@ -261,7 +264,7 @@
             font-weight: 400;
             font-size: 20px;
             line-height: 23px;
-            color: $color-black;
+            color: var(--color-black);
         }
 
         .cta {
@@ -311,8 +314,8 @@
                     display: flex;
                     align-items: center;
                     text-align: center;
-                    color: $color-black;
-                    border: $color-black 1px solid;
+                    color: var(--color-black);
+                    border: var(--color-black) 1px solid;
                     border-radius: 20px;
                     padding: 4px 10px;
                     text-transform: uppercase;
@@ -331,7 +334,7 @@
                         font-weight: 400;
                         font-size: 34px;
                         line-height: 41px;
-                        color: $color-black;
+                        color: var(--color-black);
                         text-transform: uppercase;
                     }
 
@@ -341,7 +344,7 @@
                         font-weight: 300;
                         font-size: 16px;
                         line-height: 19px;
-                        color: $color-black;
+                        color: var(--color-black);
                     }
                 }
 
@@ -351,7 +354,7 @@
                     justify-content: space-between;
                     width: 100%;
                     padding: 24px;
-                    color: $color-primary;
+                    color: var(--color-primary);
                     font-style: normal;
                     font-weight: 400;
                     font-size: 16px;
@@ -390,7 +393,7 @@
                     font-size: 32px;
                     line-height: 38px;
                     text-align: center;
-                    color: $color-primary;
+                    color: var(--color-primary);
                 }
 
                 .network {
@@ -401,8 +404,8 @@
                     display: flex;
                     align-items: center;
                     text-align: center;
-                    color: $color-primary;
-                    border: 1px solid $color-primary;
+                    color: var(--color-primary);
+                    border: 1px solid var(--color-primary);
                     border-radius: 20px;
                     padding: 4px 10px;
                 }
@@ -413,11 +416,11 @@
                     font-size: 14px;
                     line-height: 17px;
                     text-align: center;
-                    color: $color-black;
+                    color: var(--color-black);
                     position: relative;
 
                     .symbol {
-                        color: $color-primary;
+                        color: var(--color-primary);
                         font-weight: 400;
                         font-size: 28px;
                         line-height: 34px;
@@ -522,17 +525,17 @@
         }
 
         .footer-title {
-            color: $color-primary;
+            color: var(--color-primary);
         }
 
         a {
-            color: $color-black;
+            color: var(--color-black);
             text-decoration: none;
             transition: all 150ms linear;
             font-weight: 200;
             width: fit-content;
             &:hover {
-                color: $color-black;
+                color: var(--color-black);
                 transform: scale(1.05)
             }
         }

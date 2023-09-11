@@ -157,7 +157,12 @@ const DepositStep1 = (
                         <div className='winning-chance d-flex flex-row justify-content-between'>
                             <div className='text-start'>
                                 {I18n.t('deposit.chancesHint.winning.title')}
-                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
+                                <span
+                                    data-tooltip-id='winning-chance-tooltip'
+                                    data-tooltip-place='left'
+                                    data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')}
+                                    className='deposit-tooltip ms-2'
+                                >
                                     <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='winning-chance-tooltip' />
                                 </span>
@@ -167,7 +172,7 @@ const DepositStep1 = (
                         <div className='average-prize d-flex flex-row justify-content-between mt-4'>
                             <div className='text-start'>
                                 {I18n.t('deposit.chancesHint.averagePrize.title')}
-                                <span data-tooltip-id='average-prize-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
+                                <span data-tooltip-id='average-prize-tooltip' data-tooltip-place='left' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='average-prize-tooltip' />
                                 </span>
@@ -183,7 +188,7 @@ const DepositStep1 = (
                         className='position-relative deposit-cta w-100 mt-4'
                         disabled={disabled || isLoading || !!(form.touched.amount && form.errors.amount)}
                     >
-                        <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                        <div className='position-absolute deposit-cta-bg w-100 h-100' />
                         <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
                     </Button>
                 </div>
@@ -300,7 +305,7 @@ const DepositStep2 = (
                 ) : (
                     <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
                         <div className='asset-info d-flex flex-row'>
-                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3' alt='denom' />
+                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom))} className='me-3 no-filter' alt='denom' />
                             <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase()}</span>
                         </div>
                         <div className='deposit-amount'>{<SmallerDecimal nb={NumbersUtils.formatTo6digit(depositAmount)} />}</div>
@@ -324,7 +329,7 @@ const DepositStep2 = (
                 />
             )}
             <Card flat withoutPadding className='fees-warning mt-4'>
-                <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} className='me-2'>
+                <span data-tooltip-id='fees-tooltip' data-tooltip-html={I18n.t('deposit.fees')} data-tooltip-place='left' className='me-2'>
                     <img src={Assets.images.info} alt='info' />
                     <Tooltip id='fees-tooltip' delay={2000} />
                 </span>
@@ -338,10 +343,10 @@ const DepositStep2 = (
                 disabled={disabled || !!error || isLoading}
                 className='deposit-cta w-100 position-relative mt-4'
             >
-                <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
-                <img src={Assets.images.yellowStar} alt='Star' className='star me-3' style={{ zIndex: 0 }} />
+                <div className='position-absolute deposit-cta-bg w-100 h-100' />
+                <img src={Assets.images.yellowStar} alt='Star' className='star me-3 no-filter' style={{ zIndex: 0 }} />
                 <div className='deposit-cta-text'>{I18n.t('deposit.saveAndWinBtn')}</div>
-                <img src={Assets.images.yellowStar} alt='Star' className='star ms-3' style={{ zIndex: 0 }} />
+                <img src={Assets.images.yellowStar} alt='Star' className='star ms-3 no-filter' style={{ zIndex: 0 }} />
             </Button>
         </div>
     );
@@ -359,7 +364,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
             <div className='d-flex flex-column mt-5'>
                 <div className='deposit-card d-flex flex-column flex-sm-row justify-content-between align-items-sm-center py-3 py-sm-4 px-4 px-sm-5 mb-4'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img className='denom-icon' src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
+                        <img className='denom-icon no-filter' src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
                         <div className='d-flex flex-column ms-3'>
                             <div className='deposit-amount text-start'>
                                 {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
@@ -424,7 +429,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                         onTwitterShare();
                     }}
                 >
-                    <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                    <div className='position-absolute deposit-cta-bg w-100 h-100' />
                     <img src={Assets.images.twitterWhite} alt='Twitter' className='d-none d-sm-block me-3 twitter-icon' width={25} style={{ zIndex: 0 }} />
                     <div className='deposit-cta-text'>{I18n.t('deposit.shareTwitter')}</div>
                 </Button>

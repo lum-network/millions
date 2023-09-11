@@ -10,7 +10,7 @@ import { CustomEase } from 'gsap/CustomEase';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import Assets from 'assets';
-import { Card, Lottie, Modal, Steps } from 'components';
+import { Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
@@ -782,7 +782,7 @@ const Deposit = () => {
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
                         {withinDepositDelta && (
                             <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                                <img src={Assets.images.questionMark} alt='' />
+                                <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
                             </Card>
                         )}

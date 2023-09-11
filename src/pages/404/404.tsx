@@ -8,7 +8,7 @@ import './404.scss';
 const Error404 = () => {
     return (
         <div className='error-404 d-flex flex-column align-items-center justify-content-center h-100'>
-            <img src={Assets.images.warning} alt='warning' />
+            <img src={Assets.images.warning} alt='warning' className='no-filter' />
             <h2 className='my-4'>{I18n.t('errors.404.title')}</h2>
             <h3>{I18n.t('errors.404.description')}</h3>
         </div>

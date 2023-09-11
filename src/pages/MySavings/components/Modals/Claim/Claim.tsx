@@ -39,7 +39,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                 {infos.amount.map((am, index) => (
                     <div key={`claim-prize-${index}`} className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
                         <div className='d-flex flex-row align-items-center'>
-                            <img height={50} width={50} src={DenomsUtils.getIconFromDenom(am.denom.toLowerCase())} alt={am.denom} />
+                            <img height={50} width={50} src={DenomsUtils.getIconFromDenom(am.denom.toLowerCase())} alt={am.denom} className='no-filter' />
                             <div className='d-flex flex-column ms-3'>
                                 <div className='deposit-amount text-start'>
                                     <SmallerDecimal nb={am.amount} /> {DenomsUtils.getNormalDenom(am.denom).toUpperCase()}
@@ -295,11 +295,11 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                     <>
                                         <div className='mb-3 mb-sm-5 mb-lg-0'>
                                             <div className='card-title d-flex flex-row align-items-baseline justify-content-center'>
-                                                <img src={Assets.images.trophy} alt='Trophy' className='d-none d-sm-block me-3' />
+                                                <img src={Assets.images.trophy} alt='Trophy' className='d-none d-sm-block me-3 no-filter' />
                                                 {I18n.t('mySavings.claimModal.cardTitle')}
                                             </div>
                                             <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center mt-2'>
-                                                <img src={Assets.images.yellowStar} alt='Star' className='me-2' width='25' />$
+                                                <img src={Assets.images.yellowStar} alt='Star' className='me-2 no-filter' width='25' />$
                                                 {numeral(
                                                     prizes.reduce(
                                                         (acc, prize) =>
@@ -308,7 +308,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                         0,
                                                     ),
                                                 ).format('0,0')}
-                                                <img src={Assets.images.yellowStar} alt='Star' className='ms-2' width='25' />
+                                                <img src={Assets.images.yellowStar} alt='Star' className='ms-2 no-filter' width='25' />
                                             </div>
                                         </div>
                                         <div className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
@@ -324,7 +324,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                                 <div className='date'>{dayjs(prize.createdAt).format('dddd, MMMM D h:mm A')}</div>
                                                             </div>
                                                             <Card withoutPadding flat className='d-flex flex-row align-items-center text-start px-4 py-3'>
-                                                                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon me-3' alt='Denom' />
+                                                                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon me-3 no-filter' alt='Denom' />
                                                                 <div className='d-flex flex-column'>
                                                                     <span className='asset-amount'>
                                                                         <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount))} className='me-2' />
@@ -359,10 +359,11 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                         className='w-100'
                                                         disabled={isLoading || blockedCompound}
                                                         loading={isLoading}
+                                                        forcePurple
                                                     >
-                                                        <img src={Assets.images.yellowStar} alt='Star' className='me-3' />
+                                                        <img src={Assets.images.yellowStar} alt='Star' className='me-3 no-filter' />
                                                         {I18n.t('mySavings.claimModal.claimAndCompound')}
-                                                        <img src={Assets.images.yellowStar} alt='Star' className='ms-3' />
+                                                        <img src={Assets.images.yellowStar} alt='Star' className='ms-3 no-filter' />
                                                     </Button>
                                                     {blockedCompound ? <Tooltip id='claim-and-compound-hint' /> : null}
                                                 </span>

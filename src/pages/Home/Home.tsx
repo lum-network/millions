@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 import numeral from 'numeral';
 
-import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie } from 'components';
+import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie, PurpleBackgroundImage } from 'components';
 import { NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 
@@ -38,7 +38,7 @@ const Home = () => {
                             <Card>
                                 <h3>{I18n.t('home.totalValueLocked')}</h3>
                                 <div className='d-flex align-items-center pt-3'>
-                                    <img alt='coin staked' src={Assets.images.coinsStaked2} />
+                                    <PurpleBackgroundImage alt='coin stacked' src={Assets.images.coinsStacked2} className='no-filter' height={42} width={42} />
                                     <span className='ms-3 total-value-locked'>{numeral(tvl).format('$0,0[.]00a')}</span>
                                 </div>
                             </Card>
@@ -82,10 +82,10 @@ const Home = () => {
                 </div>
             </div>
             <div className='start-50 translate-middle-x save-and-win-btn-container'>
-                <Button className='save-btn' to={NavigationConstants.POOLS}>
-                    <img src={Assets.images.yellowStar} alt='Star' />
+                <Button className='save-btn' forcePurple to={NavigationConstants.POOLS}>
+                    <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />
                     {I18n.t('home.cta')}
-                    <img src={Assets.images.yellowStar} alt='Star' />
+                    <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />
                 </Button>
             </div>
         </div>

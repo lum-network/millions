@@ -14,7 +14,7 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
-import { useWindowSize } from 'hooks';
+import { useColorScheme, useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
@@ -59,6 +59,7 @@ const MySavings = () => {
     const leaderboardSectionRef = useRef<HTMLDivElement>(null);
 
     const winSizes = useWindowSize();
+    const { isDark } = useColorScheme();
 
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
@@ -160,7 +161,7 @@ const MySavings = () => {
                     <>
                         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-center flex-grow-1'>
                             <div className='d-flex flex-row align-items-center'>
-                                {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                                {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon no-filter' /> : <div className='denom-unknown-icon no-filter'>?</div>}
                                 <div className='d-flex flex-column asset-amount'>
                                     <span>
                                         <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
@@ -179,6 +180,7 @@ const MySavings = () => {
                                             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TRANSFER_OUT_CLICK);
                                             setAssetToTransferOut(asset.denom);
                                         }}
+                                        forcePurple
                                     >
                                         {I18n.t('mySavings.withdraw')}
                                     </Button>
@@ -190,6 +192,7 @@ const MySavings = () => {
                                     onClick={() => {
                                         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom: normalDenom });
                                     }}
+                                    forcePurple
                                 >
                                     {I18n.t('mySavings.deposit')}
                                 </Button>
@@ -236,7 +239,7 @@ const MySavings = () => {
 
         return (
             <div className={`d-flex flex-row align-items-center ${index > 0 ? 'mt-4' : ''}`} key={`prize-to-claim-${index}`}>
-                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
+                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon no-filter' alt='Denom' />
                 <div className='d-flex flex-column asset-amount'>
                     <span>
                         <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
@@ -255,7 +258,7 @@ const MySavings = () => {
     return (
         <div id='my-savings' className='my-savings-container mt-3 mt-lg-5'>
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
-                <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
+                <Card flat withoutPadding className='deposit-error-card d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
                     <h3 className='mx-3 mb-0'>{I18n.t('mySavings.depositError.title')}</h3>
                     <p className='mb-0'>{I18n.t('mySavings.depositError.description')}</p>
@@ -265,7 +268,7 @@ const MySavings = () => {
                 <Card flat withoutPadding className='d-flex flex-column flex-md-row align-items-md-center mb-5 p-4 new-prize-card'>
                     <div className='d-flex flex-column flex-md-row align-items-md-center'>
                         <div className='d-flex flex-row align-items-center'>
-                            <img alt='green trophy' src={Assets.images.trophyGreen} width='45' />
+                            <img alt='green trophy' src={Assets.images.trophyGreen} width='45' className='no-filter' />
                             <h3 className='ms-3 me-5 mb-0 text-nowrap'>{I18n.t('mySavings.newPrize.title')}</h3>
                         </div>
                         <p className='my-3 my-md-0'>{I18n.t('mySavings.newPrize.description')}</p>
@@ -298,9 +301,9 @@ const MySavings = () => {
                                 )}
                             </div>
                             <div className='coins-container position-absolute top-0 start-0 w-100 h-100'>
-                                <img src={Assets.images.coin} className='coin-1' alt='coin' />
-                                <img src={Assets.images.coin} className='coin-2 d-block d-md-none' alt='coin' />
-                                <img src={Assets.images.coin} className='coin-3' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-1 no-filter' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-2 d-block d-md-none no-filter' alt='coin' />
+                                <img src={Assets.images.coin} className='coin-3 no-filter' alt='coin' />
                             </div>
                             <Lottie
                                 className='d-none d-md-block cosmonaut'
@@ -314,7 +317,7 @@ const MySavings = () => {
                         {winSizes.width < Breakpoints.LG ? (
                             <div className='mt-5 mt-lg-0'>
                                 <h2>
-                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1 no-filter' width='28' />
                                     {I18n.t('mySavings.claimPrize')}
                                 </h2>
                                 <Card className='glow-bg'>
@@ -327,6 +330,7 @@ const MySavings = () => {
                                                     data-bs-toggle='modal'
                                                     data-bs-target='#claimModal'
                                                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                                                    forcePurple
                                                 >
                                                     {I18n.t('mySavings.claim')}
                                                 </Button>
@@ -343,7 +347,7 @@ const MySavings = () => {
                                                 />
                                                 <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
                                                 <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
+                                                <Button to={NavigationConstants.POOLS} className='mt-4' forcePurple>
                                                     {I18n.t('mySavings.deposit')}
                                                 </Button>
                                             </div>
@@ -385,7 +389,9 @@ const MySavings = () => {
                                     <img src={Assets.images.coinsStacked} alt='Stacked coins' />
                                     <h3 className='mt-2'>{I18n.t('mySavings.noAssets.title')}</h3>
                                     <p className='text-center'>{I18n.t('mySavings.noAssets.description')}</p>
-                                    <Button to={NavigationConstants.POOLS}>{I18n.t('mySavings.deposit')}</Button>
+                                    <Button to={NavigationConstants.POOLS} forcePurple>
+                                        {I18n.t('mySavings.deposit')}
+                                    </Button>
                                 </div>
                             )}
                         </Card>
@@ -422,7 +428,7 @@ const MySavings = () => {
                                     </div>
                                     <PoolSelect
                                         className='pool-select'
-                                        backgroundColor='#F4F4F4'
+                                        backgroundColor={isDark ? '#20142d' : '#F4F4F4'}
                                         value={leaderboardPool.poolId.toString()}
                                         pools={pools}
                                         options={pools.map((pool) => ({
@@ -467,7 +473,7 @@ const MySavings = () => {
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
-                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1 no-filter' width='28' />
                                     {I18n.t('mySavings.claimPrize')}
                                 </h2>
                                 <Card className='glow-bg'>
@@ -480,6 +486,7 @@ const MySavings = () => {
                                                     data-bs-toggle='modal'
                                                     data-bs-target='#claimModal'
                                                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
+                                                    forcePurple
                                                 >
                                                     {I18n.t('mySavings.claim')}
                                                 </Button>
@@ -496,7 +503,7 @@ const MySavings = () => {
                                                 />
                                                 <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
                                                 <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
+                                                <Button to={NavigationConstants.POOLS} className='mt-4' forcePurple>
                                                     {I18n.t('mySavings.deposit')}
                                                 </Button>
                                             </div>
@@ -516,6 +523,7 @@ const MySavings = () => {
                                         window.open(NavigationConstants.BUY_LUM, '_blank');
                                         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.BUY_LUM_CLICK);
                                     }}
+                                    forcePurple
                                 >
                                     {I18n.t('mySavings.governanceCard.cta')}
                                 </Button>

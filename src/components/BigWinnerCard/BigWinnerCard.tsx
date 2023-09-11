@@ -30,12 +30,14 @@ const BigWinnerCard = ({ denom, address, prize, className, price }: IProps) => {
                     amount: NumbersUtils.convertUnitNumber(prize),
                 })
             }
+            forcePurple
         >
             <span className='prize text-nowrap'>
-                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3' alt={denom} />${numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}
+                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 no-filter' alt={denom} />$
+                {numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}
             </span>
             <div className='address'>{StringsUtils.trunc(address)}</div>
-            <img src={Assets.images.arrow} alt='arrow' />
+            <img src={Assets.images.arrow} alt='arrow' className='purple-filter' />
         </Button>
     );
 };

@@ -30,7 +30,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
     return (
         <Card className='pool-card-container glow-bg'>
             <div className='prize-container'>
-                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
+                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='no-filter' />
                 <div className='d-flex flex-column align-items-start ms-3'>
                     <div className='prize'>
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
@@ -52,7 +52,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
             <div className='information-container'>
                 <div className='apy-container pb-2'>
                     <div className='apy-label'>
-                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2' width={24} height={24} />
+                        <img src={Assets.images.dollarIcon} alt='dollar icon' className='me-2 purple-filter' width={24} height={24} />
                         {I18n.t('pools.apy')}
                     </div>
                     {loadingAdditionalInfo ? <Skeleton height={18} width={70} /> : <div className='apy'>{apy ? numeral(apy).format('0.00') : '--'}%</div>}
@@ -60,14 +60,14 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                 <div className='separator' />
                 <div className='tvl-container py-2'>
                     <div className='tvl-label'>
-                        <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2' width={22} height={22} /> {I18n.t('pools.tvl')}
+                        <img src={Assets.images.coinsStackedPurple} alt='coins stacked purple' className='me-2 purple-filter' width={22} height={22} /> {I18n.t('pools.tvl')}
                     </div>
                     {loadingAdditionalInfo ? <Skeleton height={18} width={70} /> : <div className='tvl'>${numeral(tvl * price).format('0,0')}</div>}
                 </div>
                 <div className='separator' />
                 <div className='countdown-container pt-2'>
                     <div className='countdown-label'>
-                        <img src={Assets.images.clock} alt='clock' className='me-2' width={22} height={22} /> {I18n.t('pools.drawEndAt')}
+                        <img src={Assets.images.clock} alt='clock' className='me-2 purple-filter' width={22} height={22} /> {I18n.t('pools.drawEndAt')}
                     </div>
                     <div className={`countdown ${drawInProgress ? 'draw' : ''}`}>
                         {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={drawEndAt} onCountdownEnd={() => setDrawInProgress(true)} />}
@@ -79,6 +79,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.VIEW_DETAILS_CLICK, { denom, pool_id: poolId })}
                     to={`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`}
                     outline
+                    forcePurple
                 >
                     {I18n.t('pools.viewDetails')}
                 </Button>
@@ -96,6 +97,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                         : {
                               to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
+                    forcePurple
                     className='deposit-cta w-100 mt-3'
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >

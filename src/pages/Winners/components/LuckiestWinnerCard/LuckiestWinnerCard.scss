@@ -5,23 +5,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    background-color: $color-white;
+    background-color: var(--color-white);
     border-radius: 12px;
     padding: 2rem;
 
     h2 {
-        color: $color-black;
+        color: var(--color-black);
     }
 
     small {
         font-weight: 300;
+        color: var(--color-black);
     }
 
     .luckiest-winner-address-btn {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        color: $color-black;
+        color: var(--color-black);
     }
 }
 

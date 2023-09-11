@@ -101,7 +101,7 @@ const LeavePool = ({ deposit }: Props) => {
                                 <div className='w-100 mt-4'>
                                     <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
                                         <div className='asset-info d-flex flex-row'>
-                                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(deposit?.amount?.denom || ''))} className='me-3' alt='denom' />
+                                            <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(deposit?.amount?.denom || ''))} className='me-3 no-filter' alt='denom' />
                                             <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(deposit?.amount?.denom || '').toUpperCase()}</span>
                                         </div>
                                         <div className='deposit-amount'>
@@ -125,6 +125,7 @@ const LeavePool = ({ deposit }: Props) => {
                                         className='w-100 mt-4'
                                         disabled={isLoading}
                                         loading={isLoading}
+                                        forcePurple
                                     >
                                         {I18n.t('mySavings.leavePoolModal.cta')}
                                     </Button>

@@ -509,7 +509,7 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'You already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            subtitle: 'You have already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
             prevAmountLabel: 'Amount requested',
             nextAmountLabel: 'Missing amount',
             cta: 'Add {{ nextAmount }} {{ denom }}',

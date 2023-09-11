@@ -19,5 +19,6 @@ export { default as Tooltip } from './Tooltip/Tooltip';
 export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
 export { default as Leaderboard } from './Leaderboard/Leaderboard';
+export { default as PurpleBackgroundImage } from './PurpleBackgroundImage/PurpleBackgroundImage';
 
 export * from './ToastContent/ToastContent';

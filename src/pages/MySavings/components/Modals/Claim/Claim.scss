@@ -3,14 +3,14 @@
 #claimModal {
     
     .modal-content.last-step {
-        background-color: $color-white;
+        background-color: var(--color-white);
     }
 
     hr {
         box-sizing: border-box;
         border-radius: 12px;
         border: 1px solid rgba(86, 52, 222, 0.2);
-        color: $color-muted;
+        color: var(--color-muted);
         overflow: visible;
         text-align: center;
         height: 0;
@@ -20,7 +20,7 @@
         margin-bottom: 2.25rem;
 
         &:after {
-            background: #fff;
+            background: var(--color-white);
             content: 'OR';
             padding: 0 1.5rem;
             position: relative;
@@ -31,17 +31,18 @@
     .card-title {
         font-weight: 400;
         font-size: 32px;
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     .card-subtitle {
         font-weight: 400;
         font-size: 34px;
         line-height: 68px;
+        color: var(--color-black);
     }
 
     .prize-card {
-        color: $color-primary;
+        color: var(--color-primary);
 
         .denom-icon {
             width: 40px;
@@ -53,7 +54,7 @@
             font-weight: 200;
             font-size: 12px;
             line-height: 24px;
-            color: rgba(0, 0, 0, 0.7);
+            color: color-mix(in srgb, var(--color-black) 60%, transparent);
         }
 
         p {
