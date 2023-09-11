@@ -143,57 +143,29 @@ const MainLayout = () => {
             <Modal id='get-keplr-modal' contentClassName='bg-white' withCloseButton={false}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
-                {!isMobile && (
-                    <>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='d-flex flex-column flex-sm-row align-items-center p-4'
-                            onClick={() => {
-                                window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
-                            }}
-                            data-bs-dismiss='modal'
-                        >
-                            <img
-                                src={Assets.images.cosmostation}
-                                alt='Cosmostation icon'
-                                className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
-                                style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
+                {!isMobile ? (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center mt-4 p-4'
+                        onClick={() => {
+                            window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <p
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('keplrDownloadModal.keplr.description'),
+                                }}
                             />
-                            <div className='d-flex flex-column align-items-start text-start'>
-                                <p
-                                    dangerouslySetInnerHTML={{
-                                        __html: I18n.t('keplrDownloadModal.keplr.description'),
-                                    }}
-                                />
-                                <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
-                                    {I18n.t('keplrDownloadModal.link')}
-                                </a>
-                            </div>
-                        </Card>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='d-flex flex-column flex-sm-row align-items-center mt-4 p-4'
-                            onClick={() => {
-                                window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
-                            }}
-                            data-bs-dismiss='modal'
-                        >
-                            <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
-                            <div className='d-flex flex-column align-items-start text-start'>
-                                <p
-                                    dangerouslySetInnerHTML={{
-                                        __html: I18n.t('keplrDownloadModal.keplr.description'),
-                                    }}
-                                />
-                                <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
-                                    {I18n.t('keplrDownloadModal.link')}
-                                </a>
-                            </div>
-                        </Card>
-                    </>
-                )}
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                ) : null}
                 <Card
                     flat
                     withoutPadding
@@ -215,61 +187,61 @@ const MainLayout = () => {
                         </a>
                     </div>
                 </Card>
+                {!isMobile ? (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'
+                        onClick={() => {
+                            window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img
+                            src={Assets.images.cosmostation}
+                            alt='Cosmostation icon'
+                            className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
+                            style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
+                        />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <p
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('keplrDownloadModal.keplr.description'),
+                                }}
+                            />
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                ) : null}
             </Modal>
             <Modal id='choose-wallet-modal' contentClassName='bg-white' withCloseButton={false}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
-                {!isMobile && (
-                    <>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='d-flex flex-column flex-sm-row align-items-center mt-4 p-4'
-                            onClick={() => {
-                                WalletProvidersUtils.isCosmostationInstalled() ? onConnectWallet(WalletProvider.Cosmostation) : window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
-                            }}
-                            data-bs-dismiss='modal'
-                        >
-                            <img
-                                src={Assets.images.cosmostation}
-                                alt='Cosmostation icon'
-                                className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
-                                style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
+                {!isMobile ? (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center p-4 mt-4'
+                        onClick={() => {
+                            WalletProvidersUtils.isKeplrInstalled() ? onConnectWallet(WalletProvider.Keplr) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <h2
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('chooseWalletModal.keplr'),
+                                }}
                             />
-                            <div className='d-flex flex-column align-items-start text-start'>
-                                <h2
-                                    dangerouslySetInnerHTML={{
-                                        __html: I18n.t('chooseWalletModal.cosmostation'),
-                                    }}
-                                />
-                                <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
-                                    {I18n.t('keplrDownloadModal.link')}
-                                </a>
-                            </div>
-                        </Card>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='d-flex flex-column flex-sm-row align-items-center p-4 mt-4'
-                            onClick={() => {
-                                WalletProvidersUtils.isKeplrInstalled() ? onConnectWallet(WalletProvider.Keplr) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
-                            }}
-                            data-bs-dismiss='modal'
-                        >
-                            <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
-                            <div className='d-flex flex-column align-items-start text-start'>
-                                <h2
-                                    dangerouslySetInnerHTML={{
-                                        __html: I18n.t('chooseWalletModal.keplr'),
-                                    }}
-                                />
-                                <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
-                                    {I18n.t('keplrDownloadModal.link')}
-                                </a>
-                            </div>
-                        </Card>
-                    </>
-                )}
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                ) : null}
                 <Card
                     flat
                     withoutPadding
@@ -291,6 +263,34 @@ const MainLayout = () => {
                         </a>
                     </div>
                 </Card>
+                {!isMobile ? (
+                    <Card
+                        flat
+                        withoutPadding
+                        className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'
+                        onClick={() => {
+                            WalletProvidersUtils.isCosmostationInstalled() ? onConnectWallet(WalletProvider.Cosmostation) : window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
+                        }}
+                        data-bs-dismiss='modal'
+                    >
+                        <img
+                            src={Assets.images.cosmostation}
+                            alt='Cosmostation icon'
+                            className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
+                            style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
+                        />
+                        <div className='d-flex flex-column align-items-start text-start'>
+                            <h2
+                                dangerouslySetInnerHTML={{
+                                    __html: I18n.t('chooseWalletModal.cosmostation'),
+                                }}
+                            />
+                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
+                                {I18n.t('keplrDownloadModal.link')}
+                            </a>
+                        </div>
+                    </Card>
+                ) : null}
             </Modal>
             <Modal id='logout-modal' contentClassName='bg-white' ref={logoutModalRef}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
