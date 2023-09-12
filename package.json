@@ -64,7 +64,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test --watchAll --coverage",
+    "test": "DEBUG_PRINT_LIMIT=10000 react-app-rewired test --watchAll --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",

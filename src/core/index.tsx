@@ -16,6 +16,7 @@ const Core = () => {
     const loadingStartsAt = useRef<Date>(new Date());
 
     useEffect(() => {
+        console.log(progress);
         if (progress >= 100) {
             const elapsed = new Date().getTime() - loadingStartsAt.current.getTime();
             setTimeout(
@@ -53,12 +54,14 @@ const Core = () => {
             allSrcs.push(item[1]);
         }
 
+        console.log(allSrcs);
         const inc = Math.ceil(95.0 / allSrcs.length);
         for (const src of allSrcs) {
             const img = new Image();
             img.src = src;
             img.onload = () => {
                 const elapsed = new Date().getTime() - loadingStartsAt.current.getTime();
+                console.log('loaded');
                 setTimeout(
                     () => {
                         setProgress((p) => p + inc);
