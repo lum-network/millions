@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import Assets from 'assets';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import { AnimatedNumber, Card, CountDown, Lottie } from 'components';
-import { NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { BalanceModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n } from 'utils';
+import { DenomsUtils, Firebase, FontsUtils, I18n } from 'utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/store';
 
@@ -38,14 +38,26 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
             return;
         }
 
-        setFontSize(FontsUtils.calculateFontSize((biggestPrize?.amount * (price ?? 1)).toFixed().length, width));
+        setFontSize(FontsUtils.calculateFontSize((biggestPrize.amount * (price ?? 1)).toFixed().length, width));
     }, [biggestPrize, width]);
 
     return (
         <Card
             className={`best-prize-card ${className}`}
             withoutPadding
-            onClick={biggestPrize && poolId ? () => navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`) : undefined}
+            onClick={
+                biggestPrize && poolId
+                    ? () => {
+                          navigate(`${NavigationConstants.POOL_DETAILS}/${DenomsUtils.getNormalDenom(biggestPrize.denom)}/${poolId}`);
+                          Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.BEST_PRIZE_CARD_CLICK, {
+                              pool_id: poolId,
+                              denom: DenomsUtils.getNormalDenom(biggestPrize.denom),
+                              amount: biggestPrize.amount,
+                              remaining_time: countdownTo ? (countdownTo.getTime() - new Date().getTime()) / 1000 : null,
+                          });
+                      }
+                    : undefined
+            }
         >
             <div className='content'>
                 <div className='title-container'>
@@ -59,7 +71,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                                     $
                                 </span>
                                 <div style={{ fontSize: `${fontSize}px` }}>
-                                    <AnimatedNumber delay={delay} number={biggestPrize.amount * price} />
+                                    <AnimatedNumber delay={delay} number={Math.round(biggestPrize.amount * price)} />
                                 </div>
                             </>
                         ) : (
@@ -75,7 +87,7 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                         </div>
                         <div className='mt-4 mt-sm-0'>
                             {drawInProgress ? (
-                                <div className='draw-in-progress-container'>
+                                <div className='draw-in-progress-container text-nowrap'>
                                     <img src={Assets.images.deposit} alt='deposit' height={16} width={16} />
                                     <span className='ms-2'>{I18n.t('common.drawInProgress')}</span>
                                 </div>

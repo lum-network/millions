@@ -10,6 +10,7 @@ import cosmonautCoin from './images/cosmonaut_coin.png';
 import claim from './images/claim.svg';
 import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
+import depositDrop from './images/deposit_drop.svg';
 import discord from './images/discord.svg';
 import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
@@ -19,17 +20,21 @@ import info from './images/info.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
+import leap from './images/leap.svg';
 import leavePool from './images/leave_pool.svg';
 import logo from './images/logo.svg';
 import logout from './images/logout.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
+import questionMark from './images/questionmark.svg';
+import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
 import success from './images/success.svg';
 import trophy from './images/trophy.svg';
 import trophyPurple from './images/trophy_purple.svg';
 import trophyGreen from './images/trophy_green.svg';
+import tvlDeposit from './images/tvl_deposit.svg';
 import twitterButton from './images/twitter_button.svg';
 import twitterPlain from './images/twitter_plain.svg';
 import twitterWhite from './images/twitter_white.svg';
@@ -65,6 +70,7 @@ const Assets = {
         claim,
         clock,
         deposit,
+        depositDrop,
         discord,
         discordButton,
         discordPlain,
@@ -74,17 +80,21 @@ const Assets = {
         keplr,
         landingArrow,
         landingDoubleArrows,
+        leap,
         leavePool,
         logo,
         logout,
         lumLogoPurple,
         mintscanPurple,
         mySavings,
+        questionMark,
+        sponsor,
         star,
         success,
         trophy,
         trophyGreen,
         trophyPurple,
+        tvlDeposit,
         twitterButton,
         twitterPlain,
         twitterWhite,

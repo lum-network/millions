@@ -1,0 +1,151 @@
+@import 'src/styles/main';
+
+@mixin me {
+    background-color: $color-primary;
+
+    .address {
+        color: $color-white;
+    }
+
+    .rank {
+        background-color: $color-white;
+        color: $color-primary;
+    }
+
+    .crypto-amount,
+    .usd-amount {
+        color: $color-white;
+    }
+}
+
+.leaderboard {
+    overflow: visible;
+    padding: 40px;
+
+    &.with-anim {
+        padding-bottom: 0px;
+    }
+
+    @include media-breakpoint-down(md) {
+        padding: 0;
+    }
+
+    @include media-breakpoint-down(sm) {
+        padding: 0;
+
+        .rank,
+        .address,
+        .deposit-more-btn {
+            font-size: 12px;
+        }
+
+        .usd-amount {
+            font-size: 16px;
+        }
+
+        .crypto-amount {
+            font-size: 11px;
+        }
+    }
+}
+
+.leaderboard-rank {
+    background-color: $color-primary-light;
+    padding: 14px 16px;
+    border-radius: 8px;
+
+    &:not(:last-child) {
+        margin-bottom: 1rem;
+    }
+
+    &.white-bg {
+        background-color: $color-white;
+        box-shadow: 0px 4px 23px 0px #f1edff;
+    }
+
+    &.me {
+        @include me;
+
+        margin-bottom: 1rem;
+
+        &.animated {
+            z-index: 2;
+        }
+    }
+
+    .address {
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        color: $color-primary;
+    }
+
+    .rank {
+        background-color: $color-primary;
+        color: $color-white;
+        border-radius: 7px;
+        padding: 7px 8px;
+        width: fit-content;
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+
+        &.first {
+            background-color: #ffba20;
+        }
+
+        &.second {
+            background-color: #93949b;
+        }
+
+        &.third {
+            background-color: #c07a50;
+        }
+    }
+
+    .usd-amount {
+        font-size: 21px;
+        font-weight: 400;
+        line-height: normal;
+        color: $color-primary;
+    }
+
+    .crypto-amount {
+        font-size: 14px;
+        color: $color-black;
+        font-weight: 300;
+    }
+
+    .deposit-more-btn {
+        position: absolute;
+        width: fit-content;
+        white-space: nowrap;
+        top: 22%;
+        right: 1.25rem;
+        z-index: 3;
+        opacity: 0;
+        padding: 7px 18px;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .rank,
+        .address,
+        .deposit-more-btn {
+            font-size: 12px;
+        }
+
+        .usd-amount {
+            font-size: 16px;
+        }
+
+        .crypto-amount {
+            font-size: 11px;
+        }
+    }
+}

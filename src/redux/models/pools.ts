@@ -1,15 +1,18 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
-import { PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
+import { DrawModel, PoolModel } from 'models';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
+import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
+import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
+    depositDelta: number | null;
     mutexAdditionalInfos: boolean;
 }
 
@@ -18,6 +21,7 @@ export const pools = createModel<RootModel>()({
     state: {
         pools: [],
         bestPoolPrize: null,
+        depositDelta: null,
         mutexAdditionalInfos: false,
     } as PoolsState,
     reducers: {
@@ -31,6 +35,12 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 bestPoolPrize,
+            };
+        },
+        setDepositDelta: (state: PoolsState, depositDelta: number) => {
+            return {
+                ...state,
+                depositDelta,
             };
         },
         setMutexAdditionalInfos: (state: PoolsState, mutexAdditionalInfos: boolean): PoolsState => {
@@ -49,9 +59,12 @@ export const pools = createModel<RootModel>()({
                     const pools: PoolModel[] = [];
 
                     for (const pool of res) {
-                        //FIXME: Check if we can remove this
-                        // const prizes = await dispatch.pools.getPoolPrizes(pool.poolId);
-                        const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+                        if (pool.state !== PoolState.POOL_STATE_READY) {
+                            continue;
+                        }
+
+                        const draws = await dispatch.pools.getPoolDraws({ poolId: pool.poolId, nativeDenom: pool.nativeDenom });
+                        const leaderboard = await dispatch.pools.getLeaderboard({ poolId: pool.poolId, limit: 50 });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -60,11 +73,16 @@ export const pools = createModel<RootModel>()({
                         pools.push({
                             ...pool,
                             internalInfos: PoolsConstants.POOLS[DenomsUtils.getNormalDenom(pool.nativeDenom)],
-                            // prizes,
                             apy: 0,
                             draws,
                             nextDrawAt,
-                            prizeToWin: null,
+                            leaderboard: {
+                                items: leaderboard || [],
+                                page: 0,
+                                fullyLoaded: false,
+                            },
+                            currentPrizeToWin: null,
+                            estimatedPrizeToWin: null,
                         });
                     }
 
@@ -88,7 +106,7 @@ export const pools = createModel<RootModel>()({
                 return;
             }
 
-            await dispatch.pools.setMutexAdditionalInfos(true);
+            dispatch.pools.setMutexAdditionalInfos(true);
 
             try {
                 const pools = [...state.pools.pools];
@@ -97,19 +115,17 @@ export const pools = createModel<RootModel>()({
                     // Calculate Prize to win
                     const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
 
-                    if (pool.nativeDenom === LumConstants.MicroLumDenom) {
-                        await WalletClient.connect(process.env.REACT_APP_RPC_LUM || '');
-                    } else {
-                        if (!pool.internalInfos) {
-                            continue;
-                        }
-
-                        await WalletClient.connect(pool.internalInfos?.rpc);
+                    if (pool.nativeDenom !== LumConstants.MicroLumDenom && !pool.internalInfos) {
+                        continue;
                     }
 
+                    const client = new WalletClient();
+
+                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
+
                     const [bankBalance, stakingRewards] = await Promise.all([
-                        WalletClient.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
-                        WalletClient.getIcaAccountStakingRewards(pool.icaDepositAddress),
+                        client.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
+                        client.getIcaAccountStakingRewards(pool.icaDepositAddress),
                     ]);
 
                     const prizePool =
@@ -124,43 +140,66 @@ export const pools = createModel<RootModel>()({
                                 : '0',
                         );
 
-                    pool.prizeToWin = { amount: prizePool, denom: pool.nativeDenom };
+                    pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
                     const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
-                        WalletClient.getBonding(),
-                        WalletClient.getSupply(pool.nativeDenom),
-                        WalletClient.getCommunityTaxRate(),
-                        WalletClient.getInflation(),
+                        client.getBonding(),
+                        client.getSupply(pool.nativeDenom),
+                        client.getCommunityTaxRate(),
+                        client.getInflation(),
                         LumClient.getFeesStakers(),
                     ]);
 
-                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '0');
+                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
                     const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    pool.apy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+                    const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
 
-                    WalletClient.disconnect();
+                    pool.apy = variableApy * 100;
+
+                    // Calculate estimated prize to win
+                    const endDate = dayjs(pool.nextDrawAt);
+                    const remainingDurationAsMinutes = dayjs.duration(endDate.diff(dayjs())).asMinutes();
+
+                    const apyPerMinute = nativeApy / (365 * 24 * 60);
+
+                    const estimatedPrizePool = prizePool + poolTvl * apyPerMinute * remainingDurationAsMinutes;
+
+                    pool.estimatedPrizeToWin = { amount: estimatedPrizePool, denom: pool.nativeDenom };
+
+                    client.disconnect();
                 }
 
                 dispatch.pools.setPools(pools);
-                dispatch.pools.getNextBestPrize(null);
+                await dispatch.pools.getNextBestPrize(null);
             } catch (e) {
-                await dispatch.pools.setMutexAdditionalInfos(false);
+                dispatch.pools.setMutexAdditionalInfos(false);
 
-                console.error((e as Error).message);
+                console.warn((e as Error).message);
             }
 
-            await dispatch.pools.setMutexAdditionalInfos(false);
+            dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws(poolId: Long) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
+                const draws: DrawModel[] = [];
 
                 if (res) {
-                    return res;
+                    for (const draw of res) {
+                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+
+                        if (marketData && marketData.length) {
+                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        } else {
+                            draws.push({ ...draw });
+                        }
+                    }
+
+                    return draws;
                 }
             } catch {}
         },
@@ -176,8 +215,8 @@ export const pools = createModel<RootModel>()({
 
                 const sortedPools = pools.sort(
                     (a, b) =>
-                        (b.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.prizeToWin?.denom || 'uatom')] -
-                        (a.prizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.prizeToWin?.denom || 'uatom')],
+                        (b.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.estimatedPrizeToWin?.denom || 'uatom')] -
+                        (a.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.estimatedPrizeToWin?.denom || 'uatom')],
                 );
 
                 if (sortedPools.length === 0) {
@@ -186,6 +225,45 @@ export const pools = createModel<RootModel>()({
 
                 dispatch.pools.setBestPoolPrize(sortedPools[0]);
             } catch {}
+        },
+        async getDepositDelta() {
+            try {
+                const depositDelta = await LumClient.getMinDepositDelta();
+
+                if (depositDelta) {
+                    dispatch.pools.setDepositDelta(depositDelta);
+                }
+            } catch {}
+        },
+        async getLeaderboard(payload: { poolId: Long; limit?: number }) {
+            try {
+                const [res] = await LumApi.fetchLeaderboard(payload.poolId.toString(), payload.limit);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
+        },
+        async getNextLeaderboardPage(payload: { poolId: Long; page: number; limit?: number }, state) {
+            const { poolId, page, limit } = payload;
+
+            const pools = [...state.pools.pools];
+            const pool = PoolsUtils.getPoolByPoolId(pools, poolId.toString());
+
+            if (pool && !pool.leaderboard.fullyLoaded) {
+                try {
+                    const [res, metadata] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
+
+                    pool.leaderboard.items.push(...res);
+                    pool.leaderboard.page = page;
+
+                    if (!metadata.hasNextPage) {
+                        pool.leaderboard.fullyLoaded = true;
+                    }
+
+                    dispatch.pools.setPools(pools);
+                } catch {}
+            }
         },
     }),
 });

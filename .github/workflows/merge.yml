@@ -1,0 +1,98 @@
+# This workflow is intended to run each time a PR is merged on master (since this branch is write protected, we assume the only commits on it are PR merges)
+# It's building both test net and main net bundles, then deploying them on corresponding firebase projects
+# We assume it has already been unit tested on PR directly
+
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build_deploy_testnet:
+    name: Deploy on testnet hosting
+    runs-on: ubuntu-latest
+    environment: testnet
+    steps:
+      - name: Set up Node version to 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: yarn
+
+      - name: Build the test net bundle
+        run: yarn build
+        env:
+          REACT_APP_API_URL: "https://explorer-testnet.infra.lum.network/"
+          REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
+          GENERATE_SOURCEMAP: "false"
+          REACT_APP_RPC_LUM: "https://testnet-rpc.cosmosmillions.com/lum/rpc"
+          REACT_APP_RPC_ATOM: "https://testnet-rpc.cosmosmillions.com/atom/rpc"
+          REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
+          REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
+          REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
+          REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
+          REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
+          REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
+          REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
+
+      - name: Deploy on firebase testnet project
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: lum-network
+          target: testnet
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
+
+  build_deploy_mainnet:
+    name: Deploy on main net hosting
+    runs-on: ubuntu-latest
+    environment: mainnet
+    steps:
+      - name: Set up Node version to 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: yarn
+
+      - name: Build the main net bundle
+        run: yarn build
+        env:
+          REACT_APP_API_URL: "https://explorer-mainnet.infra.lum.network"
+          REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
+          GENERATE_SOURCEMAP: "false"
+          REACT_APP_RPC_LUM: "https://node0.mainnet.lum.network/rpc"
+          REACT_APP_RPC_ATOM: "https://rpc.cosmoshub.strange.love"
+          REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
+          REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
+          REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
+          REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
+          REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
+          REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
+          REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
+          REACT_APP_SENTRY_DSN: "https://7421a4490ba149b888913bbd7af15b84@o1171159.ingest.sentry.io/4505589511815168"
+
+      - name: Deploy on firebase main net project
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: lum-network
+          target: mainnet
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels

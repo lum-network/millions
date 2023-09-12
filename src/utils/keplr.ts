@@ -1,5 +1,4 @@
-import { ChainInfo, Window } from '@keplr-wallet/types';
-import { I18n } from 'utils';
+import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
 
 export const isKeplrInstalled = (): boolean => {
     const keplrWindow = window as Window;
@@ -7,12 +6,6 @@ export const isKeplrInstalled = (): boolean => {
     return !!keplrWindow.keplr;
 };
 
-export const enableKeplrWithInfos = (infos: ChainInfo) => {
-    const keplrWindow = window as Window;
-
-    if (!keplrWindow.keplr) {
-        throw new Error(I18n.t('errors.keplr.notInstalled'));
-    }
-
-    return keplrWindow.keplr.experimentalSuggestChain(infos);
+export const enableKeplrWithInfos = (provider: Keplr, infos: ChainInfo) => {
+    return provider.experimentalSuggestChain(infos);
 };

@@ -30,7 +30,7 @@ const Pools = () => {
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
                             poolId={pool.poolId.toString()}
                             tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}
-                            prize={pool.prizeToWin?.amount}
+                            estimatedPrize={pool.estimatedPrizeToWin?.amount}
                             apy={pool.apy}
                         />
                     </div>

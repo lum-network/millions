@@ -111,7 +111,7 @@
                 font-size: 13px;
                 color: $color-primary;
                 text-transform: uppercase;
-                padding: 8px 12px;
+                padding: 8px 18px 8px 12px;
             }
 
             .countdown {
@@ -130,16 +130,15 @@
                     background-color: $color-white;
                     width: 48px;
                     height: 48px;
-                    border-radius: 10px;
+                    border-radius: 12px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
 
                     font-style: normal;
                     font-weight: 400;
-                    font-size: 28px;
+                    font-size: 26px;
                     text-align: center;
-                    letter-spacing: -0.17em;
                     color: $color-primary;
                 }
 

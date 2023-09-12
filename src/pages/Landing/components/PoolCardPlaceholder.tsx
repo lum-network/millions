@@ -15,9 +15,9 @@ const PoolCardPlaceholder = ({ name }: { name: string }) => {
                 <h3>{name}</h3>
             </div>
             <Card withoutPadding flat className='prize-card'>
-                Prize to Win
+                Estimated Prize
                 <p className='mb-0' style={{ filter: 'blur(5px)', color: '#8C8C8C' }}>
-                    $00
+                    $00000
                 </p>
             </Card>
         </Card>

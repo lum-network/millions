@@ -17,14 +17,15 @@ interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     className?: string;
 }
 
-const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, ...rest }: IProps) => {
+const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, style, ...rest }: IProps) => {
     if (to) {
         return (
             <Link
                 to={disabled ? '#' : to}
+                type='button'
                 state={locationState}
                 onClick={
-                    !loading
+                    !loading && !disabled
                         ? (event) => {
                               event.stopPropagation();
                               onClick?.();
@@ -32,6 +33,7 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
                         : () => null
                 }
                 className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}
+                style={style}
             >
                 {loading ? <Loading /> : children}
             </Link>
@@ -40,8 +42,16 @@ const Button = ({ children, outline, to, textOnly, locationState, disabled, onCl
 
     return (
         <button
-            onClick={!loading ? onClick : () => null}
+            onClick={
+                !loading && !disabled
+                    ? (event) => {
+                          event.stopPropagation();
+                          onClick?.();
+                      }
+                    : () => null
+            }
             className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${className}`}
+            disabled={disabled}
             {...rest}
         >
             {loading ? <Loading /> : children}

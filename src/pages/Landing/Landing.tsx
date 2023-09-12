@@ -13,11 +13,11 @@ import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import Assets from 'assets';
 import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
-import { LandingConstants, NavigationConstants } from 'constant';
+import { FirebaseConstants, LandingConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import numeral from 'numeral';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
 
 import PoolCard from './components/PoolCard';
 import PoolCardPlaceholder from './components/PoolCardPlaceholder';
@@ -29,6 +29,7 @@ const placeholderNames = ['Mad Scientist ?', 'Lucky Star ?'];
 
 const Landing = () => {
     const onClickNewPool = () => {
+        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SUGGEST_POOL_CLICK);
         window.open(`${NavigationConstants.DISCORD}`, '_blank')?.focus();
     };
     const pools = useSelector((state: RootState) => state.pools.pools);
@@ -189,12 +190,21 @@ const Landing = () => {
                                 <p>{I18n.t('landing.saving.p1')}</p>
                                 <p>{I18n.t('landing.saving.p2')}</p>
                             </div>
-                            <Button className='cta' to={NavigationConstants.HOME} locationState={{ autoConnect: true }}>
+                            <Button
+                                className='cta'
+                                to={NavigationConstants.HOME}
+                                locationState={{ autoConnect: true }}
+                                onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                            >
                                 {I18n.t('landing.saving.cta')}
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
-                            <BestPrizeCard title={'ATOM pool TVL'} biggestPrize={pools && pools.length ? { amount: NumbersUtils.convertUnitNumber(pools[0].tvlAmount), denom: 'uatom' } : null} />
+                            <BestPrizeCard
+                                title={'ATOM Pool TVL'}
+                                biggestPrize={pools && pools.length ? { amount: NumbersUtils.convertUnitNumber(pools[0].tvlAmount), denom: 'uatom' } : null}
+                                poolId='2'
+                            />
                         </div>
                     </Card>
                 </div>
@@ -369,7 +379,7 @@ const Landing = () => {
                     </div>
                     <div className='pools-cards-container cards-list'>
                         {pools.slice(0, 3).map((pool, index) => (
-                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.prizeToWin?.amount || 0} />
+                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.estimatedPrizeToWin?.amount || 0} />
                         ))}
                         {poolsPlaceholders.map((_, index) => (
                             <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />
@@ -379,7 +389,12 @@ const Landing = () => {
                         <Button className='d-block d-xl-none mb-4 cta' outline onClick={onClickNewPool}>
                             {I18n.t('landing.pools.newPool')}
                         </Button>
-                        <Button className='cta' to={NavigationConstants.POOLS} locationState={{ autoConnect: true }}>
+                        <Button
+                            className='cta'
+                            to={NavigationConstants.POOLS}
+                            locationState={{ autoConnect: true }}
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SEE_ALL_POOLS_CLICK)}
+                        >
                             {I18n.t('landing.pools.cta')}
                         </Button>
                     </div>
@@ -406,7 +421,12 @@ const Landing = () => {
                                 <p className='text-flat-card'>{I18n.t('landing.future.p3')}</p>
                             </Card>
                         </div>
-                        <Button to={NavigationConstants.HOME} className='cta mt-4' locationState={{ autoConnect: true }}>
+                        <Button
+                            to={NavigationConstants.HOME}
+                            className='cta mt-4'
+                            locationState={{ autoConnect: true }}
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                        >
                             {I18n.t('landing.future.cta')}
                         </Button>
                     </Card>
@@ -462,10 +482,22 @@ const Landing = () => {
                                 <h2 className='text-center text-lg-start'>{I18n.t('landing.community.title')}</h2>
                             </div>
                             <div className='d-flex mt-4 mt-lg-0'>
-                                <a className='scale-hover me-lg-3 me-5' href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer'>
+                                <a
+                                    className='scale-hover me-lg-3 me-5'
+                                    href={NavigationConstants.TWITTER}
+                                    target='_blank'
+                                    rel='noreferrer'
+                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TWITTER_CLICK)}
+                                >
                                     <img src={Assets.images.twitterPlain} alt='Twitter' />
                                 </a>
-                                <a className='scale-hover' href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer'>
+                                <a
+                                    className='scale-hover'
+                                    href={NavigationConstants.DISCORD}
+                                    target='_blank'
+                                    rel='noreferrer'
+                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DISCORD_CLICK)}
+                                >
                                     <img src={Assets.images.discordPlain} alt='discord' />
                                 </a>
                             </div>

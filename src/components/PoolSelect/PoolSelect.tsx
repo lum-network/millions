@@ -13,6 +13,8 @@ interface Props {
     label?: string;
     readonly?: boolean;
     className?: string;
+    disabled?: boolean;
+    backgroundColor?: string;
 }
 
 const PoolOption = (
@@ -71,7 +73,7 @@ const PoolValue = (
     );
 };
 
-const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading }: Props): JSX.Element => {
+const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled, backgroundColor = '#FFF' }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
 
     useEffect(() => {
@@ -103,19 +105,21 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                     }}
                     isSearchable={false}
                     isClearable={false}
+                    isDisabled={disabled}
                     styles={{
                         control: (provided) => ({
                             ...provided,
-                            borderRadius: 15,
+                            borderRadius: 12,
                             borderColor: 'rgba(86, 52, 222, 0.2)',
                             borderWidth: 2,
-                            paddingTop: '0.75rem',
-                            paddingLeft: '1.5rem',
-                            paddingRight: '1.5rem',
-                            paddingBottom: '0.75rem',
+                            paddingTop: '0.50rem',
+                            paddingLeft: '1rem',
+                            paddingRight: '1rem',
+                            paddingBottom: '0.50rem',
                             textAlign: 'left',
                             color: '#5634DE',
-                            fontSize: 22,
+                            fontSize: 18,
+                            backgroundColor,
                         }),
                         option: (provided, state) => ({
                             ...provided,
@@ -123,6 +127,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                             textAlign: 'left',
                             backgroundColor: state.isFocused ? 'rgba(86, 52, 222, 0.2)' : state.isSelected ? '#F1EDFF' : '#fff',
                             fontSize: 22,
+                            zIndex: 3,
                         }),
                         dropdownIndicator: (provided) => ({
                             ...provided,

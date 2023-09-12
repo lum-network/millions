@@ -16,6 +16,8 @@ interface Props {
     className?: string;
     border?: boolean;
     buttonBorder?: boolean;
+    onExpand?: () => void;
+    onCollapse?: () => void;
 }
 
 const Collapsible = (props: Props) => {
@@ -23,7 +25,7 @@ const Collapsible = (props: Props) => {
     const [bsCollapse, setBsCollapse] = useState<Collapse>();
     const collapseRef = useRef<HTMLDivElement>(null);
 
-    const { header, content, id, className, toggleWithButton, disabled, border = true, buttonBorder } = props;
+    const { header, content, id, className, toggleWithButton, disabled, border = true, buttonBorder, onCollapse, onExpand } = props;
 
     useEffect(() => {
         const collapsible = document.getElementById(id);
@@ -47,8 +49,10 @@ const Collapsible = (props: Props) => {
 
         if (show) {
             bsCollapse?.show();
+            onExpand && onExpand();
         } else {
             bsCollapse?.hide();
+            onCollapse && onCollapse();
         }
     };
 

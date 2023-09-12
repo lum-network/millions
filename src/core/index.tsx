@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
 
 import { router } from 'navigation';
 import { Dispatch } from 'redux/store';
 import Assets from 'assets';
 import Loader from './components/Loader/Loader';
-import { NavigationConstants } from 'constant';
+import { Firebase } from '../utils';
 
 const Core = () => {
     const dispatch = useDispatch<Dispatch>();
@@ -25,6 +26,20 @@ const Core = () => {
             );
         }
     }, [progress, setLoading]);
+
+    useEffect(() => {
+        if (!Firebase.auth) {
+            return;
+        }
+
+        onAuthStateChanged(Firebase.auth, (user) => {
+            if (user) {
+                Firebase.setUserId(user.uid);
+            } else {
+                Firebase.setUserId(null);
+            }
+        });
+    }, []);
 
     useEffect(() => {
         const allSrcs: string[] = [];
@@ -55,7 +70,7 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        dispatch.app.init({ withWallets: location.pathname !== NavigationConstants.LANDING }).finally(() => null);
+        dispatch.app.init().finally(() => null);
     }, []);
 
     return (

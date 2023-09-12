@@ -1,13 +1,14 @@
+import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum-network/millions/prize';
-import { Window as KeplrWindow } from '@keplr-wallet/types';
+import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel } from 'models';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
+import { LumApi } from 'api';
 
 interface IbcTransferPayload {
     fromAddress: string;
@@ -58,6 +59,12 @@ interface LeavePoolPayload {
     poolId: Long;
     denom: string;
     depositId: Long;
+}
+
+interface LeavePoolRetryPayload {
+    poolId: Long;
+    denom: string;
+    withdrawalId: Long;
 }
 
 interface WalletState {
@@ -143,25 +150,30 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
-        async enableKeplrAndConnectLumWallet(payload: { silent: boolean } /* state */) {
-            const { silent } = payload;
-            const keplrWindow = window as KeplrWindow;
+        async connectWallet(payload: { provider: WalletProvider; silent: boolean }) {
+            const { silent, provider } = payload;
+            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
-            if (!keplrWindow.getOfflineSigner || !keplrWindow.keplr) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notInstalled') });
-            } else if (!keplrWindow.keplr.experimentalSuggestChain) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.notLatest') });
+            if (!walletProvider) {
+                ToastUtils.showErrorToast({ content: `${provider} is not available` });
+                return;
+            }
+
+            if (!walletProvider.getOfflineSigner) {
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notInstalled', { provider }) });
+            } else if (!walletProvider.experimentalSuggestChain) {
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notLatest', { provider }) });
             } else {
                 const chainId = LumClient.getChainId();
                 const rpc = LumClient.getRpc();
 
                 if (!chainId || !rpc) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.network') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.network', { provider }) });
                     return;
                 }
 
                 try {
-                    await keplrWindow.keplr.experimentalSuggestChain({
+                    await walletProvider.experimentalSuggestChain({
                         chainId: chainId,
                         chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                         rpc,
@@ -212,111 +224,126 @@ export const wallet = createModel<RootModel>()({
                             },
                         ],
                         beta: chainId.includes('testnet'),
+                        features: ['ibc-transfer'],
                     });
                 } catch {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.networkAdd') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.networkAdd', { provider }) });
                     return;
                 }
 
                 try {
-                    await keplrWindow.keplr.enable([/* ...state.pools.pools.map((pool) => pool.chainId),  */ chainId]);
-                    if (!keplrWindow.getOfflineSignerAuto) {
-                        throw new Error(I18n.t('errors.keplr.offlineSigner'));
+                    await walletProvider.enable(chainId);
+
+                    if (!walletProvider.getOfflineSignerAuto) {
+                        throw new Error(I18n.t('errors.walletProvider.offlineSigner', { provider }));
                     }
-                    const lumOfflineSigner = await keplrWindow.getOfflineSignerAuto(chainId);
+                    const lumOfflineSigner = await walletProvider.getOfflineSignerAuto(chainId);
                     const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
 
+                        WalletUtils.storeAutoconnectKey(provider);
+
                         await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
                         if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
+
+                        Firebase.signInAnonymous().finally(() => null);
                     }
                 } catch (e) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.keplr.wallet') });
+                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.wallet', { provider }) });
                     throw e;
                 }
             }
         },
-        async connectOtherWallets(_, state) {
-            const keplrWindow = window as KeplrWindow;
-            if (keplrWindow.getOfflineSignerAuto) {
+        async connectOtherWallets(provider: WalletProvider, state) {
+            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+            try {
+                if (!walletProvider) {
+                    throw new Error(`${provider} is not available`);
+                }
+
                 for (const pool of state.pools.pools) {
                     if (!pool.internalInfos || pool.chainId.includes('lum')) {
                         continue;
                     }
 
-                    try {
-                        if (pool.chainId === 'gaia-devnet') {
-                            await KeplrUtils.enableKeplrWithInfos({
-                                bech32Config: {
-                                    bech32PrefixAccAddr: 'cosmos',
-                                    bech32PrefixAccPub: 'cosmospub',
-                                    bech32PrefixConsAddr: 'cosmosvalcons',
-                                    bech32PrefixConsPub: 'cosmosvalconspub',
-                                    bech32PrefixValAddr: 'cosmosvaloper',
-                                    bech32PrefixValPub: 'cosmosvaloperpub',
-                                },
-                                bip44: {
-                                    coinType: 118,
-                                },
-                                chainId: 'gaia-devnet',
-                                chainName: 'Cosmos Hub [Test Millions]',
-                                chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cosmoshub/chain.png',
-                                currencies: [
-                                    {
-                                        coinDecimals: 6,
-                                        coinDenom: 'ATOM',
-                                        coinGeckoId: 'cosmos',
-                                        coinMinimalDenom: 'uatom',
-                                    },
-                                ],
-                                features: [],
-                                feeCurrencies: [
-                                    {
-                                        coinDecimals: 6,
-                                        coinDenom: 'ATOM',
-                                        coinGeckoId: 'cosmos',
-                                        coinMinimalDenom: 'uatom',
-                                        gasPriceStep: {
-                                            average: 0.025,
-                                            high: 0.03,
-                                            low: 0.01,
-                                        },
-                                    },
-                                ],
-                                rest: 'https://testnet-rpc.cosmosmillions.com/atom/rest',
-                                rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
-                                stakeCurrency: {
+                    if (pool.chainId === 'gaia-devnet') {
+                        await KeplrUtils.enableKeplrWithInfos(walletProvider, {
+                            bech32Config: {
+                                bech32PrefixAccAddr: 'cosmos',
+                                bech32PrefixAccPub: 'cosmospub',
+                                bech32PrefixConsAddr: 'cosmosvalcons',
+                                bech32PrefixConsPub: 'cosmosvalconspub',
+                                bech32PrefixValAddr: 'cosmosvaloper',
+                                bech32PrefixValPub: 'cosmosvaloperpub',
+                            },
+                            bip44: {
+                                coinType: 118,
+                            },
+                            chainId: 'gaia-devnet',
+                            chainName: 'Cosmos Hub [Test Millions]',
+                            chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cosmoshub/chain.png',
+                            currencies: [
+                                {
                                     coinDecimals: 6,
                                     coinDenom: 'ATOM',
                                     coinGeckoId: 'cosmos',
                                     coinMinimalDenom: 'uatom',
                                 },
-                            });
-                        }
-                        const offlineSigner = await keplrWindow.getOfflineSignerAuto(pool.chainId);
-                        const accounts = await offlineSigner.getAccounts();
-                        await WalletClient.connect(pool.internalInfos.rpc, offlineSigner);
+                            ],
+                            features: [],
+                            feeCurrencies: [
+                                {
+                                    coinDecimals: 6,
+                                    coinDenom: 'ATOM',
+                                    coinGeckoId: 'cosmos',
+                                    coinMinimalDenom: 'uatom',
+                                    gasPriceStep: {
+                                        average: 0.025,
+                                        high: 0.03,
+                                        low: 0.01,
+                                    },
+                                },
+                            ],
+                            rest: 'https://testnet-rpc.cosmosmillions.com/atom/rest',
+                            rpc: 'https://testnet-rpc.cosmosmillions.com/atom/rpc',
+                            stakeCurrency: {
+                                coinDecimals: 6,
+                                coinDenom: 'ATOM',
+                                coinGeckoId: 'cosmos',
+                                coinMinimalDenom: 'uatom',
+                            },
+                        });
+                    } else {
+                        await walletProvider.enable(pool.chainId);
+                    }
 
-                        if (accounts.length > 0) {
-                            const res = await WalletClient.getWalletBalance(accounts[0].address);
+                    const offlineSigner = await walletProvider.getOfflineSignerAuto(pool.chainId);
+                    const accounts = await offlineSigner.getAccounts();
 
-                            dispatch.wallet.setOtherWalletData({
-                                address: accounts[0].address,
-                                balances: res
-                                    ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter((balance) =>
-                                          DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
-                                      )
-                                    : [],
-                                denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                            });
-                        }
+                    if (accounts.length > 0) {
+                        const client = new WalletClient();
 
-                        WalletClient.disconnect();
-                    } catch (e) {
-                        console.error((e as Error).message);
+                        await client.connect(pool.internalInfos.rpc, offlineSigner);
+
+                        const res = await client.getWalletBalance(accounts[0].address);
+
+                        dispatch.wallet.setOtherWalletData({
+                            address: accounts[0].address,
+                            balances: res
+                                ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter((balance) =>
+                                      DenomsConstants.ALLOWED_DENOMS.includes(DenomsUtils.getNormalDenom(balance.denom)),
+                                  )
+                                : [],
+                            denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                        });
+
+                        client.disconnect();
                     }
                 }
+            } catch (e) {
+                console.warn((e as Error).message);
             }
         },
         async reloadWalletInfos({ address, force = true }: { address: string; force?: boolean }, state) {
@@ -326,12 +353,13 @@ export const wallet = createModel<RootModel>()({
 
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
+            await dispatch.stats.fetchStats();
+            await dispatch.pools.fetchPools();
+            await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.getPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
-            await dispatch.pools.fetchPools();
-            await dispatch.pools.getPoolsAdditionalInfo(null);
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
@@ -340,12 +368,13 @@ export const wallet = createModel<RootModel>()({
                 if (result) {
                     const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
                     const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom);
+
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
 
                     return filteredBalances;
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getActivities(payload: GetActivitiesPayload, state) {
@@ -356,7 +385,7 @@ export const wallet = createModel<RootModel>()({
                 if (res) {
                     const txs = [...(payload.reset ? [] : state.wallet.lumWallet?.activities.result || []), ...res.activities];
 
-                    const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 30) : state.wallet.lumWallet?.activities.pagesTotal || 0;
+                    const pagesTotal = res.totalCount ? Math.ceil(res.totalCount / 5) : state.wallet.lumWallet?.activities.pagesTotal || 0;
 
                     dispatch.wallet.setLumWalletData({
                         activities: {
@@ -368,7 +397,7 @@ export const wallet = createModel<RootModel>()({
                     });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getDepositsAndWithdrawals(address: string) {
@@ -379,7 +408,7 @@ export const wallet = createModel<RootModel>()({
                     dispatch.wallet.setLumWalletData({ deposits: res });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
         },
         async getPrizes(address: string) {
@@ -399,8 +428,21 @@ export const wallet = createModel<RootModel>()({
                     });
                 }
             } catch (e) {
-                console.log(e);
+                console.warn(e);
             }
+        },
+        async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
+            if (!state.wallet.lumWallet) {
+                return null;
+            }
+
+            try {
+                const [res] = await LumApi.fetchLeaderboardUserRank(poolId.toString(), state.wallet.lumWallet.address);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
         },
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
@@ -424,9 +466,19 @@ export const wallet = createModel<RootModel>()({
                 if (!chainId) {
                     throw new Error(I18n.t('errors.client.chainId', { denom: normalDenom.toUpperCase() }));
                 }
+                const provider = WalletUtils.getAutoconnectProvider();
 
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const offlineSigner = await (window as KeplrWindow).getOfflineSignerAuto!(chainId);
+                if (provider === null) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+                if (!walletProvider) {
+                    throw new Error(`${provider} is not available`);
+                }
+
+                const offlineSigner = await walletProvider.getOfflineSignerAuto(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
@@ -434,11 +486,13 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.unavailableRpc', { denom: normalDenom.toUpperCase() }));
                 }
 
-                await WalletClient.connect(rpc, offlineSigner);
+                const client = new WalletClient();
 
-                const result = await WalletClient.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+                await client.connect(rpc, offlineSigner, true);
 
-                WalletClient.disconnect();
+                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+
+                client.disconnect();
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
@@ -454,6 +508,13 @@ export const wallet = createModel<RootModel>()({
                     if (WalletUtils.updatedBalances(state.wallet.lumWallet?.balances, newBalances)) {
                         break;
                     }
+                }
+
+                if (!chainId.includes('testnet') && !chainId.includes('devnet') && type === 'deposit') {
+                    // Bot API call to send lum via faucet
+                    await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
+                        address: toAddress,
+                    });
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
@@ -504,7 +565,7 @@ export const wallet = createModel<RootModel>()({
 
             try {
                 if (!lumWallet) {
-                    throw new Error('No wallet connected');
+                    throw new Error('errors.client.noWalletConnected');
                 }
 
                 const result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
@@ -517,7 +578,7 @@ export const wallet = createModel<RootModel>()({
                     content: `Successfully retried deposit #${payload.depositId.toNumber()} to pool #${payload.depositId.toNumber()}`,
                 });
 
-                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address });
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId.toNumber()}` });
@@ -544,11 +605,52 @@ export const wallet = createModel<RootModel>()({
                     content: I18n.t('success.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }),
                 });
 
+                Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_SUCCESS, {
+                    pool_id: payload.poolId?.toString(),
+                    deposit_id: payload.depositId?.toString(),
+                    denom: payload.denom,
+                });
+
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', {
                     content: (e as Error).message || I18n.t('errors.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }),
+                });
+                return null;
+            }
+        },
+        async leavePoolRetry(payload: LeavePoolRetryPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { lumWallet } = state.wallet;
+
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }) });
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                const result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || undefined);
+                }
+
+                ToastUtils.updateLoadingToast(toastId, 'success', {
+                    content: I18n.t('success.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }),
+                });
+
+                Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_RETRY_SUCCESS, {
+                    pool_id: payload.poolId.toString(),
+                    deposit_id: payload.withdrawalId.toString(),
+                    denom: payload.denom,
+                });
+
+                dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
+                return result;
+            } catch (e) {
+                ToastUtils.updateLoadingToast(toastId, 'error', {
+                    content: (e as Error).message || I18n.t('errors.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }),
                 });
                 return null;
             }

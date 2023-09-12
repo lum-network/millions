@@ -3,7 +3,12 @@
 .steps-title {
     color: $color-black;
     margin-bottom: 4rem;
-    line-height: unset;
+    
+    @include media-breakpoint-down(sm) {
+        font-size: 24px;
+        line-height: unset;
+        margin-bottom: 2rem;
+    }
 }
 
 .glow-bg {
@@ -14,9 +19,17 @@
     .card-step-title {
         font-size: 32px;
         text-align: start;
-    }
 
+        @include media-breakpoint-down(sm) {
+            font-size: 21px;
+        }
+    }
+    
     .card-step-subtitle {
+        @include media-breakpoint-down(sm) {
+            font-size: 12px;
+        }
+
         margin-top: 0;
         text-align: start;
     }
@@ -30,17 +43,35 @@
 #depositFlow {
     .deposit-step-card {
         background-color: $color-white;
-        border-radius: 13px;
+        border-radius: 12px;
         position: relative;
     }
 
     .index-default-border {
         opacity: 0;
     }
+
+    .deposit-delta-card {
+        margin-right: 8rem;
+        border-radius: 12px;
+        padding: 2.25rem 1.75rem;
+        
+        div {
+            color: $color-primary;
+            font-weight: 350;
+            font-size: 14px;
+            line-height: 17px;
+        }
+
+        @include media-breakpoint-down(lg) {
+            margin-right: 0
+        }
+    }
 }
 
 #quitModal,
-#ibcTransferModal {
+#ibcTransferModal,
+#depositDeltaModal {
     h3 {
         color: $color-black;
     }
@@ -63,7 +94,7 @@
 
     .amount-container {
         border: 2px solid #5634de4d;
-        border-radius: 15px;
+        border-radius: 12px;
     }
 
     .arrow-container {

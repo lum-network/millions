@@ -29,18 +29,29 @@
     flex: 1 1 auto;
 }
 
-#get-keplr-modal {
+#get-keplr-modal,
+#choose-wallet-modal {
     .keplr-icon {
         width: 76px;
         height: 76px;
     }
-
+    
     h3 {
         color: $color-black;
         font-weight: 400;
         font-size: 24px;
     }
+}
 
+#choose-wallet-modal {
+    a {
+        color: $color-black;
+        font-weight: 300;
+        font-size: 14px;
+    }
+}
+
+#get-keplr-modal {
     p {
         color: $color-black;
         font-weight: 300;
@@ -51,5 +62,37 @@
         color: $color-primary;
         font-weight: 300;
         font-size: 14px;
+    }
+}
+
+#terms-modal {
+    .terms-modal-desc {
+        color: $color-black;
+        font-weight: 300;
+        font-size: 16px;
+    }
+
+    .terms-modal-content {
+        background-color: $color-primary-light;
+        height: 300px;
+        border-radius: 8px;
+        overflow-y: scroll;
+        padding: 25px;
+        text-align: left;
+
+        p {
+            color: $color-black !important;
+        }
+
+        h5 {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        ol li {
+            font-weight: 300 !important;
+            font-size: 14px !important;
+            line-height: 17px !important;
+        }
     }
 }

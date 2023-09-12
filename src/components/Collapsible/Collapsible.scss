@@ -3,7 +3,7 @@
 .collapsible {
     padding: 20px 24px;
     border: 2px solid rgba(86, 52, 222, 0.2);
-    border-radius: 15px;
+    border-radius: 12px;
 
     .collapsible-title {
         width: 100%;
@@ -51,7 +51,7 @@
         }
 
         &.with-button-border {
-            border: 1.8px solid $color-primary;
+            border: 2px solid $color-primary;
             border-radius: 12px;
             padding: 8px 18px;
             font-size: 14px;

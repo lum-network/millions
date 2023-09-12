@@ -26,9 +26,11 @@ export default {
         draw: 'Draw',
         deposit: 'Deposit',
         pool: 'Pool',
-        prizePool: 'Prize Pool',
+        prizePool: 'Estimated Prize Pool',
         drawInProgress: 'Draw in progress',
         loading: 'Loading...',
+        prev: 'Prev',
+        next: 'Next',
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',
@@ -39,12 +41,12 @@ export default {
             required: '{{ field }} is required',
             invalid: 'Invalid {{ field }}',
         },
-        keplr: {
-            notInstalled: 'Please install keplr extension',
-            notLatest: 'Please use an up to date version of the Keplr extension',
+        walletProvider: {
+            notInstalled: 'Please install {{ provider }} extension',
+            notLatest: 'Please use an up to date version of the {{ provider }} extension',
             network: 'Failed to connect to the network',
-            networkAdd: 'Failed to add network to Keplr',
-            wallet: 'Failed to connect to Keplr wallet',
+            networkAdd: 'Failed to add network to {{ provider }}',
+            wallet: 'Failed to connect to {{ provider }} wallet',
             offlineSigner: 'Offline signer not found',
         },
         client: {
@@ -56,7 +58,7 @@ export default {
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
-            lessThanMinDeposit: 'Amount must be greather than minimum deposit of {{ minDeposit }}',
+            lessThanMinDeposit: 'Amount must be equal to or greather than {{ minDeposit }} {{ denom }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
             generic: 'Failed to deposit to {{ denom }} pool',
@@ -70,6 +72,7 @@ export default {
         leavePool: 'Failed to leave {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Failed to claim prizes',
         claimAndCompound: 'Failed to compound prizes',
+        withdrawalRetry: 'Failed to retry withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     success: {
         wallet: 'Successfully connected',
@@ -78,26 +81,28 @@ export default {
         leavePool: 'Successfully left {{ denom }} pool {{ poolId }}',
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
-        logOut: 'You have been logged out.'
+        logOut: 'You have been logged out.',
+        withdrawalRetry: 'Successfully retried withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     pending: {
         ibcTransfer: 'Transferring...',
         deposit: 'Depositing to {{ denom }} pool...',
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
-        claimAndCompound: 'Compounding prizes...'
+        claimAndCompound: 'Compounding prizes...',
+        withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     landing: {
-        howItWorks: 'How it works',
+        howItWorks: 'How it Works',
         documentation: 'Documentation',
         faq: 'FAQ',
-        openTheApp: 'Open the app',
+        openTheApp: 'Open the App',
         saving: {
             title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
-            biggestPrizeToWin: 'Biggest prize to win',
+            biggestPrizeToWin: 'Biggest Prize to Win',
         },
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
@@ -109,15 +114,15 @@ export default {
         winners: {
             title: 'How it Works',
             p1: 'Deposit\nyour assets',
-            p2: 'You are eligible to all the next\nprizes automatically ',
-            p3: 'You win! Compound your prize to boost your chances of earning more next time!',
+            p2: 'You are eligible for all the next\nprizes automatically ',
+            p3: 'You win! Cash out or compound your prize to boost your chances of earning more next time!',
             p4: 'No win this time, but no loss either! Get ready for the next draw!',
             or: 'OR',
         },
         pools: {
             title: 'Pools Available',
             deposited: 'Deposited',
-            prizeToWin: 'Prize to win',
+            prizeToWin: 'Estimated Prize',
             newPool: 'Suggest a new pool',
             tvl: 'Total Value Locked',
             cta: 'See all pools',
@@ -125,7 +130,7 @@ export default {
         future: {
             title: 'The Future of Savings\nwith Cosmos Millions',
             p1: 'Leveraging the Interchain Stack (Cosmos-SDK, Tendermint BFT, IBC, ICA, ICQ), our prize-linked savings enhance traditional savings methods.',
-            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Interchain of Blockchains.',
+            p2: 'The sovereign and interoperable network of blockchains offers easy access and minimal fees, highlighting the extensive potential of the Internet of Blockchains.',
             p3: 'Our open-source, audited protocol ensures fair prize distribution, making saving a more positive and rewarding experience for all users!',
             cta: 'Start saving now!',
         },
@@ -141,7 +146,7 @@ export default {
                 },
                 {
                     title: 'What is a Prize-Linked Savings Account?',
-                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is then distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
+                    answer: 'A prize-linked savings account (PLSA) combines the stability of a traditional savings account with the excitement of potential rewards. In a PLSA, the deposits are gathered and collectively they generate a yield. Then, this yield is distributed as prizes to randomly selected account holders. Such an approach incentivizes individuals to save money by offering them the chance to win substantial rewards without risking their initial deposits.',
                 },
                 {
                     title: 'Is Cosmos Millions free to use?',
@@ -149,7 +154,8 @@ export default {
                 },
                 {
                     title: 'How can I participate?',
-                    answer: 'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                    answer:
+                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
                         'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
                         'Check the <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
@@ -159,7 +165,8 @@ export default {
                 },
                 {
                     title: 'Are my deposits safe?',
-                    answer: 'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
+                    answer:
+                        'Cosmos Millions employs robust security measures to protect your deposited assets. When you make a deposit, your tokens are sent back to their native blockchain where they are staked with reputable validators in the Interchain. These validators have a track record of reliability and security, which helps ensure the safety of your deposits.\n' +
                         '\n' +
                         'Also, Cosmos Millions is open-source, and it has been thoroughly audited by Oak Security, an independent security firms to ensure its safety and reliability. See Security & Audit',
                 },
@@ -181,7 +188,7 @@ export default {
                 },
                 {
                     title: 'How long do I have to claim my prizes?',
-                    answer: "After winning a prize on Cosmos Millions, you can claim it by accessing the \"My savings\" section of the web application. You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don't forget to come check the platform regularly to ensure that you don't miss the deadline for claiming your prize!",
+                    answer: 'After winning a prize on Cosmos Millions, you can claim it by accessing the "My savings" section of the web application. You have 30 days from the date of the draw to claim your prize. If you fail to claim your prize within this period, the prize will be added to the prize pool of the next draw. Don\'t forget to come check the platform regularly to ensure that you don\'t miss the deadline for claiming your prize!',
                 },
                 {
                     title: 'What is the Cosmos ecosystem?',
@@ -200,7 +207,7 @@ export default {
                 title: 'Learn',
                 wallet: 'Get an interchain wallet',
                 tokens: 'Get interchain tokens',
-                faq: 'FAQ'
+                faq: 'FAQ',
             },
             documentation: {
                 title: 'Documentation',
@@ -209,32 +216,49 @@ export default {
                 pool: 'Pool Management',
                 deposits: 'Deposits & Withdrawals',
                 drawMechanism: 'Draw Mechanism',
-                allDoc: 'All documentation'
+                allDoc: 'All documentation',
             },
             community: {
                 title: 'Community',
                 twitter: 'Twitter',
                 discord: 'Discord',
                 github: 'Github',
-                medium: 'Medium'
+                medium: 'Medium',
             },
             builtOn: {
                 title: 'Built on Lum Network',
-                tAndC: 'Terms & Conditions'
-            }
-        }
+                tAndC: 'Terms & Conditions',
+            },
+        },
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
+    leapKeystoreChange: 'Leap Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
-        description: 'You need an Interchain wallet to use Cosmos Millions.<br />Keplr is the most popular wallet of them.',
+        keplr: {
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.',
+        },
+        leap: {
+            description: 'You need an Interchain wallet<br />to use Cosmos Millions.<br />Mobile friendly',
+        },
         link: 'Learn more about Interchain wallets',
         later: "I'll come back later",
         download: 'Download Keplr for Chrome',
     },
+    chooseWalletModal: {
+        keplr: 'Keplr Wallet',
+        leap: 'Leap Wallet',
+    },
     logoutModal: {
         title: 'Are you sure you want\nto log out ?',
         logoutBtn: 'Log out',
+    },
+    termsModal: {
+        title: 'Terms of use',
+        description: 'Please read these terms carefully and click the button at the bottom to acknowledge that you have read and accepted the terms and conditions',
+        checkbox: 'Accept Terms of use',
+        cta: 'Accept',
+        cancel: 'Cancel',
     },
     home: {
         title: 'Dashboard',
@@ -247,17 +271,24 @@ export default {
         title: 'Pools',
         totalDeposit: 'Total Deposit',
         tvl: 'TVL:',
-        apy: 'Variable APY:',
+        apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
+        viewDetails: 'Chance to win',
         drawEndAt: 'Next draw in:',
-        poolId: 'Pool #{{ poolId }}',
+        poolId: 'Pool',
     },
     poolDetails: {
-        myDeposits: 'My {{ denom }} deposits',
-        prizePool: 'Prize Pool',
+        myDeposits: 'My {{ denom }} Deposits',
+        prizePool: 'Estimated Prize',
+        prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the current TVL. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
-        variableAPY: 'Variable APY',
+        variableAPY: 'Estimated APR',
+        tvlDetails: {
+            title: 'Total Value Locked Details',
+            sponsor: 'Sponsorship',
+            deposits: 'Cosmonauts Deposits',
+        },
         winners: {
             title: 'Winners in Numbers',
             totalPrizes: 'Total prizes won',
@@ -266,25 +297,25 @@ export default {
         },
         users: {
             title: 'Users in Numbers',
-            deposit: 'Average Deposit',
-            currentDraw: 'Unique Depositors',
+            deposit: 'Average deposit',
+            currentDraw: 'Unique depositors',
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: ['Prize Value', 'Number of prizes', 'Chance to win'],
-            hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).'
+            tableHeaders: ['Prize value', 'Number of prizes', 'Chance to win'],
+            hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
         },
         winningChances: {
             title: 'Winning Chances',
             estimatedSavings: 'Estimated savings',
-            chanceToWin: 'Chance to win',
+            chanceToWin: 'Estimated chance to win',
         },
         drawsHistory: {
             title: 'Draws History',
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Prizes', 'Prize Value'],
+            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',
@@ -296,10 +327,11 @@ export default {
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
-        totalBalance: 'Total deposits',
+        totalBalance: 'Total Deposits',
         claim: 'Claim',
-        claimPrize: 'Claim prize',
+        claimPrize: 'Claim Prize',
         deposit: 'Deposit in Pool',
+        depositorsRanking: 'Depositors Ranking',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {
@@ -307,9 +339,10 @@ export default {
             claimPrize: 'Claim Prize',
             deposit: 'Deposit',
         },
-        txListHeaders: ['Type', 'Amount'],
+        txListHeaders: ['Type', 'Hash', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
+        depositDrop: 'Deposit Drop',
         transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',
@@ -344,7 +377,7 @@ export default {
                     subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
                 },
             ],
-            cta: 'Transfer my available tokens',
+            cta: 'Transfer',
         },
         claimModal: {
             title: 'Cosmonaut,\nyour savings are blasting off like a rocketship 🚀',
@@ -359,12 +392,23 @@ export default {
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
+            claimOnlySteps: [
+                {
+                    title: 'Wonderful! Take a look at what you have won!',
+                    subtitle: 'Click on “Claim my prizes” to simply get your prizes',
+                },
+                {
+                    title: 'Confirm your claim in Keplr',
+                    subtitle: 'Accept the transaction to claim your prizes!',
+                },
+            ],
             claimAndCompound: 'CLAIM & COMPOUND',
+            claimAndCompoundHint: "You can't compound your prizes if you have less than the minimum deposit.",
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
             shareTitle: 'Spread the word!',
             shareTwitterContent:
-                'My savings are going to the moon 🚀 I just claimed {{ amount }} ${{ denom }} of prizes into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+                'Just claimed my ${{ denom }} prize on @cosmosmillions! ️🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com',
         },
         claimOnlyModal: {
             title: 'Hey Cosmonaut 🧑‍🚀',
@@ -373,7 +417,8 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Deposit error'],
+        withdrawalStates: ['Unspecified', 'Undelegate', 'Unbonding', 'IBC Transfer', 'Withdrawal error', 'Pending withdrawal'],
         depositError: {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
@@ -389,7 +434,7 @@ export default {
             steps: [
                 {
                     title: 'Choose the pool you want to leave',
-                    subtitle: 'Redeem your savings\nor transfer your available tokens',
+                    subtitle: 'Redeem your savings',
                     cardTitle: 'Leave pool',
                     cardSubtitle:
                         'Redeem your savings is submitted to an unbonding period. <a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
@@ -407,6 +452,7 @@ export default {
             },
             cta: 'Leave pool',
         },
+        sponsorHint: 'Sponsorship deposit, it will not be eligible for draws but will increase the prize pool.',
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
@@ -452,7 +498,7 @@ export default {
         },
         shareTwitter: 'Share on Twitter',
         shareTwitterContent:
-            'My savings are going to the moon 🚀 I just saved {{ amount }} ${{ denom }} into my @cosmosmillions prize savings account!\n\nJoin me and all the others Cosmonauts 🧑‍🚀 saving {{ tvl }}! Dozens of prizes to win every week #CosmosMillions #Cosmos https://cosmos.millions',
+            'I have just deposited in @cosmosmillions’ ${{ denom }} pool ⚛️🎉\n\nJoin me and all the others Cosmonauts 🧑‍🚀 we have deposited {{ tvl }} so far! Dozens of prizes to win every week in this prize-linked savings account built for the Interchain #CosmosSZN #Cosmos #IBCGang',
         goToMySavings: 'Go to\nmy savings',
         seeOnMintscan: 'See transaction\non Mintscan',
         seeOnExplorer: 'See transaction\non Lum Explorer',
@@ -472,14 +518,25 @@ export default {
         depositId: 'Deposit #{{ depositId }}',
         deposits_one: '{{ count }} Deposit',
         deposits_other: '{{ count }} Deposits',
+        depositDeltaHint:
+            'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
+            '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
         latestWinners: 'Latest Winners',
+        winnersHeaders: ['Winner', 'Draw', 'Date', 'Amount'],
         noWinnersYet: {
             title: 'You could be here!',
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
-        }
+        },
+    },
+    leaderboard: {
+        hint: 'The depositors ranking is updated every hour',
+        cta: 'See more',
+        notConnectedCta: 'Log in to see more',
+        depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
+        newRanking: 'You new ranking will be displayed in a few minutes',
     },
 };

@@ -24,13 +24,14 @@
     }
 
     &.disabled {
+        pointer-events: none;
         opacity: 0.3;
         transform: scale(1) !important;
     }
 }
 
 .app-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.048);
 }
 
 .app-btn-outline {

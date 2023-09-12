@@ -4,7 +4,8 @@ import { DepositModel } from 'models';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
+import { FirebaseConstants } from 'constant';
 
 import './LeavePool.scss';
 
@@ -13,7 +14,7 @@ interface Props {
 }
 
 const LeavePool = ({ deposit }: Props) => {
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
 
@@ -29,7 +30,12 @@ const LeavePool = ({ deposit }: Props) => {
             return;
         }
 
-        setCurrentStep(currentStep + 1);
+        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_CONFIRMED, {
+            pool_id: deposit.poolId?.toString(),
+            deposit_id: deposit.depositId?.toString(),
+            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0),
+            denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
+        });
 
         const res = await dispatch.wallet.leavePool({
             poolId: deposit.poolId,
@@ -38,8 +44,9 @@ const LeavePool = ({ deposit }: Props) => {
         });
 
         if (!res || (res && res.error)) {
-            setCurrentStep(0);
+            setCurrentStep(1);
         } else {
+            setCurrentStep(currentStep + 1);
             if (modalRef.current) {
                 modalRef.current.hide();
             }
@@ -48,7 +55,7 @@ const LeavePool = ({ deposit }: Props) => {
 
     useEffect(() => {
         const handler = () => {
-            setCurrentStep(0);
+            setCurrentStep(1);
         };
 
         const leavePoolModal = document.getElementById('leavePoolModal');
@@ -113,7 +120,7 @@ const LeavePool = ({ deposit }: Props) => {
                                     <Button
                                         type='submit'
                                         onClick={() => {
-                                            onLeavePool();
+                                            onLeavePool().finally(() => null);
                                         }}
                                         className='w-100 mt-4'
                                         disabled={isLoading}

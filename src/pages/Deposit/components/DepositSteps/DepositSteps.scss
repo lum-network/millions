@@ -58,6 +58,7 @@
     font-weight: 400;
     font-size: 22px;
 }
+
 .deposit-amount {
     font-style: normal;
     font-weight: 400;
@@ -65,14 +66,32 @@
     line-height: 26px;
 }
 
+.deposit-cta-text {
+    @include media-breakpoint-down(sm) {
+        font-size: 18px; 
+    }
+}
+
 .step-1 {
+    &.disabled {
+        opacity: 0.5;
+    }
+
     .winning-chance-card {
         padding-top: 1.25rem;
         padding-bottom: 1.25rem;
     }
+
+    .asset-select {
+        z-index: 10;
+    }
 }
 
 .step-2 {
+    &.disabled {
+        opacity: 0.5;
+    }
+
     .last-step-card {
         margin-top: 5rem;
         border-radius: 12px;
@@ -92,6 +111,10 @@
         color: $color-black;
     }
 
+    .pool-select {
+        z-index: 10;
+    }
+
     .deposit-warning {
         font-weight: 300;
         font-size: 14px;
@@ -106,11 +129,15 @@
 }
 
 .step-3 {
+    .card-step-title {
+        white-space: nowrap;
+    }
+
     .step-3-cta-container {
         background-color: $color-primary-light;
         border: none;
         color: $color-primary;
-        border-radius: 8px;
+        border-radius: 12px;
 
         img {
             width: 38px;
@@ -129,8 +156,24 @@
     }
 
     .deposit-card {
-        border-radius: 8px;
+        border-radius: 12px;
         background: #edffef;
+
+        .deposit-amount {
+            @include media-breakpoint-down(sm) {
+                font-size: 18px;
+            }
+        }
+
+        .denom-icon {
+            height: 50px;
+            width: 50px;
+        
+            @include media-breakpoint-down(sm) {
+                height: 32px;
+                width: 32px;
+            }
+        }
 
         .deposit-state {
             width: fit-content;

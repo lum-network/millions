@@ -24,12 +24,20 @@ html body {
 
 .Toastify__toast-container {
     width: 485px;
+
+    @include media-breakpoint-down(sm) {
+        width: 95%;
+    }
 }
 
 .Toastify__toast {
     border-radius: 12px !important;
     align-items: center;
     padding: 32px !important;
+
+    @include media-breakpoint-down(sm) {
+        padding: 16px !important;
+    }
 }
 
 .Toastify__spinner,
@@ -37,6 +45,18 @@ html body {
     width: 56px;
     height: 56px;
     object-fit: contain;
+
+    @include media-breakpoint-down(sm) {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+.Toastify__toast-container--bottom-left {
+    @include media-breakpoint-down(sm) {
+        left: 0.5em !important;
+        bottom: 0.5em !important;
+    }
 }
 
 .scale-hover {
@@ -44,7 +64,9 @@ html body {
     transition: scale linear 150ms !important;
 
     &:hover {
-        scale: 1.05 !important;
+        -webkit-font-smoothing: subpixel-antialiased;
+        scale: 1.048;
+        backface-visibility: hidden;
     }
 }
 
@@ -84,5 +106,50 @@ html body {
 
     &::-webkit-scrollbar {
         display: none;
+    }
+}
+
+input[type='checkbox'] {
+    cursor: pointer;
+    position: relative;
+
+    &:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 0;
+        left: 0;
+        background-color: $color-white;
+        border: 2px solid $color-black;
+        border-radius: 4px;
+    }
+
+    &:checked:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 0;
+        left: 0;
+        background-color: $color-primary;
+        border: solid 2px $color-primary;
+    }
+
+    &:checked:after {
+        content: "";
+        display: block;
+        width: 6px;
+        height: 10px;
+        border: solid $color-white;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+        position: absolute;
+        top: 3px;
+        left: 7px;
     }
 }

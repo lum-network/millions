@@ -5,21 +5,30 @@
         @include media-breakpoint-down(lg) {
             @include font-size(2rem);
         }
+        @include media-breakpoint-down(sm) {
+            @include font-size(1.5rem);
+        }
     }
 
     h2 {
         @include media-breakpoint-down(lg) {
             @include font-size(1.5rem);
         }
+        @include media-breakpoint-down(sm) {
+            @include font-size(1rem);
+        }
     }
 
     h4 {
         @include media-breakpoint-down(lg) {
+            @include font-size(1.125rem);
+        }
+        @include media-breakpoint-down(sm) {
             @include font-size(0.75rem);
         }
     }
 
-    small {
+    small.sub-title {
         font-size: 12px;
         color: $color-primary;
     }
@@ -51,7 +60,7 @@
         }
 
         .next-draw-container {
-            width: 200px;
+            width: 400px;
 
             .draw-in-progress {
                 font-size: 18px;
@@ -89,15 +98,40 @@
         }
     }
 
-    .stat-bg-white {
+    .stat-bg-white,
+    .tvl-detail-card {
         background-color: $color-white;
         color: $color-primary;
         border-radius: 8px;
         padding: 14px 22px;
     }
 
-    .my-deposits-card {
+    .tvl-detail-card {
+        padding: 22px 22px;
+
+        .tvl-detail-amount {
+            font-size: 24px;
+            color: $color-black;
+
+            .denom {
+                color: $color-primary;
+            }
+        }
+
+        .usd-amount {
+            font-size: 12px;
+            color: $color-black;
+            font-weight: 200;
+        }
+    }
+
+    .my-deposits-card,
+    .tvl-details-card {
         padding: 40px 32px;
+
+        @include media-breakpoint-down(md) {
+            padding: 24px;
+        }
     }
 
     .prize-distribution-card {
@@ -132,7 +166,7 @@
 
         .estimation-input-container {
             border: 2.5px solid rgba(86, 52, 222, 0.2);
-            border-radius: 15px;
+            border-radius: 12px;
             input {
                 border: 0;
                 background: transparent;
@@ -160,11 +194,6 @@
                     color: $color-primary;
                     background: $color-white;
                     padding: 1.5rem 0;
-
-                    .draw-date {
-                        color: $color-black;
-                        font-size: 14px;
-                    }
                 }
 
                 td:first-child,
@@ -194,6 +223,22 @@
             }
         }
 
+        .draw-date {
+            color: $color-black;
+            font-size: 14px;
+        }
+
+        .draw-token {
+            color: $color-black;
+            font-weight: 200;
+            font-size: 14px;
+        }
+
+        label {
+            color: $color-primary;
+            margin-bottom: 0.25rem;
+        }
+
         @include media-breakpoint-down(md) {
             padding: 24px;
         }
@@ -205,10 +250,16 @@
         border: 2.5px solid $color-primary;
         color: $color-primary;
 
-        &:hover,
-        &.active {
-            background-color: $color-primary;
-            color: $color-white;
+        &:not(:disabled) {
+            &:hover,
+            &.active {
+                background-color: $color-primary;
+                color: $color-white;
+            }
+        }
+
+        &:disabled {
+            opacity: 0.2;
         }
     }
 
@@ -231,7 +282,7 @@
 
     .index-container {
         background-color: $color-primary-light;
-        padding: 0px 8px;
+        padding: 0 8px;
         color: $color-primary;
         border-radius: 7px;
         font-size: 14px;
@@ -244,49 +295,51 @@
     }
 
     @include media-breakpoint-down(md) {
-        .table {
-            border-spacing: 0;
-        }
-
-        .table thead {
-            display: none;
-        }
-
-        .table tr,
-        .table tr td {
-            display: block;
-        }
-
-        .table tbody tr:not(:first-child) {
-            margin-top: 24px;
-        }
-
-        .table tbody tr:last-child {
-            margin-bottom: 24px;
-        }
-
-        .table tbody tr td {
-            padding: 1.5rem 1.5rem;
-            text-align: right;
-            vertical-align: middle;
-            &:first-child {
-                border-top-right-radius: 15px;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
+        .prize-distribution-card {
+            .table {
+                border-spacing: 0;
             }
-            &:last-child {
-                border-top-right-radius: 0;
-                border-bottom-left-radius: 15px;
-                border-bottom-right-radius: 15px;
-            }
-        }
 
-        .table td:before {
-            content: attr(data-label);
-            float: left;
-            text-align: start;
-            margin-right: 5rem;
-            font-size: 18px;
+            .table thead {
+                display: none;
+            }
+
+            .table tr,
+            .table tr td {
+                display: block;
+            }
+
+            .table tbody tr:not(:first-child) {
+                margin-top: 24px;
+            }
+
+            .table tbody tr:last-child {
+                margin-bottom: 24px;
+            }
+
+            .table tbody tr td {
+                padding: 1.5rem 1.5rem;
+                text-align: left;
+                vertical-align: middle;
+                &:first-child {
+                    border-top-right-radius: 15px;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+                &:last-child {
+                    border-top-right-radius: 0;
+                    border-bottom-left-radius: 15px;
+                    border-bottom-right-radius: 15px;
+                }
+            }
+
+            .table td:before {
+                content: attr(data-label);
+                float: left;
+                text-align: start;
+                margin-right: 5rem;
+                font-size: 18px;
+            }
         }
 
         .draws-history-card {

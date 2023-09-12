@@ -20,6 +20,7 @@ input[type='number'] {
     .labels-container {
         display: flex;
         justify-content: space-between;
+        align-items: flex-end;
 
         .sublabel {
             font-size: 14px;
@@ -35,7 +36,7 @@ input[type='number'] {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-radius: 15px;
+        border-radius: 12px;
         border: 2px solid rgba(86, 52, 222, 0.2);
 
         .input-container {

@@ -7,9 +7,10 @@ import * as yup from 'yup';
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Modal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase } from 'utils';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
+import { FirebaseConstants } from '../../../../../constant';
 
 interface Props {
     asset: string | null;
@@ -58,10 +59,10 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                     type: 'withdraw',
                     amount: {
                         amount,
-                        denom: pool.internalInfos.ibcDenom,
+                        denom: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetDenom : pool.internalInfos.ibcDenom,
                     },
                     normalDenom: normalDenom,
-                    ibcChannel: pool.internalInfos.ibcSourceChannel,
+                    ibcChannel: pool.transferChannelId,
                     chainId: LumClient.getChainId() || '',
                 });
 
@@ -114,7 +115,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                     <h1 className='steps-title'>{I18n.t('mySavings.transferOutModal.title')}</h1>
                     <Steps currentStep={currentStep} steps={steps} />
                 </div>
-                <div className='col d-flex'>
+                <div className='col'>
                     <Card withoutPadding className='d-flex flex-column justify-content-between px-3 px-sm-5 py-3 flex-grow-1 glow-bg mt-5 mt-lg-0'>
                         <div className='h-100 d-flex flex-column text-center py-sm-4'>
                             <div className='mb-3 mb-sm-5 mb-lg-0'>
@@ -169,7 +170,13 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                         </span>
                                         {I18n.t('deposit.feesWarning')}
                                     </Card>
-                                    <Button type='submit' className='w-100 mt-4' disabled={isLoading} loading={isLoading}>
+                                    <Button
+                                        type='submit'
+                                        className='w-100 mt-4'
+                                        disabled={isLoading}
+                                        loading={isLoading}
+                                        onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TRANSFER_OUT_CONFIRMED)}
+                                    >
                                         {I18n.t('mySavings.transferOutModal.cta')}
                                     </Button>
                                 </div>

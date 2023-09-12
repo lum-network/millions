@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 import { slide as Menu } from 'react-burger-menu';
 
@@ -11,17 +11,18 @@ import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
-import { I18n, KeplrUtils, StringsUtils, ToastUtils } from 'utils';
-import { Dispatch, RootState } from 'redux/store';
-import { NavigationConstants } from 'constant';
+import { Firebase, I18n } from 'utils';
+import { RootState } from 'redux/store';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+
+import ConnectButton from '../ConnectButton/ConnectButton';
 
 import './Header.scss';
 
-const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<ModalHandlers>; logoutModalRef: RefObject<ModalHandlers> }) => {
+const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }) => {
     const address = useSelector((state: RootState) => state.wallet.lumWallet?.address);
     const prizes = useSelector((state: RootState) => state.wallet.lumWallet?.prizes);
     const timeline = useRef<gsap.core.Timeline>();
-    const dispatch = useDispatch<Dispatch>();
     const [isLanding, setIsLanding] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -83,30 +84,6 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         },
     };
 
-    const connectWallet = async () => {
-        if (KeplrUtils.isKeplrInstalled()) {
-            await dispatch.wallet.enableKeplrAndConnectLumWallet({ silent: false }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(null);
-        } else {
-            if (keplrModalRef.current) {
-                keplrModalRef.current.toggle();
-            }
-        }
-    };
-
-    const copyAddress = () => {
-        if (address) {
-            navigator.clipboard.writeText(address).then(
-                () => {
-                    ToastUtils.showSuccessToast({ content: I18n.t('common.copiedAddress') });
-                },
-                () => {
-                    ToastUtils.showErrorToast({ content: I18n.t('errors.copyAddress') });
-                },
-            );
-        }
-    };
-
     const renderContent = (inBurgerMenu: boolean) => {
         if (isLanding) {
             return (
@@ -117,7 +94,13 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
-                        <a href={NavigationConstants.DOCUMENTATION} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.DOCUMENTATION}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DOCUMENTATION_CLICK)}
+                        >
                             {I18n.t('landing.documentation')}
                         </a>
                     </li>
@@ -127,17 +110,34 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                         </a>
                     </li>
                     <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
-                        <a href={NavigationConstants.TWITTER} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.TWITTER}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TWITTER_CLICK)}
+                        >
                             <img className='scale-hover' src={Assets.images.twitterButton} alt='Twitter' />
                         </a>
                     </li>
                     <li className='nav-item' {...dismissMenuProps}>
-                        <a href={NavigationConstants.DISCORD} target='_blank' rel='noreferrer' className='navlink opacity-100'>
+                        <a
+                            href={NavigationConstants.DISCORD}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='navlink opacity-100'
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DISCORD_CLICK)}
+                        >
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
                     <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0'>
-                        <Button to={NavigationConstants.HOME} {...dismissMenuProps} locationState={{ autoConnect: true }}>
+                        <Button
+                            to={NavigationConstants.HOME}
+                            {...dismissMenuProps}
+                            locationState={{ autoConnect: true }}
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                        >
                             {I18n.t('landing.openTheApp')}
                         </Button>
                     </li>
@@ -146,48 +146,62 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
         }
 
         return (
-            <ul className='navbar-nav flex-row align-items-center ms-auto'>
+            <ul className='d-flex flex-column flex-lg-row align-items-lg-center ms-auto'>
                 <li className='nav-item' {...dismissMenuProps}>
-                    <NavLink to={NavigationConstants.HOME} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                    <NavLink
+                        to={NavigationConstants.HOME}
+                        className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+                        onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DASHBOARD_CLICK)}
+                    >
                         {I18n.t('home.title')}
                     </NavLink>
                 </li>
                 <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
-                    <NavLink to={NavigationConstants.POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                    <NavLink
+                        to={NavigationConstants.POOLS}
+                        className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+                        onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.POOLS_CLICK)}
+                    >
                         {I18n.t('pools.title')}
                     </NavLink>
                 </li>
                 {address && (
                     <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
-                        <NavLink to={NavigationConstants.MY_SAVINGS} className={({ isActive }) => `navlink position-relative ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                            to={NavigationConstants.MY_SAVINGS}
+                            className={({ isActive }) => `navlink position-relative ${prizes && prizes.length > 0 && 'me-4 me-xl-3'} ${isActive ? 'active' : ''}`}
+                            onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.MY_SAVINGS_CLICK)}
+                        >
                             {I18n.t('mySavings.title')}
-                            {prizes && prizes.length > 3 && (
-                                <div className='position-absolute top-0 start-100 rounded-circle' style={{ width: 15, height: 15, backgroundColor: '#FA7676', transform: 'translate(-50%, -40%)' }} />
+                            {prizes && prizes.length > 0 && (
+                                <div
+                                    className='prize-dot position-absolute top-0 start-100 rounded-circle d-flex align-items-center justify-content-center'
+                                    style={{ transform: 'translate(20%, -50%)' }}
+                                >
+                                    {prizes.length}
+                                </div>
                             )}
                         </NavLink>
                     </li>
                 )}
                 {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
-                <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
-                    <div className='d-flex flex-row'>
-                        <Button outline className='flex-grow-1' onClick={!address ? connectWallet : copyAddress}>
-                            {address ? StringsUtils.trunc(address) : I18n.t('connectWallet')}
-                        </Button>
-                        {address && !inBurgerMenu ? (
-                            <Button
-                                textOnly
-                                className='ms-4'
-                                onClick={() => {
-                                    if (logoutModalRef.current) {
-                                        logoutModalRef.current.show();
-                                    }
-                                }}
-                            >
-                                <img src={Assets.images.logout} />
-                            </Button>
-                        ) : null}
-                    </div>
+                <li className={`nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0 ${inBurgerMenu && 'mb-5'}`}>
+                    <ConnectButton address={address} {...dismissMenuProps} />
                 </li>
+                {address && !inBurgerMenu ? (
+                    <Button
+                        textOnly
+                        className='ms-4'
+                        onClick={() => {
+                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
+                            if (logoutModalRef.current) {
+                                logoutModalRef.current.show();
+                            }
+                        }}
+                    >
+                        <img src={Assets.images.logout} />
+                    </Button>
+                ) : null}
             </ul>
         );
     };
@@ -195,7 +209,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
     const renderBurger = () => {
         return (
             <button
-                className='navbar-toggler d-flex align-items-center justify-content-center'
+                className='navbar-toggler d-flex align-items-center justify-content-center ms-auto'
                 type='button'
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-controls='offcanvasNavbar'
@@ -222,15 +236,15 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                             ]}
                         />
                     </Link>
-                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= 992 ? renderBurger() : renderContent(false)}</div>
+                    <div className='d-flex flex-row align-items-center'>{winSizes.width <= Breakpoints.LG ? renderBurger() : renderContent(false)}</div>
                 </nav>
             </header>
-            {winSizes.width <= 992 && (
+            {winSizes.width <= Breakpoints.LG && (
                 <Menu
                     right
                     customBurgerIcon={false}
                     customCrossIcon={false}
-                    width={winSizes.width < 576 ? winSizes.width : 390}
+                    width={winSizes.width < Breakpoints.SM ? winSizes.width : 390}
                     isOpen={isMenuOpen}
                     onStateChange={(state) => setIsMenuOpen(state.isOpen)}
                 >
@@ -252,6 +266,7 @@ const Header = ({ keplrModalRef, logoutModalRef }: { keplrModalRef: RefObject<Mo
                                     textOnly
                                     className='me-2 me-sm-3'
                                     onClick={() => {
+                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
                                         setIsMenuOpen(false);
                                         if (logoutModalRef.current) {
                                             logoutModalRef.current.show();
