@@ -348,7 +348,7 @@ export default {
         deposit: 'Deposit in Pool',
         depositorsRanking: 'Depositors Ranking',
         getMorePrizes: 'Get more by depositing',
-        mySavingStreak: 'My Saving Streak',
+        mySavingStreak: 'Total prizes won',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {

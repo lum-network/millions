@@ -477,7 +477,9 @@ export const wallet = createModel<RootModel>()({
                     if (!prize) {
                         prizesToClaimSorted.push({
                             ...historyPrize,
-                            state: dayjs(historyPrize.expiresAt).isBefore(dayjs()) ? PrizesConstants.PrizeState.EXPIRED : PrizesConstants.PrizeState.CLAIMED,
+                            // FIXME
+                            // state: dayjs(historyPrize.expiresAt).isBefore(dayjs()) ? PrizesConstants.PrizeState.EXPIRED : PrizesConstants.PrizeState.CLAIMED,
+                            state: PrizesConstants.PrizeState.CLAIMED,
                         });
                     }
                 }
