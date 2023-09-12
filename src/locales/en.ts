@@ -302,7 +302,7 @@ export default {
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: ['Prize value', 'Number of prizes', 'Chance to win'],
+            tableHeaders: ['Prize value', 'Number of prizes'],
             hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
         },
         winningChances: {
