@@ -34,7 +34,7 @@ const Lottie = ({ animationData, className, segments, actions, delay = 500 }: IP
                 });
             }
 
-            lottieInstance.current.playSegments(segments, true);
+            lottieInstance.current?.playSegments(segments, true);
         }, delay);
 
         return () => {

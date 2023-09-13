@@ -7,7 +7,7 @@ import { router } from 'navigation';
 import { Dispatch } from 'redux/store';
 import Assets from 'assets';
 import Loader from './components/Loader/Loader';
-import { Firebase } from '../utils';
+import { Firebase, StorageUtils } from '../utils';
 
 const Core = () => {
     const dispatch = useDispatch<Dispatch>();
@@ -71,6 +71,16 @@ const Core = () => {
 
     useEffect(() => {
         dispatch.app.init().finally(() => null);
+    }, []);
+
+    useEffect(() => {
+        if (location.hash && location.hash.includes('campaign')) {
+            StorageUtils.storeCampaignKey(location.hash.replace('#campaign=', ''));
+        }
+
+        return () => {
+            StorageUtils.deleteCampaignKey();
+        };
     }, []);
 
     return (

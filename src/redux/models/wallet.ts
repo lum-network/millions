@@ -4,7 +4,7 @@ import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@
 import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase, StorageUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
@@ -243,7 +243,7 @@ export const wallet = createModel<RootModel>()({
                     if (lumWallet) {
                         dispatch.wallet.signInLum(lumWallet);
 
-                        WalletUtils.storeAutoconnectKey(provider);
+                        StorageUtils.storeAutoconnectKey(provider);
 
                         await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
                         if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
@@ -467,7 +467,7 @@ export const wallet = createModel<RootModel>()({
                 if (!chainId) {
                     throw new Error(I18n.t('errors.client.chainId', { denom: normalDenom.toUpperCase() }));
                 }
-                const provider = WalletUtils.getAutoconnectProvider();
+                const provider = StorageUtils.getAutoconnectProvider();
 
                 if (provider === null) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));

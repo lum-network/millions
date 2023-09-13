@@ -453,6 +453,24 @@ export default {
             cta: 'Leave pool',
         },
         sponsorHint: 'Sponsorship deposit, it will not be eligible for draws but will increase the prize pool.',
+        influencerCampaignBanner: {
+            title: 'Gift from {{ influencerName }}',
+            description: "You might have won a gift, you should check if you're eligible",
+        },
+        influencerCampaignModal: {
+            title: '{{ influencerName }} is offering\n{{ count }} deposit drops!',
+            toWin: '{{ amount }} {{ denom }} to win!',
+            claimWarning: 'To claim before {{ date }}',
+            cta: 'Apply',
+            placeholder: 'Your code here',
+            hint: '',
+            shareTwitterContent: '',
+            shareStep: {
+                title: 'You registered successfully 🥳',
+                description: 'Congratulations on registering for the deposit drop! The deposit drops winners will be announced on the {{ endDate }}',
+                successStatus: 'Your registration is completed',
+            }
+        },
     },
     withdraw: {
         title: 'Withdraw IBC Asset',

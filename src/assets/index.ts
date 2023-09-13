@@ -16,6 +16,7 @@ import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
 import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
+import gift from './images/gift.svg';
 import info from './images/info.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
@@ -76,6 +77,7 @@ const Assets = {
         discordPlain,
         dollarIcon,
         downArrow,
+        gift,
         info,
         keplr,
         landingArrow,

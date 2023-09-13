@@ -13,7 +13,7 @@ import { useVisibilityState } from 'hooks';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
-import { I18n, KeplrUtils, ToastUtils, WalletUtils, Firebase } from 'utils';
+import { I18n, KeplrUtils, ToastUtils, Firebase, StorageUtils } from 'utils';
 
 import './MainLayout.scss';
 
@@ -43,7 +43,7 @@ const MainLayout = () => {
             await dispatch.wallet.connectOtherWallets(provider);
         };
 
-        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
+        const autoconnectProvider = StorageUtils.getAutoconnectProvider();
 
         if (
             !wallet &&

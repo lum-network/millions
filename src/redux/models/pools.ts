@@ -1,7 +1,7 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
-import { DrawModel, PoolModel } from 'models';
+import { DrawModel, InfluencerCampaignModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
@@ -264,6 +264,33 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setPools(pools);
                 } catch {}
             }
+        },
+        async getActiveCampaign() {
+            try {
+                return new Promise<InfluencerCampaignModel>((resolve) => {
+                    setTimeout(
+                        () =>
+                            resolve({
+                                id: 'xIOcezoicn',
+                                influencer: {
+                                    name: 'Cryptocito',
+                                    username: 'cryptocito',
+                                    picture: 'https://pbs.twimg.com/profile_images/1591066906961870854/4KkBTXic_200x200.jpg',
+                                },
+                                count: 100,
+                                amount: {
+                                    amount: NumbersUtils.convertUnitNumber('100000000').toFixed(),
+                                    denom: DenomsUtils.getNormalDenom('uatom'),
+                                },
+                                startDate: new Date('2023-08-21'),
+                                endDate: new Date('2023-09-23'),
+                                poolId: '2',
+                                code: 'cito123',
+                            }),
+                        200,
+                    );
+                });
+            } catch {}
         },
     }),
 });
