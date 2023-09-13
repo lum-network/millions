@@ -265,7 +265,7 @@ export const pools = createModel<RootModel>()({
                 } catch {}
             }
         },
-        async getActiveCampaign() {
+        async getActiveCampaign(address: string) {
             try {
                 return new Promise<InfluencerCampaignModel>((resolve) => {
                     setTimeout(
@@ -286,6 +286,7 @@ export const pools = createModel<RootModel>()({
                                 endDate: new Date('2023-09-23'),
                                 poolId: '2',
                                 code: 'cito123',
+                                hasParticipated: false,
                             }),
                         200,
                     );

@@ -146,9 +146,9 @@ const MySavings = () => {
 
     useEffect(() => {
         const computeShowBanner = async () => {
-            const activeCampaign = await dispatch.pools.getActiveCampaign();
+            const activeCampaign = await dispatch.pools.getActiveCampaign(lumWallet?.address || '');
             const campaignKey = StorageUtils.getCampaignKey();
-            console.log(activeCampaign, campaignKey);
+
             if (campaignKey && activeCampaign && campaignKey === activeCampaign.id) {
                 const userDeposited = deposits
                     ? deposits.findIndex(
@@ -163,7 +163,6 @@ const MySavings = () => {
                       ) > -1
                     : false;
 
-                console.log(userDeposited);
                 if (userDeposited) {
                     setActiveCampaign(activeCampaign);
                 }
@@ -289,8 +288,15 @@ const MySavings = () => {
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.gift} width='45' />
                     <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.influencer.name })}</h3>
-                    <p className='mb-0'>{I18n.t('mySavings.influencerCampaignBanner.description')}</p>
-                    <Button data-bs-target='#influencer-campaign-modal' data-bs-toggle='modal' className='ms-auto'>
+                    <p
+                        className='mb-0'
+                        dangerouslySetInnerHTML={{
+                            __html: I18n.t(activeCampaign.hasParticipated ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription' : 'mySavings.influencerCampaignBanner.description', {
+                                endDate: dayjs(activeCampaign.endDate).add(1, 'day').format('L'),
+                            }),
+                        }}
+                    />
+                    <Button disabled={activeCampaign.hasParticipated} data-bs-target='#influencer-campaign-modal' data-bs-toggle='modal' className='ms-auto'>
                         {I18n.t('mySavings.influencerCampaignModal.cta')}
                     </Button>
                 </Card>

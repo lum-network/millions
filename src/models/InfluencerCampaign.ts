@@ -13,6 +13,7 @@ class InfluencerCampaign {
     endDate!: Date;
     poolId!: string;
     code!: string;
+    hasParticipated!: boolean;
 }
 
 export default InfluencerCampaign;
