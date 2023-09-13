@@ -181,7 +181,7 @@ export const wallet = createModel<RootModel>()({
                     },
                     walletUrlForStaking: LUM_WALLET_LINK,
                     bip44: {
-                        coinType: 118,
+                        coinType: provider === WalletProvider.Cosmostation ? 880 : 118,
                     },
                     bech32Config: {
                         bech32PrefixAccAddr: LumConstants.LumBech32PrefixAccAddr,
@@ -218,7 +218,6 @@ export const wallet = createModel<RootModel>()({
                             },
                         },
                     ],
-                    coinType: 118,
                     beta: chainId.includes('testnet'),
                     features: ['ibc-transfer'],
                 });
@@ -274,7 +273,7 @@ export const wallet = createModel<RootModel>()({
                                 bech32PrefixValPub: 'cosmosvaloperpub',
                             },
                             bip44: {
-                                coinType: 118,
+                                coinType: provider === WalletProvider.Cosmostation ? 880 : 118,
                             },
                             chainId: 'gaia-devnet',
                             chainName: 'Cosmos Hub [Test Millions]',
