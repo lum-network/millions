@@ -52,8 +52,8 @@ const PoolDetails = () => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
-        dispatch.prizes.getStats(denom || '');
+        dispatch.prizes.fetchPrizes({ page: 0, poolId: poolId });
+        dispatch.prizes.getStats(poolId || '');
     }, [poolId, denom]);
 
     useEffect(() => {

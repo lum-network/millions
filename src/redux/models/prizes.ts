@@ -1,10 +1,11 @@
-import { MetadataModel, PrizeModel, PrizeStatsModel } from 'models';
+import { BiggestAprPrizeModel, MetadataModel, PrizeModel, PrizeStatsModel } from 'models';
 import { RootModel } from './index';
 import { createModel } from '@rematch/core';
 import { LumApi } from 'api';
 
 interface PrizesState {
     biggestPrizes: PrizeModel[];
+    biggestAprPrizes: BiggestAprPrizeModel[];
     prizes: PrizeModel[];
     metadata?: MetadataModel;
     stats: PrizeStatsModel | null;
@@ -15,6 +16,7 @@ export const prizes = createModel<RootModel>()({
     name: 'prizes',
     state: {
         biggestPrizes: [],
+        biggestAprPrizes: [],
         prizes: [],
         stats: null,
         alreadySeenConfetti: false,
@@ -24,6 +26,12 @@ export const prizes = createModel<RootModel>()({
             return {
                 ...state,
                 biggestPrizes,
+            };
+        },
+        setBiggestAprPrizes: (state: PrizesState, biggestAprPrizes: BiggestAprPrizeModel[]): PrizesState => {
+            return {
+                ...state,
+                biggestAprPrizes,
             };
         },
         setPrizes: (state: PrizesState, prizes: PrizeModel[], metadata: MetadataModel): PrizesState => {
@@ -66,11 +74,17 @@ export const prizes = createModel<RootModel>()({
             dispatch.prizes.setBiggestPrizes(biggestPrizes);
         },
 
-        fetchPrizes: async ({ page = 0, denom }: { page: number; denom?: string }) => {
+        fetchBiggestAprPrizes: async () => {
+            const [biggestAprPrizes] = await LumApi.fetchBiggestAprPrizes();
+
+            dispatch.prizes.setBiggestAprPrizes(biggestAprPrizes);
+        },
+
+        fetchPrizes: async ({ page = 0, poolId }: { page: number; poolId?: string }) => {
             dispatch.prizes.resetPrizes();
 
-            if (denom) {
-                const [prizes, metadata] = await LumApi.fetchBiggestPrizesByDenom(page, denom);
+            if (poolId) {
+                const [prizes, metadata] = await LumApi.fetchBiggestPrizesByPoolId(page, poolId);
 
                 dispatch.prizes.setPrizes(prizes, metadata);
             } else {
@@ -80,10 +94,10 @@ export const prizes = createModel<RootModel>()({
             }
         },
 
-        getStats: async (denom: string) => {
+        getStats: async (poolId: string) => {
             dispatch.prizes.resetStats();
 
-            const [stats] = await LumApi.getPrizesStats(denom);
+            const [stats] = await LumApi.getPrizesStats(poolId);
 
             dispatch.prizes.setStats(stats);
         },
