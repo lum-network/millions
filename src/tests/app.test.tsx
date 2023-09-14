@@ -1,13 +1,14 @@
 import React from 'react';
 
+import { LumWalletFactory } from '@lum-network/sdk-javascript';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+
 import App from 'App';
 import { HomePage, LandingPage, MySavingsPage, PoolsPage, Winners } from 'pages';
-import { renderWithRematchStore } from 'utils/tests';
 import store from 'redux/store';
-import { MemoryRouter } from 'react-router-dom';
-import { LumWalletFactory } from '@lum-network/sdk-javascript';
 import { I18n } from 'utils';
+import { renderWithRematchStore } from 'utils/tests';
 
 jest.setTimeout(180000);
 
