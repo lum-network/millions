@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cosmostation/cosmos-client": "^0.0.5",
+    "@cosmostation/extension-client": "^0.1.15",
     "@firebase/analytics": "^0.9.3",
     "@keplr-wallet/types": "^0.11.44",
     "@lum-network/sdk-javascript": "^0.8.9",

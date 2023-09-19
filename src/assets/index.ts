@@ -7,6 +7,7 @@ import coinsStacked from './images/coins_stacked.svg';
 import coinsStacked2 from './images/coins_stacked_2.svg';
 import coinsStackedPurple from './images/coins_stacked_purple.svg';
 import cosmonautCoin from './images/cosmonaut_coin.png';
+import cosmostation from './images/cosmostation.svg';
 import claim from './images/claim.svg';
 import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
@@ -70,6 +71,7 @@ const Assets = {
         coinsStacked,
         coinsStacked2,
         cosmonautCoin,
+        cosmostation,
         claim,
         clock,
         deposit,

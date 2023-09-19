@@ -2,7 +2,7 @@ import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { Coin } from '@lum-network/sdk-javascript/build/types';
 import dayjs from 'dayjs';
-import { I18n } from 'utils';
+import { I18n, WalletUtils } from 'utils';
 import Long from 'long';
 import { showErrorToast } from './toast';
 import { LumClient } from '@lum-network/sdk-javascript';
@@ -112,8 +112,10 @@ class WalletClient {
     };
     // Operations
 
-    ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string) => {
+    ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string, feesDenom: string) => {
         if (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner)) {
+            const fee = WalletUtils.buildTxFee('25000', '500000', feesDenom);
+
             const res = await this.walletClient.sendIbcTokens(
                 fromWallet,
                 toAddress,
@@ -125,10 +127,7 @@ class WalletClient {
                     revisionNumber: Long.fromNumber(0),
                 },
                 dayjs().utc().add(5, 'minutes').unix().valueOf(),
-                {
-                    amount: [],
-                    gas: '200000',
-                },
+                fee,
             );
 
             return {

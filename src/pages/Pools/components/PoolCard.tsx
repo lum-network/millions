@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import { Button, Card, CountDown } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, WalletProvidersUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
@@ -84,14 +84,14 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                     {I18n.t('pools.viewDetails')}
                 </Button>
                 <Button
-                    {...(!KeplrUtils.isKeplrInstalled()
-                        ? {
-                              'data-bs-target': '#get-keplr-modal',
-                              'data-bs-toggle': 'modal',
-                          }
-                        : lumWallet === null
+                    {...(WalletProvidersUtils.isAnyWalletInstalled() && lumWallet === null
                         ? {
                               'data-bs-target': '#choose-wallet-modal',
+                              'data-bs-toggle': 'modal',
+                          }
+                        : !WalletProvidersUtils.isAnyWalletInstalled()
+                        ? {
+                              'data-bs-target': '#get-keplr-modal',
                               'data-bs-toggle': 'modal',
                           }
                         : {
