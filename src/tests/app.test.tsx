@@ -58,7 +58,7 @@ describe('App', () => {
         },
     };
 
-    it('renders without crashing', async () => {
+    it('loads without crashing', async () => {
         render(<App />);
 
         const progressBar = screen.getByRole('progressbar');
@@ -145,17 +145,6 @@ describe('App', () => {
         const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
 
         store.dispatch.wallet.signInLum(testWallet);
-        store.dispatch.wallet.setLumWalletData({
-            balances: [],
-            activities: {
-                result: [],
-                currentPage: 1,
-                pagesTotal: 1,
-                pagesLoaded: 1,
-            },
-            deposits: [],
-            prizes: [],
-        });
 
         // Render My Savings page
         renderWithRematchStore(
@@ -200,19 +189,9 @@ describe('App', () => {
 
         const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
 
+        // Fake log in to enable the transfer button
         act(() => {
             store.dispatch.wallet.signInLum(testWallet);
-            store.dispatch.wallet.setLumWalletData({
-                balances: [],
-                activities: {
-                    result: [],
-                    currentPage: 1,
-                    pagesTotal: 1,
-                    pagesLoaded: 1,
-                },
-                deposits: [],
-                prizes: [],
-            });
             store.dispatch.wallet.setOtherWalletData({
                 denom: 'atom',
                 balances: [],
