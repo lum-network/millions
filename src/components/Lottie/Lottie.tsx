@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import LottieReact, { Action } from 'lottie-react';
-import lottieReact from 'lottie-web';
+import lottieReact, { AnimationItem } from 'lottie-web';
 interface IProps {
     animationData: unknown;
     className?: string;
@@ -12,7 +12,7 @@ interface IProps {
 
 const Lottie = ({ animationData, className, segments, actions, delay = 500 }: IProps) => {
     const element = useRef<HTMLDivElement>(null);
-    const lottieInstance = useRef<any>();
+    const lottieInstance = useRef<AnimationItem | null>(null);
 
     useEffect(() => {
         if (!segments) {
@@ -21,7 +21,10 @@ const Lottie = ({ animationData, className, segments, actions, delay = 500 }: IP
 
         setTimeout(() => {
             if (element.current) {
-                lottieInstance.current?.destroy();
+                if (lottieInstance.current) {
+                    lottieInstance.current.destroy();
+                }
+
                 lottieInstance.current = lottieReact.loadAnimation({
                     container: element.current,
                     renderer: 'svg',
@@ -34,7 +37,9 @@ const Lottie = ({ animationData, className, segments, actions, delay = 500 }: IP
                 });
             }
 
-            lottieInstance.current.playSegments(segments, true);
+            if (lottieInstance.current && lottieInstance.current.playSegments) {
+                lottieInstance.current.playSegments(segments, true);
+            }
         }, delay);
 
         return () => {
