@@ -358,6 +358,10 @@ export default {
             claimPrize: 'Claim Prize',
             deposit: 'Deposit',
         },
+        transactionTooltips: {
+            claim: '{{ count }} prizes claimed',
+            withdraw: '{{ count }} deposits withdrawn',
+        },
         txListHeaders: ['Type', 'Hash', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
