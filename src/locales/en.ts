@@ -233,6 +233,7 @@ export default {
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     leapKeystoreChange: 'Leap Key store/account has changed',
+    cosmostationKeystoreChange: 'Cosmostation Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         keplr: {
@@ -246,6 +247,7 @@ export default {
         download: 'Download Keplr for Chrome',
     },
     chooseWalletModal: {
+        cosmostation: 'Cosmostation Wallet',
         keplr: 'Keplr Wallet',
         leap: 'Leap Wallet',
     },
@@ -374,7 +376,7 @@ export default {
                 },
                 {
                     title: 'Select the tokens to transfer',
-                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your {{ provider }} wallet',
                 },
             ],
             cta: 'Transfer',
@@ -388,7 +390,7 @@ export default {
                     subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws!\nOR Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -398,7 +400,7 @@ export default {
                     subtitle: 'Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -441,7 +443,7 @@ export default {
                 },
                 {
                     title: 'Select the savings to redeem',
-                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your {{ provider }} wallet',
                 },
             ],
             warnings: {

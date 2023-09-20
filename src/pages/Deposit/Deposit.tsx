@@ -108,6 +108,7 @@ const Deposit = () => {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     const now = Date.now();
