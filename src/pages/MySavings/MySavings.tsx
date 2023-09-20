@@ -1,9 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,7 +11,7 @@ import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
-import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants, PrizesConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DepositModel, LeaderboardItemModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils } from 'utils';
@@ -25,12 +23,13 @@ import TransactionsTable from './components/TransationsTable/TransactionsTable';
 import ClaimModal from './components/Modals/Claim/Claim';
 import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
+import PrizesHistoryTable from './components/PrizesHistoryTable/PrizesHistoryTable';
 
 import './MySavings.scss';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti } = useSelector(
-        (state: RootState) => ({
+    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti, totalPrizesWon } =
+        useSelector((state: RootState) => ({
             lumWallet: state.wallet.lumWallet,
             otherWallets: state.wallet.otherWallets,
             balances: state.wallet.lumWallet?.balances,
@@ -43,17 +42,18 @@ const MySavings = () => {
             isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
             isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
             alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-        }),
-    );
+            totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
+        }));
 
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const leaderboardSectionRef = useRef<HTMLDivElement>(null);
@@ -63,8 +63,8 @@ const MySavings = () => {
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
-    const prizesToClaim = prizes ? prizes.slice(0, 3) : null;
-    const leaderboardPool = PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId);
+    const leaderboardPool = leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
+    const prizesToClaim = prizes && prizes.filter((prize) => prize.state === PrizesConstants.PrizeState.PENDING);
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {
@@ -78,7 +78,7 @@ const MySavings = () => {
         };
 
         if (!isReloadingInfos) {
-            getLeaderboardUserRank();
+            getLeaderboardUserRank().finally(() => null);
         }
 
         if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
@@ -227,23 +227,51 @@ const MySavings = () => {
         );
     };
 
-    const renderPrizeToClaim = (prize: Prize, index: number) => {
-        if (!prize.amount) {
-            return null;
-        }
-
-        const amount = Number(NumbersUtils.convertUnitNumber(prize.amount.amount));
-
+    const renderTotalPrizesWon = (): JSX.Element => {
         return (
-            <div className={`d-flex flex-row align-items-center ${index > 0 ? 'mt-4' : ''}`} key={`prize-to-claim-${index}`}>
-                <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon' alt='Denom' />
-                <div className='d-flex flex-column asset-amount'>
-                    <span>
-                        <SmallerDecimal nb={numeral(amount).format(amount < 1 ? '0,0[.]000000' : '0,0')} className='me-2' />
-                        {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
-                    </span>
-                    {prize.expiresAt ? <p className='expiration-date mb-0'>{I18n.t('mySavings.prizeExpiration', { expiration: dayjs(prize.expiresAt).fromNow() })}</p> : null}
-                </div>
+            <div className='d-flex flex-column prize-to-claim'>
+                {totalPrizesWon && Object.keys(totalPrizesWon).length > 0 ? (
+                    <>
+                        {Object.entries(totalPrizesWon).map(([denom, amount]) => {
+                            const icon = DenomsUtils.getIconFromDenom(denom);
+                            const normalDenom = DenomsUtils.getNormalDenom(denom);
+                            const price = prices?.[normalDenom];
+
+                            return (
+                                <div className='d-flex flex-row align-items-center justify-content-between mb-3' key={denom}>
+                                    <div className='d-flex flex-row align-items-center'>
+                                        {icon ? <img src={icon} alt={`${denom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                                        <div className='d-flex flex-column asset-amount'>
+                                            <span>
+                                                <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
+                                            </span>
+                                            <p className='p-0 m-0 subtitle'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS}>
+                            {I18n.t('mySavings.getMorePrizes')}
+                        </Button>
+                    </>
+                ) : (
+                    <div className='d-flex flex-column align-items-center justify-content-center text-center'>
+                        <Lottie
+                            className='cosmonaut-with-balloons'
+                            animationData={cosmonautWithBalloons}
+                            segments={[
+                                [0, 30],
+                                [30, 128],
+                            ]}
+                        />
+                        <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
+                        <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
+                        <Button to={NavigationConstants.POOLS} className='mt-4'>
+                            {I18n.t('mySavings.deposit')}
+                        </Button>
+                    </div>
+                )}
             </div>
         );
     };
@@ -285,6 +313,7 @@ const MySavings = () => {
                     <div>
                         <h2>{I18n.t('mySavings.totalBalance')}</h2>
                         <Card className='balance-card'>
+                            <img src={Assets.images.orbit} className='orbit' />
                             <div className='my-auto d-flex flex-column justify-content-center'>
                                 {totalBalancePrice ? (
                                     <SmallerDecimal
@@ -315,41 +344,9 @@ const MySavings = () => {
                             <div className='mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                                    {I18n.t('mySavings.claimPrize')}
+                                    {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
-                                <Card className='glow-bg'>
-                                    <div className='d-flex flex-column prize-to-claim'>
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
-                                            <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button
-                                                    className='my-savings-cta mt-4'
-                                                    data-bs-toggle='modal'
-                                                    data-bs-target='#claimModal'
-                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
-                                                >
-                                                    {I18n.t('mySavings.claim')}
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie
-                                                    className='cosmonaut-with-balloons'
-                                                    animationData={cosmonautWithBalloons}
-                                                    segments={[
-                                                        [0, 30],
-                                                        [30, 128],
-                                                    ]}
-                                                />
-                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
-                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
-                                                    {I18n.t('mySavings.deposit')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Card>
+                                <Card className='glow-bg'>{renderTotalPrizesWon()}</Card>
                             </div>
                         ) : null}
 
@@ -389,6 +386,41 @@ const MySavings = () => {
                                 </div>
                             )}
                         </Card>
+                        {prizes && prizes.length ? (
+                            <>
+                                <div className='mt-5 p-2 d-flex align-items-center justify-content-between'>
+                                    <h2>
+                                        <img src={Assets.images.trophyPurple} alt='Trophy' className='me-3 mb-1' width='28' />
+                                        {I18n.t('mySavings.prizesHistory')}
+                                    </h2>
+                                    {prizesToClaim && prizesToClaim.length ? (
+                                        <Button data-bs-toggle='modal' data-bs-target='#claimModal' onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}>
+                                            {I18n.t('mySavings.claimAll')}
+                                        </Button>
+                                    ) : null}
+                                </div>
+                                <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5 glow-bg'>
+                                    <PrizesHistoryTable
+                                        prizes={
+                                            winSizes.width < Breakpoints.MD || (winSizes.width > Breakpoints.LG && winSizes.width < Breakpoints.XL)
+                                                ? prizes
+                                                : prizes.slice((prizesHistoryPage - 1) * 5, (prizesHistoryPage - 1) * 5 + 5)
+                                        }
+                                        pagination={
+                                            prizes.length > 5
+                                                ? {
+                                                      page: prizesHistoryPage,
+                                                      pagesTotal: Math.ceil(prizes.length / 5),
+                                                      hasNextPage: prizesHistoryPage < Math.ceil(prizes.length / 5),
+                                                      hasPreviousPage: prizesHistoryPage > 1,
+                                                  }
+                                                : undefined
+                                        }
+                                        onPageChange={setPrizesHistoryPage}
+                                    />
+                                </Card>
+                            </>
+                        ) : null}
                         {activities && activities.result.length > 0 ? (
                             <>
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
@@ -462,47 +494,15 @@ const MySavings = () => {
                         ) : null}
                     </div>
                 </div>
-                <div className='col-12 col-lg-4 col-xxl-3 position-sticky top-0'>
+                <div className='col-12 col-lg-4 col-xxl-3 side-bar'>
                     <div className='row'>
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
                                 <h2>
                                     <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
-                                    {I18n.t('mySavings.claimPrize')}
+                                    {I18n.t('mySavings.mySavingStreak')}
                                 </h2>
-                                <Card className='glow-bg'>
-                                    <div className='d-flex flex-column prize-to-claim'>
-                                        {prizesToClaim && prizesToClaim.length > 0 ? (
-                                            <>
-                                                {prizesToClaim.map(renderPrizeToClaim)}
-                                                <Button
-                                                    className='my-savings-cta mt-4'
-                                                    data-bs-toggle='modal'
-                                                    data-bs-target='#claimModal'
-                                                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.CLAIM_PRIZE_CLICK)}
-                                                >
-                                                    {I18n.t('mySavings.claim')}
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className='d-flex flex-column align-items-center justify-content-center text-center'>
-                                                <Lottie
-                                                    className='cosmonaut-with-balloons'
-                                                    animationData={cosmonautWithBalloons}
-                                                    segments={[
-                                                        [0, 30],
-                                                        [30, 128],
-                                                    ]}
-                                                />
-                                                <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
-                                                <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                                                <Button to={NavigationConstants.POOLS} className='mt-4'>
-                                                    {I18n.t('mySavings.deposit')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Card>
+                                <Card className='glow-bg'>{renderTotalPrizesWon()}</Card>
                             </div>
                         ) : null}
                         <div className='col-12 col-md-6 col-lg-12 mt-5'>
@@ -534,7 +534,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            {prizesToClaim && <ClaimModal prizes={prizesToClaim} prices={prices} pools={pools} />}
+            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

@@ -86,12 +86,12 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmo
     return '0';
 };
 
-export const buildTxFee = (fee: string, gas: string): Fee => {
+export const buildTxFee = (fee: string, gas: string, denom = LumConstants.MicroLumDenom): Fee => {
     return {
         amount: [
             {
                 amount: fee,
-                denom: LumConstants.MicroLumDenom,
+                denom,
             },
         ],
         gas,

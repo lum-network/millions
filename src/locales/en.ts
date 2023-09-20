@@ -17,6 +17,15 @@ export default {
         seconds_one: 'Sec',
         seconds_other: 'Sec',
     },
+    tags: {
+        claimed: 'Claimed',
+        unclaimed: 'To be claimed',
+        expired: 'Expired',
+        expiredTooltip: 'This Prize has expired and its amount has been returned to the future Prize Pool. You have 30 days to claim a Prize once it is won.',
+        success: 'Success',
+        unbonding: 'Unbonding',
+        deposit: 'Deposit in progress',
+    },
     common: {
         continue: 'Continue',
         cancel: 'Cancel',
@@ -31,6 +40,8 @@ export default {
         loading: 'Loading...',
         prev: 'Prev',
         next: 'Next',
+        batchProgress: 'Transactions batch {{ count }}/{{ total }}',
+        batchTooltip: '',
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',
@@ -89,6 +100,7 @@ export default {
         deposit: 'Depositing to {{ denom }} pool...',
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
+        claimPrizeBatch: 'Claiming prizes batch {{ count }}/{{ total }}...',
         claimAndCompound: 'Compounding prizes...',
         withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
@@ -155,7 +167,7 @@ export default {
                 {
                     title: 'How can I participate?',
                     answer:
-                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr or a Leap Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
                         'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
                         'Check the <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
@@ -233,6 +245,7 @@ export default {
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     leapKeystoreChange: 'Leap Key store/account has changed',
+    cosmostationKeystoreChange: 'Cosmostation Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         keplr: {
@@ -246,6 +259,7 @@ export default {
         download: 'Download Keplr for Chrome',
     },
     chooseWalletModal: {
+        cosmostation: 'Cosmostation Wallet',
         keplr: 'Keplr Wallet',
         leap: 'Leap Wallet',
     },
@@ -273,7 +287,7 @@ export default {
         tvl: 'TVL:',
         apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
-        viewDetails: 'Chance to win',
+        viewDetails: 'My chances to win',
         drawEndAt: 'Next draw in:',
         poolId: 'Pool',
     },
@@ -329,9 +343,14 @@ export default {
         assets: 'Available Assets',
         totalBalance: 'Total Deposits',
         claim: 'Claim',
+        claimAll: 'Claim All',
         claimPrize: 'Claim Prize',
+        prizesHistory: 'Prizes History',
+        prizeWon: 'Prize Won',
         deposit: 'Deposit in Pool',
         depositorsRanking: 'Depositors Ranking',
+        getMorePrizes: 'Get more by depositing',
+        mySavingStreak: 'Total prizes won',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {
@@ -343,6 +362,8 @@ export default {
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         depositDrop: 'Deposit Drop',
+        depositDropHint: 'Congrats, you\'ve got a Deposit Drop!\n' +
+            'It means a temporary boost in your deposit, loaned to your account. You have more chances to win in upcoming draws so good luck Cosmonaut!',
         transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',
@@ -374,7 +395,7 @@ export default {
                 },
                 {
                     title: 'Select the tokens to transfer',
-                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the tokens you want to transfer and accept the transaction on your {{ provider }} wallet',
                 },
             ],
             cta: 'Transfer',
@@ -388,7 +409,7 @@ export default {
                     subtitle: 'Click on “Claim & Compound” to get your prizes and increase your chances for the next draws!\nOR Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -398,7 +419,7 @@ export default {
                     subtitle: 'Click on “Claim my prizes” to simply get your prizes',
                 },
                 {
-                    title: 'Confirm your claim in Keplr',
+                    title: 'Confirm your claim in {{ provider }}',
                     subtitle: 'Accept the transaction to claim your prizes!',
                 },
             ],
@@ -441,7 +462,7 @@ export default {
                 },
                 {
                     title: 'Select the savings to redeem',
-                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your Keplr wallet',
+                    subtitle: 'Select the savings you want to redeem\nand accept the transaction on your {{ provider }} wallet',
                 },
             ],
             warnings: {
@@ -521,6 +542,7 @@ export default {
         depositDeltaHint:
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
+        depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
@@ -530,6 +552,12 @@ export default {
             title: 'You could be here!',
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
+        },
+        card: {
+            apr: 'APR',
+            pool: 'Pool',
+            deposit: 'Deposit',
+            win: 'Win',
         },
     },
     leaderboard: {

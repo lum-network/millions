@@ -7,7 +7,7 @@ import { Button, Card, Loading, SmallerDecimal } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { LeaderboardItemModel, LumWalletModel } from 'models';
-import { DenomsUtils, I18n, KeplrUtils, NumbersUtils, StringsUtils } from 'utils';
+import { DenomsUtils, I18n, WalletProvidersUtils, NumbersUtils, StringsUtils } from 'utils';
 import numeral from 'numeral';
 
 import './Leaderboard.scss';
@@ -243,7 +243,7 @@ const Leaderboard = (props: Props) => {
                     {...(!lumWallet
                         ? {
                               'data-bs-toggle': 'modal',
-                              'data-bs-target': !KeplrUtils.isKeplrInstalled() ? '#get-keplr-modal' : '#choose-wallet-modal',
+                              'data-bs-target': WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal',
                           }
                         : {
                               to: NavigationConstants.MY_SAVINGS,
