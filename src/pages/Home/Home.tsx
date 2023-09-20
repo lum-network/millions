@@ -63,7 +63,7 @@ const Home = () => {
                                             .map((prize, index) => (
                                                 <BigWinnerCard
                                                     key={index}
-                                                    price={prize.usdTokenValue}
+                                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
                                                     address={prize.winnerAddress}
                                                     prize={prize.amount.amount}
                                                     denom={prize.amount.denom}

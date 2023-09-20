@@ -18,6 +18,7 @@ import discordPlain from './images/discord_plain.svg';
 import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
 import info from './images/info.svg';
+import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
@@ -81,6 +82,7 @@ const Assets = {
         dollarIcon,
         downArrow,
         info,
+        infoWhite,
         keplr,
         landingArrow,
         landingDoubleArrows,

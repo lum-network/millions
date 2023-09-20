@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
-import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletProvidersUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
 
@@ -28,7 +27,8 @@ interface SetWalletDataPayload {
         pagesTotal: number;
     };
     deposits?: AggregatedDepositModel[];
-    prizes?: Prize[];
+    prizes?: PrizeModel[];
+    totalPrizesWon?: { [denom: string]: number };
 }
 
 interface GetActivitiesPayload {
@@ -45,6 +45,13 @@ interface SetOtherWalletPayload {
 interface DepositToPoolPayload {
     amount: string;
     pool: PoolModel;
+}
+
+interface ClaimPrizesPayload {
+    prizes: PrizeModel[];
+    batchTotal: number;
+    batch: number;
+    onBatchComplete: (batch: number) => void;
 }
 
 interface RetryDepositPayload {
@@ -70,6 +77,7 @@ interface WalletState {
         [denom: string]: OtherWalletModel;
     };
     autoReloadTimestamp: number;
+    prizesMutex: boolean;
 }
 
 export const wallet = createModel<RootModel>()({
@@ -78,6 +86,7 @@ export const wallet = createModel<RootModel>()({
         lumWallet: null,
         otherWallets: {},
         autoReloadTimestamp: 0,
+        prizesMutex: false,
     } as WalletState,
     reducers: {
         signInLum(state, payload: LumWallet): WalletState {
@@ -94,6 +103,7 @@ export const wallet = createModel<RootModel>()({
                     },
                     deposits: [],
                     prizes: [],
+                    totalPrizesWon: {},
                 },
             };
         },
@@ -107,6 +117,7 @@ export const wallet = createModel<RootModel>()({
                         activities: payload.activities || state.lumWallet.activities,
                         deposits: payload.deposits || state.lumWallet.deposits,
                         prizes: payload.prizes || state.lumWallet.prizes,
+                        totalPrizesWon: payload.totalPrizesWon || state.lumWallet.totalPrizesWon,
                     },
                 }),
             };
@@ -142,6 +153,12 @@ export const wallet = createModel<RootModel>()({
             return {
                 ...state,
                 autoReloadTimestamp: payload,
+            };
+        },
+        setPrizesMutex(state, payload: boolean): WalletState {
+            return {
+                ...state,
+                prizesMutex: payload,
             };
         },
     },
@@ -344,10 +361,10 @@ export const wallet = createModel<RootModel>()({
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
             await dispatch.stats.fetchStats();
-            await dispatch.pools.fetchPools();
+            await dispatch.pools.fetchPools(null);
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.wallet.getLumWalletBalances(address);
-            await dispatch.wallet.getPrizes(address);
+            await dispatch.wallet.fetchPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
@@ -439,24 +456,82 @@ export const wallet = createModel<RootModel>()({
                 console.warn(e);
             }
         },
-        async getPrizes(address: string) {
+        async fetchPrizes(address: string, state) {
+            if (state.wallet.prizesMutex) {
+                return;
+            }
+
+            dispatch.wallet.setPrizesMutex(true);
+
             try {
-                const res = await LumClient.getWalletPrizes(address);
+                const prizesToClaim = await LumClient.getWalletPrizes(address);
+                let prizesToClaimSorted: PrizeModel[] = [];
 
-                if (res) {
+                if (prizesToClaim) {
+                    prizesToClaimSorted = prizesToClaim.prizes
+                        .sort((a, b) => {
+                            const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
+                            const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
+
+                            return bAmount - aAmount;
+                        })
+                        .map((prize) => ({
+                            ...prize,
+                            drawId: prize.drawId.toNumber(),
+                            poolId: prize.poolId.toNumber(),
+                            prizeId: prize.prizeId.toNumber(),
+                            createdAtHeight: prize.createdAtHeight.toNumber(),
+                            updatedAtHeight: prize.updatedAtHeight.toNumber(),
+                            amount: {
+                                amount: Number(prize.amount?.amount || '0'),
+                                denom: prize.amount?.denom ?? '',
+                            },
+                            id: `${prize.poolId}-${prize.drawId}-${prize.prizeId}`,
+                            state: PrizesConstants.PrizeState.PENDING,
+                        }));
+
                     dispatch.wallet.setLumWalletData({
-                        prizes: res.prizes
-                            .filter((prize) => prize.state === PrizeState.PRIZE_STATE_PENDING)
-                            .sort((a, b) => {
-                                const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
-                                const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
-
-                                return bAmount - aAmount;
-                            }),
+                        prizes: prizesToClaimSorted,
                     });
                 }
+
+                const [prizesHistory] = await LumApi.fetchPrizesByAddress(address);
+
+                for (const historyPrize of prizesHistory) {
+                    const prize = prizesToClaimSorted.find((prize) => prize.id === historyPrize.id);
+
+                    if (!prize) {
+                        prizesToClaimSorted.push({
+                            ...historyPrize,
+                            // FIXME
+                            // state: dayjs(historyPrize.expiresAt).isBefore(dayjs()) ? PrizesConstants.PrizeState.EXPIRED : PrizesConstants.PrizeState.CLAIMED,
+                            state: PrizesConstants.PrizeState.CLAIMED,
+                        });
+                    }
+                }
+
+                const totalPrizesWon: { [denom: string]: number } = {};
+
+                for (const prize of prizesToClaimSorted) {
+                    if (prize.state !== PrizesConstants.PrizeState.CLAIMED) {
+                        continue;
+                    }
+
+                    if (totalPrizesWon[prize.amount.denom]) {
+                        totalPrizesWon[prize.amount.denom] += NumbersUtils.convertUnitNumber(prize.amount.amount);
+                    } else {
+                        totalPrizesWon[prize.amount.denom] = NumbersUtils.convertUnitNumber(prize.amount.amount);
+                    }
+                }
+
+                dispatch.wallet.setLumWalletData({
+                    prizes: prizesToClaimSorted,
+                    totalPrizesWon,
+                });
             } catch (e) {
                 console.warn(e);
+            } finally {
+                dispatch.wallet.setPrizesMutex(false);
             }
         },
         async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
@@ -684,34 +759,65 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async claimPrizes(payload: Prize[], state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.claimPrize') });
+            const { prizes, batch, batchTotal, onBatchComplete } = payload;
+
+            let prizesToClaim = [...prizes];
+
+            const LIMIT = 6;
+
+            const toastId = ToastUtils.showLoadingToast({ content: I18n.t(batchTotal > 1 ? 'pending.claimPrize' : 'pending.claimPrize', { count: 1, total: batchTotal }) });
+
+            let lastBatch = 0;
 
             try {
                 if (!lumWallet) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.claimPrizes(lumWallet.innerWallet, payload);
+                let result = null;
 
-                if (!result || (result && result.error)) {
-                    throw new Error(result?.error || undefined);
+                for (let i = batch; i < batchTotal; i++) {
+                    lastBatch = i;
+
+                    if (i > 0) {
+                        ToastUtils.updateToastContent(toastId, {
+                            content: I18n.t('pending.claimPrizeBatch', { count: i + 1, total: batchTotal }),
+                        });
+                    }
+
+                    const toClaim = prizesToClaim.slice(0, LIMIT);
+
+                    result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    } else {
+                        const newPrizes = prizesToClaim.slice(toClaim.length);
+                        prizesToClaim = [...newPrizes];
+
+                        dispatch.wallet.setLumWalletData({
+                            prizes: [...newPrizes],
+                        });
+                        onBatchComplete(i + 1);
+                    }
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
                     content: I18n.t('success.claimPrize'),
                 });
-
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
+                onBatchComplete(lastBatch);
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimPrize') });
                 return null;
             }
         },
-        async claimAndCompoundPrizes(payload: Prize[], state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimAndCompoundPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+            const { prizes } = payload;
             const claimRes = await dispatch.wallet.claimPrizes(payload);
 
             if (!claimRes || (claimRes && claimRes.error)) {
@@ -723,7 +829,7 @@ export const wallet = createModel<RootModel>()({
                 pool: PoolModel;
             }[] = [];
 
-            for (const prize of payload) {
+            for (const prize of prizes) {
                 if (!prize.amount) continue;
 
                 const existingItemIndex = toDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
@@ -733,7 +839,7 @@ export const wallet = createModel<RootModel>()({
                     if (!pool) continue;
 
                     toDeposit.push({
-                        amount: prize.amount.amount,
+                        amount: prize.amount.amount.toPrecision(),
                         pool,
                     });
                 } else {

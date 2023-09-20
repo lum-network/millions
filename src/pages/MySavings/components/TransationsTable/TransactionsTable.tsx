@@ -6,7 +6,7 @@ import { LumMessages } from '@lum-network/sdk-javascript';
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
-import { TransactionModel } from 'models';
+import { MetadataModel, TransactionModel } from 'models';
 import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils, TransactionsUtils } from 'utils';
 
@@ -18,12 +18,7 @@ const TransactionsTable = ({
     onPageChange,
 }: {
     transactions: TransactionModel[];
-    pagination?: {
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-        pagesTotal: number;
-        page: number;
-    };
+    pagination?: Omit<MetadataModel, 'itemsCount' | 'itemsTotal' | 'limit'>;
     onPageChange: (page: number) => void;
 }) => {
     const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
@@ -142,8 +137,10 @@ const TransactionsTable = ({
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn'
                         disabled={smallTableVisibleItem === 0 && !pagination?.hasPreviousPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 0 && pagination) {
-                                onPageChange(pagination.page - 1);
+                            if (smallTableVisibleItem === 0) {
+                                if (pagination) {
+                                    onPageChange(pagination.page - 1);
+                                }
                                 setSmallTableVisibleItem(4);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem - 1);
@@ -157,8 +154,10 @@ const TransactionsTable = ({
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
                         disabled={((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem === transactions.length - 1 && !pagination?.hasNextPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 4 && pagination) {
-                                onPageChange(pagination.page + 1);
+                            if (smallTableVisibleItem === 4) {
+                                if (pagination) {
+                                    onPageChange(pagination.page + 1);
+                                }
                                 setSmallTableVisibleItem(0);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem + 1);

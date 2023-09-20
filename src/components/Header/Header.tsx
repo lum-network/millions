@@ -13,7 +13,7 @@ import { ModalHandlers } from 'components/Modal/Modal';
 import { useWindowSize } from 'hooks';
 import { Firebase, I18n } from 'utils';
 import { RootState } from 'redux/store';
-import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants, PrizesConstants } from 'constant';
 
 import ConnectButton from '../ConnectButton/ConnectButton';
 
@@ -145,6 +145,8 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
             );
         }
 
+        const prizesPendingLength = (prizes && prizes.filter((prize) => prize.state === PrizesConstants.PrizeState.PENDING).length) || 0;
+
         return (
             <ul className='d-flex flex-column flex-lg-row align-items-lg-center ms-auto'>
                 <li className='nav-item' {...dismissMenuProps}>
@@ -169,16 +171,16 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                     <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
                         <NavLink
                             to={NavigationConstants.MY_SAVINGS}
-                            className={({ isActive }) => `navlink position-relative ${prizes && prizes.length > 0 && 'me-4 me-xl-3'} ${isActive ? 'active' : ''}`}
+                            className={({ isActive }) => `navlink position-relative ${prizesPendingLength && 'me-4 me-xl-3'} ${isActive ? 'active' : ''}`}
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.MY_SAVINGS_CLICK)}
                         >
                             {I18n.t('mySavings.title')}
-                            {prizes && prizes.length > 0 && (
+                            {!!prizesPendingLength && (
                                 <div
                                     className='prize-dot position-absolute top-0 start-100 rounded-circle d-flex align-items-center justify-content-center'
                                     style={{ transform: 'translate(20%, -50%)' }}
                                 >
-                                    {prizes.length}
+                                    {prizesPendingLength}
                                 </div>
                             )}
                         </NavLink>
@@ -199,7 +201,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             }
                         }}
                     >
-                        <img src={Assets.images.logout} />
+                        <img src={Assets.images.logout} alt='logout' />
                     </Button>
                 ) : null}
             </ul>
@@ -273,7 +275,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                                         }
                                     }}
                                 >
-                                    <img src={Assets.images.logout} />
+                                    <img src={Assets.images.logout} alt='logout' />
                                 </Button>
                             ) : null}
                             <button className='close-btn d-flex align-items-center justify-content-center' type='button' aria-label='Close burger menu' {...dismissMenuProps}>

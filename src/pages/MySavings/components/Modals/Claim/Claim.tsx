@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import Assets from 'assets';
-import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip } from 'components';
+import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchProgress } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { useVisibilityState } from 'hooks';
-import { PoolModel } from 'models';
+import { PoolModel, PrizeModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
@@ -20,7 +19,7 @@ import { confettis } from 'utils/confetti';
 import './Claim.scss';
 
 interface Props {
-    prizes: Prize[];
+    prizes: PrizeModel[];
     prices: { [key: string]: number };
     pools: PoolModel[];
 }
@@ -129,6 +128,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [shareInfos, setShareInfos] = useState<ShareInfos | null>(null);
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
+    const [batch, setBatch] = useState(0);
+    const [batchTotal, setBatchTotal] = useState(-1);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -149,12 +150,26 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CONFIRMED);
         }
 
+        const LIMIT = 6;
+        const batchCount = Math.ceil(prizes.length / LIMIT);
+
+        setBatchTotal(batchCount);
         setCurrentStep(currentStep + 1);
 
-        const res = await (compound ? dispatch.wallet.claimAndCompoundPrizes(prizes) : dispatch.wallet.claimPrizes(prizes));
+        const onBatchComplete = (batch: number) => {
+            setBatch(batch);
+        };
+
+        const payload = { prizes, batch, batchTotal: batchCount, onBatchComplete };
+
+        const action = compound ? dispatch.wallet.claimAndCompoundPrizes : dispatch.wallet.claimPrizes;
+
+        const res = await action(payload);
 
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep);
+            setBatch(0);
+            setBatchTotal(0);
         } else {
             const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
             const amount: LumTypes.Coin[] = [];
@@ -201,7 +216,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                     pool,
                 });
             } else {
-                prizesToDeposit[existingItemIndex].amount = (Number(prizesToDeposit[existingItemIndex].amount) + Number(prize.amount.amount)).toFixed();
+                prizesToDeposit[existingItemIndex].amount = prizesToDeposit[existingItemIndex].amount + prize.amount.amount;
             }
         }
 
@@ -220,6 +235,8 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setClaimOnly(false);
             setShareInfos(null);
             setShareState(null);
+            setBatchTotal(-1);
+            setBatch(0);
         };
 
         const claimModal = document.getElementById('claimModal');
@@ -237,7 +254,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
 
     const blockCompound = (
         toDeposit: {
-            amount: string;
+            amount: number;
             pool: PoolModel;
         }[],
     ) => {
@@ -283,6 +300,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                         <Card flat withoutPadding className='fees-warning p-4 my-4'>
                                             {I18n.t('mySavings.claimOnlyModal.info')}
                                         </Card>
+                                        {batchTotal > 1 ? <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mb-4' /> : null}
                                         <div className='d-flex flex-column align-items-stretch'>
                                             <Button type='button' outline onClick={() => onClaim(false)} loading={isLoading} disabled={isLoading} className='w-100 me-3'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimBtn')}
@@ -299,7 +317,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                 <img src={Assets.images.trophy} alt='Trophy' className='d-none d-sm-block me-3' />
                                                 {I18n.t('mySavings.claimModal.cardTitle')}
                                             </div>
-                                            <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center mt-2'>
+                                            <div className='card-subtitle d-flex flex-row align-items-baseline justify-content-center'>
                                                 <img src={Assets.images.yellowStar} alt='Star' className='me-2' width='25' />$
                                                 {numeral(
                                                     prizes.reduce(
@@ -313,14 +331,12 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                             </div>
                                         </div>
                                         <div className={isLoading ? 'step-1 d-flex flex-column align-items-stretch w-100' : 'step-1'}>
-                                            <div className='w-100 mt-3'>
+                                            <div className='w-100 mt-1 scrollable'>
                                                 {prizes.map((prize, index) =>
                                                     prize.amount ? (
-                                                        <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-4' : ''}`}>
+                                                        <div key={`prize-to-claim-${index}`} className={`prize-card ${index > 0 ? 'mt-3' : ''}`}>
                                                             <div className='d-flex flex-column flex-sm-row align-items-sm-end justify-content-between text-start mb-2'>
-                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
-                                                                <br />
-                                                                {I18n.t('pools.poolId', { poolId: prize.poolId.toString() })} -{' '}
+                                                                ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} -{' '}
                                                                 {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId.toString() })}
                                                                 <div className='date'>{dayjs(prize.createdAt).format('dddd, MMMM D h:mm A')}</div>
                                                             </div>
@@ -351,6 +367,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                                     </span>
                                                     {I18n.t('deposit.feesWarning')}
                                                 </Card>
+                                                {batchTotal > 1 ? <TransactionBatchProgress batch={batch} batchTotal={batchTotal} /> : null}
                                                 <span data-tooltip-id='claim-and-compound-hint' data-tooltip-html={I18n.t('mySavings.claimModal.claimAndCompoundHint')} className='ms-2 mb-2'>
                                                     <Button
                                                         type='button'
