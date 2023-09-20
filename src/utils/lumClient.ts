@@ -198,30 +198,37 @@ class LumClient {
         return { balances };
     };
 
-    getWalletActivities = async (address: string, page = 1) => {
+    getWalletActivities = async (address: string) => {
         if (this.client === null) {
             return null;
         }
 
-        const LIMIT = 5;
+        const txs = [];
+        let totalCount = 0;
 
-        let totalCount: number | null = null;
+        const queries = [
+            // Query deposits
+            `deposit.depositor='${address}' AND deposit.winner='${address}'`,
 
-        const query = LumUtils.searchTxByTags([
-            { key: 'message.module', value: 'millions' },
-            { key: 'transfer.sender', value: address },
-        ]);
+            // Query claim prize
+            `prize_claim.winner='${address}'`,
 
-        const res = await this.client.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' });
+            // Query leave pool
+            `withdraw_deposit.depositor='${address}' AND withdraw_deposit.recipient='${address}'`,
+        ];
 
-        if (page === 1) {
-            totalCount = res.totalCount;
+        const res = await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearchAll({ query })));
+
+        for (const r of res) {
+            if (r.status === 'fulfilled' && r.value !== undefined) {
+                txs.push(...r.value.txs);
+                totalCount += r.value.totalCount;
+            }
         }
 
         return {
-            activities: await formatTxs(res.txs, true),
+            activities: await formatTxs(txs, true),
             totalCount,
-            currentPage: page,
         };
     };
 

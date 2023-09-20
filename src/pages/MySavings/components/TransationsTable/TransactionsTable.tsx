@@ -128,18 +128,16 @@ const TransactionsTable = ({
 
         return (
             <div className='transactions-table py-3'>
-                {renderItem(transactions[((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem)}
+                {renderItem(transactions[((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem)}
                 <div className='d-flex flex-row mt-4'>
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn'
                         disabled={smallTableVisibleItem === 0 && !pagination?.hasPreviousPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 0) {
-                                if (pagination) {
-                                    onPageChange(pagination.page - 1);
-                                }
-                                setSmallTableVisibleItem(29);
+                            if (smallTableVisibleItem === 0 && pagination) {
+                                onPageChange(pagination.page - 1);
+                                setSmallTableVisibleItem(4);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem - 1);
                             }
@@ -150,12 +148,10 @@ const TransactionsTable = ({
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                        disabled={((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem === transactions.length - 1}
+                        disabled={((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem === transactions.length - 1 && !pagination?.hasNextPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 29) {
-                                if (pagination) {
-                                    onPageChange(pagination.page + 1);
-                                }
+                            if (smallTableVisibleItem === 4 && pagination) {
+                                onPageChange(pagination.page + 1);
                                 setSmallTableVisibleItem(0);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem + 1);
@@ -170,11 +166,13 @@ const TransactionsTable = ({
         );
     };
 
+    const normalTableTxs = pagination ? transactions.slice((pagination.page - 1) * 5, (pagination.page - 1) * 5 + 5) : transactions;
+
     return winSizes.width < Breakpoints.MD || (winSizes.width > Breakpoints.LG && winSizes.width < Breakpoints.XL) ? (
         renderSmallTable(transactions)
     ) : (
         <Table className='transactions-table' pagination={pagination} onPageChange={onPageChange}>
-            {transactions.map((transaction, index) => renderRow(transaction, index))}
+            {normalTableTxs.map((transaction, index) => renderRow(transaction, index))}
         </Table>
     );
 };

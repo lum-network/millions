@@ -26,7 +26,6 @@ interface SetWalletDataPayload {
         result: TransactionModel[];
         currentPage: number;
         pagesTotal: number;
-        pagesLoaded: number;
     };
     deposits?: AggregatedDepositModel[];
     prizes?: Prize[];
@@ -34,8 +33,6 @@ interface SetWalletDataPayload {
 
 interface GetActivitiesPayload {
     address: string;
-    page?: number;
-    prevTxs?: TransactionModel[];
     reset?: boolean;
 }
 
@@ -94,7 +91,6 @@ export const wallet = createModel<RootModel>()({
                         result: [],
                         currentPage: 1,
                         pagesTotal: 1,
-                        pagesLoaded: 1,
                     },
                     deposits: [],
                     prizes: [],
@@ -413,8 +409,7 @@ export const wallet = createModel<RootModel>()({
         },
         async getActivities(payload: GetActivitiesPayload, state) {
             try {
-                const res = await LumClient.getWalletActivities(payload.address, payload.page);
-                const currPagesLoaded = state.wallet.lumWallet?.activities.pagesLoaded || 1;
+                const res = await LumClient.getWalletActivities(payload.address);
 
                 if (res) {
                     const txs = [...(payload.reset ? [] : state.wallet.lumWallet?.activities.result || []), ...res.activities];
@@ -424,9 +419,8 @@ export const wallet = createModel<RootModel>()({
                     dispatch.wallet.setLumWalletData({
                         activities: {
                             result: txs,
-                            currentPage: res.currentPage,
                             pagesTotal,
-                            pagesLoaded: payload.reset ? 1 : res.currentPage > currPagesLoaded ? res.currentPage : currPagesLoaded,
+                            currentPage: 1,
                         },
                     });
                 }

@@ -1,10 +1,14 @@
+const isTestEnv = (): boolean => {
+    return window.location.href.includes('localhost') || window.location.href.includes('testnet');
+};
+
 export const LANDING = '/';
 export const HOME = '/dashboard';
 export const POOLS = '/pools';
 export const POOL_DETAILS = '/pools/details';
 export const MY_SAVINGS = '/my-savings';
 export const WINNERS = '/winners';
-export const LUM_EXPLORER = 'https://explorer.lum.network';
+export const LUM_EXPLORER = `https://explorer.${isTestEnv() ? 'testnet.' : ''}lum.network`;
 export const DOCUMENTATION = 'https://docs.cosmosmillions.com';
 export const FAQ = '#faq';
 export const DISCORD = 'https://discord.com/invite/PWHUMdwQ5r';

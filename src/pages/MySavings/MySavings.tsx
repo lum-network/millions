@@ -100,14 +100,6 @@ const MySavings = () => {
     }, [leaderboardPage]);
 
     useEffect(() => {
-        const page = activities?.currentPage;
-
-        if (lumWallet && page && page > 1 && page > activities.pagesLoaded) {
-            dispatch.wallet.getActivities({ address: lumWallet.address, page });
-        }
-    }, [activities?.currentPage]);
-
-    useEffect(() => {
         if (isReloadingInfos) {
             dispatch.wallet.setActivitiesPage(1);
         }
@@ -394,7 +386,7 @@ const MySavings = () => {
                                 <h2 className='mt-5'>{I18n.t('mySavings.activities')}</h2>
                                 <Card withoutPadding className='py-1 py-sm-2 py-xl-4 px-3 px-sm-4 px-xl-5  glow-bg'>
                                     <TransactionsTable
-                                        transactions={activities.result.slice((activities.currentPage - 1) * 5, (activities.currentPage - 1) * 5 + 5)}
+                                        transactions={activities.result}
                                         pagination={
                                             activities.pagesTotal > 1
                                                 ? {
