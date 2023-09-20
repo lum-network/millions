@@ -245,6 +245,7 @@ export default {
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     leapKeystoreChange: 'Leap Key store/account has changed',
+    cosmostationKeystoreChange: 'Cosmostation Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         keplr: {
@@ -258,6 +259,7 @@ export default {
         download: 'Download Keplr for Chrome',
     },
     chooseWalletModal: {
+        cosmostation: 'Cosmostation Wallet',
         keplr: 'Keplr Wallet',
         leap: 'Leap Wallet',
     },
@@ -550,6 +552,12 @@ export default {
             title: 'You could be here!',
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
+        },
+        card: {
+            apr: 'APR',
+            pool: 'Pool',
+            deposit: 'Deposit',
+            win: 'Win',
         },
     },
     leaderboard: {

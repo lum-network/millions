@@ -15,8 +15,8 @@ import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } fro
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { LeaderboardItemModel } from 'models';
+import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -52,8 +52,8 @@ const PoolDetails = () => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
-        dispatch.prizes.getStats(denom || '');
+        dispatch.prizes.fetchPrizes({ page: 0, poolId: poolId });
+        dispatch.prizes.getStats(poolId || '');
     }, [poolId, denom]);
 
     useEffect(() => {
@@ -137,8 +137,12 @@ const PoolDetails = () => {
                             </div>
                         </div>
                         <Button
-                            disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
-                            {...(!KeplrUtils.isKeplrInstalled()
+                            {...(WalletProvidersUtils.isAnyWalletInstalled() && lumWallet === null
+                                ? {
+                                      'data-bs-target': '#choose-wallet-modal',
+                                      'data-bs-toggle': 'modal',
+                                  }
+                                : !WalletProvidersUtils.isAnyWalletInstalled()
                                 ? {
                                       'data-bs-target': '#get-keplr-modal',
                                       'data-bs-toggle': 'modal',

@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
+import { Prize, PrizeState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import Long from 'long';
 
-import { DenomsUtils, Firebase, I18n, KeplrUtils, LumClient, NumbersUtils, ToastUtils, WalletClient, WalletUtils } from 'utils';
-import { ApiConstants, DenomsConstants, FirebaseConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, PrizesConstants } from 'constant';
-import { AggregatedDepositModel, LeaderboardItemModel, LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel } from 'models';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, KeplrUtils, WalletUtils, NumbersUtils, Firebase } from 'utils';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
 import dayjs from 'dayjs';
@@ -170,115 +171,108 @@ export const wallet = createModel<RootModel>()({
     effects: (dispatch) => ({
         async connectWallet(payload: { provider: WalletProvider; silent: boolean }) {
             const { silent, provider } = payload;
-            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+            const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
 
-            if (!walletProvider) {
+            if (!providerFunctions) {
                 ToastUtils.showErrorToast({ content: `${provider} is not available` });
                 return;
             }
 
-            if (!walletProvider.getOfflineSigner) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notInstalled', { provider }) });
-            } else if (!walletProvider.experimentalSuggestChain) {
-                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.notLatest', { provider }) });
-            } else {
-                const chainId = LumClient.getChainId();
-                const rpc = LumClient.getRpc();
+            const chainId = LumClient.getChainId();
+            const rpc = LumClient.getRpc();
 
-                if (!chainId || !rpc) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.network', { provider }) });
-                    return;
-                }
+            if (!chainId || !rpc) {
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.network', { provider }) });
+                return;
+            }
 
-                try {
-                    await walletProvider.experimentalSuggestChain({
-                        chainId: chainId,
-                        chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
-                        rpc,
-                        rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
-                        stakeCurrency: {
+            try {
+                await WalletProvidersUtils.suggestChain(provider, {
+                    chainId: chainId,
+                    chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
+                    rpc,
+                    rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
+                    stakeCurrency: {
+                        coinDenom: LumConstants.LumDenom,
+                        coinMinimalDenom: LumConstants.MicroLumDenom,
+                        coinDecimals: LumConstants.LumExponent,
+                        coinGeckoId: LUM_COINGECKO_ID,
+                    },
+                    walletUrlForStaking: LUM_WALLET_LINK,
+                    bip44: {
+                        coinType: provider === WalletProvider.Cosmostation ? 880 : 118,
+                    },
+                    bech32Config: {
+                        bech32PrefixAccAddr: LumConstants.LumBech32PrefixAccAddr,
+                        bech32PrefixAccPub: LumConstants.LumBech32PrefixAccPub,
+                        bech32PrefixValAddr: LumConstants.LumBech32PrefixValAddr,
+                        bech32PrefixValPub: LumConstants.LumBech32PrefixValPub,
+                        bech32PrefixConsAddr: LumConstants.LumBech32PrefixConsAddr,
+                        bech32PrefixConsPub: LumConstants.LumBech32PrefixConsPub,
+                    },
+                    currencies: [
+                        {
                             coinDenom: LumConstants.LumDenom,
                             coinMinimalDenom: LumConstants.MicroLumDenom,
                             coinDecimals: LumConstants.LumExponent,
                             coinGeckoId: LUM_COINGECKO_ID,
                         },
-                        walletUrlForStaking: LUM_WALLET_LINK,
-                        bip44: {
-                            coinType: 118,
+                        {
+                            coinDenom: 'dfr',
+                            coinMinimalDenom: 'udfr',
+                            coinDecimals: 6,
                         },
-                        bech32Config: {
-                            bech32PrefixAccAddr: LumConstants.LumBech32PrefixAccAddr,
-                            bech32PrefixAccPub: LumConstants.LumBech32PrefixAccPub,
-                            bech32PrefixValAddr: LumConstants.LumBech32PrefixValAddr,
-                            bech32PrefixValPub: LumConstants.LumBech32PrefixValPub,
-                            bech32PrefixConsAddr: LumConstants.LumBech32PrefixConsAddr,
-                            bech32PrefixConsPub: LumConstants.LumBech32PrefixConsPub,
+                    ],
+                    // List of coin/tokens used as a fee token in this chain.
+                    feeCurrencies: [
+                        {
+                            coinDenom: LumConstants.LumDenom,
+                            coinMinimalDenom: LumConstants.MicroLumDenom,
+                            coinDecimals: LumConstants.LumExponent,
+                            coinGeckoId: LUM_COINGECKO_ID,
+                            gasPriceStep: {
+                                low: 0.01,
+                                average: 0.025,
+                                high: 0.04,
+                            },
                         },
-                        currencies: [
-                            {
-                                coinDenom: LumConstants.LumDenom,
-                                coinMinimalDenom: LumConstants.MicroLumDenom,
-                                coinDecimals: LumConstants.LumExponent,
-                                coinGeckoId: LUM_COINGECKO_ID,
-                            },
-                            {
-                                coinDenom: 'dfr',
-                                coinMinimalDenom: 'udfr',
-                                coinDecimals: 6,
-                            },
-                        ],
-                        // List of coin/tokens used as a fee token in this chain.
-                        feeCurrencies: [
-                            {
-                                coinDenom: LumConstants.LumDenom,
-                                coinMinimalDenom: LumConstants.MicroLumDenom,
-                                coinDecimals: LumConstants.LumExponent,
-                                coinGeckoId: LUM_COINGECKO_ID,
-                                gasPriceStep: {
-                                    low: 0.01,
-                                    average: 0.025,
-                                    high: 0.04,
-                                },
-                            },
-                        ],
-                        coinType: 118,
-                        beta: chainId.includes('testnet'),
-                        features: ['ibc-transfer'],
-                    });
-                } catch {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.networkAdd', { provider }) });
-                    return;
+                    ],
+                    beta: chainId.includes('testnet'),
+                    features: ['ibc-transfer'],
+                });
+            } catch (e) {
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.networkAdd', { provider }) });
+                return;
+            }
+
+            try {
+                await providerFunctions.enable(chainId);
+
+                if (provider === WalletProvider.Cosmostation) {
+                    await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
+                const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
+                const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
+                if (lumWallet) {
+                    dispatch.wallet.signInLum(lumWallet);
 
-                try {
-                    await walletProvider.enable(chainId);
+                    WalletUtils.storeAutoconnectKey(provider);
 
-                    if (!walletProvider.getOfflineSignerAuto) {
-                        throw new Error(I18n.t('errors.walletProvider.offlineSigner', { provider }));
-                    }
-                    const lumOfflineSigner = await walletProvider.getOfflineSignerAuto(chainId);
-                    const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
-                    if (lumWallet) {
-                        dispatch.wallet.signInLum(lumWallet);
+                    await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
+                    if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
 
-                        WalletUtils.storeAutoconnectKey(provider);
-
-                        await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
-                        if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
-
-                        Firebase.signInAnonymous().finally(() => null);
-                    }
-                } catch (e) {
-                    if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.wallet', { provider }) });
-                    throw e;
+                    Firebase.signInAnonymous().finally(() => null);
                 }
+            } catch (e) {
+                if (!silent) ToastUtils.showErrorToast({ content: I18n.t('errors.walletProvider.wallet', { provider }) });
+                throw e;
             }
         },
         async connectOtherWallets(provider: WalletProvider, state) {
-            const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+            const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
 
             try {
-                if (!walletProvider) {
+                if (!providerFunctions) {
                     throw new Error(`${provider} is not available`);
                 }
 
@@ -288,7 +282,7 @@ export const wallet = createModel<RootModel>()({
                     }
 
                     if (pool.chainId === 'gaia-devnet') {
-                        await KeplrUtils.enableKeplrWithInfos(walletProvider, {
+                        await WalletProvidersUtils.suggestChain(provider, {
                             bech32Config: {
                                 bech32PrefixAccAddr: 'cosmos',
                                 bech32PrefixAccPub: 'cosmospub',
@@ -298,7 +292,7 @@ export const wallet = createModel<RootModel>()({
                                 bech32PrefixValPub: 'cosmosvaloperpub',
                             },
                             bip44: {
-                                coinType: 118,
+                                coinType: provider === WalletProvider.Cosmostation ? 880 : 118,
                             },
                             chainId: 'gaia-devnet',
                             chainName: 'Cosmos Hub [Test Millions]',
@@ -335,10 +329,10 @@ export const wallet = createModel<RootModel>()({
                             },
                         });
                     } else {
-                        await walletProvider.enable(pool.chainId);
+                        await providerFunctions.enable(pool.chainId);
                     }
 
-                    const offlineSigner = await walletProvider.getOfflineSignerAuto(pool.chainId);
+                    const offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
                     const accounts = await offlineSigner.getAccounts();
 
                     if (accounts.length > 0) {
@@ -379,6 +373,46 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.fetchPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });
             await dispatch.wallet.getDepositsAndWithdrawals(address);
+        },
+        async reloadOtherWalletInfo(payload: { address: string }, state) {
+            const { address } = payload;
+
+            const poolsChainIds = state.pools.pools.reduce<string[]>((acc, pool) => {
+                if (!acc.includes(pool.chainId) && !pool.chainId.includes('lum')) {
+                    acc.push(pool.chainId);
+                }
+                return acc;
+            }, []);
+
+            for (const chainId of poolsChainIds) {
+                const pool = state.pools.pools.find((pool) => pool.chainId === chainId);
+
+                if (!pool) {
+                    continue;
+                }
+
+                if (pool.internalInfos === undefined) {
+                    continue;
+                }
+
+                const client = new WalletClient();
+
+                await client.connect(pool.internalInfos.rpc);
+
+                const res = await client.getWalletBalance(address);
+
+                dispatch.wallet.setOtherWalletData({
+                    address,
+                    balances: res
+                        ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter(
+                              (balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom,
+                          )
+                        : [],
+                    denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                });
+
+                client.disconnect();
+            }
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
             try {
@@ -549,13 +583,13 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const walletProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
 
-                if (!walletProvider) {
+                if (!providerFunctions) {
                     throw new Error(`${provider} is not available`);
                 }
 
-                const offlineSigner = await walletProvider.getOfflineSignerAuto(chainId);
+                const offlineSigner = await providerFunctions.getOfflineSigner(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
@@ -567,7 +601,7 @@ export const wallet = createModel<RootModel>()({
 
                 await client.connect(rpc, offlineSigner, true);
 
-                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel);
+                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? LumConstants.MicroLumDenom : 'u' + normalDenom);
 
                 client.disconnect();
 
@@ -599,6 +633,7 @@ export const wallet = createModel<RootModel>()({
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
+                dispatch.wallet.reloadOtherWalletInfo({ address: type === 'withdraw' ? toAddress : fromAddress });
 
                 return result;
             } catch (e) {

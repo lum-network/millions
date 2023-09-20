@@ -1,4 +1,4 @@
-import * as KeplrUtils from './keplr';
+import * as WalletProvidersUtils from './walletProviders';
 import * as ToastUtils from './toast';
 import * as StringsUtils from './strings';
 import * as NumbersUtils from './numbers';
@@ -16,4 +16,4 @@ export { default as Firebase } from './firebase';
 export { default as LumClient } from './lumClient';
 export { default as WalletClient } from './walletClient';
 
-export { DenomsUtils, FontsUtils, KeplrUtils, NumbersUtils, PoolsUtils, StringsUtils, TimesUtils, ToastUtils, TransactionsUtils, WalletUtils };
+export { DenomsUtils, FontsUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils, StringsUtils, TimesUtils, ToastUtils, TransactionsUtils, WalletUtils };
