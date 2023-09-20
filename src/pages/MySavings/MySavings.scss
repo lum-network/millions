@@ -241,6 +241,12 @@
             animation: unset;
             opacity: 1;
         }
+
+        .pool-select {
+            .pool-select__menu {
+                z-index: 4;
+            }
+        }
     }
 
     #withdrawModal {
