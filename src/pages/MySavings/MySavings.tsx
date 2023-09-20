@@ -285,6 +285,7 @@ const MySavings = () => {
                     <div>
                         <h2>{I18n.t('mySavings.totalBalance')}</h2>
                         <Card className='balance-card'>
+                            <img src={Assets.images.orbit} className='orbit' />
                             <div className='my-auto d-flex flex-column justify-content-center'>
                                 {totalBalancePrice ? (
                                     <SmallerDecimal
