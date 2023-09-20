@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
+import { LumMessages } from '@lum-network/sdk-javascript';
 
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
@@ -55,7 +56,13 @@ const TransactionsTable = ({
                             )}
                             <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>
                             {transaction.messages.length > 1 ? (
-                                <span data-tooltip-id={`claim-tooltip-${transaction.hash}`} data-tooltip-html={`${transaction.messages.length} prizes claimed`}>
+                                <span
+                                    data-tooltip-id={`claim-tooltip-${transaction.hash}`}
+                                    data-tooltip-html={I18n.t(
+                                        transaction.messages[0] === LumMessages.MsgClaimPrizeUrl ? 'mySavings.transactionTooltips.claim' : 'mySavings.transactionTooltips.withdraw',
+                                        { count: transaction.messages.length },
+                                    )}
+                                >
                                     <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
                                     <Tooltip id={`claim-tooltip-${transaction.hash}`} />
                                 </span>
