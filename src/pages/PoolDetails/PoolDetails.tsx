@@ -270,7 +270,7 @@ const PoolDetails = () => {
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
                                 <h2 className='mb-0'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
                                 <span data-tooltip-id='prize-distribution-tooltip' data-tooltip-html={I18n.t('poolDetails.prizeDistribution.hint')} className='ms-2 mb-2'>
-                                    <img src={Assets.images.info} alt='info' />
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
@@ -315,7 +315,7 @@ const PoolDetails = () => {
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
                                 <h2 className='mb-0'>{I18n.t('poolDetails.winningChances.title')}</h2>
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2 mb-2'>
-                                    <img src={Assets.images.info} alt='info' />
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
                                     <Tooltip id='winning-chance-tooltip' />
                                 </span>
                             </div>
@@ -375,7 +375,7 @@ const PoolDetails = () => {
                             <div className='d-flex align-items-center mt-4 mt-lg-5 mb-2 mb-lg-4'>
                                 <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
                                 <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
-                                    <img src={Assets.images.info} alt='info' />
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
                                     <Tooltip id='depositor-ranking-hint' />
                                 </span>
                             </div>
