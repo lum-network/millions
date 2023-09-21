@@ -7,6 +7,7 @@
 }
 
 .custom-container {
+    padding-top: 130px;
     @include media-breakpoint-down(sm) {
         @include make-container(32px);
     }
@@ -15,7 +16,6 @@
 .main-layout {
     display: flex;
     min-height: 100vh;
-    padding-top: 130px;
     padding-bottom: 60px;
     background-color: var(--color-background);
     background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
