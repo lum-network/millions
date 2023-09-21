@@ -274,32 +274,23 @@ const PoolDetails = () => {
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
-                            {winSizes.width > Breakpoints.LG ? (
-                                <Card flat withoutPadding className='prize-distribution-card'>
-                                    <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
-                                        {prizes.map((prize, index) => (
-                                            <tr key={`prize-${index}`} className='stat-bg-white'>
-                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value / prize.count).format('$0,0[.]00')}</td>
-                                                <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
-                                                <td className='text-end' data-label={prizeDistributionHeaders[2]}>
-                                                    1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </Table>
-                                </Card>
-                            ) : (
-                                prizes.map((prize, index) => (
-                                    <Card flat key={`prize-${index}`} className={index < prizes.length - 1 ? 'mb-3' : ''}>
-                                        <h4>{prizeDistributionHeaders[0]}</h4>
-                                        <div className='stat-bg-white mb-3'>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
-                                        <h4>{prizeDistributionHeaders[1]}</h4>
-                                        <div className='stat-bg-white mb-3'>{prize.count}</div>
-                                        <h4>{prizeDistributionHeaders[2]}</h4>
-                                        <div className='stat-bg-white'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</div>
-                                    </Card>
-                                ))
-                            )}
+                            <Card flat withoutPadding className='prize-distribution-card'>
+                                <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
+                                    {prizes.map((prize, index) => (
+                                        <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
+                                            <td data-label={prizeDistributionHeaders[0]}>
+                                                <div className='d-flex flex-column'>
+                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
+                                                    <div className='percentage'>{numeral(prize.chances).format('0,0[.]00%')} to win</div>
+                                                </div>
+                                            </td>
+                                            <td className='text-end' data-label={prizeDistributionHeaders[1]}>
+                                                {prize.count}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </Table>
+                            </Card>
                             <Lottie
                                 className='d-none d-sm-block cosmonaut-with-duck'
                                 animationData={cosmonautWithDuck}
