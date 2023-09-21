@@ -153,8 +153,8 @@
             }
 
             .rank, .rank td {
-                background-color: $color-primary !important;
-                color: $color-white !important;
+                background-color: var(--color-primary) !important;
+                color: var(--color-white) !important;
             }
 
             .rank.first, .rank.first td {
@@ -330,7 +330,7 @@
     @include media-breakpoint-down(md) {
         .prize-distribution-card {
             padding: 0;
-            background-color: $color-white;
+            background-color: var(--color-white);
         }
 
         .draws-history-card {
