@@ -19,6 +19,7 @@ import dollarIcon from './images/dollar_icon.svg';
 import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import info from './images/info.svg';
+import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
@@ -30,9 +31,11 @@ import lumLogoPurple from './images/lum_logo_purple.svg';
 import moon from './images/moon.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
+import orbit from './images/orbit.svg';
 import questionMark from './images/questionmark.svg';
 import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
+import starVisu from './images/star_visu.svg';
 import success from './images/success.svg';
 import sun from './images/sun.svg';
 import trophy from './images/trophy.svg';
@@ -83,6 +86,7 @@ const Assets = {
         dollarWhite,
         downArrow,
         info,
+        infoWhite,
         keplr,
         landingArrow,
         landingDoubleArrows,
@@ -94,9 +98,11 @@ const Assets = {
         mintscanPurple,
         moon,
         mySavings,
+        orbit,
         questionMark,
         sponsor,
         star,
+        starVisu,
         success,
         sun,
         trophy,

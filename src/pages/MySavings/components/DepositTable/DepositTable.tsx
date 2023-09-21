@@ -33,10 +33,11 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
             case DepositState.DEPOSIT_STATE_SUCCESS:
                 statusClassName = 'success';
                 cta = deposit.isDepositDrop ? (
-                    <div className='d-flex align-items-center'>
+                    <span data-tooltip-id={`deposit-drop-${deposit.depositId?.toString() || index}-hint`} data-tooltip-html={I18n.t('mySavings.depositDropHint')} className='d-flex align-items-center'>
+                        <Tooltip place='left' id={`deposit-drop-${deposit.depositId?.toString() || index}-hint`} />
                         <p className='me-3 mb-0'>{I18n.t('mySavings.depositDrop')}</p>
                         <img alt='Deposit drop' src={Assets.images.depositDrop} className='no-filter' />
-                    </div>
+                    </span>
                 ) : (
                     <Button
                         textOnly

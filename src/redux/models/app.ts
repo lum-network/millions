@@ -14,7 +14,7 @@ export const app = createModel<RootModel>()({
             await LumClient.connect();
 
             await dispatch.stats.fetchStats();
-            await dispatch.pools.fetchPools();
+            await dispatch.pools.fetchPools(null);
             await dispatch.pools.getPoolsAdditionalInfo(null);
             await dispatch.pools.getDepositDelta();
             await dispatch.prizes.fetchBiggestPrizes();

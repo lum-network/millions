@@ -21,5 +21,7 @@ export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
 export { default as Leaderboard } from './Leaderboard/Leaderboard';
 export { default as PurpleBackgroundImage } from './PurpleBackgroundImage/PurpleBackgroundImage';
+export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
+export { default as Tag } from './Tag/Tag';
 
 export * from './ToastContent/ToastContent';

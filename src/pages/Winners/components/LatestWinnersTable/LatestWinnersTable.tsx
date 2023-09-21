@@ -43,7 +43,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                             <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                         </div>
-                        <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * prize.usdTokenValue).format('0,0.00')}</small>
+                        <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
                     </div>
                 </td>
             </tr>
@@ -89,7 +89,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                                 <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                                 <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                             </div>
-                            <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * prize.usdTokenValue).format('0,0.00')}</small>
+                            <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
                         </div>
                     </div>
                 </div>

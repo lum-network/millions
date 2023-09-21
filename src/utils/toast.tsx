@@ -49,3 +49,9 @@ export const updateLoadingToast = (toastId: Id, type: TypeOptions, content: Toas
         ...options,
     });
 };
+
+export const updateToastContent = (toastId: Id, content: ToastContentProps) => {
+    toast.update(toastId, {
+        render: <ToastContent {...content} />,
+    });
+};

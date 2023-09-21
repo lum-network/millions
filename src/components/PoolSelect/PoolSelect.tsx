@@ -110,6 +110,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
             ) : (
                 <Select
                     id='custom-select-input'
+                    classNamePrefix='pool-select'
                     value={{ value, label: selectedOptionLabel }}
                     components={{
                         Option: (props) => <PoolOption {...props} pools={pools} />,

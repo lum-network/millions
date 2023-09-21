@@ -1,7 +1,6 @@
 @import 'src/styles/main';
 
 #claimModal {
-    
     .modal-content.last-step {
         background-color: var(--color-white);
     }
@@ -63,6 +62,11 @@
             font-weight: 300;
             font-size: 12px;
         }
+    }
+
+    .scrollable {
+        max-height: min(300px, 60vh);
+        overflow-y: scroll;
     }
 }
 

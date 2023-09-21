@@ -121,25 +121,21 @@ const MainLayout = () => {
     };
 
     return (
-        <>
+        <div className='main-layout'>
             <Header logoutModalRef={logoutModalRef} />
-            <div className='main-layout'>
-                <div className='custom-container container fill'>
-                    <main className='h-100'>
-                        {appLoading ? (
-                            <div className='d-flex justify-content-center align-items-center h-75'>
-                                <div className='spinner-border' role='status'>
-                                    <span className='visually-hidden'>{I18n.t('common.loading')}</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <Outlet />
-                        )}
-                        <RouteListener location={location} />
-                        <ScrollRestoration />
-                    </main>
-                </div>
-            </div>
+            <main className='custom-container container'>
+                {appLoading ? (
+                    <div className='d-flex justify-content-center align-items-center h-75'>
+                        <div className='spinner-border' role='status'>
+                            <span className='visually-hidden'>{I18n.t('common.loading')}</span>
+                        </div>
+                    </div>
+                ) : (
+                    <Outlet />
+                )}
+                <RouteListener location={location} />
+                <ScrollRestoration />
+            </main>
             <Modal id='get-keplr-modal' withCloseButton={false}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
@@ -483,7 +479,7 @@ const MainLayout = () => {
                     </Button>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 };
 

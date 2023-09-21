@@ -14,9 +14,9 @@
 
 .main-layout {
     display: flex;
+    min-height: 100vh;
     padding-top: 130px;
     padding-bottom: 60px;
-    min-height: 100vh;
     background-color: var(--color-background);
     background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
         url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
@@ -34,7 +34,6 @@
         percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
         percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100));
     background-repeat: no-repeat no-repeat;
-    overflow: hidden;
     white-space: pre-line;
 
     .spinner-border {
@@ -42,10 +41,6 @@
         height: '3rem';
         color: var(--color-purple);
     }
-}
-
-.fill {
-    flex: 1 1 auto;
 }
 
 #get-keplr-modal,
