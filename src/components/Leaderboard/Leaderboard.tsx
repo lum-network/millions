@@ -172,12 +172,15 @@ const Leaderboard = (props: Props) => {
                         locationState={{
                             amountToDeposit: Math.ceil(amount - totalUserDeposits),
                         }}
+                        forcePurple
                     >
                         {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalUserDeposits), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
                     </Button>
                 ) : null}
                 {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
-                    <Button className='deposit-more-btn'>{I18n.t('leaderboard.newRanking')}</Button>
+                    <Button className='deposit-more-btn' forcePurple>
+                        {I18n.t('leaderboard.newRanking')}
+                    </Button>
                 ) : null}
             </div>
         );

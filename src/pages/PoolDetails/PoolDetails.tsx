@@ -152,6 +152,7 @@ const PoolDetails = () => {
                                       to: `${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`,
                                   })}
                             className='deposit-btn'
+                            forcePurple
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom: denom })}
                         >
                             {I18n.t('mySavings.deposit')}

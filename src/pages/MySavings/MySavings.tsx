@@ -246,7 +246,7 @@ const MySavings = () => {
                                 </div>
                             );
                         })}
-                        <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS}>
+                        <Button className='my-savings-cta mt-4 text-center' to={NavigationConstants.POOLS} forcePurple>
                             {I18n.t('mySavings.getMorePrizes')}
                         </Button>
                     </>
@@ -262,7 +262,7 @@ const MySavings = () => {
                         />
                         <h3 className='mt-2'>{I18n.t('mySavings.noPrizes.title')}</h3>
                         <p className='text-center'>{I18n.t('mySavings.noPrizes.subtitle')}</p>
-                        <Button to={NavigationConstants.POOLS} className='mt-4'>
+                        <Button to={NavigationConstants.POOLS} className='mt-4' forcePurple>
                             {I18n.t('mySavings.deposit')}
                         </Button>
                     </div>
