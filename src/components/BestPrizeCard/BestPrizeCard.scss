@@ -3,7 +3,7 @@
 .best-prize-card {
     overflow: hidden;
     height: 100%;
-    background: url("../../assets/images/confetti_blur.svg") repeat, radial-gradient(circle, rgba(200,9,249,1) 0%, rgba(86,52,222,1) 80%);
+    background: url("../../assets/images/confetti_blur.svg") repeat, radial-gradient(circle, var(--color-pink) 0%, var(--color-purple) 80%);
 
     .cosmonaut-on-the-moon {
         position: absolute;

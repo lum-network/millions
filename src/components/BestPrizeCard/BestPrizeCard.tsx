@@ -59,11 +59,11 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                     : undefined
             }
         >
-            <img src={Assets.images.orbit} className='orbit' />
-            <img src={Assets.images.starVisu} className='star star-1' />
-            <img src={Assets.images.starVisu} className='star star-2' />
-            <img src={Assets.images.starVisu} className='star star-3' />
-            <img src={Assets.images.starVisu} className='star star-4' />
+            <img src={Assets.images.orbit} className='orbit no-filter' />
+            <img src={Assets.images.starVisu} className='star star-1 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-2 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-3 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-4 no-filter' />
             <div className='content'>
                 <div className='title-container'>
                     <h3 className=''>{title || I18n.t('home.nextBestPrize')}</h3>

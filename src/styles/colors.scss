@@ -15,6 +15,7 @@
     --color-success-light: #edffef;
     --color-failure: #fa7676;
     --color-failure-light: #ffeded;
+    --color-pink: #CD22F8;
 }
 
 @mixin set-dark-mode {
@@ -34,6 +35,7 @@
     --color-success-light: #3B5C3F;
     --color-failure: #fa7676;
     --color-failure-light: #5C3B3B;
+    --color-pink: #CD22F8;
 }
 
 body {

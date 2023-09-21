@@ -305,7 +305,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
                                             <Button type='button' outline onClick={() => onClaim(false)} loading={isLoading} disabled={isLoading} className='w-100 me-3'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimBtn')}
                                             </Button>
-                                            <Button type='button' onClick={() => onClaim(true)} loading={isLoading} disabled={isLoading} className='w-100 mt-4'>
+                                            <Button type='button' forcePurple onClick={() => onClaim(true)} loading={isLoading} disabled={isLoading} className='w-100 mt-4'>
                                                 {I18n.t('mySavings.claimOnlyModal.claimAndCompoundBtn')}
                                             </Button>
                                         </div>
