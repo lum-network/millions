@@ -136,6 +136,7 @@
 
     .prize-distribution-card {
         padding: 22px 32px;
+
         .prize-distribution-table {
             .table thead tr th {
                 color: $color-primary;
@@ -149,6 +150,27 @@
             .table tbody tr td:first-child,
             .table tbody tr td:last-child {
                 padding: 1.5rem 1.5rem;
+            }
+
+            .rank, .rank td {
+                background-color: $color-primary !important;
+                color: $color-white !important;
+            }
+
+            .rank.first, .rank.first td {
+                background-color: #ffba20 !important;
+            }
+
+            .rank.second, .rank.second td {
+                background-color: #93949b !important;
+            }
+
+            .rank.third, .rank.third td {
+                background-color: #c07a50 !important;
+            }
+
+            .percentage {
+                font-size: 12px;
             }
         }
 
@@ -296,50 +318,8 @@
 
     @include media-breakpoint-down(md) {
         .prize-distribution-card {
-            .table {
-                border-spacing: 0;
-            }
-
-            .table thead {
-                display: none;
-            }
-
-            .table tr,
-            .table tr td {
-                display: block;
-            }
-
-            .table tbody tr:not(:first-child) {
-                margin-top: 24px;
-            }
-
-            .table tbody tr:last-child {
-                margin-bottom: 24px;
-            }
-
-            .table tbody tr td {
-                padding: 1.5rem 1.5rem;
-                text-align: left;
-                vertical-align: middle;
-                &:first-child {
-                    border-top-right-radius: 15px;
-                    border-bottom-left-radius: 0;
-                    border-bottom-right-radius: 0;
-                }
-                &:last-child {
-                    border-top-right-radius: 0;
-                    border-bottom-left-radius: 15px;
-                    border-bottom-right-radius: 15px;
-                }
-            }
-
-            .table td:before {
-                content: attr(data-label);
-                float: left;
-                text-align: start;
-                margin-right: 5rem;
-                font-size: 18px;
-            }
+            padding: 0;
+            background-color: $color-white;
         }
 
         .draws-history-card {
