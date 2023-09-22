@@ -786,7 +786,7 @@ const Deposit = () => {
                             </Card>
                         )}
                         <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                            <img src={Assets.images.questionMark} alt='' />
+                            <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                             <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
                         </Card>
                     </div>

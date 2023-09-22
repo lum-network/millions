@@ -260,7 +260,11 @@ const DepositStep2 = (
                 <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
             </div>
             <Card flat withoutPadding className='deposit-warning mt-4'>
-                <div dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositWarning', { unbondingTime: currentPool?.internalInfos?.unbondingTime || 21 }) }} />
+                <div
+                    dangerouslySetInnerHTML={{
+                        __html: I18n.t('deposit.depositWarning', { unbondingTime: currentPool?.internalInfos?.unbondingTime || 21, lockTime: (currentPool?.internalInfos?.unbondingTime || 21) + 3 }),
+                    }}
+                />
             </Card>
             <div className='step2-input-container'>
                 <div className='d-flex flex-row justify-content-between align-items-baseline mt-4'>
