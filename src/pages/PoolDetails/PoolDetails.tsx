@@ -282,7 +282,7 @@ const PoolDetails = () => {
                                             <td data-label={prizeDistributionHeaders[0]}>
                                                 <div className='d-flex flex-column'>
                                                     <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
-                                                    <div className='percentage'>{numeral(prize.chances).format('0,0[.]00%')} to win</div>
+                                                    <div className='percentage'>{I18n.t('poolDetails.prizeDistribution.chancesToWin', { percentage: numeral(prize.chances).format('0,0[.]00%') })}</div>
                                                 </div>
                                             </td>
                                             <td className='text-end' data-label={prizeDistributionHeaders[1]}>
