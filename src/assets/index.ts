@@ -7,6 +7,7 @@ import coinsStacked from './images/coins_stacked.svg';
 import coinsStaked2 from './images/coins_stacked_2.svg';
 import coinsStackedPurple from './images/coins_stacked_purple.svg';
 import cosmonautCoin from './images/cosmonaut_coin.png';
+import cosmostation from './images/cosmostation.svg';
 import claim from './images/claim.svg';
 import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
@@ -18,6 +19,7 @@ import dollarIcon from './images/dollar_icon.svg';
 import downArrow from './images/down_arrow.svg';
 import gift from './images/gift.svg';
 import info from './images/info.svg';
+import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
 import landingArrow from './images/landing_arrow.svg';
 import landingDoubleArrows from './images/landing_double_arrows.svg';
@@ -28,9 +30,11 @@ import logout from './images/logout.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
+import orbit from './images/orbit.svg';
 import questionMark from './images/questionmark.svg';
 import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
+import starVisu from './images/star_visu.svg';
 import success from './images/success.svg';
 import trophy from './images/trophy.svg';
 import trophyPurple from './images/trophy_purple.svg';
@@ -68,6 +72,7 @@ const Assets = {
         coinsStacked,
         coinsStaked2,
         cosmonautCoin,
+        cosmostation,
         claim,
         clock,
         deposit,
@@ -79,6 +84,7 @@ const Assets = {
         downArrow,
         gift,
         info,
+        infoWhite,
         keplr,
         landingArrow,
         landingDoubleArrows,
@@ -89,9 +95,11 @@ const Assets = {
         lumLogoPurple,
         mintscanPurple,
         mySavings,
+        orbit,
         questionMark,
         sponsor,
         star,
+        starVisu,
         success,
         trophy,
         trophyGreen,

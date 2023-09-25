@@ -46,3 +46,17 @@
     font-size: 22px;
     vertical-align: middle;
 }
+
+.table.small-padding {
+    tbody tr td {
+        padding: 1rem 2px;
+    }
+
+    tbody tr td:first-child {
+        padding-left: 1.5rem;
+    }
+
+    tbody tr td:last-child {
+        padding-right: 1.5rem;
+    }
+}

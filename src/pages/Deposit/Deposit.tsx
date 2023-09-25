@@ -108,6 +108,7 @@ const Deposit = () => {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     const now = Date.now();
@@ -713,13 +714,11 @@ const Deposit = () => {
                 }
             });
 
-            if (withinDepositDelta) {
-                timeline.from('#depositFlow .deposit-delta-card', {
-                    y: 50,
-                    opacity: 0,
-                    duration: 0.8,
-                });
-            }
+            timeline.from('#depositFlow .deposit-delta-card', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+            });
 
             timeline.add(cardTimeline(), '<0.2');
 
@@ -786,6 +785,10 @@ const Deposit = () => {
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
                             </Card>
                         )}
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                            <img src={Assets.images.questionMark} alt='' />
+                            <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
+                        </Card>
                     </div>
                 )}
                 <div className='col'>

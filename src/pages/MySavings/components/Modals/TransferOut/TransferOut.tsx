@@ -106,6 +106,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
 
     const steps = I18n.t('mySavings.transferOutModal.steps', {
         returnObjects: true,
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     return (

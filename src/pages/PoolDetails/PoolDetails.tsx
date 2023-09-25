@@ -15,8 +15,8 @@ import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } fro
 import { useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { LeaderboardItemModel } from 'models';
+import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -52,8 +52,8 @@ const PoolDetails = () => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
-        dispatch.prizes.getStats(denom || '');
+        dispatch.prizes.fetchPrizes({ page: 0, poolId: poolId });
+        dispatch.prizes.getStats(poolId || '');
     }, [poolId, denom]);
 
     useEffect(() => {
@@ -137,8 +137,12 @@ const PoolDetails = () => {
                             </div>
                         </div>
                         <Button
-                            disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
-                            {...(!KeplrUtils.isKeplrInstalled()
+                            {...(WalletProvidersUtils.isAnyWalletInstalled() && lumWallet === null
+                                ? {
+                                      'data-bs-target': '#choose-wallet-modal',
+                                      'data-bs-toggle': 'modal',
+                                  }
+                                : !WalletProvidersUtils.isAnyWalletInstalled()
                                 ? {
                                       'data-bs-target': '#get-keplr-modal',
                                       'data-bs-toggle': 'modal',
@@ -265,32 +269,23 @@ const PoolDetails = () => {
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
-                            {winSizes.width > Breakpoints.LG ? (
-                                <Card flat withoutPadding className='prize-distribution-card'>
-                                    <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
-                                        {prizes.map((prize, index) => (
-                                            <tr key={`prize-${index}`} className='stat-bg-white'>
-                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value / prize.count).format('$0,0[.]00')}</td>
-                                                <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
-                                                <td className='text-end' data-label={prizeDistributionHeaders[2]}>
-                                                    1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </Table>
-                                </Card>
-                            ) : (
-                                prizes.map((prize, index) => (
-                                    <Card flat key={`prize-${index}`} className={index < prizes.length - 1 ? 'mb-3' : ''}>
-                                        <h4>{prizeDistributionHeaders[0]}</h4>
-                                        <div className='stat-bg-white mb-3'>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
-                                        <h4>{prizeDistributionHeaders[1]}</h4>
-                                        <div className='stat-bg-white mb-3'>{prize.count}</div>
-                                        <h4>{prizeDistributionHeaders[2]}</h4>
-                                        <div className='stat-bg-white'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</div>
-                                    </Card>
-                                ))
-                            )}
+                            <Card flat withoutPadding className='prize-distribution-card'>
+                                <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
+                                    {prizes.map((prize, index) => (
+                                        <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
+                                            <td data-label={prizeDistributionHeaders[0]}>
+                                                <div className='d-flex flex-column'>
+                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
+                                                    <div className='percentage'>{numeral(prize.chances).format('0,0[.]00%')} to win</div>
+                                                </div>
+                                            </td>
+                                            <td className='text-end' data-label={prizeDistributionHeaders[1]}>
+                                                {prize.count}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </Table>
+                            </Card>
                             <Lottie
                                 className='d-none d-sm-block cosmonaut-with-duck'
                                 animationData={cosmonautWithDuck}
@@ -426,7 +421,11 @@ const PoolDetails = () => {
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
                                             $
-                                            {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
+                                            {numeral(
+                                                NumbersUtils.convertUnitNumber(
+                                                    biggestPrizes && biggestPrizes.length && biggestPrizes[0].usdTokenValue ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0,
+                                                ),
+                                            )
                                                 .format('0,0')
                                                 .toUpperCase()}
                                         </div>
@@ -451,7 +450,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue}
+                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}
@@ -481,20 +480,12 @@ const PoolDetails = () => {
                                                 <label>{drawHistoryHeaders[0]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='d-flex align-items-center justify-content-center index-container'>
-                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.poolId.toString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[1]}</label>
-                                                <div className='stat-bg-white'>
-                                                    <div className='d-flex align-items-center justify-content-center index-container'>
                                                         #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[2]}</label>
+                                                <label>{drawHistoryHeaders[1]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='draw-date'>
                                                         {dayjs(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
@@ -502,11 +493,11 @@ const PoolDetails = () => {
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[3]}</label>
+                                                <label>{drawHistoryHeaders[2]}</label>
                                                 <div className='stat-bg-white'>{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[4]}</label>
+                                                <label>{drawHistoryHeaders[3]}</label>
                                                 <div className='stat-bg-white'>
                                                     <SmallerDecimal
                                                         nb={numeral(

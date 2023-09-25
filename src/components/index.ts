@@ -1,5 +1,6 @@
 export { default as Card } from './Card/Card';
 export { default as Button } from './Button/Button';
+export { default as ArrowButton } from './ArrowButton/ArrowButton';
 export { default as Header } from './Header/Header';
 export { default as Loading } from './Loading/Loading';
 export { default as SmallerDecimal } from './SmallerDecimal/SmallerDecimal';
@@ -18,6 +19,8 @@ export { default as PoolSelect } from './PoolSelect/PoolSelect';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export { default as BigWinnerCard } from './BigWinnerCard/BigWinnerCard';
 export { default as Pagination } from './Pagination/Pagination';
-export { default as Leaderboard } from './Leaderboard/Leaderboard';
+export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
+export { default as Tag } from './Tag/Tag';
 
+export { default as Leaderboard } from './Leaderboard/Leaderboard';
 export * from './ToastContent/ToastContent';

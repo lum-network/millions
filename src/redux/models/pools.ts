@@ -13,6 +13,7 @@ interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
     depositDelta: number | null;
+    mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
 }
 
@@ -22,6 +23,7 @@ export const pools = createModel<RootModel>()({
         pools: [],
         bestPoolPrize: null,
         depositDelta: null,
+        mutexFetchPools: false,
         mutexAdditionalInfos: false,
     } as PoolsState,
     reducers: {
@@ -49,9 +51,21 @@ export const pools = createModel<RootModel>()({
                 mutexAdditionalInfos,
             };
         },
+        setMutexFetchPools: (state: PoolsState, mutexFetchPools: boolean): PoolsState => {
+            return {
+                ...state,
+                mutexFetchPools,
+            };
+        },
     },
     effects: (dispatch) => ({
-        async fetchPools() {
+        async fetchPools(_, state) {
+            if (state.pools.mutexFetchPools) {
+                return;
+            }
+
+            dispatch.pools.setMutexFetchPools(true);
+
             try {
                 const res = await LumClient.getPools();
 
@@ -87,10 +101,17 @@ export const pools = createModel<RootModel>()({
                     }
 
                     dispatch.pools.setPools(pools);
+                    dispatch.pools.setMutexFetchPools(false);
 
                     return pools;
                 }
-            } catch {}
+            } catch (e) {
+                dispatch.pools.setMutexFetchPools(false);
+
+                console.warn((e as Error).message);
+            }
+
+            dispatch.pools.setMutexFetchPools(false);
         },
         async getPoolPrizes(poolId: Long) {
             try {
@@ -183,13 +204,23 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }, state) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
                 const draws: DrawModel[] = [];
 
                 if (res) {
                     for (const draw of res) {
+                        // If the draw already has a USD value, we don't need to fetch it again
+                        const existingUsdTokenValue = state.pools.pools
+                            .find((pool) => pool.poolId?.toString() === poolId.toString())
+                            ?.draws?.find((d) => d.drawId?.toString() === draw.drawId?.toString())?.usdTokenValue;
+
+                        if (existingUsdTokenValue) {
+                            draws.push({ ...draw, usdTokenValue: existingUsdTokenValue });
+                            continue;
+                        }
+
                         const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
 
                         if (marketData && marketData.length) {
