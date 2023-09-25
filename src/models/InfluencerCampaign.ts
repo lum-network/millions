@@ -12,7 +12,7 @@ class InfluencerCampaign {
     startDate!: Date;
     endDate!: Date;
     poolId!: string;
-    code!: string;
+    password!: string;
     hasParticipated!: boolean;
 }
 

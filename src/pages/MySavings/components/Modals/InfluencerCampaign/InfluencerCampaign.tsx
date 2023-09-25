@@ -12,22 +12,24 @@ import { InfluencerCampaignModel } from 'models';
 import { DenomsUtils, I18n } from 'utils';
 
 import './InfluencerCampaign.scss';
+import { LumUtils } from '@lum-network/sdk-javascript';
 
 interface Props {
     campaign?: InfluencerCampaignModel;
+    onApply: (campaignId: string, code: string) => Promise<{ hasParticipated: boolean; error: string | null }>;
     prices: { [key: string]: number };
 }
 
-const InfluencerCampaignModal = ({ campaign, prices }: Props) => {
-    const [code, setCode] = useState('');
-    const [codeError, setCodeError] = useState('');
+const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
+    const [password, setPassword] = useState('');
+    const [pwdError, setPwdError] = useState('');
     const [status, setStatus] = useState<'success' | null>(null);
 
     useEffect(() => {
         const handler = () => {
             setStatus(null);
-            setCode('');
-            setCodeError('');
+            setPassword('');
+            setPwdError('');
         };
 
         const campaignModal = document.getElementById('influencer-campaign-modal');
@@ -43,12 +45,19 @@ const InfluencerCampaignModal = ({ campaign, prices }: Props) => {
         };
     }, []);
 
-    const onApplyCode = () => {
-        if (!code) {
-            setCodeError(I18n.t('errors.generic.required', { field: 'Code' }));
+    const onApplyCode = async () => {
+        if (!campaign) {
+            return;
+        }
+
+        if (!password) {
+            setPwdError(I18n.t('errors.generic.required', { field: 'Code' }));
         } else {
-            if (code !== campaign?.code) {
-                setCodeError(I18n.t('errors.generic.invalid', { field: 'campaign code' }));
+            const hashedPwd = LumUtils.sha3(password);
+            const res = await onApply(campaign.id, hashedPwd);
+
+            if (res.error) {
+                setPwdError(res.error);
             } else {
                 setStatus('success');
             }
@@ -159,8 +168,13 @@ const InfluencerCampaignModal = ({ campaign, prices }: Props) => {
                                     <img src={Assets.images.clock} alt='clock' className='me-2' />
                                     <div dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.claimWarning', { date: dayjs(campaign.endDate).format('L') }) }} />
                                 </div>
-                                <input value={code} onChange={(e) => setCode(e.target.value)} className='px-4 py-2 my-3' placeholder={I18n.t('mySavings.influencerCampaignModal.placeholder')} />
-                                {codeError ? <p className='code-error'>{codeError}</p> : null}
+                                <input
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className='px-4 py-2 my-3'
+                                    placeholder={I18n.t('mySavings.influencerCampaignModal.placeholder')}
+                                />
+                                {pwdError ? <p className='code-error'>{pwdError}</p> : null}
                                 <Button onClick={onApplyCode}>{I18n.t('mySavings.influencerCampaignModal.cta')}</Button>
                             </Card>
                         </div>

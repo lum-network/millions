@@ -5,7 +5,7 @@ import { DrawModel, InfluencerCampaignModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
-import { LumConstants } from '@lum-network/sdk-javascript';
+import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
 import { LumApi } from 'api';
 
@@ -15,6 +15,7 @@ interface PoolsState {
     depositDelta: number | null;
     mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
+    activeCampaigns: InfluencerCampaignModel[];
 }
 
 export const pools = createModel<RootModel>()({
@@ -25,6 +26,7 @@ export const pools = createModel<RootModel>()({
         depositDelta: null,
         mutexFetchPools: false,
         mutexAdditionalInfos: false,
+        activeCampaigns: [],
     } as PoolsState,
     reducers: {
         setPools: (state: PoolsState, pools: PoolModel[]): PoolsState => {
@@ -55,6 +57,12 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 mutexFetchPools,
+            };
+        },
+        setActiveCampaigns: (state: PoolsState, activeCampaigns: InfluencerCampaignModel[]): PoolsState => {
+            return {
+                ...state,
+                activeCampaigns,
             };
         },
     },
@@ -296,32 +304,36 @@ export const pools = createModel<RootModel>()({
                 } catch {}
             }
         },
-        async getActiveCampaign(address: string) {
+        async getActiveCampaigns() {
             try {
-                return new Promise<InfluencerCampaignModel>((resolve) => {
+                const activeCampaigns = await new Promise<InfluencerCampaignModel[]>((resolve) => {
                     setTimeout(
                         () =>
-                            resolve({
-                                id: 'xIOcezoicn',
-                                influencer: {
-                                    name: 'Cryptocito',
-                                    username: 'cryptocito',
-                                    picture: 'https://pbs.twimg.com/profile_images/1591066906961870854/4KkBTXic_200x200.jpg',
+                            resolve([
+                                {
+                                    id: 'xIOcezoicn',
+                                    influencer: {
+                                        name: 'Cryptocito',
+                                        username: 'cryptocito',
+                                        picture: 'https://pbs.twimg.com/profile_images/1591066906961870854/4KkBTXic_200x200.jpg',
+                                    },
+                                    count: 100,
+                                    amount: {
+                                        amount: NumbersUtils.convertUnitNumber('100000000').toFixed(),
+                                        denom: DenomsUtils.getNormalDenom('uatom'),
+                                    },
+                                    startDate: new Date('2023-09-21'),
+                                    endDate: new Date('2023-10-23'),
+                                    poolId: '1',
+                                    password: LumUtils.sha3('cito123'),
+                                    hasParticipated: false,
                                 },
-                                count: 100,
-                                amount: {
-                                    amount: NumbersUtils.convertUnitNumber('100000000').toFixed(),
-                                    denom: DenomsUtils.getNormalDenom('uatom'),
-                                },
-                                startDate: new Date('2023-08-21'),
-                                endDate: new Date('2023-09-23'),
-                                poolId: '2',
-                                code: 'cito123',
-                                hasParticipated: false,
-                            }),
+                            ]),
                         200,
                     );
                 });
+
+                dispatch.pools.setActiveCampaigns(activeCampaigns);
             } catch {}
         },
     }),

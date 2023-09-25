@@ -71,6 +71,11 @@ interface LeavePoolRetryPayload {
     withdrawalId: Long;
 }
 
+interface RegisterForCampaignPayload {
+    campaignId: string;
+    password: string;
+}
+
 interface WalletState {
     lumWallet: LumWalletModel | null;
     otherWallets: {
@@ -871,6 +876,40 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimAndCompound') });
                 return null;
+            }
+        },
+        async registerForCampaign(payload: RegisterForCampaignPayload, state) {
+            try {
+                const res = await new Promise<{ hasParticipated: boolean; error: string | null }>((resolve, reject) => {
+                    return setTimeout(() => {
+                        const campaign = state.pools.activeCampaigns.find((campaign) => campaign.id === payload.campaignId);
+
+                        if (!campaign) {
+                            reject({
+                                hasParticipated: false,
+                                error: 'Campaign not found',
+                            });
+                            return;
+                        }
+
+                        if (payload.password !== campaign.password) {
+                            reject({
+                                error: I18n.t('errors.generic.invalid', { field: 'campaign code' }),
+                                hasParticipated: false,
+                            });
+                            return;
+                        }
+
+                        resolve({ hasParticipated: true, error: null });
+                    }, 200);
+                });
+
+                return res;
+            } catch {
+                return {
+                    hasParticipated: false,
+                    error: '',
+                };
             }
         },
     }),

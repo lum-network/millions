@@ -30,22 +30,37 @@ import './MySavings.scss';
 import dayjs from 'dayjs';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti, totalPrizesWon } =
-        useSelector((state: RootState) => ({
-            lumWallet: state.wallet.lumWallet,
-            otherWallets: state.wallet.otherWallets,
-            balances: state.wallet.lumWallet?.balances,
-            activities: state.wallet.lumWallet?.activities,
-            deposits: state.wallet.lumWallet?.deposits,
-            prizes: state.wallet.lumWallet?.prizes,
-            prices: state.stats.prices,
-            pools: state.pools.pools,
-            isTransferring: state.loading.effects.wallet.ibcTransfer,
-            isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
-            isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
-            alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-            totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
-        }));
+    const {
+        activeCampaigns,
+        lumWallet,
+        otherWallets,
+        balances,
+        activities,
+        prizes,
+        prices,
+        pools,
+        isTransferring,
+        deposits,
+        isReloadingInfos,
+        isLoadingNextLeaderboardPage,
+        alreadySeenConfetti,
+        totalPrizesWon,
+    } = useSelector((state: RootState) => ({
+        lumWallet: state.wallet.lumWallet,
+        otherWallets: state.wallet.otherWallets,
+        balances: state.wallet.lumWallet?.balances,
+        activities: state.wallet.lumWallet?.activities,
+        deposits: state.wallet.lumWallet?.deposits,
+        prizes: state.wallet.lumWallet?.prizes,
+        prices: state.stats.prices,
+        pools: state.pools.pools,
+        isTransferring: state.loading.effects.wallet.ibcTransfer,
+        isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
+        isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
+        alreadySeenConfetti: state.prizes.alreadySeenConfetti,
+        totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
+        activeCampaigns: state.pools.activeCampaigns,
+    }));
 
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
@@ -139,17 +154,17 @@ const MySavings = () => {
 
     useEffect(() => {
         const computeShowBanner = async () => {
-            const activeCampaign = await dispatch.pools.getActiveCampaign(lumWallet?.address || '');
             const campaignKey = StorageUtils.getCampaignKey();
+            const campaign = activeCampaigns.find((campaign) => campaign.id === campaignKey);
 
-            if (campaignKey && activeCampaign && campaignKey === activeCampaign.id) {
+            if (campaignKey && campaign) {
                 const userDeposited = deposits
                     ? deposits.findIndex(
                           (deposit) =>
                               deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
-                              deposit.poolId?.eq(activeCampaign.poolId) &&
+                              deposit.poolId?.eq(campaign.poolId) &&
                               deposit.createdAt &&
-                              dayjs(deposit.createdAt).isBefore(dayjs(activeCampaign.startDate)) &&
+                              dayjs(deposit.createdAt).isBefore(dayjs(campaign.startDate)) &&
                               !deposit.isDepositDrop &&
                               !deposit.isSponsor &&
                               !deposit.isWithdrawing,
@@ -157,7 +172,7 @@ const MySavings = () => {
                     : false;
 
                 if (userDeposited) {
-                    setActiveCampaign(activeCampaign);
+                    setActiveCampaign(campaign);
                 }
             }
         };
@@ -576,7 +591,16 @@ const MySavings = () => {
             />
             <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
             <LeavePoolModal deposit={depositToLeave} />
-            <InfluencerCampaignModal campaign={activeCampaign} prices={prices} />
+            <InfluencerCampaignModal
+                campaign={activeCampaign}
+                prices={prices}
+                onApply={(campaignId, password) =>
+                    dispatch.wallet.registerForCampaign({
+                        campaignId,
+                        password,
+                    })
+                }
+            />
         </div>
     );
 };

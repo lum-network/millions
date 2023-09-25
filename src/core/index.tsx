@@ -74,8 +74,8 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        if (location.hash && location.hash.includes('campaign')) {
-            StorageUtils.storeCampaignKey(location.hash.replace('#campaign=', ''));
+        if (location.search && location.search.includes('campaign_id')) {
+            StorageUtils.storeCampaignKey(location.search.replace('?campaign_id=', ''));
         }
 
         return () => {

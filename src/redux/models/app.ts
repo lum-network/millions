@@ -13,12 +13,16 @@ export const app = createModel<RootModel>()({
         async init() {
             await LumClient.connect();
 
-            await dispatch.stats.fetchStats();
-            await dispatch.pools.fetchPools(null);
+            await Promise.allSettled([
+                dispatch.stats.fetchStats(),
+                dispatch.pools.fetchPools(null),
+                dispatch.pools.getDepositDelta(),
+                dispatch.pools.getActiveCampaigns(),
+                dispatch.prizes.fetchBiggestPrizes(),
+                dispatch.prizes.fetchBiggestAprPrizes(),
+            ]);
+
             await dispatch.pools.getPoolsAdditionalInfo(null);
-            await dispatch.pools.getDepositDelta();
-            await dispatch.prizes.fetchBiggestPrizes();
-            await dispatch.prizes.fetchBiggestAprPrizes();
 
             dispatch.app.SET_INITIALIZED(true);
         },
