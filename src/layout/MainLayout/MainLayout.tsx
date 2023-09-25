@@ -28,8 +28,6 @@ const MainLayout = () => {
     const wallet = useSelector((state: RootState) => state.wallet.lumWallet);
     const appInitialized = useSelector((state: RootState) => state.app);
 
-    const appLoading = useSelector((state: RootState) => state.loading.effects.app.init);
-
     const dispatch = useDispatch<Dispatch>();
     const store = useStore();
     const visibilityState = useVisibilityState();
@@ -124,7 +122,7 @@ const MainLayout = () => {
         <div className='main-layout'>
             <Header logoutModalRef={logoutModalRef} />
             <main className='custom-container container'>
-                {appLoading ? (
+                {!appInitialized ? (
                     <div className='d-flex justify-content-center align-items-center h-75'>
                         <div className='spinner-border' role='status'>
                             <span className='visually-hidden'>{I18n.t('common.loading')}</span>
