@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Modal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase } from 'utils';
+import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase, StorageUtils } from 'utils';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { FirebaseConstants } from '../../../../../constant';
@@ -106,7 +106,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
 
     const steps = I18n.t('mySavings.transferOutModal.steps', {
         returnObjects: true,
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     return (

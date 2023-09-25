@@ -14,7 +14,7 @@ import { Card, Lottie, Modal, Steps } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, StorageUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -108,7 +108,7 @@ const Deposit = () => {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     const now = Date.now();
