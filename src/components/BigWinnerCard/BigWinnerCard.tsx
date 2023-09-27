@@ -2,22 +2,26 @@ import React from 'react';
 import numeral from 'numeral';
 
 import Assets from 'assets';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { DenomsUtils, Firebase, NumbersUtils, StringsUtils } from 'utils';
 
 import Button from '../Button/Button';
 
 import './BigWinnerCard.scss';
+import { useWindowSize } from 'hooks';
 
 interface IProps {
     denom: string;
     address: string;
+    apr?: number;
     prize: number;
     className?: string;
     price: number;
 }
 
-const BigWinnerCard = ({ denom, address, prize, className, price }: IProps) => {
+const BigWinnerCard = ({ apr, denom, address, prize, className, price }: IProps) => {
+    const { width: windowWidth } = useWindowSize();
+
     return (
         <Button
             to={NavigationConstants.WINNERS}
@@ -33,11 +37,11 @@ const BigWinnerCard = ({ denom, address, prize, className, price }: IProps) => {
             forcePurple
         >
             <span className='prize text-nowrap'>
-                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 no-filter' alt={denom} />$
-                {numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}
+                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 d-none d-sm-inline-block' alt={denom} />
+                {apr ? `APR: ${numeral(apr / 100).format('0,0%')}` : `$${numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}`}
             </span>
-            <div className='address'>{StringsUtils.trunc(address)}</div>
-            <img src={Assets.images.arrow} alt='arrow' className='purple-filter' />
+            <div className='address'>{StringsUtils.trunc(address, windowWidth <= Breakpoints.SM ? 3 : 6)}</div>
+            <img src={Assets.images.arrow} alt='arrow' />
         </Button>
     );
 };
