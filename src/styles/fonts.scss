@@ -1,7 +1,7 @@
 @import 'colors.scss';
 
 h1 {
-    color: $color-primary;
+    color: var(--color-purple);
     font-style: normal;
     font-weight: 400;
     font-size: 42px;
@@ -9,7 +9,7 @@ h1 {
 }
 
 h2 {
-    color: $color-primary;
+    color: var(--color-purple);
     font-style: normal;
     font-weight: 400;
     font-size: 28px;
@@ -17,7 +17,7 @@ h2 {
 }
 
 h3 {
-    color: $color-primary;
+    color: var(--color-purple);
     font-style: normal;
     font-weight: 400;
     font-size: 22px;
@@ -30,14 +30,14 @@ h3 {
 }
 
 h4 {
-    color: $color-primary;
+    color: var(--color-purple);
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
 }
 
 p {
-    color: $color-primary;
+    color: var(--color-primary);
     font-style: normal;
     font-weight: 300;
     font-size: 14px;
@@ -68,7 +68,7 @@ p {
     font-display: swap;
 }
 
-@Font-face {
+@font-face {
     font-family: 'GT Maru';
     src: url('../assets/fonts/gt-maru/GTMaru-Black.ttf') format('truetype');
     font-weight: 900;

@@ -4,21 +4,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $color-white;
+    color: var(--color-white);
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
     padding: 7px 12px;
 
     &.success {
-        background-color: $color-success;
+        background-color: var(--color-success);
     }
     &.outline {
         background-color: transparent;
-        border: 2px solid $color-primary;
-        color: $color-primary;
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
     }
     &.info {
-        background-color: $color-grey;
+        background-color: var(--color-grey);
     }
 }

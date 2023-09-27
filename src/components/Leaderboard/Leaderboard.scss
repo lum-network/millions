@@ -1,20 +1,20 @@
 @import 'src/styles/main';
 
 @mixin me {
-    background-color: $color-primary;
+    background-color: var(--color-primary);
 
     .address {
-        color: $color-white;
+        color: var(--color-white);
     }
 
     .rank {
-        background-color: $color-white;
-        color: $color-primary;
+        background-color: var(--color-white);
+        color: var(--color-primary);
     }
 
     .crypto-amount,
     .usd-amount {
-        color: $color-white;
+        color: var(--color-white);
     }
 }
 
@@ -50,7 +50,7 @@
 }
 
 .leaderboard-rank {
-    background-color: $color-primary-light;
+    background-color: var(--color-primary-light);
     padding: 14px 16px;
     border-radius: 8px;
 
@@ -59,8 +59,11 @@
     }
 
     &.white-bg {
-        background-color: $color-white;
         box-shadow: 0px 4px 23px 0px #f1edff;
+    }
+
+    &.flat {
+        background-color: var(--color-white);
     }
 
     &.me {
@@ -78,12 +81,12 @@
         font-style: normal;
         font-weight: 400;
         line-height: normal;
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     .rank {
-        background-color: $color-primary;
-        color: $color-white;
+        background-color: var(--color-primary);
+        color: var(--color-white);
         border-radius: 7px;
         padding: 7px 8px;
         width: fit-content;
@@ -98,7 +101,7 @@
         }
 
         &.second {
-            background-color: #93949b;
+            background-color: #cdcdcd;
         }
 
         &.third {
@@ -110,12 +113,12 @@
         font-size: 21px;
         font-weight: 400;
         line-height: normal;
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     .crypto-amount {
         font-size: 14px;
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 300;
     }
 

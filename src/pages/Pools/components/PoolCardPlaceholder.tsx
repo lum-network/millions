@@ -6,7 +6,7 @@ import { Card } from 'components';
 const PoolCardPlaceholder = ({ name }: { name: string }) => {
     return (
         <Card className='pool-card-container pool-card-placeholder glow-bg'>
-            <img width={74} height={74} src={Assets.images.cosmonautCoin} alt='cosmonaut coin' />
+            <img width={74} height={74} src={Assets.images.cosmonautCoin} alt='cosmonaut coin' className='no-filter' />
             <div className='name-container'>
                 <span className='name'>{'soon'}</span>
             </div>

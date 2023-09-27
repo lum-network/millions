@@ -34,6 +34,7 @@ const BigWinnerCard = ({ apr, denom, address, prize, className, price }: IProps)
                     amount: NumbersUtils.convertUnitNumber(prize),
                 })
             }
+            forcePurple
         >
             <span className='prize text-nowrap'>
                 <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 d-none d-sm-inline-block' alt={denom} />

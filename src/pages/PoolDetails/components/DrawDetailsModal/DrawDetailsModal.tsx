@@ -23,7 +23,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
             {draw ? (
                 <div className='d-flex flex-column align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon' />
+                        <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon no-filter' />
                         <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
                             {poolDenom.toUpperCase()} {I18n.t('common.pool')}
                         </h1>
@@ -78,7 +78,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                         <td>
                                             <div className='d-flex flex-row align-items-baseline winner-address'>
                                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                                    <img src={Assets.images.trophyPurple} alt='' />
+                                                    <img src={Assets.images.trophyPurple} alt='' className='no-filter' />
                                                 </div>
                                                 {StringsUtils.trunc(winner.winnerAddress)}
                                             </div>
@@ -110,7 +110,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                                     ).format('$0,0[.]00')}
                                                 />
                                             </div>
-                                            <div>
+                                            <div className='prize-remaining-amount'>
                                                 <SmallerDecimal
                                                     nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')}
                                                 />{' '}

@@ -3,7 +3,7 @@
 header {
     position: relative;
     height: 112px;
-    color: $color-black;
+    color: var(--color-black);
     border-radius: 12px;
 
     &.app {
@@ -43,8 +43,8 @@ header {
         --bs-navbar-toggler-icon-bg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 30 30%27%3e%3cpath stroke=%27rgba%280, 0, 0, 1%29%27 stroke-linecap=%27round%27 stroke-miterlimit=%2710%27 stroke-width=%272%27 d=%27M4 7h22M4 15h22M4 23h22%27/%3e%3c/svg%3e') !important;
 
         .navbar-toggler {
-            background-color: $color-primary;
-            border-radius: 50%;
+            background-color: var(--color-purple);
+            border-radius: 9px;
             min-width: 47px;
             min-height: 47px;
             width: 47px;
@@ -61,14 +61,21 @@ header {
 .prize-dot {
     width: 22px;
     height: 22px;
-    background-color: $color-primary;
-    color: $color-white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     font-size: 0.5rem;
     font-weight: 900;
 }
 
+.logout-btn {
+    height: 55px;
+    width: 55px;
+    border-radius: 12px;
+    padding: 15px 15px 15px 21px;
+}
+
 .navlink {
-    color: $color-primary;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 18px;
     font-weight: 400;
@@ -81,12 +88,12 @@ header {
     }
 
     &.active {
-        color: $color-primary;
+        color: var(--color-primary);
         opacity: 1;
     }
 
     &:hover {
-        color: $color-primary;
+        color: var(--color-primary);
         opacity: 1;
     }
 }
@@ -99,7 +106,8 @@ header .background {
     bottom: 0;
     opacity: 0;
     border-radius: 12px;
-    background-color: $color-background;
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: color-mix(in srgb, var(--color-white) 30%, transparent);
 }
 
 header,
@@ -112,8 +120,8 @@ header,
 }
 
 .bm-menu {
-    background: $color-white;
-    color: $color-primary;
+    background: var(--color-background);
+    color: var(--color-white);
     padding: 1.5rem 2rem;
 
     .bm-item {
@@ -123,14 +131,16 @@ header,
     .close-btn {
         border: 0;
 
-        border-radius: 50%;
+        border-radius: 9px;
         min-width: 47px;
         min-height: 47px;
         width: 47px;
         height: 47px;
-        background-color: $color-primary;
+
         .btn-close {
             filter: invert(1);
+            width: 22px;
+            height: 22px;
             padding: 0;
             opacity: 1;
         }

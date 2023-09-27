@@ -14,7 +14,7 @@
     line-height: 17px;
     border-width: 3px;
     border-style: solid;
-    border-color: $color-primary;
+    border-color: var(--color-primary);
     text-decoration: none;
 
     &:not(.app-btn-text) {
@@ -38,32 +38,47 @@
     background-color: transparent !important;
     border-width: 3px;
     border-style: solid;
-    border-color: $color-primary;
-    color: $color-primary;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 
     &:hover {
-        background-color: $color-primary;
-        color: $color-primary;
+        background-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    &.purple-btn {
+        color: var(--color-purple);
+        border-color: var(--color-purple);
     }
 }
 
 .app-btn-plain {
-    background-color: $color-primary;
-    color: $color-white;
-
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    
     &:hover {
-        background-color: $color-primary;
-        color: $color-white;
+        background-color: var(--color-primary);
+        color: var(--color-white);
+    }
+    
+    &.purple-btn {
+        color: white;
+        border-color: var(--color-purple);
+        background-color: var(--color-purple);
     }
 }
 
 .app-btn-text {
     background-color: transparent;
     border: none;
-    color: $color-primary;
+    color: var(--color-primary);
     padding: 0;
 
     &:hover {
-        color: $color-primary;
+        color: var(--color-primary);
+    }
+
+    &.purple-btn {
+        color: var(--color-purple);
     }
 }

@@ -43,7 +43,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
 
         return (
             <tr key={`prize-${prize.id}-${index}`}>
-                <td className=''>{icon ? <img height={40} width={40} src={icon} alt={`${normalDenom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}</td>
+                <td className=''>{icon ? <img height={40} width={40} src={icon} alt={`${normalDenom} icon`} className='denom-icon no-filter' /> : <div className='denom-unknown-icon'>?</div>}</td>
                 <td className=''>
                     <div className='d-flex flex-column'>
                         <h4 className='mb-1'>{I18n.t('mySavings.prizeWon')}</h4>
@@ -100,7 +100,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
                 <div key={`prize-${index}`} className='d-flex flex-column mb-4'>
                     <div className='d-flex flex-column'>
                         <div className='d-flex flex-row align-items-center table-item'>
-                            {icon ? <img height={40} width={40} src={icon} alt={`${normalDenom} icon`} className='denom-icon' /> : <div className='denom-unknown-icon'>?</div>}
+                            {icon ? <img height={40} width={40} src={icon} alt={`${normalDenom} icon`} className='denom-icon no-filter' /> : <div className='denom-unknown-icon'>?</div>}
                             <div className='ms-3 d-flex flex-column'>
                                 <h4 className='mb-1'>{I18n.t('mySavings.prizeWon')}</h4>
                                 <p className='m-0 subtitle'>

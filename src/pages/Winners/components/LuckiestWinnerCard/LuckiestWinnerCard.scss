@@ -8,17 +8,21 @@
     }
 
     .title {
-        color: $color-primary;
+        color: var(--color-primary);
         font-size: 12px;
     }
 
     .value {
-        color: $color-black;
+        color: var(--color-black);
         font-size: 14px;
 
         .amount {
-            color: $color-primary;
+            color: var(--color-primary);
             font-size: 15px;
+        }
+
+        .denom {
+            color: var(--color-purple);
         }
     }
 
@@ -26,9 +30,13 @@
         border-top: 1px solid rgba(86,52,222,.3);
     }
 
+    .address {
+        color: var(--color-black);
+    }
+
     .rank {
-        background-color: $color-primary;
-        color: $color-white;
+        background-color: var(--color-primary);
+        color: var(--color-white);
         border-radius: 7px;
         padding: 7px 8px;
         width: fit-content;

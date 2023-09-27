@@ -15,45 +15,30 @@ interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     disabled?: boolean;
     loading?: boolean;
     className?: string;
+    forcePurple?: boolean;
 }
 
-const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, style, ...rest }: IProps) => {
+const Button = ({ children, outline, to, textOnly, locationState, disabled, onClick, loading, className, style, forcePurple, ...rest }: IProps) => {
+    const commonProps = {
+        onClick:
+            !loading && !disabled
+                ? (event: React.MouseEvent<HTMLAnchorElement, MouseEvent> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                      event.stopPropagation();
+                      onClick?.();
+                  }
+                : () => null,
+        className: `app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${forcePurple ? 'purple-btn' : ''} ${className}`,
+    };
     if (to) {
         return (
-            <Link
-                to={disabled ? '#' : to}
-                type='button'
-                state={locationState}
-                onClick={
-                    !loading && !disabled
-                        ? (event) => {
-                              event.stopPropagation();
-                              onClick?.();
-                          }
-                        : () => null
-                }
-                className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : 'app-btn-plain'} ${className}`}
-                style={style}
-            >
+            <Link {...commonProps} to={disabled ? '#' : to} type='button' state={locationState} style={style}>
                 {loading ? <Loading /> : children}
             </Link>
         );
     }
 
     return (
-        <button
-            onClick={
-                !loading && !disabled
-                    ? (event) => {
-                          event.stopPropagation();
-                          onClick?.();
-                      }
-                    : () => null
-            }
-            className={`app-btn ${disabled ? 'disabled' : ''} ${outline ? 'app-btn-outline' : textOnly ? 'app-btn-text' : 'app-btn-plain'} ${className}`}
-            disabled={disabled}
-            {...rest}
-        >
+        <button {...commonProps} disabled={disabled} style={style} {...rest}>
             {loading ? <Loading /> : children}
         </button>
     );

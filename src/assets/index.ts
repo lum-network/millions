@@ -4,7 +4,7 @@ import biggestPrizePoolPlaceholder from './images/biggest_prize_pool_placeholder
 import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
-import coinsStaked2 from './images/coins_stacked_2.svg';
+import coinsStacked2 from './images/coins_stacked_2.svg';
 import coinsStackedPurple from './images/coins_stacked_purple.svg';
 import cosmonautCoin from './images/cosmonaut_coin.png';
 import cosmostation from './images/cosmostation.svg';
@@ -16,6 +16,7 @@ import discord from './images/discord.svg';
 import discordButton from './images/discord_button.svg';
 import discordPlain from './images/discord_plain.svg';
 import dollarIcon from './images/dollar_icon.svg';
+import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import info from './images/info.svg';
 import infoWhite from './images/info_white.svg';
@@ -27,6 +28,7 @@ import leavePool from './images/leave_pool.svg';
 import logo from './images/logo.svg';
 import logout from './images/logout.svg';
 import lumLogoPurple from './images/lum_logo_purple.svg';
+import moon from './images/moon.svg';
 import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
 import orbit from './images/orbit.svg';
@@ -35,6 +37,7 @@ import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
 import starVisu from './images/star_visu.svg';
 import success from './images/success.svg';
+import sun from './images/sun.svg';
 import trophy from './images/trophy.svg';
 import trophyPurple from './images/trophy_purple.svg';
 import trophyGreen from './images/trophy_green.svg';
@@ -69,7 +72,7 @@ const Assets = {
         coin,
         coinsStackedPurple,
         coinsStacked,
-        coinsStaked2,
+        coinsStacked2,
         cosmonautCoin,
         cosmostation,
         claim,
@@ -80,6 +83,7 @@ const Assets = {
         discordButton,
         discordPlain,
         dollarIcon,
+        dollarWhite,
         downArrow,
         info,
         infoWhite,
@@ -92,6 +96,7 @@ const Assets = {
         logout,
         lumLogoPurple,
         mintscanPurple,
+        moon,
         mySavings,
         orbit,
         questionMark,
@@ -99,6 +104,7 @@ const Assets = {
         star,
         starVisu,
         success,
+        sun,
         trophy,
         trophyGreen,
         trophyPurple,
