@@ -37,7 +37,7 @@ const BigWinnerCard = ({ apr, denom, address, prize, className, price }: IProps)
             forcePurple
         >
             <span className='prize text-nowrap'>
-                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 d-none d-sm-inline-block' alt={denom} />
+                <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 d-none d-sm-inline-block no-filter' alt={denom} />
                 {apr ? `APR: ${numeral(apr / 100).format('0,0%')}` : `$${numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}`}
             </span>
             <div className='address'>{StringsUtils.trunc(address, windowWidth <= Breakpoints.SM ? 3 : 6)}</div>
