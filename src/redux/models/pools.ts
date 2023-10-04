@@ -199,7 +199,6 @@ export const pools = createModel<RootModel>()({
             } catch (e) {
                 dispatch.pools.setMutexAdditionalInfos(false);
 
-                console.warn("Couldn't fetch additional infos");
                 console.warn((e as Error).message);
             }
 
