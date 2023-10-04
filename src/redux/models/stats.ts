@@ -27,8 +27,6 @@ export const stats = createModel<RootModel>()({
     },
     effects: (dispatch) => ({
         async fetchStats() {
-            console.log('------------------------------- [Stats] fetchStats (prices) -------------------------------');
-
             try {
                 const [res] = await ImperatorApi.getPrices();
 

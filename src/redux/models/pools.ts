@@ -64,8 +64,6 @@ export const pools = createModel<RootModel>()({
                 return;
             }
 
-            console.log('------------------------------- [Pools] fetchPools -------------------------------');
-
             dispatch.pools.setMutexFetchPools(true);
 
             try {
@@ -116,8 +114,6 @@ export const pools = createModel<RootModel>()({
             dispatch.pools.setMutexFetchPools(false);
         },
         async getPoolPrizes(poolId: Long) {
-            console.log(`------------------------------- [Pools] getPoolPrizes: ${poolId} -------------------------------`);
-
             try {
                 const res = await LumClient.getPoolPrizes(poolId);
 
@@ -130,8 +126,6 @@ export const pools = createModel<RootModel>()({
             if (state.pools.mutexAdditionalInfos) {
                 return;
             }
-
-            console.log('------------------------------- [Pools] getPoolsAdditionalInfo-------------------------------');
 
             dispatch.pools.setMutexAdditionalInfos(true);
 
@@ -212,8 +206,6 @@ export const pools = createModel<RootModel>()({
             dispatch.pools.setMutexAdditionalInfos(false);
         },
         async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }, state) {
-            console.log(`------------------------------- [Pools] getPoolDraw, ${poolId} -------------------------------`);
-
             try {
                 const res = await LumClient.getPoolDraws(poolId);
                 const draws: DrawModel[] = [];
@@ -244,8 +236,6 @@ export const pools = createModel<RootModel>()({
             } catch {}
         },
         async getNextBestPrize(_, state) {
-            console.log('------------------------------- [Pools] getNextBestPrize -------------------------------');
-
             try {
                 const pools = state.pools.pools;
 
@@ -269,8 +259,6 @@ export const pools = createModel<RootModel>()({
             } catch {}
         },
         async getDepositDelta() {
-            console.log('------------------------------- [Pools] getDepositDelta -------------------------------');
-
             try {
                 const depositDelta = await LumClient.getMinDepositDelta();
 
@@ -280,8 +268,6 @@ export const pools = createModel<RootModel>()({
             } catch {}
         },
         async getLeaderboard(payload: { poolId: Long; limit?: number }) {
-            console.log(`------------------------------- [Pools] getLeaderboard, ${payload.poolId} -------------------------------`);
-
             try {
                 const [res] = await LumApi.fetchLeaderboard(payload.poolId.toString(), payload.limit);
 
@@ -292,8 +278,6 @@ export const pools = createModel<RootModel>()({
         },
         async getNextLeaderboardPage(payload: { poolId: Long; page: number; limit?: number }, state) {
             const { poolId, page, limit } = payload;
-
-            console.log(`------------------------------- [Pools] getNextLeaderboardPage, PoolId: ${poolId}, page: ${page} -------------------------------`);
 
             const pools = [...state.pools.pools];
             const pool = PoolsUtils.getPoolByPoolId(pools, poolId.toString());

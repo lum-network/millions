@@ -69,24 +69,18 @@ export const prizes = createModel<RootModel>()({
     },
     effects: (dispatch) => ({
         fetchBiggestPrizes: async () => {
-            console.log('------------------------------- [Prizes] fetchBiggestPrizes -------------------------------');
-
             const [biggestPrizes] = await LumApi.fetchBiggestPrizes();
 
             dispatch.prizes.setBiggestPrizes(biggestPrizes);
         },
 
         fetchBiggestAprPrizes: async () => {
-            console.log('------------------------------- [Prizes] fetchBiggestAprPrizes -------------------------------');
-
             const [biggestAprPrizes] = await LumApi.fetchBiggestAprPrizes();
 
             dispatch.prizes.setBiggestAprPrizes(biggestAprPrizes);
         },
 
         fetchPrizes: async ({ page = 0, poolId }: { page: number; poolId?: string }) => {
-            console.log('------------------------------- [Prizes] fetchPrizes -------------------------------');
-
             dispatch.prizes.resetPrizes();
 
             if (poolId) {
@@ -101,8 +95,6 @@ export const prizes = createModel<RootModel>()({
         },
 
         getStats: async (poolId: string) => {
-            console.log('------------------------------- [Prizes] getStats -------------------------------');
-
             dispatch.prizes.resetStats();
 
             const [stats] = await LumApi.getPrizesStats(poolId);

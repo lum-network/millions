@@ -164,8 +164,6 @@ export const wallet = createModel<RootModel>()({
     },
     effects: (dispatch) => ({
         async connectWallet(payload: { provider: WalletProvider; silent: boolean }) {
-            console.log(`------------------------------- [Wallet] connectWallet, ${payload.provider} -------------------------------`);
-
             const { silent, provider } = payload;
             const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
 
@@ -265,8 +263,6 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async connectOtherWallets(provider: WalletProvider, state) {
-            console.log(`------------------------------- [Wallet] connectOtherWallets, ${provider} -------------------------------`);
-
             const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
 
             try {
@@ -362,8 +358,6 @@ export const wallet = createModel<RootModel>()({
                 return;
             }
 
-            console.log(`------------------------------- [Wallet] reloadWalletInfos, ${force} -------------------------------`);
-
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
             if (!init) {
@@ -377,8 +371,6 @@ export const wallet = createModel<RootModel>()({
             await dispatch.wallet.getDepositsAndWithdrawals(address);
         },
         async reloadOtherWalletInfo(payload: { address: string }, state) {
-            console.log('------------------------------- [Wallet] reloadOtherWalletInfo -------------------------------');
-
             const { address } = payload;
 
             const poolsChainIds = state.pools.pools.reduce<string[]>((acc, pool) => {
@@ -419,8 +411,6 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
-            console.log('------------------------------- [Wallet] getLumWalletBalances -------------------------------');
-
             try {
                 const result = await LumClient.getWalletBalances(address);
 
@@ -437,8 +427,6 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async getActivities(payload: GetActivitiesPayload, state) {
-            console.log('------------------------------- [Wallet] getActivities -------------------------------');
-
             try {
                 const res = await LumClient.getWalletActivities(payload.address);
 
@@ -460,8 +448,6 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async getDepositsAndWithdrawals(address: string) {
-            console.log('------------------------------- [Wallet] getDepositsAndWithdrawals -------------------------------');
-
             try {
                 const res = await LumClient.getDepositsAndWithdrawals(address);
 
@@ -476,8 +462,6 @@ export const wallet = createModel<RootModel>()({
             if (state.wallet.prizesMutex) {
                 return;
             }
-
-            console.log('------------------------------- [Wallet] fetchPrizes -------------------------------');
 
             dispatch.wallet.setPrizesMutex(true);
 
@@ -557,8 +541,6 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
 
-            console.log(`------------------------------- [Wallet] getLeaderboardRank, ${poolId} -------------------------------`);
-
             try {
                 const [res] = await LumApi.fetchLeaderboardUserRank(poolId.toString(), state.wallet.lumWallet.address);
 
@@ -569,8 +551,6 @@ export const wallet = createModel<RootModel>()({
         },
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
-
-            console.log('------------------------------- [Wallet] ibcTransfer -------------------------------');
 
             const convertedAmount = LumUtils.convertUnit(
                 {

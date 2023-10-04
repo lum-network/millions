@@ -34,8 +34,6 @@ export const app = createModel<RootModel>()({
 
             dispatch.app.SET_INIT_MUTEX(true);
 
-            console.log('------------------------------- [App] init -------------------------------');
-
             await LumClient.connect();
 
             try {
@@ -47,7 +45,6 @@ export const app = createModel<RootModel>()({
                     dispatch.prizes.fetchBiggestAprPrizes(),
                 ]);
             } catch (e) {
-                console.error("Couldn't fetch initial data");
                 console.error(e);
                 dispatch.app.SET_INIT_MUTEX(false);
             }
