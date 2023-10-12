@@ -2,11 +2,11 @@
 
 .pagination {
     .page-item.active .page-link {
-        color: $color-black !important;
+        color: var(--color-black) !important;
     }
 
     .page-item.active:not(.without-border) .page-link {
-        border-color: $color-black !important;
+        border-color: var(--color-black) !important;
         border-left-width: 3px;
         border-right-width: 3px;
     }
@@ -14,17 +14,17 @@
     .page-item .page-link {
         cursor: pointer;
         border-radius: 3px !important;
-        border-color: $color-white !important;
+        border-color: var(--color-white) !important;
         border-style: solid !important;
         border-top-width: 3px !important;
         border-bottom-width: 3px !important;
-        background-color: $color-white !important;
-        color: $color-muted !important;
+        background-color: var(--color-white) !important;
+        color: var(--color-muted) !important;
     }
     
     .page-item.disabled .page-link {
         cursor: unset;
-        color: $color-muted !important;
+        color: var(--color-muted) !important;
     }
 
     .page-item:first-child .page-link {

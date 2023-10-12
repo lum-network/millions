@@ -30,7 +30,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
     return (
         <Card className='pool-card-container glow-bg'>
             <div className='prize-container'>
-                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
+                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='no-filter' />
                 <div className='d-flex flex-column align-items-start ms-3'>
                     <div className='prize'>
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
@@ -96,6 +96,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                         : {
                               to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
+                    forcePurple
                     className='deposit-cta w-100 mt-3'
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >

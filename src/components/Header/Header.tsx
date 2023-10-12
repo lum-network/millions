@@ -2,15 +2,18 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { gsap } from 'gsap';
+import Switch from 'react-switch';
+
 import { slide as Menu } from 'react-burger-menu';
 
 import logo from 'assets/lotties/logo.json';
+import logoWhite from 'assets/lotties/logo_white.json';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import Assets from 'assets';
 import { Button, Lottie } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { useWindowSize } from 'hooks';
+import { useColorScheme, useWindowSize } from 'hooks';
 import { Firebase, I18n } from 'utils';
 import { RootState } from 'redux/store';
 import { Breakpoints, FirebaseConstants, NavigationConstants, PrizesConstants } from 'constant';
@@ -26,8 +29,10 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
     const [isLanding, setIsLanding] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const headerRef = useRef(null);
     const location = useLocation();
     const winSizes = useWindowSize();
+    const { isDark, setIsDark } = useColorScheme();
 
     useEffect(() => {
         setIsLanding(window.location.pathname === NavigationConstants.LANDING);
@@ -58,31 +63,95 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
 
     useEffect(() => {
         const scrollTrigger = {
+            trigger: '#root',
             start: 'top top',
-            end: '3% top',
+            end: 'top+=45px top',
             scrub: true,
         };
 
         if (!timeline.current) {
-            const tl = gsap.timeline();
-
-            timeline.current = tl;
-
-            tl.to('header.navbar .background', {
-                opacity: 1,
-                ease: 'none',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'saturate(180%) blur(20px)',
-                scrollTrigger: scrollTrigger,
+            timeline.current = gsap.timeline({
+                scrollTrigger,
             });
         }
-    }, []);
+
+        timeline.current.to('header.navbar .background', {
+            ease: 'none',
+            opacity: 1,
+        });
+    }, [isDark]);
 
     const dismissMenuProps = {
         onClick: () => {
             setIsMenuOpen(false);
         },
     };
+
+    const DarkModeSwitch = ({ inBurgerMenu = false }: { inBurgerMenu?: boolean }) => (
+        <Switch
+            checked={isDark}
+            onChange={() => setIsDark(!isDark)}
+            handleDiameter={35}
+            offColor='#fff'
+            onColor='#482673'
+            offHandleColor='#5634DE'
+            onHandleColor='#331954'
+            height={inBurgerMenu ? 47 : 55}
+            width={87}
+            borderRadius={inBurgerMenu ? 9 : 12}
+            uncheckedIcon={
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                    }}
+                >
+                    <img src={Assets.images.moon} alt='moon' style={{ opacity: 0.2 }} />
+                </div>
+            }
+            checkedIcon={
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        paddingLeft: inBurgerMenu ? 0 : 6,
+                    }}
+                >
+                    <img src={Assets.images.sun} alt='sun' style={{ opacity: 0.3 }} />
+                </div>
+            }
+            uncheckedHandleIcon={
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        fontSize: 20,
+                    }}
+                >
+                    <img src={Assets.images.sun} alt='sun' />
+                </div>
+            }
+            checkedHandleIcon={
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                    }}
+                >
+                    <img src={Assets.images.moon} alt='moon' />
+                </div>
+            }
+            className='dark-mode-switch ms-4'
+        />
+    );
 
     const renderContent = (inBurgerMenu: boolean) => {
         if (isLanding) {
@@ -137,10 +206,12 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             {...dismissMenuProps}
                             locationState={{ autoConnect: true }}
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                            forcePurple
                         >
                             {I18n.t('landing.openTheApp')}
                         </Button>
                     </li>
+                    {!inBurgerMenu ? <DarkModeSwitch /> : null}
                 </ul>
             );
         }
@@ -188,22 +259,26 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                 )}
                 {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
                 <li className={`nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0 ${inBurgerMenu && 'mb-5'}`}>
-                    <ConnectButton address={address} {...dismissMenuProps} />
+                    <div className='d-flex flex-row align-items-center'>
+                        <ConnectButton address={address} {...dismissMenuProps} />
+                        {address ? (
+                            <Button
+                                textOnly
+                                className='logout-btn ms-4'
+                                style={{ backgroundColor: isDark ? '#482673' : 'white' }}
+                                onClick={() => {
+                                    Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
+                                    if (logoutModalRef.current) {
+                                        logoutModalRef.current.show();
+                                    }
+                                }}
+                            >
+                                <img src={Assets.images.logout} />
+                            </Button>
+                        ) : null}
+                    </div>
                 </li>
-                {address && !inBurgerMenu ? (
-                    <Button
-                        textOnly
-                        className='ms-4'
-                        onClick={() => {
-                            Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
-                            if (logoutModalRef.current) {
-                                logoutModalRef.current.show();
-                            }
-                        }}
-                    >
-                        <img src={Assets.images.logout} alt='logout' />
-                    </Button>
-                ) : null}
+                {!inBurgerMenu ? <DarkModeSwitch /> : null}
             </ul>
         );
     };
@@ -224,14 +299,14 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
 
     return (
         <>
-            <header className={`navbar fixed-top container mt-4 mx-auto px-4 py-2 py-lg-4 ${!isLanding ? 'app' : ''}`}>
+            <header ref={headerRef} className={`navbar fixed-top container mt-4 mx-auto px-4 py-2 py-lg-4 ${!isLanding ? 'app' : ''}`}>
                 <div className='background' />
                 <nav>
                     <Link to={NavigationConstants.LANDING}>
                         <Lottie
                             delay={1100}
                             className='logo'
-                            animationData={logo}
+                            animationData={isDark ? logoWhite : logo}
                             segments={[
                                 [0, 41],
                                 [41, 400],
@@ -250,12 +325,12 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                     isOpen={isMenuOpen}
                     onStateChange={(state) => setIsMenuOpen(state.isOpen)}
                 >
-                    <div className='d-flex flex-row justify-content-between menu-header pt-3'>
+                    <div className='d-flex flex-row justify-content-between align-items-end menu-header pt-3'>
                         <Link to={NavigationConstants.LANDING} {...dismissMenuProps}>
                             <Lottie
                                 delay={1100}
                                 className='logo'
-                                animationData={logo}
+                                animationData={isDark ? logoWhite : logo}
                                 segments={[
                                     [0, 41],
                                     [41, 400],
@@ -263,23 +338,15 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             />
                         </Link>
                         <div className='d-flex flex-row align-items-center'>
-                            {address ? (
-                                <Button
-                                    textOnly
-                                    className='me-2 me-sm-3'
-                                    onClick={() => {
-                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
-                                        setIsMenuOpen(false);
-                                        if (logoutModalRef.current) {
-                                            logoutModalRef.current.show();
-                                        }
-                                    }}
-                                >
-                                    <img src={Assets.images.logout} alt='logout' />
-                                </Button>
-                            ) : null}
-                            <button className='close-btn d-flex align-items-center justify-content-center' type='button' aria-label='Close burger menu' {...dismissMenuProps}>
-                                <span className='btn-close'></span>
+                            <DarkModeSwitch inBurgerMenu />
+                            <button
+                                className='close-btn d-flex align-items-center justify-content-center ms-3'
+                                style={{ backgroundColor: isDark ? '#482673' : '#5634de' }}
+                                type='button'
+                                aria-label='Close burger menu'
+                                {...dismissMenuProps}
+                            >
+                                <span className={`btn-close ${isDark ? 'btn-close-white' : ''}`}></span>
                             </button>
                         </div>
                     </div>

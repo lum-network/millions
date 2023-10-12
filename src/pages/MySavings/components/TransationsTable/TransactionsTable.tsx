@@ -46,7 +46,7 @@ const TransactionsTable = ({
                         <div className='d-flex flex-row align-items-baseline'>
                             {icon && (
                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                    <img src={icon} alt='tx icon' />
+                                    <img src={icon} alt='tx icon' className='no-filter' />
                                 </div>
                             )}
                             <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>
@@ -94,7 +94,7 @@ const TransactionsTable = ({
                         <div className='d-flex flex-row align-items-baseline table-item'>
                             {icon && (
                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                    <img src={icon} alt='tx icon' />
+                                    <img src={icon} alt='tx icon' className='no-filter' />
                                 </div>
                             )}
                             <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>

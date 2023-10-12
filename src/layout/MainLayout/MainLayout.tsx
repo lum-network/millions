@@ -28,8 +28,6 @@ const MainLayout = () => {
     const wallet = useSelector((state: RootState) => state.wallet.lumWallet);
     const appInitialized = useSelector((state: RootState) => state.app);
 
-    const appLoading = useSelector((state: RootState) => state.loading.effects.app.init);
-
     const dispatch = useDispatch<Dispatch>();
     const store = useStore();
     const visibilityState = useVisibilityState();
@@ -124,9 +122,9 @@ const MainLayout = () => {
         <div className='main-layout'>
             <Header logoutModalRef={logoutModalRef} />
             <main className='custom-container container'>
-                {appLoading ? (
+                {!appInitialized ? (
                     <div className='d-flex justify-content-center align-items-center h-75'>
-                        <div className='spinner-border' style={{ width: '3rem', height: '3rem', color: '#5634DE' }} role='status'>
+                        <div className='spinner-border' role='status'>
                             <span className='visually-hidden'>{I18n.t('common.loading')}</span>
                         </div>
                     </div>
@@ -136,7 +134,7 @@ const MainLayout = () => {
                 <RouteListener location={location} />
                 <ScrollRestoration />
             </main>
-            <Modal id='get-keplr-modal' contentClassName='bg-white' withCloseButton={false}>
+            <Modal id='get-keplr-modal' withCloseButton={false}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
                 {!isMobile ? (
@@ -149,7 +147,7 @@ const MainLayout = () => {
                         }}
                         data-bs-dismiss='modal'
                     >
-                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                         <div className='d-flex flex-column align-items-start text-start'>
                             <p
                                 dangerouslySetInnerHTML={{
@@ -171,7 +169,7 @@ const MainLayout = () => {
                     }}
                     data-bs-dismiss='modal'
                 >
-                    <img src={Assets.images.leap} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                    <img src={Assets.images.leap} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <p
                             dangerouslySetInnerHTML={{
@@ -183,36 +181,8 @@ const MainLayout = () => {
                         </a>
                     </div>
                 </Card>
-                {!isMobile ? (
-                    <Card
-                        flat
-                        withoutPadding
-                        className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'
-                        onClick={() => {
-                            window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
-                        }}
-                        data-bs-dismiss='modal'
-                    >
-                        <img
-                            src={Assets.images.cosmostation}
-                            alt='Cosmostation icon'
-                            className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
-                            style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
-                        />
-                        <div className='d-flex flex-column align-items-start text-start'>
-                            <p
-                                dangerouslySetInnerHTML={{
-                                    __html: I18n.t('keplrDownloadModal.keplr.description'),
-                                }}
-                            />
-                            <a href={NavigationConstants.INTERCHAIN_WALLETS_DOC} onClick={(e) => e.stopPropagation()} target='_blank' rel='noreferrer'>
-                                {I18n.t('keplrDownloadModal.link')}
-                            </a>
-                        </div>
-                    </Card>
-                ) : null}
             </Modal>
-            <Modal id='choose-wallet-modal' contentClassName='bg-white' withCloseButton={false}>
+            <Modal id='choose-wallet-modal' withCloseButton={false}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('keplrDownloadModal.title')}</h3>
                 {!isMobile ? (
@@ -225,7 +195,7 @@ const MainLayout = () => {
                         }}
                         data-bs-dismiss='modal'
                     >
-                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                        <img src={Assets.images.keplr} alt='Keplr icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                         <div className='d-flex flex-column align-items-start text-start'>
                             <h2
                                 dangerouslySetInnerHTML={{
@@ -247,7 +217,7 @@ const MainLayout = () => {
                     }}
                     data-bs-dismiss='modal'
                 >
-                    <img src={Assets.images.leap} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0' />
+                    <img src={Assets.images.leap} alt='Leap icon' className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter' />
                     <div className='d-flex flex-column align-items-start text-start'>
                         <h2
                             dangerouslySetInnerHTML={{
@@ -272,7 +242,7 @@ const MainLayout = () => {
                         <img
                             src={Assets.images.cosmostation}
                             alt='Cosmostation icon'
-                            className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0'
+                            className='keplr-icon me-0 me-sm-4 mb-4 mb-sm-0 no-filter'
                             style={{ padding: 16, backgroundColor: 'black', borderRadius: 18 }}
                         />
                         <div className='d-flex flex-column align-items-start text-start'>
@@ -288,7 +258,7 @@ const MainLayout = () => {
                     </Card>
                 ) : null}
             </Modal>
-            <Modal id='logout-modal' contentClassName='bg-white' ref={logoutModalRef}>
+            <Modal id='logout-modal' ref={logoutModalRef}>
                 <img src={Assets.images.info} alt='info' width={42} height={42} />
                 <h3 className='my-4'>{I18n.t('logoutModal.title')}</h3>
                 <div className='d-flex flex-row align-self-stretch justify-content-between'>
@@ -319,6 +289,7 @@ const MainLayout = () => {
                             setEnableAutoConnect(false);
                             store.dispatch({ type: LOGOUT });
                         }}
+                        forcePurple
                     >
                         {I18n.t('logoutModal.logoutBtn')}
                     </Button>
@@ -462,7 +433,7 @@ const MainLayout = () => {
                         affiliates, or any other individual or entity involved in the operation of the Cosmos Millions Interface.
                     </p>
                 </div>
-                <div className='d-flex my-4'>
+                <div className='d-flex my-4 terms-checkbox'>
                     <input onChange={(value) => setTermsChecked(value.target.checked)} type='checkbox' className='me-3' /> {I18n.t('termsModal.checkbox')}
                 </div>
                 <div className='d-flex flex-row'>
@@ -484,6 +455,7 @@ const MainLayout = () => {
 
                             setEnableAutoConnect(true);
                         }}
+                        forcePurple
                     >
                         {I18n.t('termsModal.cta')}
                     </Button>

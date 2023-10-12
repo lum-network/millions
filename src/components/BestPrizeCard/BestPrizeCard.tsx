@@ -59,11 +59,11 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                     : undefined
             }
         >
-            <img src={Assets.images.orbit} className='orbit' />
-            <img src={Assets.images.starVisu} className='star star-1' />
-            <img src={Assets.images.starVisu} className='star star-2' />
-            <img src={Assets.images.starVisu} className='star star-3' />
-            <img src={Assets.images.starVisu} className='star star-4' />
+            <img src={Assets.images.orbit} className='orbit no-filter' />
+            <img src={Assets.images.starVisu} className='star star-1 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-2 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-3 no-filter' />
+            <img src={Assets.images.starVisu} className='star star-4 no-filter' />
             <div className='content'>
                 <div className='title-container'>
                     <h3 className=''>{title || I18n.t('home.nextBestPrize')}</h3>
@@ -80,14 +80,14 @@ const BestPrizeCard = ({ biggestPrize, poolId, countdownTo, className, delay, ti
                                 </div>
                             </>
                         ) : (
-                            <img alt='Prize pool placeholeder' src={Assets.images.biggestPrizePoolPlaceholder} className='mt-2 mt-sm-3 mt-md-4' />
+                            <img alt='Prize pool placeholeder' src={Assets.images.biggestPrizePoolPlaceholder} className='mt-2 mt-sm-3 mt-md-4 no-filter' />
                         )}
                     </div>
                 </div>
                 {countdownTo && (
                     <div className='d-flex flex-column flex-sm-row align-items-center justify-content-between w-100 best-prize-countdown'>
                         <div className='network mt-4 mt-sm-0'>
-                            <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} />
+                            <img src={biggestPrize ? DenomsUtils.getIconFromDenom(biggestPrize.denom) : '-'} alt='denom' height={32} width={32} className='no-filter' />
                             <span className='ms-2'>{biggestPrize ? DenomsUtils.getNormalDenom(biggestPrize.denom) : '-'}</span>
                         </div>
                         <div className='mt-4 mt-sm-0'>

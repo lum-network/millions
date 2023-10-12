@@ -1,7 +1,7 @@
 @import 'src/styles/main';
 
 .app-card {
-    background-color: $color-white;
+    background-color: var(--color-white);
     border-radius: 12px;
     position: relative;
     opacity: 0;
@@ -9,7 +9,7 @@
     
     &.flat {
         border-radius: 12px;
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         animation: none;
         opacity: 1;
     }

@@ -15,12 +15,16 @@ input[type='number'] {
 .amount-input {
     display: flex;
     flex-direction: column;
-    color: $color-primary;
+    color: var(--color-primary);
 
     .labels-container {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
+
+        .label {
+            color: var(--color-primary);
+        }
 
         .sublabel {
             font-size: 14px;
@@ -28,7 +32,7 @@ input[type='number'] {
             line-height: 28px;
             vertical-align: sub;
             text-align: right;
-            color: $color-black;
+            color: var(--color-black);
         }
     }
 
@@ -48,13 +52,15 @@ input[type='number'] {
                 line-height: 26px;
                 letter-spacing: 0em;
                 text-align: left;
+                background-color: transparent;
+                color: var(--color-black);
 
                 &:focus {
                     outline: none;
                 }
 
                 &::placeholder {
-                    color: $color-black;
+                    color: var(--color-black);
                     opacity: 0.3;
                 }
             }
@@ -65,11 +71,11 @@ input[type='number'] {
         }
 
         &.readonly {
-            background-color: $color-primary-light;
+            background-color: var(--color-primary-light);
         }
 
         .price-label {
-            color: $color-grey;
+            color: var(--color-grey);
             font-weight: 200;
         }
     }

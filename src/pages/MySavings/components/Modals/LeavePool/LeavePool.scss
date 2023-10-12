@@ -3,17 +3,18 @@
 #leavePoolModal {
     .card-step-subtitle {
         a {
-            color: $color-grey;
+            color: var(--color-grey);
         }
     }
     .warnings {
         p {
-            color: $color-failure;
+            color: var(--color-failure);
             font-size: 16px;
         }
 
         .app-card {
-            background-color: $color-failure-light;
+            background-color: var(--color-failure-light);
+            color: var(--color-black);
             font-size: 14px;
         }
     }

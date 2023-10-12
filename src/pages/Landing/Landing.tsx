@@ -12,9 +12,9 @@ import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import Assets from 'assets';
-import { Button, Card, Lottie, Collapsible, BestPrizeCard } from 'components';
+import { Button, Card, Lottie, Collapsible, BestPrizeCard, PurpleBackgroundImage } from 'components';
 import { FirebaseConstants, LandingConstants, NavigationConstants } from 'constant';
-import { useWindowSize } from 'hooks';
+import { useColorScheme, useWindowSize } from 'hooks';
 import numeral from 'numeral';
 import { RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
@@ -38,7 +38,7 @@ const Landing = () => {
 
     const timeline = useRef<gsap.core.Timeline>();
     const { width } = useWindowSize();
-
+    const { isDark } = useColorScheme();
     const location = useLocation();
 
     const poolsPlaceholders = [];
@@ -100,14 +100,12 @@ const Landing = () => {
                     titleSplit.chars,
                     {
                         opacity: 0,
-                        color: '#FFFFFF',
                         textShadow: `0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 50px #ffffff, 0 0 60px #ffffff, 0 0 70px #ffffff`,
                         ease: Power1.easeIn,
                     },
                     {
                         duration: 0.5,
                         opacity: 1,
-                        color: '#5634DE',
                         // eslint-disable-next-line max-len
                         textShadow: `0 0 10px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0), 0 0 30px rgba(255,255,255,0), 0 0 40px rgba(255,255,255,0), 0 0 50px rgba(255,255,255,0), 0 0 60px rgba(255,255,255,0), 0 0 70px rgba(255,255,255,0)`,
                         ease: Power1.easeIn,
@@ -195,6 +193,7 @@ const Landing = () => {
                                 to={NavigationConstants.HOME}
                                 locationState={{ autoConnect: true }}
                                 onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                                forcePurple
                             >
                                 {I18n.t('landing.saving.cta')}
                             </Button>
@@ -240,7 +239,7 @@ const Landing = () => {
                     <h1 className='text-center mb-4'>{I18n.t('landing.winners.title')}</h1>
                     <Card withoutPadding className='w-100 d-flex flex-xl-row flex-column align-items-center p-3 py-5 p-xl-5'>
                         <div className='d-flex flex-column align-items-center'>
-                            <div className='square'>
+                            <div className={`square ${isDark ? 'square-dark' : ''}`}>
                                 <Lottie
                                     className='cosmonaut-coin'
                                     animationData={cosmonautWithCoin}
@@ -270,7 +269,7 @@ const Landing = () => {
                             <img src={Assets.images.landingArrow} alt='arrow' className='arrow' />
                         </div>
                         <div className='d-flex flex-column align-items-center'>
-                            <div className='square'>
+                            <div className={`square ${isDark ? 'square-dark' : ''}`}>
                                 <Lottie
                                     className='cosmonaut-balloons'
                                     animationData={cosmonautWithBalloons}
@@ -304,7 +303,7 @@ const Landing = () => {
                         </div>
                         <div className='image-group'>
                             <div className='d-flex flex-column flex-xl-row align-items-center'>
-                                <div className='square'>
+                                <div className={`square ${isDark ? 'square-dark' : ''}`}>
                                     <Lottie
                                         className='cosmonaut-duck'
                                         animationData={cosmonautWithDuck}
@@ -331,7 +330,7 @@ const Landing = () => {
                             </div>
                             <div className='or'>{I18n.t('landing.winners.or')}</div>
                             <div className='d-flex flex-column flex-xl-row align-items-center'>
-                                <div className='square'>
+                                <div className={`square ${isDark ? 'square-dark' : ''}`}>
                                     <Lottie
                                         className='cosmonaut-zen'
                                         animationData={cosmonautZen}
@@ -364,7 +363,7 @@ const Landing = () => {
                         <div className='d-flex align-items-lg-center flex-column flex-lg-row'>
                             <h1>{I18n.t('landing.pools.title')}</h1>
                             <div className='ms-lg-5 d-flex align-items-center'>
-                                <img width={42} height={42} src={Assets.images.coinsStaked2} alt='Coins staked' className='coins-staked me-2' />
+                                <PurpleBackgroundImage alt='coin stacked' src={Assets.images.coinsStacked2} className='me-2 no-filter' height={42} width={42} />
                                 <div className='d-flex flex-column'>
                                     <span className='tvl-legend'>{I18n.t('landing.pools.tvl')}</span>
                                     <span className='tvl-value'>{numeral(tvl).format('$0,0').replaceAll(',', '\u00a0')}</span>
@@ -394,6 +393,7 @@ const Landing = () => {
                             to={NavigationConstants.POOLS}
                             locationState={{ autoConnect: true }}
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.SEE_ALL_POOLS_CLICK)}
+                            forcePurple
                         >
                             {I18n.t('landing.pools.cta')}
                         </Button>
@@ -426,6 +426,7 @@ const Landing = () => {
                             className='cta mt-4'
                             locationState={{ autoConnect: true }}
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.OPEN_APP_CLICK)}
+                            forcePurple
                         >
                             {I18n.t('landing.future.cta')}
                         </Button>
@@ -489,7 +490,7 @@ const Landing = () => {
                                     rel='noreferrer'
                                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TWITTER_CLICK)}
                                 >
-                                    <img src={Assets.images.twitterPlain} alt='Twitter' />
+                                    <PurpleBackgroundImage src={Assets.images.twitterWhite} alt='Twitter' className='rounded-circle no-filter p-4' width={76} height={76} />
                                 </a>
                                 <a
                                     className='scale-hover'
@@ -498,7 +499,7 @@ const Landing = () => {
                                     rel='noreferrer'
                                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DISCORD_CLICK)}
                                 >
-                                    <img src={Assets.images.discordPlain} alt='discord' />
+                                    <PurpleBackgroundImage src={Assets.images.discord} alt='Discord' className='rounded-circle no-filter p-4' width={76} height={76} />
                                 </a>
                             </div>
                         </Card>

@@ -48,7 +48,7 @@ const LuckiestWinnerCard = ({ prize, rank }: IProps) => {
                 </div>
                 <div className='d-flex justify-content-between align-items-center separator py-3'>
                     <div className='d-flex align-items-center title'>
-                        <img className='me-2' alt={denom} src={icon} width={18} height={18} />
+                        <img className='me-2 no-filter' alt={denom} src={icon} width={18} height={18} />
                         {I18n.t('luckiestWinners.card.pool')}
                     </div>
                     <div className='value'>{denom.toUpperCase()}</div>
@@ -60,7 +60,7 @@ const LuckiestWinnerCard = ({ prize, rank }: IProps) => {
                     </div>
                     <div className='value text-end'>
                         <div className='amount'>{numeral(prize.sumOfDeposits * price).format('$0,0')}</div>
-                        <SmallerDecimal nb={numeral(prize.sumOfDeposits).format(prize.sumOfDeposits < 10 ? '0,0.000' : '0,0')} /> {denom.toUpperCase()}
+                        <SmallerDecimal nb={numeral(prize.sumOfDeposits).format(prize.sumOfDeposits < 10 ? '0,0.000' : '0,0')} /> <span className='denom'>{denom.toUpperCase()}</span>
                     </div>
                 </div>
                 <div className='d-flex justify-content-between align-items-center separator pt-3'>
@@ -70,7 +70,7 @@ const LuckiestWinnerCard = ({ prize, rank }: IProps) => {
                     </div>
                     <div className='value text-end'>
                         <div className='amount'>{numeral(prize.amount * price).format('$0,0')}</div>
-                        <SmallerDecimal nb={numeral(prize.amount).format(prize.amount < 10 ? '0,0.000' : '0,0')} /> {denom.toUpperCase()}
+                        <SmallerDecimal nb={numeral(prize.amount).format(prize.amount < 10 ? '0,0.000' : '0,0')} /> <span className='denom'>{denom.toUpperCase()}</span>
                     </div>
                 </div>
             </Card>

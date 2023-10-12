@@ -316,8 +316,9 @@ export default {
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: ['Prize value', 'Nbr of prizes'],
+            tableHeaders: ['Prize value', 'Number of prizes'],
             hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
+            chancesToWin: '{{ percentage }} chances to win',
         },
         winningChances: {
             title: 'Winning Chances',
@@ -473,7 +474,7 @@ export default {
                 title: 'Once the unbonding period begins you will:',
                 draws: 'Not be selected for all future draws',
                 cancel: 'Not be able to cancel the unbonding',
-                waiting: 'Need to wait {{ unbondingTime }} days for the amount to be liquid',
+                waiting: 'Need to wait up to {{ unbondingTime }} days for the amount to be liquid',
             },
             cta: 'Leave pool',
         },
@@ -522,7 +523,7 @@ export default {
         },
         feesWarning: 'You need LUM for transaction fees',
         depositWarning:
-            'Deposit will lock your assets for {{ unbondingTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take {{ unbondingTime }} days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+            'Deposit will lock your assets for up to {{ lockTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take {{ unbondingTime }} days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',
         steps: [
             {
@@ -553,7 +554,7 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'You already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            subtitle: 'You have already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
             prevAmountLabel: 'Amount requested',
             nextAmountLabel: 'Missing amount',
             cta: 'Add {{ nextAmount }} {{ denom }}',

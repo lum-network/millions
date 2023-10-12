@@ -177,6 +177,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                         disabled={isLoading}
                                         loading={isLoading}
                                         onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.TRANSFER_OUT_CONFIRMED)}
+                                        forcePurple
                                     >
                                         {I18n.t('mySavings.transferOutModal.cta')}
                                     </Button>

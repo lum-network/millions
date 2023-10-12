@@ -18,7 +18,7 @@ const PoolCard = ({ denom, tvl, prize }: IProps) => {
     return (
         <Card withoutPadding className='p-3 p-xxl-4 pool-card d-flex flex-column align-items-center'>
             <div className='d-flex flex-column justify-content-center align-items-center'>
-                <img width={88} height={88} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
+                <img width={88} height={88} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='no-filter' />
                 <div className='name-container mt-3'>
                     <span className='name'>{denom}</span>
                 </div>

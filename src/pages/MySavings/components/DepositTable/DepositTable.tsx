@@ -3,7 +3,7 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/networ
 import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 import numeral from 'numeral';
 
-import { Button, Collapsible, SmallerDecimal, Tooltip } from 'components';
+import { Button, Collapsible, PurpleBackgroundImage, SmallerDecimal, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
@@ -36,7 +36,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                     <span data-tooltip-id={`deposit-drop-${deposit.depositId?.toString() || index}-hint`} data-tooltip-html={I18n.t('mySavings.depositDropHint')} className='d-flex align-items-center'>
                         <Tooltip place='left' id={`deposit-drop-${deposit.depositId?.toString() || index}-hint`} />
                         <p className='me-3 mb-0'>{I18n.t('mySavings.depositDrop')}</p>
-                        <img alt='Deposit drop' src={Assets.images.depositDrop} />
+                        <img alt='Deposit drop' src={Assets.images.depositDrop} className='no-filter' />
                     </span>
                 ) : (
                     <Button
@@ -53,6 +53,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                         data-bs-target='#leavePoolModal'
                         data-bs-toggle='modal'
                         className='h-100'
+                        forcePurple
                     >
                         {I18n.t('mySavings.leavePoolCta')}
                     </Button>
@@ -115,14 +116,14 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
             <div className={`${className}`} key={`deposit-${index}`}>
                 <div className='col-12 col-md-6'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
+                        <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' className='no-filter' />
                         <div className='d-flex flex-column ms-3'>
                             <h3 className='mb-0'>
                                 <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
                                 {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                 {deposit.isSponsor && (
                                     <span data-tooltip-id={`deposit-${deposit.depositId?.toString() || index}-sponsor`} data-tooltip-html={I18n.t('mySavings.sponsorHint')} className='ms-2'>
-                                        <img src={Assets.images.sponsor} width='20' height='20' alt='sponsor' className='mb-1' />
+                                        <PurpleBackgroundImage src={Assets.images.sponsor} width='20' height='20' alt='sponsor' className='mb-1 no-filter sponsorship-icon' />
                                         <Tooltip id={`deposit-${deposit.depositId?.toString() || index}-sponsor`} />
                                     </span>
                                 )}
@@ -175,7 +176,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                         <div className='d-flex flex-column flex-md-row align-items-center w-100' key={`deposit-${index}`}>
                             <div className='col-12 col-md-6'>
                                 <div className='d-flex flex-row align-items-center'>
-                                    <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' />
+                                    <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' className='no-filter' />
                                     <div className='d-flex flex-column ms-3'>
                                         <h3 className='mb-0'>
                                             <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}

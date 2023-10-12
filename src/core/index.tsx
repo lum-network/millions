@@ -3,9 +3,12 @@ import { useDispatch } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 
+import Assets from 'assets';
+
+import { useColorScheme } from 'hooks';
 import { router } from 'navigation';
 import { Dispatch } from 'redux/store';
-import Assets from 'assets';
+
 import Loader from './components/Loader/Loader';
 import { Firebase, StorageUtils } from '../utils';
 
@@ -14,6 +17,7 @@ const Core = () => {
     const [progress, setProgress] = useState<number>(5);
     const [loading, setLoading] = useState<boolean>(true);
     const loadingStartsAt = useRef<Date>(new Date());
+    const { isDark } = useColorScheme();
 
     useEffect(() => {
         if (progress >= 100) {
@@ -70,7 +74,7 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        dispatch.app.init().finally(() => null);
+        dispatch.app.init(null).finally(() => null);
     }, []);
 
     useEffect(() => {
@@ -85,7 +89,7 @@ const Core = () => {
 
     return (
         <>
-            <Loader progress={progress} loading={loading} />
+            <Loader progress={progress} loading={loading} isDark={isDark} />
             {!loading ? <RouterProvider router={router} /> : null}
         </>
     );
