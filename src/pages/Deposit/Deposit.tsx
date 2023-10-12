@@ -6,15 +6,16 @@ import * as yup from 'yup';
 import { LumConstants } from '@lum-network/sdk-javascript';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
+import { SwapTab, ThemeContextProvider, WalletClientContextProvider, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import Assets from 'assets';
-import { Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'components';
+import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { usePrevious, useVisibilityState } from 'hooks';
+import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -54,14 +55,83 @@ const Deposit = () => {
             smoothChildTiming: true,
         }),
     );
+    const [computedStyles, setComputedStyles] = useState(getComputedStyle(document.body));
 
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const leapSwapModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
 
     const prevStep = usePrevious(currentStep);
+    const { isDark } = useColorScheme();
+
+    const wcConfig: WalletClientContext = {
+        userAddress: lumWallet?.address,
+        connectWallet: () => {
+            // do nothing
+        },
+        walletClient: {
+            enable: async (chainIds) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                if (autoConnectProvider) {
+                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                    for (const chainId of chainIds) {
+                        await providerFunctions.enable(chainId);
+                    }
+                }
+            },
+            getKey: async (chainId) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                if (autoConnectProvider) {
+                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                    return await providerFunctions.getKey(chainId);
+                }
+
+                return {
+                    address: new Uint8Array(),
+                    pubKey: new Uint8Array(),
+                    name: '',
+                    algo: '',
+                    isNanoLedger: false,
+                    bech32Address: '',
+                };
+            },
+            getOfflineSigner: (chainId) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
+
+                return providerFunctions.getOfflineSigner(chainId);
+            },
+        },
+    };
+
+    const leapModalTheme: ThemeDefinition = {
+        colors: {
+            primary: computedStyles.getPropertyValue('--color-purple'),
+            primaryButton: computedStyles.getPropertyValue('--color-purple'),
+            text: computedStyles.getPropertyValue('--color-purple'),
+            primaryButtonText: 'white',
+            textSecondary: computedStyles.getPropertyValue('--color-muted'),
+            border: computedStyles.getPropertyValue('--color-purple-light'),
+            stepBorder: computedStyles.getPropertyValue('--color-purple-light'),
+            alpha: computedStyles.getPropertyValue('--color-purple'),
+            gray: computedStyles.getPropertyValue('--color-grey'),
+            backgroundPrimary: computedStyles.getPropertyValue('--color-background'),
+            backgroundSecondary: computedStyles.getPropertyValue('--color-white'),
+            error: computedStyles.getPropertyValue('--color-failure'),
+            errorBackground: computedStyles.getPropertyValue('--color-failure-light'),
+            success: computedStyles.getPropertyValue('--color-success'),
+            successBackground: computedStyles.getPropertyValue('--color-success-light'),
+        },
+        borderRadii: defaultBorderRadii,
+        blurs: defaultBlurs,
+        fontFamily: 'Gotham Rounded',
+    };
 
     const transferForm = useFormik({
         initialValues: {
@@ -718,6 +788,7 @@ const Deposit = () => {
                 y: 50,
                 opacity: 0,
                 duration: 0.8,
+                stagger: 0.1,
             });
 
             timeline.add(cardTimeline(), '<0.2');
@@ -760,6 +831,10 @@ const Deposit = () => {
         });
     }, [currentStep]);
 
+    useEffect(() => {
+        setComputedStyles(getComputedStyle(document.body));
+    }, [isDark]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -770,29 +845,47 @@ const Deposit = () => {
         steps.splice(0, 1);
     }
 
-    const isLastStep = currentStep >= steps.length;
+    const isShareStep = currentStep > steps.length;
 
     return (
         <div id='depositFlow' ref={depositFlowContainerRef}>
-            <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
-                {!isLastStep && (
+            <div className={`row row-cols-1 ${!isShareStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
+                {!isShareStep && (
                     <div className='col'>
                         <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                         <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                            <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                            <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
+                        </Card>
+                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                            <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                            <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{"Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first"}</div>
+                            <Button data-bs-target='#swap-modal' data-bs-toggle='modal' className='text-nowrap ms-3'>
+                                Swap
+                            </Button>
+                        </Card>
+                        {otherWallet?.balances.find(
+                            (balance) => balance.denom === 'uatom' && NumbersUtils.convertUnitNumber(balance.amount) <= NumbersUtils.convertUnitNumber(pool.minDepositAmount),
+                        ) && currentStep < steps.length - 1 ? (
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                                <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{"Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first"}</div>
+                                <Button data-bs-target='#swap-modal' data-bs-toggle='modal' className='text-nowrap ms-3'>
+                                    Swap
+                                </Button>
+                            </Card>
+                        ) : null}
                         {withinDepositDelta && (
                             <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                 <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
                             </Card>
                         )}
-                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                            <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
-                            <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
-                        </Card>
                     </div>
                 )}
                 <div className='col'>
-                    <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
+                    <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isShareStep ? 'last-step glow-bg' : ''}`}>
                         <DepositSteps
                             transferForm={transferForm}
                             onNextStep={startTransition}
@@ -834,7 +927,7 @@ const Deposit = () => {
                             otherWallets={otherWallets}
                             amountFromLocationState={location.state?.amountToDeposit}
                         />
-                        {isLastStep && (
+                        {isShareStep && (
                             <Lottie
                                 className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
                                 animationData={cosmonautWithRocket}
@@ -880,6 +973,40 @@ const Deposit = () => {
                     }
                 }}
             />
+            <Modal id='swap-modal' ref={leapSwapModalRef}>
+                <h3 className='mt-4'>Swap ATOM to Cosmos Hub</h3>
+                <div className='text-start'>
+                    <ThemeContextProvider theme={leapModalTheme} customStylesParentSelector='#swap-modal'>
+                        <WalletClientContextProvider value={wcConfig}>
+                            <SwapTab
+                                title=''
+                                onTxnComplete={(summary) => {
+                                    /* dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+                                    if (summary.txnSteps[0] && summary.txnSteps[0].isComplete && summary.txnSteps[0].status === 'SUCCESS') {
+                                        leapSwapModalRef.current?.hide();
+                                    } */
+                                }}
+                                defaults={{
+                                    sourceChainId: 'osmosis-1',
+                                    sourceAssetDenom: 'uatom',
+                                }}
+                                allowedDestinationChains={[
+                                    {
+                                        chainId: 'cosmoshub-4',
+                                        assetDenoms: ['uatom'],
+                                    },
+                                ]}
+                            />
+                        </WalletClientContextProvider>
+                    </ThemeContextProvider>
+                </div>
+                <div className='mt-4 powered-by'>
+                    <span>
+                        <img alt='leap' src={Assets.images.leap} width={32} height={32} className='me-3' />
+                        Powered by Leap
+                    </span>
+                </div>
+            </Modal>
         </div>
     );
 };

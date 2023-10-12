@@ -13,6 +13,7 @@ import Core from 'core';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import '@leapwallet/elements/styles.css';
 
 import store from './redux/store';
 

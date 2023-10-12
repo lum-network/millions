@@ -1,4 +1,4 @@
-const isTestEnv = (): boolean => {
+export const isTestEnv = (): boolean => {
     return window.location.href.includes('localhost') || window.location.href.includes('testnet');
 };
 
