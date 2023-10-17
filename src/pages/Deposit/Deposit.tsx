@@ -56,6 +56,7 @@ const Deposit = () => {
         }),
     );
     const [computedStyles, setComputedStyles] = useState(getComputedStyle(document.body));
+    const [swapTxnSummary, setSwapTxnSummary] = useState(null);
 
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -835,6 +836,24 @@ const Deposit = () => {
         setComputedStyles(getComputedStyle(document.body));
     }, [isDark]);
 
+    useEffect(() => {
+        const handler = () => {
+            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+        };
+
+        const swapModal = document.getElementById('swap-modal');
+
+        if (swapModal) {
+            swapModal.addEventListener('hide.bs.modal', handler);
+        }
+
+        return () => {
+            if (swapModal) {
+                swapModal.removeEventListener('hide.bs.modal', handler);
+            }
+        };
+    }, []);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -865,17 +884,6 @@ const Deposit = () => {
                                 Swap
                             </Button>
                         </Card>
-                        {otherWallet?.balances.find(
-                            (balance) => balance.denom === 'uatom' && NumbersUtils.convertUnitNumber(balance.amount) <= NumbersUtils.convertUnitNumber(pool.minDepositAmount),
-                        ) && currentStep < steps.length - 1 ? (
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                                <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
-                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{"Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first"}</div>
-                                <Button data-bs-target='#swap-modal' data-bs-toggle='modal' className='text-nowrap ms-3'>
-                                    Swap
-                                </Button>
-                            </Card>
-                        ) : null}
                         {withinDepositDelta && (
                             <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                 <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
@@ -981,10 +989,9 @@ const Deposit = () => {
                             <SwapTab
                                 title=''
                                 onTxnComplete={(summary) => {
-                                    /* dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
                                     if (summary.txnSteps[0] && summary.txnSteps[0].isComplete && summary.txnSteps[0].status === 'SUCCESS') {
                                         leapSwapModalRef.current?.hide();
-                                    } */
+                                    }
                                 }}
                                 defaults={{
                                     sourceChainId: 'osmosis-1',

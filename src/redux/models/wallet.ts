@@ -256,7 +256,7 @@ export const wallet = createModel<RootModel>()({
 
                     WalletUtils.storeAutoconnectKey(provider);
 
-                    await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true });
+                    await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true, init: true });
                     if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
 
                     Firebase.signInAnonymous().finally(() => null);
@@ -357,16 +357,18 @@ export const wallet = createModel<RootModel>()({
                 console.warn((e as Error).message);
             }
         },
-        async reloadWalletInfos({ address, force = true }: { address: string; force?: boolean }, state) {
+        async reloadWalletInfos({ address, force = true, init = false }: { address: string; force?: boolean; init?: boolean }, state) {
             if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 3) {
                 return;
             }
 
             dispatch.wallet.setAutoReloadTimestamp(Date.now());
 
-            await dispatch.stats.fetchStats();
-            await dispatch.pools.fetchPools(null);
-            await dispatch.pools.getPoolsAdditionalInfo(null);
+            if (!init) {
+                await dispatch.pools.fetchPools(null);
+                await dispatch.pools.getPoolsAdditionalInfo(null);
+            }
+
             await dispatch.wallet.getLumWalletBalances(address);
             await dispatch.wallet.fetchPrizes(address);
             await dispatch.wallet.getActivities({ address, reset: true });

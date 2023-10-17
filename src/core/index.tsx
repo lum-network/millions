@@ -75,7 +75,7 @@ const Core = () => {
     }, []);
 
     useEffect(() => {
-        dispatch.app.init().finally(() => null);
+        dispatch.app.init(null).finally(() => null);
     }, []);
 
     return (

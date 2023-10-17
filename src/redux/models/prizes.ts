@@ -69,9 +69,11 @@ export const prizes = createModel<RootModel>()({
     },
     effects: (dispatch) => ({
         fetchBiggestPrizes: async () => {
-            const [biggestPrizes] = await LumApi.fetchBiggestPrizes();
+            try {
+                const [biggestPrizes] = await LumApi.fetchBiggestPrizes();
 
-            dispatch.prizes.setBiggestPrizes(biggestPrizes);
+                dispatch.prizes.setBiggestPrizes(biggestPrizes);
+            } catch {}
         },
 
         fetchBiggestAprPrizes: async () => {
@@ -83,23 +85,27 @@ export const prizes = createModel<RootModel>()({
         fetchPrizes: async ({ page = 0, poolId }: { page: number; poolId?: string }) => {
             dispatch.prizes.resetPrizes();
 
-            if (poolId) {
-                const [prizes, metadata] = await LumApi.fetchBiggestPrizesByPoolId(page, poolId);
+            try {
+                if (poolId) {
+                    const [prizes, metadata] = await LumApi.fetchBiggestPrizesByPoolId(page, poolId);
 
-                dispatch.prizes.setPrizes(prizes, metadata);
-            } else {
-                const [prizes, metadata] = await LumApi.fetchPrizes(page);
+                    dispatch.prizes.setPrizes(prizes, metadata);
+                } else {
+                    const [prizes, metadata] = await LumApi.fetchPrizes(page);
 
-                dispatch.prizes.setPrizes(prizes, metadata);
-            }
+                    dispatch.prizes.setPrizes(prizes, metadata);
+                }
+            } catch {}
         },
 
         getStats: async (poolId: string) => {
             dispatch.prizes.resetStats();
 
-            const [stats] = await LumApi.getPrizesStats(poolId);
+            try {
+                const [stats] = await LumApi.getPrizesStats(poolId);
 
-            dispatch.prizes.setStats(stats);
+                dispatch.prizes.setStats(stats);
+            } catch {}
         },
 
         seenConfetti: () => {

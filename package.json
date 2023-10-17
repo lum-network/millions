@@ -6,7 +6,7 @@
     "@cosmostation/cosmos-client": "^0.0.5",
     "@cosmostation/extension-client": "^0.1.15",
     "@firebase/analytics": "^0.9.3",
-    "@keplr-wallet/types": "^0.11.44",
+    "@keplr-wallet/types": "^0.12.6",
     "@leapwallet/elements": "^0.6.6",
     "@lum-network/sdk-javascript": "^0.8.9",
     "@popperjs/core": "^2.11.6",
@@ -33,6 +33,7 @@
     "firebase": "^9.17.1",
     "formik": "^2.2.9",
     "gsap": "^3.11.4",
+    "gsap-trial": "^3.12.0",
     "https-browserify": "^1.0.0",
     "i18next": "^22.4.10",
     "long": "^5.2.1",
@@ -73,8 +74,8 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
+    "test": "react-app-rewired test --coverage",
+    "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx,json}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
@@ -112,6 +113,7 @@
     "@types/use-persisted-state": "^0.3.2",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-import-resolver-typescript": "^3.5.3",
@@ -119,6 +121,9 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.4"
+    "identity-obj-proxy": "^3.0.0",
+    "jest-canvas-mock": "^2.5.1",
+    "prettier": "^2.8.4",
+    "ts-jest": "^27"
   }
 }

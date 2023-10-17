@@ -121,8 +121,7 @@
     }
 }
 
-#swap-modal,
-.swap-section {
+#swap-modal {
     text-align: left;
 
     img {
@@ -145,7 +144,11 @@
 
         &._1h7yi88s,
         &._10b3pjv3 {
-            border: none
+            border: none;
+
+            svg {
+                fill: var(--color-purple);
+            }
         }
 
         &._1h7yi888 {
@@ -205,3 +208,11 @@
         color: var(--color-primary);
     }
 }
+/* 
+body.dark {
+    #swap-modal {
+        button._1h7yi88s svg {
+            fill: white;
+        }
+    }
+} */
