@@ -1,19 +1,30 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
+import { Expose } from 'class-transformer';
 
 class InfluencerCampaign {
+    @Expose()
     id!: string;
-    influencer!: {
-        name: string;
-        username: string;
-        picture: string;
-    };
+
+    @Expose()
+    username!: string;
+
+    @Expose()
+    image!: string;
+
     count!: number;
     amount!: LumTypes.Coin;
-    startDate!: Date;
-    endDate!: Date;
+
+    @Expose({ name: 'start_at' })
+    startAt!: Date;
+
+    @Expose({ name: 'end_at' })
+    endAt!: Date;
+
+    @Expose({ name: 'pool_id' })
     poolId!: string;
+
+    @Expose()
     password!: string;
-    hasParticipated!: boolean;
 }
 
 export default InfluencerCampaign;

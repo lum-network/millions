@@ -75,7 +75,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                         <div className='d-flex flex-column justify-content-center h-100'>
                             <div
                                 className='share-step-subtitle'
-                                dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.shareStep.description', { endDate: dayjs(campaign.endDate).add(1, 'day').format('L') }) }}
+                                dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.shareStep.description', { endDate: dayjs(campaign.endAt).add(1, 'day').format('L') }) }}
                             />
                         </div>
                     </div>
@@ -150,11 +150,11 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                                 [30, 100],
                             ]}
                         />
-                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.influencer.name, count: campaign.count })}</h1>
+                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.username, count: campaign.count })}</h1>
                         <div className='d-flex flex-row mt-4'>
                             <div className='position-relative'>
-                                <img src={campaign.influencer.picture} className='influencer-picture' alt='influencer picture' />
-                                <div className='influencer-username py-2'>@{campaign.influencer.username}</div>
+                                <img src={campaign.image} className='influencer-picture' alt='influencer picture' />
+                                <div className='influencer-username py-2'>@{campaign.image}</div>
                             </div>
                             <Card flat withoutPadding className='d-flex flex-column justify-content-center ms-3 flex-grow-1 p-4'>
                                 <span className='campaign-amount me-auto mb-3'>
@@ -166,7 +166,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                                 </span>
                                 <div className='campaign-expiration p-3 d-flex flex-row align-items-center'>
                                     <img src={Assets.images.clock} alt='clock' className='me-2' />
-                                    <div dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.claimWarning', { date: dayjs(campaign.endDate).format('L') }) }} />
+                                    <div dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.claimWarning', { date: dayjs(campaign.endAt).format('L') }) }} />
                                 </div>
                                 <input
                                     value={password}

@@ -165,7 +165,7 @@ const MySavings = () => {
                               deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
                               deposit.poolId?.eq(campaign.poolId) &&
                               deposit.createdAt &&
-                              dayjs(deposit.createdAt).isBefore(dayjs(campaign.startDate)) &&
+                              dayjs(deposit.createdAt).isBefore(dayjs(campaign.startAt)) &&
                               !deposit.isDepositDrop &&
                               !deposit.isSponsor &&
                               !deposit.isWithdrawing,
@@ -331,7 +331,7 @@ const MySavings = () => {
                         className='mb-0'
                         dangerouslySetInnerHTML={{
                             __html: I18n.t(activeCampaign.hasParticipated ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription' : 'mySavings.influencerCampaignBanner.description', {
-                                endDate: dayjs(activeCampaign.endDate).add(1, 'day').format('L'),
+                                endDate: dayjs(activeCampaign.endAt).add(1, 'day').format('L'),
                             }),
                         }}
                     />

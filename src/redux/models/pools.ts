@@ -5,7 +5,7 @@ import { DrawModel, InfluencerCampaignModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
-import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
+import { LumConstants } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
 import { LumApi } from 'api';
 
@@ -306,34 +306,11 @@ export const pools = createModel<RootModel>()({
         },
         async getActiveCampaigns() {
             try {
-                const activeCampaigns = await new Promise<InfluencerCampaignModel[]>((resolve) => {
-                    setTimeout(
-                        () =>
-                            resolve([
-                                {
-                                    id: 'xIOcezoicn',
-                                    influencer: {
-                                        name: 'Cryptocito',
-                                        username: 'cryptocito',
-                                        picture: 'https://pbs.twimg.com/profile_images/1591066906961870854/4KkBTXic_200x200.jpg',
-                                    },
-                                    count: 100,
-                                    amount: {
-                                        amount: NumbersUtils.convertUnitNumber('100000000').toFixed(),
-                                        denom: DenomsUtils.getNormalDenom('uatom'),
-                                    },
-                                    startDate: new Date('2023-09-21'),
-                                    endDate: new Date('2023-10-23'),
-                                    poolId: '1',
-                                    password: LumUtils.sha3('cito123'),
-                                    hasParticipated: false,
-                                },
-                            ]),
-                        200,
-                    );
-                });
+                const [activeCampaigns] = await LumApi.fetchCampaigns();
 
-                dispatch.pools.setActiveCampaigns(activeCampaigns);
+                if (activeCampaigns) {
+                    dispatch.pools.setActiveCampaigns(activeCampaigns);
+                }
             } catch {}
         },
     }),

@@ -1,6 +1,6 @@
 import { HttpClient } from 'utils';
 import { ApiConstants } from 'constant';
-import { DepositDropModel, LeaderboardItemModel, MarketDataModel, PrizeModel, PrizeStatsModel, BiggestAprPrizeModel } from 'models';
+import { DepositDropModel, LeaderboardItemModel, MarketDataModel, PrizeModel, PrizeStatsModel, BiggestAprPrizeModel, InfluencerCampaignModel } from 'models';
 
 class LumApi extends HttpClient {
     private static instance?: LumApi;
@@ -38,6 +38,22 @@ class LumApi extends HttpClient {
         this.request<LeaderboardItemModel[]>({ url: `/millions/depositors/${poolId}/${address}`, method: 'GET' }, LeaderboardItemModel);
 
     fetchMarketData = async (since: Date) => this.request<MarketDataModel[]>({ url: `/market/data/since?limit=1`, method: 'POST', data: { since } }, MarketDataModel);
+
+    fetchCampaigns = async () => this.request<InfluencerCampaignModel[]>({ url: '/campaigns', method: 'GET' }, InfluencerCampaignModel);
+
+    participateForCampaign = async (campaignId: string, address: string, password: string) =>
+        this.request(
+            {
+                url: '/campaign/participate',
+                method: 'POST',
+                data: {
+                    campaignId,
+                    address,
+                    password,
+                },
+            },
+            null,
+        );
 }
 
 export default LumApi.getInstance();
