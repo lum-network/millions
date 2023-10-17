@@ -279,7 +279,7 @@ export default {
         nextBestPrize: 'Next Draw',
         lastBigWinners: 'Luckiest Winners',
         totalValueLocked: 'Total Value Locked',
-        cta: 'SAVE & WIN',
+        cta: 'DEPOSIT',
     },
     pools: {
         title: 'Pools',
@@ -301,6 +301,7 @@ export default {
         tvlDetails: {
             title: 'Total Value Locked Details',
             sponsor: 'Sponsorship',
+            sponsorDesc: 'Boosting your winning chances! These tokens only generate yield for the prizes. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/deposits-and-withdrawals#sponsorship">Learn more</a>',
             deposits: 'Cosmonauts Deposits',
         },
         winners: {
@@ -490,7 +491,7 @@ export default {
     deposit: {
         title: 'Few steps away<br/>from your deposit',
         transferBtn: 'Transfer',
-        saveAndWinBtn: 'Save & Win',
+        saveAndWinBtn: 'DEPOSIT',
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
             winning: {
@@ -504,7 +505,7 @@ export default {
         },
         feesWarning: 'You need LUM for transaction fees',
         depositWarning:
-            'Deposit will lock your assets for up to {{ lockTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take {{ unbondingTime }} days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+            'Deposit will lock your assets for up to {{ lockTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',
         steps: [
             {
@@ -548,6 +549,7 @@ export default {
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
         depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
+        depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>'
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
