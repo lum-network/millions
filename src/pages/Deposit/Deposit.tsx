@@ -56,7 +56,6 @@ const Deposit = () => {
         }),
     );
     const [computedStyles, setComputedStyles] = useState(getComputedStyle(document.body));
-    const [swapTxnSummary, setSwapTxnSummary] = useState(null);
 
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -104,6 +103,7 @@ const Deposit = () => {
             getOfflineSigner: (chainId) => {
                 const autoConnectProvider = WalletUtils.getAutoconnectProvider();
 
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
 
                 return providerFunctions.getOfflineSigner(chainId);
