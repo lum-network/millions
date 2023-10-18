@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 
 import { TextEncoder, TextDecoder } from 'util';
-import Crypto from 'crypto';
+import crypto from 'crypto';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -42,3 +42,9 @@ const noop = () => {
 Object.defineProperty(window, 'scrollTo', { value: noop, writable: true });
 
 Object.assign(global, { TextDecoder, TextEncoder });
+
+Object.defineProperty(global, 'crypto', {
+    value: {
+        getRandomValues: (arr: any) => crypto.randomBytes(arr.length),
+    },
+});

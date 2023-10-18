@@ -125,6 +125,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "identity-obj-proxy": "^3.0.0",
     "jest-canvas-mock": "^2.5.1",
+    "lokijs": "^1.5.12",
     "prettier": "^2.8.4",
     "ts-jest": "^27"
   }

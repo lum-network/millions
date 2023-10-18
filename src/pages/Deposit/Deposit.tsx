@@ -981,39 +981,41 @@ const Deposit = () => {
                     }
                 }}
             />
-            <Modal id='swap-modal' ref={leapSwapModalRef}>
-                <h3 className='mt-4'>Swap ATOM to Cosmos Hub</h3>
-                <div className='text-start'>
-                    <ThemeContextProvider theme={leapModalTheme} customStylesParentSelector='#swap-modal'>
-                        <WalletClientContextProvider value={wcConfig}>
-                            <SwapTab
-                                title=''
-                                onTxnComplete={(summary) => {
-                                    if (summary.txnSteps[0] && summary.txnSteps[0].isComplete && summary.txnSteps[0].status === 'SUCCESS') {
-                                        leapSwapModalRef.current?.hide();
-                                    }
-                                }}
-                                defaults={{
-                                    sourceChainId: 'osmosis-1',
-                                    sourceAssetDenom: 'uatom',
-                                }}
-                                allowedDestinationChains={[
-                                    {
-                                        chainId: 'cosmoshub-4',
-                                        assetDenoms: ['uatom'],
-                                    },
-                                ]}
-                            />
-                        </WalletClientContextProvider>
-                    </ThemeContextProvider>
-                </div>
-                <div className='mt-4 powered-by'>
-                    <span>
-                        <img alt='leap' src={Assets.images.leap} width={32} height={32} className='me-3' />
-                        Powered by Leap
-                    </span>
-                </div>
-            </Modal>
+            {process.env.NODE_ENV !== 'test' ? (
+                <Modal id='swap-modal' ref={leapSwapModalRef}>
+                    <h3 className='mt-4'>Swap ATOM to Cosmos Hub</h3>
+                    <div className='text-start'>
+                        <ThemeContextProvider theme={leapModalTheme} customStylesParentSelector='#swap-modal'>
+                            <WalletClientContextProvider value={wcConfig}>
+                                <SwapTab
+                                    title=''
+                                    onTxnComplete={(summary) => {
+                                        if (summary.txnSteps[0] && summary.txnSteps[0].isComplete && summary.txnSteps[0].status === 'SUCCESS') {
+                                            leapSwapModalRef.current?.hide();
+                                        }
+                                    }}
+                                    defaults={{
+                                        sourceChainId: 'osmosis-1',
+                                        sourceAssetDenom: 'uatom',
+                                    }}
+                                    allowedDestinationChains={[
+                                        {
+                                            chainId: 'cosmoshub-4',
+                                            assetDenoms: ['uatom'],
+                                        },
+                                    ]}
+                                />
+                            </WalletClientContextProvider>
+                        </ThemeContextProvider>
+                    </div>
+                    <div className='mt-4 powered-by'>
+                        <span>
+                            <img alt='leap' src={Assets.images.leap} width={32} height={32} className='me-3' />
+                            Powered by Leap
+                        </span>
+                    </div>
+                </Modal>
+            ) : null}
         </div>
     );
 };

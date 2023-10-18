@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require('webpack');
-const path = require('path');
 
 module.exports = {
     webpack: function (config) {
@@ -39,7 +38,7 @@ module.exports = {
             '^.+\\.(ts|tsx)$': 'ts-jest',
         };
 
-        config.transformIgnorePatterns = ['/node_modules/(?!(axios|gsap|@leapwallet/elements|wagmi|@wagmi|@adraffy/ens-normalize|@rainbow-me/rainbowkit))'];
+        config.transformIgnorePatterns = ['/node_modules/(?!(axios|gsap|wagmi|@wagmi|@adraffy/ens-normalize|@rainbow-me/rainbowkit))'];
 
         config.moduleNameMapper = {
             ...config.moduleNameMapper,

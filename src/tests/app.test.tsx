@@ -1,18 +1,18 @@
 import React from 'react';
 
 import { LumWalletFactory } from '@lum-network/sdk-javascript';
+import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
+import { DrawState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom';
+import Long from 'long';
 
 import App from 'App';
 import { DepositPage, HomePage, LandingPage, MySavingsPage, PoolDetailsPage, PoolsPage, Winners } from 'pages';
 import store from 'redux/store';
 import { DenomsUtils, I18n } from 'utils';
 import { renderWithRematchStore } from 'utils/tests';
-import Long from 'long';
 import { PoolModel } from 'models';
-import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
-import { DrawState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 
 jest.setTimeout(180000);
 
@@ -58,8 +58,7 @@ describe('App', () => {
         },
     };
 
-    test.todo('To find a way to re-enable after leap elements integration');
-    /* it('loads without crashing', async () => {
+    it('loads without crashing', async () => {
         render(<App />);
 
         const progressBar = screen.getByRole('progressbar');
@@ -201,5 +200,5 @@ describe('App', () => {
         });
 
         expect(transferBtn.parentElement).toBeEnabled();
-    }); */
+    });
 });
