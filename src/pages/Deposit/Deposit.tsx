@@ -7,6 +7,7 @@ import { LumConstants } from '@lum-network/sdk-javascript';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { SwapTab, ThemeContextProvider, WalletClientContextProvider, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
+import { Modal as BootstrapModal } from 'bootstrap';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
@@ -70,7 +71,14 @@ const Deposit = () => {
     const wcConfig: WalletClientContext = {
         userAddress: lumWallet?.address,
         connectWallet: () => {
-            // do nothing
+            const modal = BootstrapModal.getOrCreateInstance(WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal');
+
+            if (modal && leapSwapModalRef.current) {
+                leapSwapModalRef.current.hide();
+                setTimeout(() => {
+                    modal.show();
+                }, 500); // --> wait 500ms modal dismiss timing
+            }
         },
         walletClient: {
             enable: async (chainIds) => {
@@ -838,7 +846,9 @@ const Deposit = () => {
 
     useEffect(() => {
         const handler = () => {
-            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+            if (otherWallet) {
+                dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+            }
         };
 
         const swapModal = document.getElementById('swap-modal');
