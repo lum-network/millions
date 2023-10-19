@@ -214,8 +214,11 @@ const PoolDetails = () => {
                             {sponsorshipAmount > 0 && (
                                 <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 tvl-detail-card'>
                                     <div className='d-flex flex-row align-items-center'>
-                                        <PurpleBackgroundImage alt='sponsor' src={Assets.images.sponsor} className='d-none d-sm-block me-3 no-filter' width={40} height={40} />
-                                        <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.sponsor')}</h4>
+                                        <PurpleBackgroundImage alt='sponsor' src={Assets.images.sponsor} className='d-none d-sm-block me-3 no-filter' width={50} height={50} />
+                                        <div>
+                                            <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.sponsor')}</h4>
+                                            <p className='mb-0' dangerouslySetInnerHTML={{ __html: I18n.t('poolDetails.tvlDetails.sponsorDesc') }} />
+                                        </div>
                                     </div>
                                     <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                         <div className='tvl-detail-amount'>
@@ -227,7 +230,7 @@ const PoolDetails = () => {
                             )}
                             <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center tvl-detail-card'>
                                 <div className='d-flex flex-row align-items-center'>
-                                    <PurpleBackgroundImage alt='deposit' src={Assets.images.tvlDeposit} className='d-none d-sm-block me-3 no-filter' width={40} height={40} style={{ padding: 4 }} />
+                                    <PurpleBackgroundImage alt='deposit' src={Assets.images.tvlDeposit} className='d-none d-sm-block me-3 no-filter' width={50} height={50} style={{ padding: 4 }} />
                                     <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.deposits')}</h4>
                                 </div>
                                 <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
