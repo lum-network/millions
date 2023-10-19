@@ -3,7 +3,7 @@
 .steps-title {
     color: var(--color-black);
     margin-bottom: 4rem;
-    
+
     @include media-breakpoint-down(sm) {
         font-size: 24px;
         line-height: unset;
@@ -24,7 +24,7 @@
             font-size: 21px;
         }
     }
-    
+
     .card-step-subtitle {
         @include media-breakpoint-down(sm) {
             font-size: 12px;
@@ -55,7 +55,7 @@
         margin-right: 8rem;
         border-radius: 12px;
         padding: 2.25rem 1.75rem;
-        
+
         div {
             color: var(--color-primary);
             font-weight: 350;
@@ -64,7 +64,7 @@
         }
 
         @include media-breakpoint-down(lg) {
-            margin-right: 0
+            margin-right: 0;
         }
     }
 }
@@ -121,15 +121,11 @@
     }
 }
 
-#swap-modal {
+.leap-elements {
     text-align: left;
 
     img {
         filter: none !important;
-    }
-
-    p {
-        margin: 0;
     }
 
     button {
@@ -151,6 +147,18 @@
             }
         }
 
+        &._1sc81q02 {
+            border: none;
+        }
+
+        &._7t3fz48 {
+            border: none;
+
+            &::after {
+                background-color: transparent;
+            }
+        }
+
         &._1h7yi888 {
             margin-bottom: 0;
         }
@@ -164,55 +172,11 @@
         }
     }
 
+    p {
+        margin: 0;
+    }
+
     input {
         border: none;
     }
-
-    ._1h7yi883 {
-        border: none;
-        box-shadow: none;
-        padding: unset;
-    }
-
-    ._1h7yi884 {
-        margin-bottom: 0;
-        margin-top: 1rem;
-
-        h2 {
-            font-size: 16px;
-            margin-bottom: 0;
-        }
-    }
-
-    ._1h7yi887 {
-        margin-top: 1rem;
-    }
-
-    .n52xp60 {
-        p {
-            color: var(--color-failure);
-        }
-    }
-
-    .m7b250 {
-        &::before {
-            bottom: 1.2rem;
-        }
-    }
-
-    .m7b253:before {
-        height: 3.8rem;
-    }
-
-    .powered-by {
-        color: var(--color-primary);
-    }
 }
-/* 
-body.dark {
-    #swap-modal {
-        button._1h7yi88s svg {
-            fill: white;
-        }
-    }
-} */
