@@ -880,38 +880,23 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async registerForCampaign(payload: RegisterForCampaignPayload, state) {
+        async registerForCampaign(payload: RegisterForCampaignPayload, state): Promise<{ error: string | null }> {
+            const { lumWallet } = state.wallet;
+
             try {
-                const res = await new Promise<{ hasParticipated: boolean; error: string | null }>((resolve, reject) => {
-                    return setTimeout(() => {
-                        const campaign = state.pools.activeCampaigns.find((campaign) => campaign.id === payload.campaignId);
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
 
-                        if (!campaign) {
-                            reject({
-                                hasParticipated: false,
-                                error: 'Campaign not found',
-                            });
-                            return;
-                        }
+                await LumApi.participateForCampaign(payload.campaignId, lumWallet.address, payload.password);
 
-                        if (payload.password !== campaign.password) {
-                            reject({
-                                error: I18n.t('errors.generic.invalid', { field: 'campaign code' }),
-                                hasParticipated: false,
-                            });
-                            return;
-                        }
+                ToastUtils.showSuccessToast({ content: I18n.t('success.participatedInCampaign') });
+                return { error: null };
+            } catch (e) {
+                const content = (e as Error).message || I18n.t('errors.participatedInCampaign');
 
-                        resolve({ hasParticipated: true, error: null });
-                    }, 200);
-                });
-
-                return res;
-            } catch {
-                return {
-                    hasParticipated: false,
-                    error: '',
-                };
+                ToastUtils.showErrorToast({ content });
+                return { error: content };
             }
         },
     }),

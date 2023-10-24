@@ -42,9 +42,9 @@ class LumApi extends HttpClient {
     fetchCampaigns = async () => this.request<InfluencerCampaignModel[]>({ url: '/campaigns', method: 'GET' }, InfluencerCampaignModel);
 
     participateForCampaign = async (campaignId: string, address: string, password: string) =>
-        this.request(
+        this.request<InfluencerCampaignModel>(
             {
-                url: '/campaign/participate',
+                url: '/campaigns/participate',
                 method: 'POST',
                 data: {
                     campaignId,
@@ -52,7 +52,7 @@ class LumApi extends HttpClient {
                     password,
                 },
             },
-            null,
+            InfluencerCampaignModel,
         );
 }
 

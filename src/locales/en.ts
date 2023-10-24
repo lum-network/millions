@@ -84,6 +84,7 @@ export default {
         claimPrize: 'Failed to claim prizes',
         claimAndCompound: 'Failed to compound prizes',
         withdrawalRetry: 'Failed to retry withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
+        participatedInCampaign: 'Failed to register for this campaign',
     },
     success: {
         wallet: 'Successfully connected',
@@ -94,6 +95,7 @@ export default {
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
         withdrawalRetry: 'Successfully retried withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
+        participatedInCampaign: 'Successfully registered for this campaign',
     },
     pending: {
         ibcTransfer: 'Transferring...',

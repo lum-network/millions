@@ -1,5 +1,6 @@
 import { LumTypes } from '@lum-network/sdk-javascript';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import InfluencerCampaignMember from './InfluencerCampaignMember';
 
 class InfluencerCampaign {
     @Expose()
@@ -11,7 +12,10 @@ class InfluencerCampaign {
     @Expose()
     image!: string;
 
-    count!: number;
+    @Expose()
+    drops!: number;
+
+    @Expose()
     amount!: LumTypes.Coin;
 
     @Expose({ name: 'start_at' })
@@ -25,6 +29,10 @@ class InfluencerCampaign {
 
     @Expose()
     password!: string;
+
+    @Expose()
+    @Type(() => InfluencerCampaignMember)
+    members!: InfluencerCampaignMember[];
 }
 
 export default InfluencerCampaign;

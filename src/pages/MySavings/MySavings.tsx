@@ -326,16 +326,26 @@ const MySavings = () => {
             {activeCampaign ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.gift} width='45' />
-                    <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.influencer.name })}</h3>
+                    <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.username })}</h3>
                     <p
                         className='mb-0'
                         dangerouslySetInnerHTML={{
-                            __html: I18n.t(activeCampaign.hasParticipated ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription' : 'mySavings.influencerCampaignBanner.description', {
-                                endDate: dayjs(activeCampaign.endAt).add(1, 'day').format('L'),
-                            }),
+                            __html: I18n.t(
+                                activeCampaign.members.find((member) => member.walletAddress === lumWallet.address)
+                                    ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription'
+                                    : 'mySavings.influencerCampaignBanner.description',
+                                {
+                                    endDate: dayjs(activeCampaign.endAt).add(1, 'day').format('L'),
+                                },
+                            ),
                         }}
                     />
-                    <Button disabled={activeCampaign.hasParticipated} data-bs-target='#influencer-campaign-modal' data-bs-toggle='modal' className='ms-auto'>
+                    <Button
+                        disabled={!!activeCampaign.members.find((member) => member.walletAddress === lumWallet.address)}
+                        data-bs-target='#influencer-campaign-modal'
+                        data-bs-toggle='modal'
+                        className='ms-auto'
+                    >
                         {I18n.t('mySavings.influencerCampaignModal.cta')}
                     </Button>
                 </Card>

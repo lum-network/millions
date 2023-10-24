@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
+import bcrypt from 'bcrypt';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
@@ -12,11 +13,10 @@ import { InfluencerCampaignModel } from 'models';
 import { DenomsUtils, I18n } from 'utils';
 
 import './InfluencerCampaign.scss';
-import { LumUtils } from '@lum-network/sdk-javascript';
 
 interface Props {
     campaign?: InfluencerCampaignModel;
-    onApply: (campaignId: string, code: string) => Promise<{ hasParticipated: boolean; error: string | null }>;
+    onApply: (campaignId: string, code: string) => Promise<{ error: string | null }>;
     prices: { [key: string]: number };
 }
 
@@ -53,7 +53,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
         if (!password) {
             setPwdError(I18n.t('errors.generic.required', { field: 'Code' }));
         } else {
-            const hashedPwd = LumUtils.sha3(password);
+            const hashedPwd = await bcrypt.hash(password, 10);
             const res = await onApply(campaign.id, hashedPwd);
 
             if (res.error) {
@@ -150,7 +150,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                                 [30, 100],
                             ]}
                         />
-                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.username, count: campaign.count })}</h1>
+                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.username, count: campaign.drops })}</h1>
                         <div className='d-flex flex-row mt-4'>
                             <div className='position-relative'>
                                 <img src={campaign.image} className='influencer-picture' alt='influencer picture' />
@@ -169,6 +169,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                                     <div dangerouslySetInnerHTML={{ __html: I18n.t('mySavings.influencerCampaignModal.claimWarning', { date: dayjs(campaign.endAt).format('L') }) }} />
                                 </div>
                                 <input
+                                    type='password'
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className='px-4 py-2 my-3'
