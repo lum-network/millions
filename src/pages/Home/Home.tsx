@@ -90,7 +90,7 @@ const Home = () => {
                 </div>
             </div>
             <div className='start-50 translate-middle-x save-and-win-btn-container'>
-                <Button className='save-btn' forcePurple to={NavigationConstants.POOLS}>
+                <Button className='save-btn' forcePurple to={`${NavigationConstants.POOL_DETAILS}/atom/2`}>
                     <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />
                     {I18n.t('home.cta')}
                     <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />

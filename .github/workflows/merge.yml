@@ -12,6 +12,21 @@ jobs:
     name: Deploy on testnet hosting
     runs-on: ubuntu-latest
     environment: testnet
+    env:
+      REACT_APP_API_URL: "https://explorer-testnet.infra.lum.network/"
+      REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
+      GENERATE_SOURCEMAP: "false"
+      REACT_APP_RPC_LUM: "https://testnet-rpc.cosmosmillions.com/lum/rpc"
+      REACT_APP_RPC_ATOM: "https://testnet-rpc.cosmosmillions.com/atom/rpc"
+      REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
+      REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
+      REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
+      REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
+      REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
+      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
+      REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
+      REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
+
     steps:
       - name: Set up Node version to 16
         uses: actions/setup-node@v2
@@ -24,22 +39,11 @@ jobs:
       - name: Install packages
         run: yarn
 
+      - name: Test
+        run: yarn test
+
       - name: Build the test net bundle
         run: yarn build
-        env:
-          REACT_APP_API_URL: "https://explorer-testnet.infra.lum.network/"
-          REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
-          GENERATE_SOURCEMAP: "false"
-          REACT_APP_RPC_LUM: "https://testnet-rpc.cosmosmillions.com/lum/rpc"
-          REACT_APP_RPC_ATOM: "https://testnet-rpc.cosmosmillions.com/atom/rpc"
-          REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
-          REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
-          REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
-          REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
-          REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
-          REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
-          REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
 
       - name: Deploy on firebase testnet project
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -56,6 +60,22 @@ jobs:
     name: Deploy on main net hosting
     runs-on: ubuntu-latest
     environment: mainnet
+    env:
+      REACT_APP_API_URL: "https://explorer-mainnet.infra.lum.network"
+      REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
+      GENERATE_SOURCEMAP: "false"
+      REACT_APP_RPC_LUM: "https://node0.mainnet.lum.network/rpc"
+      REACT_APP_RPC_ATOM: "https://rpc.cosmos.directory/cosmoshub"
+      REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
+      REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
+      REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
+      REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
+      REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
+      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
+      REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
+      REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
+      REACT_APP_SENTRY_DSN: "https://7421a4490ba149b888913bbd7af15b84@o1171159.ingest.sentry.io/4505589511815168"
+
     steps:
       - name: Set up Node version to 16
         uses: actions/setup-node@v2
@@ -68,23 +88,11 @@ jobs:
       - name: Install packages
         run: yarn
 
+      - name: Test
+        run: yarn test
+
       - name: Build the main net bundle
         run: yarn build
-        env:
-          REACT_APP_API_URL: "https://explorer-mainnet.infra.lum.network"
-          REACT_APP_IMPERATOR_API_URL: "https://api-osmosis.imperator.co"
-          GENERATE_SOURCEMAP: "false"
-          REACT_APP_RPC_LUM: "https://node0.mainnet.lum.network/rpc"
-          REACT_APP_RPC_ATOM: "https://rpc.cosmos.directory/cosmoshub"
-          REACT_APP_FIREBASE_API_KEY: "AIzaSyA49DTslUcJG2b5TUdI_EbPzugFFXOfO0o"
-          REACT_APP_FIREBASE_AUTH_DOMAIN: "lum-network.firebaseapp.com"
-          REACT_APP_FIREBASE_DATABASE_URL: "https://lum-network-default-rtdb.firebaseio.com"
-          REACT_APP_FIREBASE_PROJECT_ID: "lum-network"
-          REACT_APP_FIREBASE_STORAGE_BUCKET: "lum-network.appspot.com"
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "904911254564"
-          REACT_APP_FIREBASE_APP_ID: "1:904911254564:web:a0297e7aa68664410394b1"
-          REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
-          REACT_APP_SENTRY_DSN: "https://7421a4490ba149b888913bbd7af15b84@o1171159.ingest.sentry.io/4505589511815168"
 
       - name: Deploy on firebase main net project
         uses: FirebaseExtended/action-hosting-deploy@v0

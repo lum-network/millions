@@ -19,6 +19,7 @@ import dollarIcon from './images/dollar_icon.svg';
 import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import gift from './images/gift.svg';
+import faucet from './images/faucet.svg';
 import info from './images/info.svg';
 import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
@@ -87,6 +88,7 @@ const Assets = {
         dollarWhite,
         downArrow,
         gift,
+        faucet,
         info,
         infoWhite,
         keplr,
