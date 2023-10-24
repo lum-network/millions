@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
