@@ -53,12 +53,14 @@ const Winners = () => {
         <div className='luckiest-winners-container mt-3 mt-lg-5'>
             <div className='d-flex justify-content-between align-items-center'>
                 <h1 className='mb-0'>{I18n.t('luckiestWinners.title')}</h1>
-                <div className='d-flex'>
-                    <ArrowButton className='me-3' onClick={scrollLeft} direction='left' />
-                    <ArrowButton onClick={scrollRight} direction='right' />
-                </div>
+                {biggestAprPrizes.length > 0 ? (
+                    <div className='d-flex'>
+                        <ArrowButton className='me-3' onClick={scrollLeft} direction='left' />
+                        <ArrowButton onClick={scrollRight} direction='right' />
+                    </div>
+                ) : null}
             </div>
-            <div className='cards-list py-3' ref={containerRef}>
+            <div className='cards-list overflow-visible py-3' ref={containerRef}>
                 {biggestAprPrizes.length > 0 ? (
                     biggestAprPrizes.map((prize, index) => (
                         <div className='me-xl-4 me-3' key={`winner-${index}`}>
