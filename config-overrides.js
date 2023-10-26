@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require('webpack');
-const path = require('path');
 
 module.exports = {
     webpack: function (config) {
@@ -12,8 +11,12 @@ module.exports = {
             crypto: require.resolve('crypto-browserify'),
             querystring: require.resolve('querystring-es3'),
             buffer: require.resolve('buffer'),
+            assert: require.resolve('minimalistic-assert'),
+            http: require.resolve('stream-http'),
+            https: require.resolve('https-browserify'),
+            url: require.resolve('url'),
         };
-        config.resolve.modules = [path.resolve(__dirname, 'src'), 'node_modules'];
+
         config.plugins = [
             ...config.plugins,
             new webpack.ProvidePlugin({
@@ -21,6 +24,12 @@ module.exports = {
             }),
         ];
 
+        config.module.rules.push({
+            test: /\.m?js$/,
+            resolve: {
+                fullySpecified: false,
+            },
+        });
         return config;
     },
     jest: function (config) {
@@ -29,7 +38,7 @@ module.exports = {
             '^.+\\.(ts|tsx)$': 'ts-jest',
         };
 
-        config.transformIgnorePatterns = ['node_modules/(?!(axios|gsap))'];
+        config.transformIgnorePatterns = ['/node_modules/(?!(axios|gsap|wagmi|@wagmi|@adraffy/ens-normalize|@rainbow-me/rainbowkit))'];
 
         config.moduleNameMapper = {
             ...config.moduleNameMapper,

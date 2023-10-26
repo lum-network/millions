@@ -5,14 +5,14 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/networ
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from 'redux/store';
 
 import Assets from 'assets';
 
-import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
-import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { NavigationConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
+import { RootState } from 'redux/store';
+import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
 
 import './DepositSteps.scss';
 
@@ -287,7 +287,11 @@ const DepositStep2 = (
                         isLoading={isLoading}
                         className='mt-2'
                         onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, poolToDeposit.nativeDenom === LumConstants.MicroLumDenom ? 1 : 0);
+                            const amount = WalletUtils.getMaxAmount(
+                                poolToDeposit.nativeDenom,
+                                balances,
+                                poolToDeposit.nativeDenom === LumConstants.MicroLumDenom ? 0.05 : poolToDeposit.internalInfos?.fees,
+                            );
                             setDepositAmount(amount);
                         }}
                         inputProps={{
