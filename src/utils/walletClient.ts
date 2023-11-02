@@ -1,5 +1,6 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
+import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import { Coin } from '@lum-network/sdk-javascript/build/types';
 import dayjs from 'dayjs';
 import { I18n, WalletUtils } from 'utils';
@@ -27,7 +28,8 @@ class WalletClient {
             }
 
             if (offlineSigner) {
-                this.walletClient = await SigningStargateClient.connectWithSigner(rpc, offlineSigner);
+                const tmClient = await Tendermint37Client.connect(rpc);
+                this.walletClient = await SigningStargateClient.createWithSigner(tmClient, offlineSigner);
             } else {
                 this.walletClient = await LumClient.connect(rpc);
             }
@@ -110,8 +112,8 @@ class WalletClient {
 
         return Number(await this.walletClient.queryClient.mint.inflation()) / ApiConstants.CLIENT_PRECISION;
     };
-    // Operations
 
+    // Operations
     ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string, feesDenom: string) => {
         if (this.walletClient && isConnectedWithSigner(this.walletClient, this.connectedWithSigner)) {
             const fee = WalletUtils.buildTxFee('25000', '500000', feesDenom);
