@@ -39,12 +39,12 @@ class LumApi extends HttpClient {
 
     fetchMarketData = async (since: Date) => this.request<MarketDataModel[]>({ url: `/market/data/since?limit=1`, method: 'POST', data: { since } }, MarketDataModel);
 
-    fetchCampaigns = async () => this.request<InfluencerCampaignModel[]>({ url: '/campaigns', method: 'GET' }, InfluencerCampaignModel);
+    fetchCampaigns = async () => this.request<InfluencerCampaignModel[]>({ url: '/millions/campaigns', method: 'GET' }, InfluencerCampaignModel);
 
     participateForCampaign = async (campaignId: string, address: string, password: string) =>
         this.request<InfluencerCampaignModel>(
             {
-                url: '/campaigns/participate',
+                url: '/millions/campaigns/participate',
                 method: 'POST',
                 data: {
                     campaignId,
