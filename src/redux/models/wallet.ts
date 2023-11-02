@@ -168,6 +168,10 @@ export const wallet = createModel<RootModel>()({
         },
     },
     effects: (dispatch) => ({
+        async connect(provider: WalletProvider) {
+            await dispatch.wallet.connectWallet({ provider, silent: false }).finally(() => null);
+            await dispatch.wallet.connectOtherWallets(provider);
+        },
         async connectWallet(payload: { provider: WalletProvider; silent: boolean }) {
             const { silent, provider } = payload;
             const providerFunctions = WalletProvidersUtils.getProviderFunctions(provider);
@@ -605,7 +609,7 @@ export const wallet = createModel<RootModel>()({
                 client.disconnect();
 
                 if (!result || (result && result.error)) {
-                    throw new Error(result?.error || undefined);
+                    throw new Error(result?.error || I18n.t('errors.ibcTransfer'));
                 }
 
                 while (true) {
@@ -636,6 +640,7 @@ export const wallet = createModel<RootModel>()({
 
                 return result;
             } catch (e) {
+                console.error(e);
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.ibcTransfer') });
                 return null;
             }

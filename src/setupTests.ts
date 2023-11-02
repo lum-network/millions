@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 
+import { TextEncoder, TextDecoder } from 'util';
+import crypto from 'crypto';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -43,8 +41,10 @@ const noop = () => {
 };
 Object.defineProperty(window, 'scrollTo', { value: noop, writable: true });
 
-if (typeof global.TextEncoder === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { TextEncoder } = require('util');
-    global.TextEncoder = TextEncoder;
-}
+Object.assign(global, { TextDecoder, TextEncoder });
+
+Object.defineProperty(global, 'crypto', {
+    value: {
+        getRandomValues: (arr: any) => crypto.randomBytes(arr.length),
+    },
+});

@@ -1,9 +1,10 @@
-import { ChainInfo, Window } from '@keplr-wallet/types';
+import { ChainInfo, Key, Window } from '@keplr-wallet/types';
 import { getOfflineSigner } from '@cosmostation/cosmos-client';
 import { cosmos } from '@cosmostation/extension-client';
 
 import { WalletProvider, PoolsConstants } from 'constant';
 import { I18n } from 'utils';
+import { LumUtils } from '@lum-network/sdk-javascript';
 
 export const isKeplrInstalled = (): boolean => {
     const keplrWindow = window as Window;
@@ -50,6 +51,49 @@ export const getProviderFunctions = (provider: WalletProvider) => {
             }
 
             throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+        },
+        getKey: async (chainId: string): Promise<Key> => {
+            if (provider === WalletProvider.Cosmostation) {
+                if (isCosmostationInstalled()) {
+                    const account = await requestCosmostationAccount(chainId);
+
+                    return {
+                        address: LumUtils.fromBech32(account.address).data,
+                        bech32Address: account.address,
+                        name: account.name,
+                        algo: 'secp256k1',
+                        isNanoLedger: account.isLedger,
+                        pubKey: account.publicKey,
+                        isKeystone: false,
+                    };
+                } else {
+                    return {
+                        address: new Uint8Array(),
+                        pubKey: new Uint8Array(),
+                        name: '',
+                        algo: '',
+                        isNanoLedger: false,
+                        isKeystone: false,
+                        bech32Address: '',
+                    };
+                }
+            } else {
+                const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+                if (keplrProvider) {
+                    return await keplrProvider.getKey(chainId);
+                } else {
+                    return {
+                        address: new Uint8Array(),
+                        pubKey: new Uint8Array(),
+                        name: '',
+                        algo: '',
+                        isNanoLedger: false,
+                        isKeystone: false,
+                        bech32Address: '',
+                    };
+                }
+            }
         },
     };
 };

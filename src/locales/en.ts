@@ -570,6 +570,13 @@ export default {
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
         depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
+        swapHint: {
+            content: "Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first",
+            cta: 'Swap',
+        },
+        swapModal: {
+            title: 'Swap to Cosmos Hub',
+        },
         depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>'
     },
     luckiestWinners: {

@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cosmjs/stargate": "^0.31.3",
+    "@cosmjs/tendermint-rpc": "^0.31.3",
     "@cosmostation/cosmos-client": "^0.0.5",
     "@cosmostation/extension-client": "^0.1.15",
     "@firebase/analytics": "^0.9.3",
     "@keplr-wallet/types": "^0.12.6",
+    "@leapwallet/elements": "^0.6.6",
     "@lum-network/sdk-javascript": "^0.8.9",
     "@popperjs/core": "^2.11.6",
     "@rematch/core": "^2.2.0",
@@ -33,6 +36,7 @@
     "formik": "^2.2.9",
     "gsap": "^3.11.4",
     "gsap-trial": "^3.12.0",
+    "https-browserify": "^1.0.0",
     "i18next": "^22.4.10",
     "long": "^5.2.1",
     "lottie-react": "^2.4.0",
@@ -62,7 +66,9 @@
     "reflect-metadata": "^0.1.13",
     "sass": "^1.58.1",
     "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
     "typescript": "^4.4.2",
+    "url": "^0.11.3",
     "use-persisted-state": "^0.3.3",
     "web-vitals": "^2.1.0",
     "yup": "^1.0.2"
@@ -86,9 +92,11 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
     ],
     "development": [
       "last 1 chrome version",
@@ -110,6 +118,7 @@
     "@types/use-persisted-state": "^0.3.2",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-import-resolver-typescript": "^3.5.3",
@@ -119,6 +128,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "identity-obj-proxy": "^3.0.0",
     "jest-canvas-mock": "^2.5.1",
+    "lokijs": "^1.5.12",
     "prettier": "^2.8.4",
     "ts-jest": "^27"
   }

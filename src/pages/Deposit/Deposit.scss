@@ -3,7 +3,7 @@
 .steps-title {
     color: var(--color-black);
     margin-bottom: 4rem;
-    
+
     @include media-breakpoint-down(sm) {
         font-size: 24px;
         line-height: unset;
@@ -24,7 +24,7 @@
             font-size: 21px;
         }
     }
-    
+
     .card-step-subtitle {
         @include media-breakpoint-down(sm) {
             font-size: 12px;
@@ -55,7 +55,7 @@
         margin-right: 8rem;
         border-radius: 12px;
         padding: 2.25rem 1.75rem;
-        
+
         div {
             color: var(--color-primary);
             font-weight: 350;
@@ -64,7 +64,7 @@
         }
 
         @include media-breakpoint-down(lg) {
-            margin-right: 0
+            margin-right: 0;
         }
     }
 }
@@ -118,5 +118,65 @@
         font-size: 14px;
         font-weight: 300;
         color: var(--color-dark-grey);
+    }
+}
+
+.leap-elements {
+    text-align: left;
+
+    img {
+        filter: none !important;
+    }
+
+    button {
+        border-style: solid;
+        border-color: var(--color-purple);
+        background-color: transparent;
+
+        &._1h7yi8818,
+        &._84qboe0 {
+            background-color: var(--color-purple);
+        }
+
+        &._1h7yi88s,
+        &._10b3pjv3 {
+            border: none;
+
+            svg {
+                fill: var(--color-purple);
+            }
+        }
+
+        &._1sc81q02 {
+            border: none;
+        }
+
+        &._7t3fz48 {
+            border: none;
+
+            &::after {
+                background-color: transparent;
+            }
+        }
+
+        &._1h7yi888 {
+            margin-bottom: 0;
+        }
+
+        &._84qboe0 {
+            margin-top: 1rem;
+        }
+
+        p {
+            color: var(--color-purple);
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+
+    input {
+        border: none;
     }
 }
