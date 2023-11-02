@@ -37,7 +37,10 @@ class WalletClient {
             this.connectedWithSigner = !!offlineSigner;
             this.chainId = await this.walletClient.getChainId();
         } catch (e) {
-            if (!silent) showErrorToast({ content: I18n.t('errors.client.rpc') });
+            if (!silent) {
+                showErrorToast({ content: I18n.t('errors.client.rpc') });
+            }
+
             throw e;
         }
     };
