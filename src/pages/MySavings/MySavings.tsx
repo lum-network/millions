@@ -534,7 +534,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
+            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} limit={lumWallet.isLedger ? 3 : 6} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

@@ -13,7 +13,7 @@ import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import Assets from 'assets';
 import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'components';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
@@ -82,39 +82,43 @@ const Deposit = () => {
         },
         walletClient: {
             enable: async (chainIds) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    for (const chainId of chainIds) {
-                        await providerFunctions.enable(chainId);
-                    }
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return;
+                }
+
+                for (const chainId of chainIds) {
+                    await providerFunctions.enable(chainId);
                 }
             },
             getKey: async (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    return await providerFunctions.getKey(chainId);
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return {
+                        address: new Uint8Array(),
+                        pubKey: new Uint8Array(),
+                        name: '',
+                        algo: '',
+                        isNanoLedger: false,
+                        bech32Address: '',
+                    };
                 }
 
-                return {
-                    address: new Uint8Array(),
-                    pubKey: new Uint8Array(),
-                    name: '',
-                    algo: '',
-                    isNanoLedger: false,
-                    bech32Address: '',
-                };
+                return await providerFunctions.getKey(chainId);
             },
             getOfflineSigner: (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
-
-                return providerFunctions.getOfflineSigner(chainId);
+                return providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
@@ -855,6 +859,7 @@ const Deposit = () => {
     }
 
     const isShareStep = currentStep >= steps.length;
+    const showSwapCard = otherWallet && process.env.NODE_ENV !== 'test';
 
     return (
         <>
@@ -864,7 +869,7 @@ const Deposit = () => {
                         <div className='col'>
                             <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                             <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                            {otherWallet && process.env.NODE_ENV !== 'test' ? (
+                            {showSwapCard ? (
                                 <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                     <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                     <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{I18n.t('deposit.swapHint.content')}</div>
@@ -909,7 +914,7 @@ const Deposit = () => {
                                     />
                                 </Card>
                             ) : null}
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                            <Card flat withoutPadding className={`deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-${showSwapCard ? '3' : '5'}`}>
                                 <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
                             </Card>

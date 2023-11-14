@@ -9,6 +9,10 @@ import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionMod
 import { RootModel } from '.';
 import { LumApi } from 'api';
 
+type SignInLumPayload = LumWallet & {
+    isLedger: boolean;
+};
+
 interface IbcTransferPayload {
     fromAddress: string;
     toAddress: string;
@@ -51,6 +55,7 @@ interface ClaimPrizesPayload {
     prizes: PrizeModel[];
     batchTotal: number;
     batch: number;
+    limit: number;
     onBatchComplete: (batch: number) => void;
 }
 
@@ -89,7 +94,7 @@ export const wallet = createModel<RootModel>()({
         prizesMutex: false,
     } as WalletState,
     reducers: {
-        signInLum(state, payload: LumWallet): WalletState {
+        signInLum(state, payload: SignInLumPayload): WalletState {
             return {
                 ...state,
                 lumWallet: {
@@ -104,6 +109,7 @@ export const wallet = createModel<RootModel>()({
                     deposits: [],
                     prizes: [],
                     totalPrizesWon: {},
+                    isLedger: !!payload.isLedger,
                 },
             };
         },
@@ -249,10 +255,16 @@ export const wallet = createModel<RootModel>()({
                 if (provider === WalletProvider.Cosmostation) {
                     await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
+
                 const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
                 const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
+
                 if (lumWallet) {
-                    dispatch.wallet.signInLum(lumWallet);
+                    const { isNanoLedger } = await providerFunctions.getKey(chainId);
+
+                    const wallet = Object.assign(lumWallet, { isLedger: isNanoLedger });
+
+                    dispatch.wallet.signInLum(wallet);
 
                     WalletUtils.storeAutoconnectKey(provider);
 
@@ -773,8 +785,6 @@ export const wallet = createModel<RootModel>()({
 
             let prizesToClaim = [...prizes];
 
-            const LIMIT = 6;
-
             const toastId = ToastUtils.showLoadingToast({ content: I18n.t(batchTotal > 1 ? 'pending.claimPrize' : 'pending.claimPrize', { count: 1, total: batchTotal }) });
 
             let lastBatch = 0;
@@ -795,7 +805,7 @@ export const wallet = createModel<RootModel>()({
                         });
                     }
 
-                    const toClaim = prizesToClaim.slice(0, LIMIT);
+                    const toClaim = prizesToClaim.slice(0, payload.limit);
 
                     result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
 
