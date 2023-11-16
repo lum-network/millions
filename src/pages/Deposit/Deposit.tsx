@@ -854,7 +854,7 @@ const Deposit = () => {
         steps.splice(0, 1);
     }
 
-    const isShareStep = currentStep > steps.length;
+    const isShareStep = currentStep >= steps.length;
 
     return (
         <>
