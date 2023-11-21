@@ -1,33 +1,38 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload } from 'react-router-dom';
+import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { LumConstants } from '@lum-network/sdk-javascript';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
+import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
+import { Modal as BootstrapModal } from 'bootstrap';
 
 import Assets from 'assets';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
+import { Card, Lottie, Modal, Steps, Button } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { Card, Lottie, Modal, Steps, QuitDepositModal, IbcTransferModal } from 'components';
-import { DepositDropSteps } from 'drops/components';
 import { usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
 import DepositSteps from './components/DepositSteps/DepositSteps';
+import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
+import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
 
 import './Deposit.scss';
+import PurpleBackgroundImage from 'components/PurpleBackgroundImage/PurpleBackgroundImage';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
 const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     const { poolId, denom } = useParams<NavigationConstants.PoolsParams>();
+    const location = useLocation();
 
     const { otherWallets, lumWallet, prices, pools, pool, depositDelta, isTransferring } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
@@ -56,18 +61,95 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
             smoothChildTiming: true,
         }),
     );
+    const [computedStyles, setComputedStyles] = useState(getComputedStyle(document.body));
 
     const depositFlowContainerRef = useRef(null);
     const quitModalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const ibcModalRef = useRef<React.ElementRef<typeof Modal>>(null);
+    const leapSwapModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const dispatch = useDispatch<Dispatch>();
 
     const prevStep = usePrevious(currentStep);
+    const { isDark } = useColorScheme();
+
+    const wcConfig: WalletClientContext = {
+        userAddress: lumWallet?.address,
+        connectWallet: () => {
+            const modal = BootstrapModal.getOrCreateInstance(WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal');
+
+            if (modal && leapSwapModalRef.current) {
+                leapSwapModalRef.current.hide();
+                setTimeout(() => {
+                    modal.show();
+                }, 500); // --> wait 500ms modal dismiss timing
+            }
+        },
+        walletClient: {
+            enable: async (chainIds) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                if (autoConnectProvider) {
+                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                    for (const chainId of chainIds) {
+                        await providerFunctions.enable(chainId);
+                    }
+                }
+            },
+            getKey: async (chainId) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                if (autoConnectProvider) {
+                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                    return await providerFunctions.getKey(chainId);
+                }
+
+                return {
+                    address: new Uint8Array(),
+                    pubKey: new Uint8Array(),
+                    name: '',
+                    algo: '',
+                    isNanoLedger: false,
+                    bech32Address: '',
+                };
+            },
+            getOfflineSigner: (chainId) => {
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
+
+                return providerFunctions.getOfflineSigner(chainId);
+            },
+        },
+    };
+
+    const leapModalTheme: ThemeDefinition = {
+        colors: {
+            primary: computedStyles.getPropertyValue('--color-purple'),
+            primaryButton: computedStyles.getPropertyValue('--color-purple'),
+            text: computedStyles.getPropertyValue('--color-purple'),
+            primaryButtonText: 'white',
+            textSecondary: computedStyles.getPropertyValue('--color-muted'),
+            border: computedStyles.getPropertyValue('--color-purple-light'),
+            stepBorder: computedStyles.getPropertyValue('--color-purple-light'),
+            alpha: computedStyles.getPropertyValue('--color-white'),
+            gray: computedStyles.getPropertyValue('--color-grey'),
+            backgroundPrimary: computedStyles.getPropertyValue('--color-background'),
+            backgroundSecondary: computedStyles.getPropertyValue('--color-white'),
+            error: computedStyles.getPropertyValue('--color-failure'),
+            errorBackground: computedStyles.getPropertyValue('--color-failure-light'),
+            success: computedStyles.getPropertyValue('--color-success'),
+            successBackground: computedStyles.getPropertyValue('--color-success-light'),
+        },
+        borderRadii: defaultBorderRadii,
+        blurs: defaultBlurs,
+        fontFamily: 'Gotham Rounded',
+    };
 
     const transferForm = useFormik({
         initialValues: {
-            amount: '',
+            amount: location.state?.amountToDeposit || '',
         },
         validationSchema: yup.object().shape({
             amount: yup
@@ -110,6 +192,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
+        provider: WalletUtils.getAutoconnectProvider(),
     });
 
     const now = Date.now();
@@ -817,6 +900,10 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         });
     }, [currentStep]);
 
+    useEffect(() => {
+        setComputedStyles(getComputedStyle(document.body));
+    }, [isDark]);
+
     if (pool === undefined) {
         return <Error404 />;
     }
@@ -827,7 +914,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         steps.splice(0, 1);
     }
 
-    const isLastStep = currentStep >= steps.length;
+    const isShareStep = currentStep >= steps.length;
 
     const depositComponentCommonProps = {
         transferForm,
@@ -862,52 +949,129 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     };
 
     return (
-        <div id='depositFlow' ref={depositFlowContainerRef}>
-            <div className={`row row-cols-1 ${!isLastStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
-                {!isLastStep && (
-                    <div className='col'>
-                        <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
-                        <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                        <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
-                            <img src={Assets.images.faucet} alt='' />
-                            <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
-                                <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.faucetHint') }} />
-                            </div>
-                        </Card>
-                        {isDrop ? (
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
-                                <img src={Assets.images.questionMark} alt='' />
-                                <div className='d-flex flex-column ms-0 ms-sm-4 mt-3 mt-sm-0'>
-                                    <div className='text-center text-sm-start' dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.content') }} />
-                                    <a
-                                        className='text-center text-sm-start'
-                                        style={{ width: 'fit-content' }}
-                                        href={NavigationConstants.DEPOSITS_AND_WITHDRAWALS_DOC}
-                                        dangerouslySetInnerHTML={{ __html: I18n.t('depositDrops.depositFlow.infoCards.deposit.howItWorks') }}
+        <>
+            <div id='depositFlow' ref={depositFlowContainerRef}>
+                <div className={`row row-cols-1 ${!isShareStep && 'row-cols-lg-2'} py-5 h-100 gy-5 justify-content-center deposit-flow-container`}>
+                    {!isShareStep && (
+                        <div className='col'>
+                            <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
+                            <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
+                            {otherWallet && process.env.NODE_ENV !== 'test' ? (
+                                <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
+                                    <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                                    <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{I18n.t('deposit.swapHint.content')}</div>
+                                    <LiquidityModal
+                                        renderLiquidityButton={({ onClick }) => <Button onClick={onClick}>{I18n.t('deposit.swapHint.cta')}</Button>}
+                                        walletClientConfig={wcConfig}
+                                        theme={leapModalTheme}
+                                        config={{
+                                            title: I18n.t('deposit.swapModal.title'),
+                                            subtitle: '',
+                                            icon: Assets.images.cosmonautCoin,
+                                            tabsConfig: {
+                                                [Tabs.SWAP]: {
+                                                    title: 'Swaps',
+                                                    defaults: {
+                                                        sourceChainId: 'osmosis-1',
+                                                        sourceAssetDenom: 'uatom',
+                                                    },
+                                                    allowedDestinationChains: [
+                                                        {
+                                                            chainId: 'cosmoshub-4',
+                                                            assetDenoms: ['uatom'],
+                                                        },
+                                                    ],
+                                                },
+                                                [Tabs.TRANSFER]: {
+                                                    enabled: false,
+                                                },
+                                                [Tabs.SQUID]: {
+                                                    enabled: false,
+                                                },
+                                                [Tabs.KADO]: {
+                                                    enabled: false,
+                                                },
+                                            },
+                                        }}
+                                        onClose={() => {
+                                            if (otherWallet) {
+                                                dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+                                            }
+                                        }}
                                     />
-                                </div>
-                            </Card>
-                        ) : withinDepositDelta ? (
+                                </Card>
+                            ) : null}
                             <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
-                                <img src={Assets.images.questionMark} alt='' />
-                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
+                                <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
                             </Card>
-                        ) : null}
-                    </div>
-                )}
-                <div className='col'>
-                    <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isLastStep ? 'last-step glow-bg' : ''}`}>
-                        {isDrop ? <DepositDropSteps {...depositComponentCommonProps} onDepositDrop={onDepositDrop} /> : <DepositSteps {...depositComponentCommonProps} onDeposit={onDeposit} />}
-                        {isLastStep && (
-                            <Lottie
-                                className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
-                                animationData={cosmonautWithRocket}
-                                segments={[
-                                    [0, 30],
-                                    [30, 128],
-                                ]}
+                            {withinDepositDelta && (
+                                <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                                    <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                                    <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositDeltaHint') }} />
+                                </Card>
+                            )}
+                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                                <PurpleBackgroundImage src={Assets.images.faucet} alt='' className='no-filter rounded-circle' width={42} height={42} />
+                                <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositFaucet') }} />
+                            </Card>
+                        </div>
+                    )}
+                    <div className='col'>
+                        <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isShareStep ? 'last-step glow-bg' : ''}`}>
+                            <DepositSteps
+                                transferForm={transferForm}
+                                onNextStep={startTransition}
+                                onDeposit={onDeposit}
+                                onFinishDeposit={(callback) => {
+                                    const tl = gsap.timeline({
+                                        ...GSAP_DEFAULT_CONFIG,
+                                        onComplete: () => {
+                                            callback();
+                                            gsap.set('#depositFlow .deposit-flow-container', {
+                                                opacity: 1,
+                                                delay: 0.2,
+                                            });
+                                        },
+                                    });
+
+                                    tl.to('#depositFlow .deposit-flow-container', {
+                                        opacity: 0,
+                                        y: -50,
+                                    }).set('#depositFlow .deposit-flow-container', {
+                                        y: 0,
+                                    });
+                                }}
+                                onPrevStep={(prev, next) => {
+                                    transferForm.setFieldValue('amount', next);
+                                    setIbcModalPrevAmount(prev);
+                                    setIbcModalDepositAmount(next);
+                                    if (ibcModalRef.current) {
+                                        ibcModalRef.current.show();
+                                    }
+                                }}
+                                onTwitterShare={() => setShareState('sharing')}
+                                currentStep={currentStep}
+                                steps={steps}
+                                pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}
+                                currentPool={pool}
+                                price={prices?.[denom || ''] || 0}
+                                lumWallet={lumWallet}
+                                otherWallets={otherWallets}
+                                amountFromLocationState={location.state?.amountToDeposit}
                             />
-                        )}
+                            {isDrop ? <DepositDropSteps {...depositComponentCommonProps} onDepositDrop={onDepositDrop} /> : <DepositSteps {...depositComponentCommonProps} onDeposit={onDeposit} />}
+                            {isShareStep && (
+                                <Lottie
+                                    className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'
+                                    animationData={cosmonautWithRocket}
+                                    segments={[
+                                        [0, 30],
+                                        [30, 128],
+                                    ]}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -944,7 +1108,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                     }
                 }}
             />
-        </div>
+        </>
     );
 };
 

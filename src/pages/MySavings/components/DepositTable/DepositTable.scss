@@ -16,7 +16,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         border-radius: 12px;
         padding: 25px 32px;
         width: 100%;
@@ -63,21 +63,24 @@
         width: fit-content;
         padding: 7px 14px;
 
-        box-shadow: 0 4px 23px #f1edff;
-
         background: #8c8c8c;
         color: white;
 
         font-size: 12px;
         &.success {
-            background: $color-success;
+            background: var(--color-success);
         }
         
         &.failure {
-            background: $color-failure;
+            background: var(--color-failure);
         }
         &.pending {
             font-size: 10px;
         }
+    }
+
+    .sponsorship-icon {
+        padding: 5px;
+        border-radius: 6px;
     }
 }

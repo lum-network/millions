@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Table } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
 import { NavigationConstants } from 'constant';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
+import { DrawModel } from 'models';
 
 import './DrawDetailsModal.scss';
 
-const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null; poolDenom: string; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers> }) => {
+const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | null; poolDenom: string; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers> }) => {
     const [view, setView] = useState<'winners' | 'redelegated'>('winners');
     const [winnersPage, setWinnersPage] = useState(1);
 
@@ -23,7 +23,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
             {draw ? (
                 <div className='d-flex flex-column align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon' />
+                        <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon no-filter' />
                         <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
                             {poolDenom.toUpperCase()} {I18n.t('common.pool')}
                         </h1>
@@ -78,7 +78,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                         <td>
                                             <div className='d-flex flex-row align-items-baseline winner-address'>
                                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                                    <img src={Assets.images.trophyPurple} alt='' />
+                                                    <img src={Assets.images.trophyPurple} alt='' className='no-filter' />
                                                 </div>
                                                 {StringsUtils.trunc(winner.winnerAddress)}
                                             </div>
@@ -86,7 +86,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                         <td className='text-md-end'>
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                                 <div className='amount text-nowrap'>
-                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] || 0)).format('$0,0[.]00')} />
+                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (draw.usdTokenValue || prices[poolDenom] || 0)).format('$0,0[.]00')} />
                                                 </div>
                                                 <span className='usd-price'>
                                                     <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} /> {poolDenom.toUpperCase()}
@@ -105,11 +105,12 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: Draw | null;
                                             <div className='display-6 prize-remaining-amount'>
                                                 <SmallerDecimal
                                                     nb={numeral(
-                                                        (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) * (prices[poolDenom] || 0),
+                                                        (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) *
+                                                            (draw.usdTokenValue || prices[poolDenom] || 0),
                                                     ).format('$0,0[.]00')}
                                                 />
                                             </div>
-                                            <div>
+                                            <div className='prize-remaining-amount'>
                                                 <SmallerDecimal
                                                     nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')}
                                                 />{' '}

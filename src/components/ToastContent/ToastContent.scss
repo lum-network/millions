@@ -12,7 +12,7 @@
     font-weight: 700;
     font-size: 32px;
     line-height: 29px;
-    color: $color-primary;
+    color: var(--color-primary);
 }
 
 .toast-content {
@@ -21,6 +21,6 @@
     font-weight: 700;
     font-size: 18px;
     line-height: 24px;
-    color: black;
+    color: var(--color-black);
     white-space: pre-line;
 }

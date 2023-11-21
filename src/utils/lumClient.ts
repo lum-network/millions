@@ -2,14 +2,15 @@ import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } f
 import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
 import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import Long from 'long';
-import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
+import { AggregatedDepositModel, DepositModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
+import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
+import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 class LumClient {
     private static instance: LumClient | null = null;
@@ -127,21 +128,38 @@ class LumClient {
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
 
-        const resWithdrawals = await this.client.queryClient.millions.accountWithdrawals(address);
+        let pageWithdrawals: Uint8Array | undefined = undefined;
+        const withdrawals: Withdrawal[] = [];
+
+        while (true) {
+            const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
+
+            withdrawals.push(...resWithdrawals.withdrawals);
+
+            // If we have pagination key, we just patch it, and it will process in the next loop
+            if (resWithdrawals.pagination && resWithdrawals.pagination.nextKey && resWithdrawals.pagination.nextKey.length) {
+                pageWithdrawals = resWithdrawals.pagination.nextKey;
+            } else {
+                break;
+            }
+        }
 
         const withdrawalsToDeposit: Partial<DepositModel>[] = [];
 
-        for (const withdrawal of resWithdrawals.withdrawals) {
+        for (const withdrawal of withdrawals) {
             withdrawalsToDeposit.push({
                 poolId: withdrawal.poolId,
                 amount: withdrawal.amount,
                 depositId: withdrawal.depositId,
+                withdrawalId: withdrawal.withdrawalId,
                 depositorAddress: withdrawal.depositorAddress,
                 isWithdrawing: true,
                 isDepositDrop: false,
                 createdAt: withdrawal.createdAt,
                 unbondingEndAt: withdrawal.unbondingEndsAt,
                 winnerAddress: withdrawal.toAddress,
+                withdrawalState: withdrawal.state,
+                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER,
             });
         }
 
@@ -180,30 +198,37 @@ class LumClient {
         return { balances };
     };
 
-    getWalletActivities = async (address: string, page = 1) => {
+    getWalletActivities = async (address: string) => {
         if (this.client === null) {
             return null;
         }
 
-        const LIMIT = 30;
+        const txs = [];
+        let totalCount = 0;
 
-        let totalCount: number | null = null;
+        const queries = [
+            // Query deposits
+            `deposit.depositor='${address}' AND deposit.winner='${address}'`,
 
-        const query = LumUtils.searchTxByTags([
-            { key: 'message.module', value: 'millions' },
-            { key: 'transfer.sender', value: address },
-        ]);
+            // Query claim prize
+            `prize_claim.winner='${address}'`,
 
-        const res = await this.client.tmClient.txSearch({ query, page, per_page: LIMIT, order_by: 'desc' });
+            // Query leave pool
+            `withdraw_deposit.depositor='${address}' AND withdraw_deposit.recipient='${address}'`,
+        ];
 
-        if (page === 1) {
-            totalCount = res.totalCount;
+        const res = await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearchAll({ query })));
+
+        for (const r of res) {
+            if (r.status === 'fulfilled' && r.value !== undefined) {
+                txs.push(...r.value.txs);
+                totalCount += r.value.totalCount;
+            }
         }
 
         return {
-            activities: await formatTxs(res.txs, true),
+            activities: await formatTxs(txs, true),
             totalCount,
-            currentPage: page,
         };
     };
 
@@ -391,7 +416,37 @@ class LumClient {
         };
     };
 
-    claimPrizes = async (wallet: LumWallet, prizes: Prize[]) => {
+    leavePoolRetry = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
+        if (this.client === null) {
+            return null;
+        }
+
+        // Build transaction message
+        const message = LumMessages.BuildMsgWithdrawDepositRetry(poolId, depositId, wallet.getAddress());
+
+        // Define fees
+        const fee = WalletUtils.buildTxFee('25000', '500000');
+
+        // Create the transaction document
+        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
+
+        if (!doc) {
+            return null;
+        }
+
+        // Sign and broadcast the transaction using the client
+        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+
+        return {
+            hash: broadcastResult.hash,
+            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+        };
+    };
+
+    claimPrizes = async (wallet: LumWallet, prizes: PrizeModel[]) => {
         if (this.client === null) {
             return null;
         }
@@ -400,11 +455,11 @@ class LumClient {
         const messages = [];
 
         for (const prize of prizes) {
-            messages.push(LumMessages.BuildMsgClaimPrize(prize.poolId, prize.drawId, prize.prizeId, wallet.getAddress()));
+            messages.push(LumMessages.BuildMsgClaimPrize(Long.fromNumber(prize.poolId), Long.fromNumber(prize.drawId), Long.fromNumber(prize.prizeId), wallet.getAddress()));
         }
 
         // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const fee = WalletUtils.buildTxFee('25000', (400000 + messages.length * 120000).toFixed(0));
 
         // Create the transaction document
         const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));

@@ -1,9 +1,9 @@
 @import 'src/styles/main';
 
 .progress-card {
-    color: $color-white;
-    border: 2px solid $color-primary;
-    background-color: #5634de4d !important;
+    color: white;
+    border: 2px solid var(--color-purple);
+    background-color: color-mix(in srgb, var(--color-purple) 60%, transparent) !important;
     padding: 11px 16.5px;
     position: relative;
     overflow: hidden;
@@ -18,9 +18,9 @@
         top: -2px;
         left: -2px;
         bottom: -2px;
-        border: 2px solid $color-primary;
+        border: 2px solid var(--color-purple);
         border-radius: 12px;
-        background-color: $color-primary;
+        background-color: var(--color-purple);
 
         transition: width 0.3s ease-out;
     }

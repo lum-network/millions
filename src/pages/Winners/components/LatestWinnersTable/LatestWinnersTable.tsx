@@ -28,11 +28,11 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
             <tr className='d-block d-lg-table-row' key={`winner-${prize.poolId}-${prize.drawId}-${prize.prizeId}`}>
                 <td className='align-middle py-3 px-4 winner-infos'>
                     <span className='me-3'>
-                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt={prize.amount.denom} width='38' height='38' />
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(prize.amount.denom))} alt={prize.amount.denom} width='38' height='38' className='no-filter' />
                     </span>
                     {StringsUtils.trunc(prize.winnerAddress)}
                     <span className='prize-infos ms-3'>
-                        ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} {I18n.t('pools.poolId', { poolId: prize.poolId }).toUpperCase()} -{' '}
+                        ${DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()} {I18n.t('pools.poolId').toUpperCase()} -{' '}
                         {I18n.t('mySavings.claimModal.drawId', { drawId: prize.drawId }).toUpperCase()}
                     </span>
                     <span className='date ms-3'>{dayjs(prize.createdAt).format('D MMM YYYY')}</span>
@@ -43,7 +43,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                             <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                         </div>
-                        <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * prize.usdTokenValue).format('0,0.00')}</small>
+                        <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
                     </div>
                 </td>
             </tr>
@@ -89,7 +89,7 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                                 <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                                 <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                             </div>
-                            <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * prize.usdTokenValue).format('0,0.00')}</small>
+                            <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
                         </div>
                     </div>
                 </div>

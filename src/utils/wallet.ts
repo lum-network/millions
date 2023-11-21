@@ -26,7 +26,15 @@ export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: str
     return missingPrice ? null : totalBalance;
 };
 
-export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] | undefined, prices: { [denom: string]: number }) => {
+/**
+ * Returns a total balance from deposits.
+ *
+ * @param deposits - A list of aggregated deposits
+ * @param prices - A map of prices (can be optional, if optional crypto total amount is returned otherwise fiat total amount is returned)
+ * @returns The total balance from deposits
+ *
+ */
+export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] | undefined, prices?: { [denom: string]: number }) => {
     let totalBalance = 0;
     let missingPrice = false;
 
@@ -37,13 +45,17 @@ export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] |
     deposits
         .filter((deposit) => deposit.state === DepositState.DEPOSIT_STATE_SUCCESS)
         .forEach((deposit) => {
-            const price = Object.entries(prices).find((price) => price[0] === getNormalDenom(deposit.amount?.denom || ''));
+            const price = prices ? Object.entries(prices).find((price) => price[0] === getNormalDenom(deposit.amount?.denom || '')) : null;
             const convertedAmount = convertUnitNumber(deposit.amount?.amount || '0');
 
-            if (price) {
-                totalBalance += convertedAmount * price[1];
-            } else {
+            if (prices && !price) {
                 missingPrice = true;
+            } else {
+                if (price) {
+                    totalBalance += convertedAmount * price[1];
+                } else {
+                    totalBalance += convertedAmount;
+                }
             }
         });
 
@@ -74,12 +86,12 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmo
     return '0';
 };
 
-export const buildTxFee = (fee: string, gas: string): Fee => {
+export const buildTxFee = (fee: string, gas: string, denom = LumConstants.MicroLumDenom): Fee => {
     return {
         amount: [
             {
                 amount: fee,
-                denom: LumConstants.MicroLumDenom,
+                denom,
             },
         ],
         gas,
@@ -117,13 +129,11 @@ export const updatedBalances = (currentBalance?: LumTypes.Coin[], newBalance?: L
         return true;
     }
 
-    const balanceChanged = currentBalance.some((balance) => {
+    return currentBalance.some((balance) => {
         const newBalanceAmount = newBalance.find((b) => b.denom === balance.denom)?.amount;
 
         return newBalanceAmount !== balance.amount;
     });
-
-    return balanceChanged;
 };
 
 export const storeAutoconnectKey = (provider: WalletProvider) => {

@@ -1,5 +1,6 @@
 export { default as Card } from './Card/Card';
 export { default as Button } from './Button/Button';
+export { default as ArrowButton } from './ArrowButton/ArrowButton';
 export { default as Header } from './Header/Header';
 export { default as Loading } from './Loading/Loading';
 export { default as SmallerDecimal } from './SmallerDecimal/SmallerDecimal';
@@ -22,5 +23,8 @@ export { default as IbcTransferModal } from './Modals/IbcTransfer/IbcTransfer';
 export { default as QuitDepositModal } from './Modals/QuitDeposit/QuitDeposit';
 export { default as TransactionBatchProgress } from './TransactionBatchProgress/TransactionBatchProgress';
 export { default as DepositIbcTransfer } from './DepositIbcTransfer/DepositIbcTransfer';
+export { default as Leaderboard } from './Leaderboard/Leaderboard';
+export { default as PurpleBackgroundImage } from './PurpleBackgroundImage/PurpleBackgroundImage';
+export { default as Tag } from './Tag/Tag';
 
 export * from './ToastContent/ToastContent';

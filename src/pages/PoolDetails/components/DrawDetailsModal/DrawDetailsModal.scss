@@ -2,23 +2,23 @@
 
 #drawDetailsModal {
     h4 {
-        color: $color-black;
+        color: var(--color-black);
     }
 
     .next-pool-info {
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 400;
     }
 
     .date {
         font-size: 12px;
         font-weight: 300;
-        color: $color-muted;
+        color: var(--color-muted);
     }
 
     .redelegated-prizes-card {
         .prize-remaining-amount {
-            color: $color-primary;
+            color: var(--color-primary);
         }
     }
 
@@ -42,36 +42,36 @@
                 }
 
                 .winner-address {
-                    color: $color-black;
+                    color: var(--color-black);
                     font-size: 14px;
                     font-weight: 400;
                 }
 
                 .tx-amount {
                     .amount {
-                        color: $color-primary;
+                        color: var(--color-primary);
                     }
 
                     .usd-price {
-                        color: $color-black;
+                        color: var(--color-black);
                     }
                 }
 
                 .usd-price {
                     font-size: 14px;
-                    color: $color-black;
-                    font-weight: 300;
+                    color: var(--color-black);
+                    font-weight: 200;
                 }
             }
         }
 
         .pagination {
             .page-item .page-link {
-                background-color: $color-background !important;
-                border-color: $color-background !important;
+                background-color: var(--color-background) !important;
+                border-color: var(--color-background) !important;
             }
             .page-item.active:not(.without-border) .page-link {
-                border-color: $color-black !important;
+                border-color: var(--color-black) !important;
             }
         }
     }

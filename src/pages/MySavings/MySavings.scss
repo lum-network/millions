@@ -13,10 +13,16 @@
         }
     }
 
+    .side-bar {
+        position: sticky;
+        height: 100%;
+        top: 180px;
+    }
+
     .balance-card {
         height: 100%;
-        background-color: $color-primary;
         color: white;
+        background: linear-gradient(43deg, var(--color-purple) 53%, rgba(200, 9, 249, 1) 76%, var(--color-pink) 88%, rgba(139, 32, 234, 1) 100%);
         position: relative;
 
         .balance-number {
@@ -57,18 +63,41 @@
         }
 
         .cosmonaut {
-            width: 190px;
-            height: 190px;
+            width: 300px;
+            height: 300px;
             object-fit: contain;
             position: absolute;
             right: -30px;
             top: calc(190px / 2 * -1);
+
+            @include media-breakpoint-down(xl) {
+                width: 190px;
+                height: 190px;
+                top: calc(190px / 3 * -1);
+            }
+        }
+
+        .background-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: inherit;
+            overflow: hidden;
+
+            .orbit {
+                width: 100%;
+                @include media-breakpoint-up(sm) {
+                    transform: translateY(-25%);
+                }
+            }
         }
     }
 
     .asset-card {
         margin-bottom: 1.5rem;
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         border-radius: 12px;
         padding: 40px 32px;
 
@@ -89,7 +118,7 @@
             width: 50px;
             height: 50px;
             margin-right: 1rem;
-            background-color: $color-primary;
+            background-color: var(--color-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -130,7 +159,7 @@
                     width: 30px;
                     height: 30px;
                     border-radius: 6.5625px;
-                    background-color: $color-primary;
+                    background-color: var(--color-primary);
 
                     img {
                         width: 15px;
@@ -140,11 +169,11 @@
 
                 .asset-detail {
                     font-size: 12px;
-                    color: $color-primary;
+                    color: var(--color-primary);
 
                     .asset-detail-amount {
                         font-size: 14px;
-                        color: $color-black;
+                        color: var(--color-black);
                     }
                 }
             }
@@ -155,27 +184,32 @@
         }
     }
 
+    .expiration-date {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 12px;
+        color: #fa7676;
+    }
+
     .asset-amount {
-        color: $color-primary;
+        color: var(--color-primary);
         font-size: 24px;
         font-weight: 400;
         letter-spacing: 0;
         text-align: left;
-
-        .expiration-date {
-            font-style: normal;
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 12px;
-            color: #fa7676;
-        }
 
         small {
             font-size: 16px;
             font-weight: 300;
             letter-spacing: 0;
             text-align: left;
-            color: $color-primary;
+            color: var(--color-primary);
+        }
+
+        .subtitle {
+            color: var(--color-black);
+            font-size: 14px;
         }
 
         @include media-breakpoint-only(lg) {
@@ -206,22 +240,44 @@
     }
 
     .new-prize-card {
-        background-color: $color-success-light;
+        background-color: var(--color-success-light);
 
         .claim-btn {
-            background-color: $color-success;
-            border-color: $color-success;
+            background-color: var(--color-success);
+            border-color: var(--color-success);
+            color: white;
         }
 
         h3 {
-            color: $color-success;
+            color: var(--color-success);
         }
 
         p {
-            color: $color-black;
+            color: var(--color-black);
         }
     }
- 
+
+    .deposit-error-card {
+        background-color: var(--color-purple-light);
+
+        h3 {
+            color: var(--color-primary);
+        }
+    }
+
+    .leaderboard-section {
+        .leaderboard {
+            animation: unset;
+            opacity: 1;
+        }
+
+        .pool-select {
+            .pool-select__menu {
+                z-index: 4;
+            }
+        }
+    }
+
     #withdrawModal {
         .withdraw-title {
             font-size: 24px;
@@ -229,7 +285,7 @@
             line-height: 29px;
             letter-spacing: 0;
             text-align: center;
-            color: $color-black;
+            color: var(--color-black);
         }
         .arrow-container {
             display: flex;
@@ -238,7 +294,7 @@
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            background-color: $color-primary;
+            background-color: var(--color-primary);
 
             img {
                 width: 10px;
@@ -247,7 +303,7 @@
         }
 
         .address-container {
-            background-color: $color-primary-light;
+            background-color: var(--color-primary-light);
             border-radius: 12px;
             padding: 1rem 1.5rem;
             font-size: 15px;
@@ -258,7 +314,7 @@
 
     #claimOnlyModal {
         h3 {
-            color: $color-black;
+            color: var(--color-black);
         }
 
         p {

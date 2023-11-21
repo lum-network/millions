@@ -7,6 +7,7 @@
 }
 
 .custom-container {
+    padding-top: 130px;
     @include media-breakpoint-down(sm) {
         @include make-container(32px);
     }
@@ -14,19 +15,32 @@
 
 .main-layout {
     display: flex;
-    padding-top: 130px;
-    padding-bottom: 60px;
     min-height: 100vh;
-    background-color: $color-background;
-    background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg');
-    background-position: percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100));
+    padding-bottom: 60px;
+    background-color: var(--color-background);
+    background-image: url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'), url('../../assets/images/star.svg'),
+        url('../../assets/images/star.svg');
+    background-position: percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)),
+        percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100)), percentage(calc(random(100) / 100)) percentage(calc(random(100) / 100));
     background-repeat: no-repeat no-repeat;
-    overflow: hidden;
     white-space: pre-line;
-}
-
-.fill {
-    flex: 1 1 auto;
+    overflow: hidden;
+    .spinner-border {
+        width: '3rem';
+        height: '3rem';
+        color: var(--color-purple);
+    }
 }
 
 #get-keplr-modal,
@@ -35,9 +49,9 @@
         width: 76px;
         height: 76px;
     }
-    
+
     h3 {
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 400;
         font-size: 24px;
     }
@@ -45,7 +59,7 @@
 
 #choose-wallet-modal {
     a {
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 300;
         font-size: 14px;
     }
@@ -53,13 +67,13 @@
 
 #get-keplr-modal {
     p {
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 300;
         font-size: 16px;
     }
 
     a {
-        color: $color-primary;
+        color: var(--color-primary);
         font-weight: 300;
         font-size: 14px;
     }
@@ -67,13 +81,13 @@
 
 #terms-modal {
     .terms-modal-desc {
-        color: $color-black;
+        color: var(--color-black);
         font-weight: 300;
         font-size: 16px;
     }
 
     .terms-modal-content {
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         height: 300px;
         border-radius: 8px;
         overflow-y: scroll;
@@ -81,18 +95,24 @@
         text-align: left;
 
         p {
-            color: $color-black !important;
+            color: var(--color-black) !important;
         }
 
         h5 {
             font-size: 1.1em;
             font-weight: bold;
+            color: var(--color-black);
         }
 
         ol li {
             font-weight: 300 !important;
             font-size: 14px !important;
             line-height: 17px !important;
+            color: var(--color-black);
         }
+    }
+
+    .terms-checkbox {
+        color: var(--color-black);
     }
 }

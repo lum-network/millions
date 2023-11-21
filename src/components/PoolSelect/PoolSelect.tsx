@@ -3,6 +3,7 @@ import Skeleton from 'react-loading-skeleton';
 import Select, { GroupBase, OptionProps, components, SingleValueProps } from 'react-select';
 import { DenomsUtils } from 'utils';
 import { PoolModel } from 'models';
+import { useColorScheme } from 'hooks';
 
 interface Props {
     onChange: (value: string) => void;
@@ -14,6 +15,7 @@ interface Props {
     readonly?: boolean;
     className?: string;
     disabled?: boolean;
+    backgroundColor?: string;
 }
 
 const PoolOption = (
@@ -37,7 +39,7 @@ const PoolOption = (
         <components.Option {...props}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2' />} {props.data.label}
+                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2 no-filter' />} {props.data.label}
                 </div>
             </div>
         </components.Option>
@@ -65,15 +67,26 @@ const PoolValue = (
         <components.SingleValue {...props}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {icon && <img src={icon} className='value-asset-icon me-3' />} {props.data.label}
+                    {icon && <img src={icon} className='value-asset-icon me-3 no-filter' />} {props.data.label}
                 </div>
             </div>
         </components.SingleValue>
     );
 };
 
-const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled }: Props): JSX.Element => {
+const PoolSelect = ({ pools, options, onChange, value, readonly, label, className, isLoading, disabled, backgroundColor }: Props): JSX.Element => {
     const [selectedOptionLabel, setSelectedOptionLabel] = useState<string>(options.find((opt) => opt.value === value)?.label || '');
+    const [colorBg, setColorBg] = useState(getComputedStyle(document.body).getPropertyValue('--color-white'));
+    const [colorMenuBg, setColorMenuBg] = useState(getComputedStyle(document.body).getPropertyValue('--color-background'));
+    const [colorText, setColorText] = useState(getComputedStyle(document.body).getPropertyValue('--color-primary'));
+
+    const { isDark } = useColorScheme();
+
+    useEffect(() => {
+        setColorBg(getComputedStyle(document.body).getPropertyValue('--color-white'));
+        setColorMenuBg(getComputedStyle(document.body).getPropertyValue('--color-background'));
+        setColorText(getComputedStyle(document.body).getPropertyValue('--color-primary'));
+    }, [isDark]);
 
     useEffect(() => {
         setSelectedOptionLabel(options.find((opt) => opt.value === value)?.label || '');
@@ -97,6 +110,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
             ) : (
                 <Select
                     id='custom-select-input'
+                    classNamePrefix='pool-select'
                     value={{ value, label: selectedOptionLabel }}
                     components={{
                         Option: (props) => <PoolOption {...props} pools={pools} />,
@@ -106,29 +120,34 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                     isClearable={false}
                     isDisabled={disabled}
                     styles={{
+                        menu: (provided) => ({
+                            ...provided,
+                            backgroundColor: colorMenuBg,
+                        }),
                         control: (provided) => ({
                             ...provided,
                             borderRadius: 12,
                             borderColor: 'rgba(86, 52, 222, 0.2)',
                             borderWidth: 2,
-                            paddingTop: '0.75rem',
-                            paddingLeft: '1.5rem',
-                            paddingRight: '1.5rem',
-                            paddingBottom: '0.75rem',
+                            paddingTop: '0.50rem',
+                            paddingLeft: '1rem',
+                            paddingRight: '1rem',
+                            paddingBottom: '0.50rem',
                             textAlign: 'left',
-                            color: '#5634DE',
-                            fontSize: 22,
+                            color: colorText,
+                            fontSize: 18,
+                            backgroundColor: backgroundColor || colorBg,
                         }),
                         option: (provided, state) => ({
                             ...provided,
-                            color: '#5634DE',
+                            color: colorText,
                             textAlign: 'left',
-                            backgroundColor: state.isFocused ? 'rgba(86, 52, 222, 0.2)' : state.isSelected ? '#F1EDFF' : '#fff',
+                            backgroundColor: state.isFocused ? (isDark ? '#9277FF' : 'rgba(86, 52, 222, 0.2)') : state.isSelected ? (isDark ? '#482673' : '#F1EDFF') : colorBg,
                             fontSize: 22,
                         }),
                         dropdownIndicator: (provided) => ({
                             ...provided,
-                            color: '#5634DE',
+                            color: colorText,
                         }),
                         indicatorSeparator: (provided) => ({
                             ...provided,
@@ -136,7 +155,7 @@ const PoolSelect = ({ pools, options, onChange, value, readonly, label, classNam
                         }),
                         singleValue: (provided) => ({
                             ...provided,
-                            color: '#5634DE',
+                            color: colorText,
                         }),
                         valueContainer: (provided) => ({
                             ...provided,

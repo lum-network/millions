@@ -10,12 +10,13 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { BigWinnerCard, Button, Card, CountDown, Lottie, Modal, Pagination, SmallerDecimal, Table, Tooltip } from 'components';
+import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, PurpleBackgroundImage, SmallerDecimal, Table, Tooltip } from 'components';
 import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
-import { useWindowSize } from 'hooks';
+import { useColorScheme, useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { LeaderboardItemModel } from 'models';
+import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -27,6 +28,7 @@ const PoolDetails = () => {
     const navigate = useNavigate();
     const winSizes = useWindowSize();
     const dispatch = useDispatch<Dispatch>();
+    const { isDark } = useColorScheme();
 
     const { lumWallet, prices, pools, pool, biggestPrizes, prizesStats } = useSelector((state: RootState) => ({
         otherWallets: state.wallet.otherWallets,
@@ -46,13 +48,30 @@ const PoolDetails = () => {
     const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     useEffect(() => {
-        dispatch.prizes.fetchPrizes({ page: 0, denom: denom });
-        dispatch.prizes.getStats(denom || '');
+        dispatch.prizes.fetchPrizes({ page: 0, poolId: poolId });
+        dispatch.prizes.getStats(poolId || '');
     }, [poolId, denom]);
+
+    useEffect(() => {
+        const getLeaderboard = async () => {
+            if (pool && lumWallet) {
+                const userRankItems = await dispatch.wallet.getLeaderboardRank(pool.poolId);
+
+                if (userRankItems) {
+                    setUserRankItems([...userRankItems]);
+                }
+            } else {
+                setUserRankItems(undefined);
+            }
+        };
+
+        getLeaderboard().finally(() => null);
+    }, [lumWallet]);
 
     useEffect(() => {
         if (pool) {
@@ -90,18 +109,18 @@ const PoolDetails = () => {
                     className='d-none close-btn bg-transparent rounded-circle d-xl-flex align-self-end justify-content-center align-items-center border-0 position-absolute top-0 end-0 mt-3 me-3'
                     aria-label='Close'
                 >
-                    <div className='btn-close' />
+                    <div className={`btn-close ${isDark ? 'btn-close-white' : ''}`} />
                 </button>
                 <div className='d-flex flex-column flex-xl-row justify-content-between align-items-xl-center'>
                     <div className='d-flex flex-row align-items-center me-0 me-xxl-5'>
-                        <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='pool-icon' />
+                        <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='pool-icon no-filter' />
                         <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
                             {denom.toUpperCase()} {I18n.t('common.pool')} {pools.filter((pool) => pool.nativeDenom === 'u' + denom).length > 1 ? `#${pool.poolId.toString()}` : ''}
                         </h1>
                     </div>
                     <div className='d-flex flex-column flex-lg-row justify-content-between flex-grow-1 ms-0 ms-xl-5 mt-4 mt-xl-0'>
-                        <div className='d-flex flex-row'>
-                            <img alt='coin staked' src={Assets.images.coinsStaked2} />
+                        <div className='d-flex flex-row align-items-center'>
+                            <PurpleBackgroundImage alt='dollar' src={Assets.images.dollarWhite} className='no-filter' height={42} width={42} />
                             <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
                                 <h4 className='mb-0 text-nowrap'>{I18n.t('poolDetails.variableAPY')}</h4>
                                 {loadingFetchPools || loadingAdditionalInfo ? (
@@ -111,16 +130,20 @@ const PoolDetails = () => {
                                 )}
                             </div>
                         </div>
-                        <div className='d-flex flex-row my-4 my-lg-0'>
-                            <img alt='coin staked' src={Assets.images.coinsStaked2} />
+                        <div className='d-flex flex-row my-4 my-lg-0 align-items-center'>
+                            <PurpleBackgroundImage alt='coin stacked' src={Assets.images.coinsStacked2} className='no-filter' height={42} width={42} />
                             <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
                                 <h4 className='mb-0 text-nowrap'>{I18n.t('home.totalValueLocked')}</h4>
                                 <div className='total-value-locked text-nowrap'>${numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[denom] || 1)).format('0,0')}</div>
                             </div>
                         </div>
                         <Button
-                            disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
-                            {...(!KeplrUtils.isKeplrInstalled()
+                            {...(WalletProvidersUtils.isAnyWalletInstalled() && lumWallet === null
+                                ? {
+                                      'data-bs-target': '#choose-wallet-modal',
+                                      'data-bs-toggle': 'modal',
+                                  }
+                                : !WalletProvidersUtils.isAnyWalletInstalled()
                                 ? {
                                       'data-bs-target': '#get-keplr-modal',
                                       'data-bs-toggle': 'modal',
@@ -129,6 +152,7 @@ const PoolDetails = () => {
                                       to: `${NavigationConstants.POOLS}/${denom}/${poolId || pool.poolId.toString()}`,
                                   })}
                             className='deposit-btn'
+                            forcePurple
                             onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom: denom })}
                         >
                             {I18n.t('mySavings.deposit')}
@@ -148,19 +172,21 @@ const PoolDetails = () => {
                                 })}
                                 className='ms-2 mb-2'
                             >
-                                <img src={Assets.images.info} alt='info' />
+                                <img src={Assets.images.info} alt='info' className='purple-filter' />
                                 <Tooltip id='winning-chance-tooltip' />
                             </span>
                         </div>
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={45} width={180} />
                         ) : (
-                            <div className='display-6'>{pool.estimatedPrizeToWin && prices ? numeral(pool.estimatedPrizeToWin.amount * (prices[denom] || 1)).format('$0,0') : '--'}</div>
+                            <div className='display-6 estimated-prize-usd'>
+                                {pool.estimatedPrizeToWin && prices ? numeral(pool.estimatedPrizeToWin.amount * (prices[denom] || 1)).format('$0,0') : '--'}
+                            </div>
                         )}
                         {loadingFetchPools || loadingAdditionalInfo ? (
                             <Skeleton height={20} width={150} />
                         ) : (
-                            <div className='d-flex'>
+                            <div className='d-flex estimated-prize'>
                                 <SmallerDecimal nb={pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0.000000') : '--'} />
                                 &nbsp;{denom.toUpperCase()}
                             </div>
@@ -168,7 +194,7 @@ const PoolDetails = () => {
                     </div>
                     <div className='next-draw-container'>
                         <h2 className='mb-0'>{I18n.t('poolDetails.nextDraw')}</h2>
-                        <div className={`display-6 ${drawInProgress ? 'draw-in-progress' : ''}`}>
+                        <div className={`display-6 next-draw ${drawInProgress ? 'draw-in-progress' : ''}`}>
                             {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
                         </div>
                     </div>
@@ -179,7 +205,7 @@ const PoolDetails = () => {
                             height: '1px',
                         }}
                     />
-                    {pool.internalInfos?.illustration && <img alt='' src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration' />}
+                    {pool.internalInfos?.illustration && <img alt='' src={pool.internalInfos.illustration} className='d-none d-sm-block pool-illustration no-filter' />}
                 </Card>
                 {(usersDepositsAmount > 0 || sponsorshipAmount > 0) && (
                     <>
@@ -188,8 +214,11 @@ const PoolDetails = () => {
                             {sponsorshipAmount > 0 && (
                                 <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 tvl-detail-card'>
                                     <div className='d-flex flex-row align-items-center'>
-                                        <img alt='sponsor' src={Assets.images.sponsor} className='d-none d-sm-block me-3' />
-                                        <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.sponsor')}</h4>
+                                        <PurpleBackgroundImage alt='sponsor' src={Assets.images.sponsor} className='d-none d-sm-block me-3 no-filter' width={50} height={50} />
+                                        <div>
+                                            <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.sponsor')}</h4>
+                                            <p className='mb-0' dangerouslySetInnerHTML={{ __html: I18n.t('poolDetails.tvlDetails.sponsorDesc') }} />
+                                        </div>
                                     </div>
                                     <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                         <div className='tvl-detail-amount'>
@@ -201,7 +230,7 @@ const PoolDetails = () => {
                             )}
                             <div className='d-flex flex-column flex-md-row justify-content-between align-items-md-center tvl-detail-card'>
                                 <div className='d-flex flex-row align-items-center'>
-                                    <img alt='deposit' src={Assets.images.tvlDeposit} className='d-none d-sm-block me-3' />
+                                    <PurpleBackgroundImage alt='deposit' src={Assets.images.tvlDeposit} className='d-none d-sm-block me-3 no-filter' width={50} height={50} style={{ padding: 4 }} />
                                     <h4 className='mb-0'>{I18n.t('poolDetails.tvlDetails.deposits')}</h4>
                                 </div>
                                 <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
@@ -219,16 +248,18 @@ const PoolDetails = () => {
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.myDeposits', { denom: denom.toUpperCase() })}</h2>
                         <Card flat withoutPadding className='d-flex flex-column flex-lg-row align-items-lg-center justify-content-between my-deposits-card'>
                             <div className='d-flex flex-row align-items-center mb-4 mb-lg-0'>
-                                <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} width='50' height='50' className='d-none d-sm-block me-4' />
+                                <img src={DenomsUtils.getIconFromDenom(denom)} alt={denom} width='50' height='50' className='d-none d-sm-block me-4 no-filter' />
                                 <div>
                                     <h3 className='mb-0'>
                                         {I18n.t('common.deposit')}
                                         {userDeposits.deposits.length > 1 ? 's' : ` #${userDeposits.depositId?.toString()}`}
                                     </h3>
-                                    <SmallerDecimal
-                                        nb={NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}
-                                    />{' '}
-                                    {denom.toUpperCase()}
+                                    <span className='user-deposit-amount'>
+                                        <SmallerDecimal
+                                            nb={NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}
+                                        />{' '}
+                                        {denom.toUpperCase()}
+                                    </span>
                                 </div>
                             </div>
                             <Button outline to={NavigationConstants.MY_SAVINGS}>
@@ -243,36 +274,27 @@ const PoolDetails = () => {
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
                                 <h2 className='mb-0'>{I18n.t('poolDetails.prizeDistribution.title')}</h2>
                                 <span data-tooltip-id='prize-distribution-tooltip' data-tooltip-html={I18n.t('poolDetails.prizeDistribution.hint')} className='ms-2 mb-2'>
-                                    <img src={Assets.images.info} alt='info' />
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
                                     <Tooltip id='prize-distribution-tooltip' />
                                 </span>
                             </div>
-                            {winSizes.width > Breakpoints.LG ? (
-                                <Card flat withoutPadding className='prize-distribution-card'>
-                                    <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
-                                        {prizes.map((prize, index) => (
-                                            <tr key={`prize-${index}`} className='stat-bg-white'>
-                                                <td data-label={prizeDistributionHeaders[0]}>{numeral(prize.value / prize.count).format('$0,0[.]00')}</td>
-                                                <td data-label={prizeDistributionHeaders[1]}>{prize.count}</td>
-                                                <td className='text-end' data-label={prizeDistributionHeaders[2]}>
-                                                    1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </Table>
-                                </Card>
-                            ) : (
-                                prizes.map((prize, index) => (
-                                    <Card flat key={`prize-${index}`} className={index < prizes.length - 1 ? 'mb-3' : ''}>
-                                        <h4>{prizeDistributionHeaders[0]}</h4>
-                                        <div className='stat-bg-white mb-3'>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
-                                        <h4>{prizeDistributionHeaders[1]}</h4>
-                                        <div className='stat-bg-white mb-3'>{prize.count}</div>
-                                        <h4>{prizeDistributionHeaders[2]}</h4>
-                                        <div className='stat-bg-white'>1 in {numeral(100 / (prize.chances * 100)).format('0[.]00')}</div>
-                                    </Card>
-                                ))
-                            )}
+                            <Card flat withoutPadding className='prize-distribution-card'>
+                                <Table headers={prizeDistributionHeaders} className='prize-distribution-table'>
+                                    {prizes.map((prize, index) => (
+                                        <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
+                                            <td data-label={prizeDistributionHeaders[0]}>
+                                                <div className='d-flex flex-column'>
+                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
+                                                    <div className='percentage'>{I18n.t('poolDetails.prizeDistribution.chancesToWin', { percentage: numeral(prize.chances).format('0,0[.]00%') })}</div>
+                                                </div>
+                                            </td>
+                                            <td className='text-end' data-label={prizeDistributionHeaders[1]}>
+                                                {prize.count}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </Table>
+                            </Card>
                             <Lottie
                                 className='d-none d-sm-block cosmonaut-with-duck'
                                 animationData={cosmonautWithDuck}
@@ -288,7 +310,7 @@ const PoolDetails = () => {
                             <div className='mb-2 mb-lg-4 mt-4 mt-lg-5 d-flex align-items-center'>
                                 <h2 className='mb-0'>{I18n.t('poolDetails.winningChances.title')}</h2>
                                 <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2 mb-2'>
-                                    <img src={Assets.images.info} alt='info' />
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
                                     <Tooltip id='winning-chance-tooltip' />
                                 </span>
                             </div>
@@ -342,6 +364,38 @@ const PoolDetails = () => {
                         </div>
                     </div>
                 </div>
+                {pool.leaderboard.items.length > 0 && (
+                    <div className='row'>
+                        <div className='col-12 overflow-visible'>
+                            <div className='d-flex align-items-center mt-4 mt-lg-5 mb-2 mb-lg-4'>
+                                <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
+                                <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
+                                    <img src={Assets.images.info} alt='info' className='purple-filter' />
+                                    <Tooltip id='depositor-ranking-hint' />
+                                </span>
+                            </div>
+                            <Leaderboard
+                                flat
+                                items={pool.leaderboard.items}
+                                poolId={pool.poolId.toString()}
+                                limit={5}
+                                withSeeMoreBtn
+                                lumWallet={lumWallet}
+                                price={prices[denom || '']}
+                                totalDeposited={WalletUtils.getTotalBalanceFromDeposits(lumWallet?.deposits)}
+                                userRank={
+                                    userRankItems && userRankItems[1].rank > 4
+                                        ? {
+                                              ...userRankItems[1],
+                                              prev: userRankItems[0],
+                                              next: userRankItems[2],
+                                          }
+                                        : undefined
+                                }
+                            />
+                        </div>
+                    </div>
+                )}
                 <div className='row position-relative'>
                     <div className='col-12 col-xl-4'>
                         <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.users.title')}</h2>
@@ -360,7 +414,7 @@ const PoolDetails = () => {
                         {!!prizesStats && (
                             <>
                                 <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>
-                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1' width='28' />
+                                    <img src={Assets.images.trophy} alt='Trophy' className='me-3 mb-1 no-filter' width='28' />
                                     {I18n.t('poolDetails.winners.title')}
                                 </h2>
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
@@ -376,7 +430,11 @@ const PoolDetails = () => {
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
                                             $
-                                            {numeral(NumbersUtils.convertUnitNumber(biggestPrizes && biggestPrizes.length ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0))
+                                            {numeral(
+                                                NumbersUtils.convertUnitNumber(
+                                                    biggestPrizes && biggestPrizes.length && biggestPrizes[0].usdTokenValue ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0,
+                                                ),
+                                            )
                                                 .format('0,0')
                                                 .toUpperCase()}
                                         </div>
@@ -401,7 +459,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue}
+                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}
@@ -431,20 +489,12 @@ const PoolDetails = () => {
                                                 <label>{drawHistoryHeaders[0]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='d-flex align-items-center justify-content-center index-container'>
-                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.poolId.toString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[1]}</label>
-                                                <div className='stat-bg-white'>
-                                                    <div className='d-flex align-items-center justify-content-center index-container'>
                                                         #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[2]}</label>
+                                                <label>{drawHistoryHeaders[1]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='draw-date'>
                                                         {dayjs(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
@@ -452,11 +502,11 @@ const PoolDetails = () => {
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column my-3'>
-                                                <label>{drawHistoryHeaders[3]}</label>
+                                                <label>{drawHistoryHeaders[2]}</label>
                                                 <div className='stat-bg-white'>{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
                                             </div>
                                             <div className='d-flex flex-column'>
-                                                <label>{drawHistoryHeaders[4]}</label>
+                                                <label>{drawHistoryHeaders[3]}</label>
                                                 <div className='stat-bg-white'>
                                                     <SmallerDecimal
                                                         nb={numeral(
@@ -541,9 +591,6 @@ const PoolDetails = () => {
                                                     }}
                                                     className='scale-hover'
                                                 >
-                                                    <td data-label={drawHistoryHeaders[0]}>
-                                                        <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.poolId.toString()}</div>
-                                                    </td>
                                                     <td data-label={drawHistoryHeaders[1]}>
                                                         <div className='d-flex align-items-center justify-content-center me-0 me-md-3 ms-auto ms-md-0 index-container'>#{draw.drawId.toString()}</div>
                                                     </td>
@@ -554,7 +601,9 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] || 1)).format('$0,0[.]00')} />
+                                                        <SmallerDecimal
+                                                            nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (draw.usdTokenValue || prices[denom] || 0)).format('$0,0[.]00')}
+                                                        />
                                                         <div className='draw-token'>
                                                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
                                                             &nbsp;

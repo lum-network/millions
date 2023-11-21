@@ -30,7 +30,7 @@
             align-items: center;
             justify-content: center;
             background-color: var(--step-bg-color);
-            color: $color-grey;
+            color: var(--color-grey);
             font-family: 'Gotham Rounded';
             font-size: 12px;
             font-weight: 700;
@@ -44,24 +44,24 @@
             translate: -1.5px -1.5px;
             transform: rotateY(180deg);
         }
-        
+
         .index-default-border {
-            background: conic-gradient($color-light-grey 100%, 0, transparent);
+            background: conic-gradient(var(--color-light-grey) 100%, 0, transparent);
         }
-        
-        .index-border {            
+
+        .index-border {
             background: conic-gradient(var(--border-color) var(--border-progress), 0, transparent);
         }
 
         .title {
             vertical-align: bottom;
             line-height: 28px;
-            color: $color-black;
+            color: var(--color-black);
             opacity: 0.6;
         }
 
         .subtitle {
-            color: $color-muted;
+            color: var(--color-muted);
             opacity: 0.6;
             margin-left: calc(30px + 0.5rem);
         }
@@ -69,17 +69,17 @@
         .checkmark-container {
             width: 28px;
             height: 28px;
-            background-color: $color-success;
+            background-color: var(--color-success);
             scale: 0;
         }
 
         &.active {
-            --border-color: #5634DE;
-            
+            --border-color: var(--color-purple);
+
             .index-container {
-                color: $color-primary;
+                color: var(--color-primary);
             }
-            
+
             .title {
                 opacity: 1;
             }
@@ -94,17 +94,17 @@
             --grey-line-height: 0;
 
             .index-container {
-                color: $color-white;
+                color: var(--color-white);
             }
 
             .title {
                 opacity: 1;
-                color: $color-success;
+                color: var(--color-success);
             }
 
             .subtitle {
                 opacity: 0.3;
-                color: $color-success;
+                color: var(--color-success);
             }
 
             .checkmark-container {
@@ -122,7 +122,7 @@
                 left: 12px;
                 width: 2px;
                 height: var(--primary-line-height);
-                background-color: $color-success;
+                background-color: var(--color-primary);
             }
             &::before {
                 content: '';
@@ -133,7 +133,7 @@
                 left: 12px;
                 width: 2px;
                 height: var(--grey-line-height);
-                background-color: $color-light-grey;
+                background-color: var(--color-light-grey);
             }
         }
     }

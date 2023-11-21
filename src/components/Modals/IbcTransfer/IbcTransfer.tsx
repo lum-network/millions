@@ -29,7 +29,7 @@ const IbcTransfer = ({ modalRef, denom, price, prevAmount, nextAmount, isLoading
                     <div className='d-flex flex-column align-items-start text-start flex-grow-1'>
                         <label className='amount-label'>{I18n.t('deposit.ibcTransferModal.prevAmountLabel', { denom: denom.toUpperCase() })}</label>
                         <div className='d-flex flex-row align-items-center w-100 amount-container px-3 py-2'>
-                            <img src={DenomsUtils.getIconFromDenom(denom)} alt='cosmos icon' width={30} height={30} />
+                            <img src={DenomsUtils.getIconFromDenom(denom)} alt='cosmos icon' width={30} height={30} className='no-filter' />
                             <div className='ms-3 text-nowrap'>
                                 <div className='crypto-price'>
                                     {formattedPrevAmount} {denom.toUpperCase()}
@@ -41,14 +41,14 @@ const IbcTransfer = ({ modalRef, denom, price, prevAmount, nextAmount, isLoading
                 </div>
                 <div className='col-2 position-relative'>
                     <div className='d-flex align-items-center justify-content-center position-absolute bottom-0 start-50 translate-middle arrow-container'>
-                        <img src={Assets.images.arrow} alt='arrow' />
+                        <img src={Assets.images.arrow} alt='arrow' className='no-filter' />
                     </div>
                 </div>
                 <div className='col-5 px-0'>
                     <div className='d-flex flex-column align-items-start text-start flex-grow-1'>
                         <label className='amount-label'>{I18n.t('deposit.ibcTransferModal.nextAmountLabel', { denom: denom.toUpperCase() })}</label>
                         <div className='d-flex flex-row align-items-center w-100 amount-container px-3 py-2'>
-                            <img src={DenomsUtils.getIconFromDenom(denom)} alt='cosmos icon' width={30} height={30} />
+                            <img src={DenomsUtils.getIconFromDenom(denom)} alt='cosmos icon' width={30} height={30} className='no-filter' />
                             <div className='ms-3 text-nowrap'>
                                 <div className='crypto-price'>
                                     {formattedNextAmount} {denom.toUpperCase()}
@@ -74,7 +74,7 @@ const IbcTransfer = ({ modalRef, denom, price, prevAmount, nextAmount, isLoading
                 <Button outline className='w-100' data-bs-dismiss='modal' loading={isLoading} disabled={isLoading}>
                     {I18n.t('deposit.ibcTransferModal.cancel')}
                 </Button>
-                <Button className='w-100 ms-4' loading={isLoading} disabled={isLoading} onClick={onConfirm}>
+                <Button className='w-100 ms-4' loading={isLoading} disabled={isLoading} onClick={onConfirm} forcePurple>
                     {I18n.t('deposit.ibcTransferModal.cta', { denom: denom.toUpperCase(), nextAmount: formattedNextAmount })}
                 </Button>
             </div>

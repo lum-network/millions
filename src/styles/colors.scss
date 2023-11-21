@@ -1,14 +1,55 @@
-$color-primary: #5634DE;
-$color-primary-light: #F1EDFF;
-$color-white: #FFFFFF;
-$color-background: #F4F4F4;
-$color-muted: #BBBBBB;
-$color-black: #333333;
-$color-border: #FFB516;
-$color-dark-grey: #585858;
-$color-grey: #8C8C8C;
-$color-light-grey: #DEDEDE;
-$color-success: #34ad09;
-$color-success-light: #EDFFEF;
-$color-failure: #FA7676;
-$color-failure-light: #FFEDED;
+@mixin set-light-mode {
+    --color-primary: #5634de;
+    --color-primary-light: #f1edff;
+    --color-purple-light: #f1edff;
+    --color-purple: #5634de;
+    --color-white: #ffffff;
+    --color-background: #f4f4f4;
+    --color-muted: #bbbbbb;
+    --color-black: #333333;
+    --color-border: #ffb516;
+    --color-dark-grey: #585858;
+    --color-grey: #8c8c8c;
+    --color-light-grey: #dedede;
+    --color-success: #34ad09;
+    --color-success-light: #edffef;
+    --color-failure: #fa7676;
+    --color-failure-light: #ffeded;
+    --color-pink: #CD22F8;
+}
+
+@mixin set-dark-mode {
+    --color-primary: #fff;
+    --color-primary-light: #482673;
+    --color-purple-light: #524A71;
+    --color-purple: #9277FF;
+    --color-white: #331954;
+    --color-background: #20142d;
+    --color-muted: #bbbbbb;
+    --color-black: #fff;
+    --color-border: #ffb516;
+    --color-dark-grey: #fff;
+    --color-grey: #fff;
+    --color-light-grey: #dedede;
+    --color-success: #34ad09;
+    --color-success-light: #3B5C3F;
+    --color-failure: #fa7676;
+    --color-failure-light: #5C3B3B;
+    --color-pink: #CD22F8;
+}
+
+body {
+    @include set-light-mode();    
+}
+
+body.dark {
+    @include set-dark-mode();
+
+    & img {
+        filter: brightness(0) invert(1);
+
+        &.purple-filter {
+            filter: invert(50%) sepia(33%) saturate(2836%) hue-rotate(221deg) brightness(98%) contrast(106%);
+        }
+    }
+}

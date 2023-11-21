@@ -17,6 +17,15 @@ export default {
         seconds_one: 'Sec',
         seconds_other: 'Sec',
     },
+    tags: {
+        claimed: 'Claimed',
+        unclaimed: 'To be claimed',
+        expired: 'Expired',
+        expiredTooltip: 'This Prize has expired and its amount has been returned to the future Prize Pool. You have 30 days to claim a Prize once it is won.',
+        success: 'Success',
+        unbonding: 'Unbonding',
+        deposit: 'Deposit in progress',
+    },
     common: {
         continue: 'Continue',
         cancel: 'Cancel',
@@ -31,6 +40,8 @@ export default {
         loading: 'Loading...',
         prev: 'Prev',
         next: 'Next',
+        batchProgress: 'Transactions batch {{ count }}/{{ total }}',
+        batchTooltip: '',
     },
     collapsible: {
         closeDetails: 'Close&nbsp;details',
@@ -72,6 +83,7 @@ export default {
         leavePool: 'Failed to leave {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Failed to claim prizes',
         claimAndCompound: 'Failed to compound prizes',
+        withdrawalRetry: 'Failed to retry withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     success: {
         wallet: 'Successfully connected',
@@ -84,30 +96,33 @@ export default {
         multiDeposit: 'Successfully made {{ count }} deposits',
         cancelDrop: 'Successfully cancelled your deposit drop',
         cancelDropMulti: 'Successfully cancelled your deposit drops',
-        editDrop: 'Successfully edited your deposit drop'
+        editDrop: 'Successfully edited your deposit drop',
+        withdrawalRetry: 'Successfully retried withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     pending: {
         ibcTransfer: 'Transferring...',
         deposit: 'Depositing to {{ denom }} pool...',
         leavePool: 'Leaving {{ denom }} pool #{{ poolId }}',
         claimPrize: 'Claiming prizes...',
+        claimPrizeBatch: 'Claiming prizes batch {{ count }}/{{ total }}...',
         claimAndCompound: 'Compounding prizes...',
+        withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
         multiDeposit: 'Depositing batch {{ index }}/{{ count }}...',
         cancelDrop: 'Cancelling deposit drops...',
         cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...',
-        editDrop: 'Editing your deposit drop...'
+        editDrop: 'Editing your deposit drop...',
     },
     landing: {
-        howItWorks: 'How it works',
+        howItWorks: 'How it Works',
         documentation: 'Documentation',
         faq: 'FAQ',
-        openTheApp: 'Open the app',
+        openTheApp: 'Open the App',
         saving: {
             title: 'Win Big by<br />Saving Smart',
             p1: 'Introducing Cosmos Millions, a DeFi protocol and open-source platform for prize savings.',
             p2: 'The prize-linked savings account that brings excitement to your crypto journey!',
             cta: 'Earn by saving',
-            biggestPrizeToWin: 'Biggest prize to win',
+            biggestPrizeToWin: 'Biggest Prize to Win',
         },
         cosmosGame: {
             title: 'Time to Spice Up\nthe Cosmos Game!',
@@ -160,7 +175,7 @@ export default {
                 {
                     title: 'How can I participate?',
                     answer:
-                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
+                        'To participate to Cosmos Millions, you first need:<ul><li>A Keplr or a Leap Wallet</li><li>Cosmos Ecosystem tokens to save</li></ul>' +
                         'Then you can deposit your savings into Cosmos Millions to start participating.\n' +
                         'Check the <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/welcome/getting-started">🚀Getting Started</a> section and follow the onboarding to participate.',
                 },
@@ -238,6 +253,7 @@ export default {
     },
     keplrKeystoreChange: 'Keplr Key store/account has changed',
     leapKeystoreChange: 'Leap Key store/account has changed',
+    cosmostationKeystoreChange: 'Cosmostation Key store/account has changed',
     keplrDownloadModal: {
         title: 'Connect your wallet ✌️',
         keplr: {
@@ -251,6 +267,7 @@ export default {
         download: 'Download Keplr for Chrome',
     },
     chooseWalletModal: {
+        cosmostation: 'Cosmostation Wallet',
         keplr: 'Keplr Wallet',
         leap: 'Leap Wallet',
     },
@@ -270,7 +287,7 @@ export default {
         nextBestPrize: 'Next Draw',
         lastBigWinners: 'Luckiest Winners',
         totalValueLocked: 'Total Value Locked',
-        cta: 'SAVE & WIN',
+        cta: 'DEPOSIT',
     },
     pools: {
         title: 'Pools',
@@ -278,19 +295,21 @@ export default {
         tvl: 'TVL:',
         apy: 'Estimated APR:',
         cta: 'Deposit in Pool',
+        viewDetails: 'My chances to win',
         drawEndAt: 'Next draw in:',
-        poolId: 'Pool #{{ poolId }}',
+        poolId: 'Pool',
     },
     poolDetails: {
-        myDeposits: 'My {{ denom }} deposits',
+        myDeposits: 'My {{ denom }} Deposits',
         prizePool: 'Estimated Prize',
         prizePoolHint: `This is a calculation of the estimated prize pool at draw time, based on factors such as the native chain APR and the current TVL. The current prize pool is {{ prizePool }} {{ denom }} (\${{ prizePoolInUsd }})`,
         nextDraw: 'Next Draw',
         viewDetails: 'View Details',
         variableAPY: 'Estimated APR',
         tvlDetails: {
-            title: 'Total Value Locked details',
+            title: 'Total Value Locked Details',
             sponsor: 'Sponsorship',
+            sponsorDesc: 'Boosting your winning chances! These tokens only generate yield for the prizes. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/deposits-and-withdrawals#sponsorship">Learn more</a>',
             deposits: 'Cosmonauts Deposits',
         },
         winners: {
@@ -301,13 +320,14 @@ export default {
         },
         users: {
             title: 'Users in Numbers',
-            deposit: 'Average Deposit',
-            currentDraw: 'Unique Depositors',
+            deposit: 'Average deposit',
+            currentDraw: 'Unique depositors',
         },
         prizeDistribution: {
             title: 'Prize Distribution',
-            tableHeaders: ['Prize Value', 'Number of prizes', 'Chance to win'],
+            tableHeaders: ['Prize value', 'Number of prizes'],
             hint: 'Each category is associated with a prize value ($ amount), a maximum number of prizes distributed (number between 1 and 1,000) and a chance to win prizes in this category (expressed as 1 out of N).',
+            chancesToWin: '{{ percentage }} chances to win',
         },
         winningChances: {
             title: 'Winning Chances',
@@ -319,7 +339,7 @@ export default {
             noDraws: 'No draws yet',
             noDrawsDescription: 'Draws will be available as soon as the first prize is won',
             noDrawsCta: 'Deposit in Pool',
-            tableHeaders: ['Pool ID', 'Draw ID', 'Date', 'Prizes', 'Prize Value'],
+            tableHeaders: ['Draw ID', 'Date', 'Prizes', 'Prize value'],
         },
         drawDetails: {
             winnersBtn: 'Winners',
@@ -331,10 +351,16 @@ export default {
     mySavings: {
         title: 'My Savings',
         assets: 'Available Assets',
-        totalBalance: 'Total deposits',
+        totalBalance: 'Total Deposits',
         claim: 'Claim',
-        claimPrize: 'Claim prize',
+        claimAll: 'Claim All',
+        claimPrize: 'Claim Prize',
+        prizesHistory: 'Prizes History',
+        prizeWon: 'Prize Won',
         deposit: 'Deposit in Pool',
+        depositorsRanking: 'Depositors Ranking',
+        getMorePrizes: 'Get more by depositing',
+        mySavingStreak: 'Total Prizes Won',
         withdraw: 'Transfer out',
         activities: 'Past Transactions',
         transactionTypes: {
@@ -342,10 +368,16 @@ export default {
             claimPrize: 'Claim Prize',
             deposit: 'Deposit',
         },
+        transactionTooltips: {
+            claim: '{{ count }} prizes claimed',
+            withdraw: '{{ count }} deposits withdrawn',
+        },
         txListHeaders: ['Type', 'Hash', 'Amount'],
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         depositDrop: 'Deposit Drop',
+        depositDropHint: 'Congrats, you\'ve got a Deposit Drop!\n' +
+            'It means a temporary boost in your deposit, loaned to your account. You have more chances to win in upcoming draws so good luck Cosmonaut!',
         transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',
@@ -406,6 +438,7 @@ export default {
                 },
             ],
             claimAndCompound: 'CLAIM & COMPOUND',
+            claimAndCompoundHint: "You can't compound your prizes if you have less than the minimum deposit.",
             claimMyPrizes: 'Claim My Prizes',
             drawId: 'Draw #{{ drawId }}',
             shareTitle: 'Spread the word!',
@@ -419,7 +452,8 @@ export default {
             claimBtn: 'Just claim',
             claimAndCompoundBtn: "Let's compound 🎉",
         },
-        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Error', 'Unbonding'],
+        depositStates: ['Unspecified', 'Deposit In Progress', 'Deposit In Progress', 'Success', 'Deposit error'],
+        withdrawalStates: ['Unspecified', 'Undelegate', 'Unbonding', 'IBC Transfer', 'Withdrawal error', 'Pending withdrawal'],
         depositError: {
             title: 'Deposit error',
             description: 'Check your deposits ! An error occurred and you should be able to retry your failed deposit(s).',
@@ -449,10 +483,11 @@ export default {
                 title: 'Once the unbonding period begins you will:',
                 draws: 'Not be selected for all future draws',
                 cancel: 'Not be able to cancel the unbonding',
-                waiting: 'Need to wait {{ unbondingTime }} days for the amount to be liquid',
+                waiting: 'Need to wait up to {{ unbondingTime }} days for the amount to be liquid',
             },
             cta: 'Leave pool',
         },
+        sponsorHint: 'Sponsorship deposit, it will not be eligible for draws but will increase the prize pool.',
     },
     withdraw: {
         title: 'Withdraw IBC Asset',
@@ -464,7 +499,7 @@ export default {
     deposit: {
         title: 'Few steps away<br/>from your deposit',
         transferBtn: 'Transfer',
-        saveAndWinBtn: 'Save & Win',
+        saveAndWinBtn: 'DEPOSIT',
         fees: 'Get $LUM on <a rel="noreferrer" target="_blank" href="https://app.osmosis.zone/?from=ATOM&to=LUM">Osmosis</a>\nor use the <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">$LUM faucet on Discord</a>',
         chancesHint: {
             winning: {
@@ -478,7 +513,7 @@ export default {
         },
         feesWarning: 'You need LUM for transaction fees',
         depositWarning:
-            'Deposit will lock your assets for {{ unbondingTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\nThis process will take {{ unbondingTime }} days to complete.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
+            'Deposit will lock your assets for up to {{ lockTime }} days.\nTo make your assets liquid again, you will need to leave the pool.\n<a target="_blank" rel="noreferrer noopener" href="https://docs.cosmosmillions.com/welcome/faq#why-is-there-an-unbonding-period-on-my-deposit">Learn why</a>',
         depositLabel: 'Amount to deposit',
         steps: [
             {
@@ -509,7 +544,7 @@ export default {
         },
         ibcTransferModal: {
             title: 'You are trying to deposit more tokens than your available balance on the Lum Network.',
-            subtitle: 'You already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
+            subtitle: 'You have already transferred <strong>{{ prevAmount }} {{ denom }}</strong> on Lum Network.\nDo you want to add an extra <strong>{{ nextAmount }} {{ denom }}</strong>?',
             prevAmountLabel: 'Amount requested',
             nextAmountLabel: 'Missing amount',
             cta: 'Add {{ nextAmount }} {{ denom }}',
@@ -521,6 +556,15 @@ export default {
         depositDeltaHint:
             'As your deposit is occurring within the last 5 minutes prior to the draw, you are not eligible to this one.\n\nGood news, you will enjoy a 100% Time Weighted Balance for all future draws. ' +
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
+        depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
+        swapHint: {
+            content: "Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first",
+            cta: 'Swap',
+        },
+        swapModal: {
+            title: 'Swap to Cosmos Hub',
+        },
+        depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>',
         faucetHint: 'You can use our <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">faucet</a> on Discord to get $LUM for your deposit.',
     },
     luckiestWinners: {
@@ -532,6 +576,19 @@ export default {
             description: "Participating in this drawing has a higher\nchance of winning, so don't delay!",
             cta: 'Deposit in Pool',
         },
+        card: {
+            apr: 'APR',
+            pool: 'Pool',
+            deposit: 'Deposit',
+            win: 'Win',
+        },
+    },
+    leaderboard: {
+        hint: 'The depositors ranking is updated every hour',
+        cta: 'See more',
+        notConnectedCta: 'Log in to see more',
+        depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
+        newRanking: 'You new ranking will be displayed in a few minutes',
     },
     depositDrops: {
         myDeposits: {

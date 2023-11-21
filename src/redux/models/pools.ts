@@ -1,17 +1,19 @@
 import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
-import { PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, WalletClient } from 'utils';
+import { DrawModel, PoolModel } from 'models';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
+import { LumApi } from 'api';
 
 interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
     depositDelta: number | null;
+    mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
 }
 
@@ -21,6 +23,7 @@ export const pools = createModel<RootModel>()({
         pools: [],
         bestPoolPrize: null,
         depositDelta: null,
+        mutexFetchPools: false,
         mutexAdditionalInfos: false,
     } as PoolsState,
     reducers: {
@@ -48,9 +51,21 @@ export const pools = createModel<RootModel>()({
                 mutexAdditionalInfos,
             };
         },
+        setMutexFetchPools: (state: PoolsState, mutexFetchPools: boolean): PoolsState => {
+            return {
+                ...state,
+                mutexFetchPools,
+            };
+        },
     },
     effects: (dispatch) => ({
-        async fetchPools() {
+        async fetchPools(_, state) {
+            if (state.pools.mutexFetchPools) {
+                return;
+            }
+
+            dispatch.pools.setMutexFetchPools(true);
+
             try {
                 const res = await LumClient.getPools();
 
@@ -62,7 +77,8 @@ export const pools = createModel<RootModel>()({
                             continue;
                         }
 
-                        const draws = await dispatch.pools.getPoolDraws(pool.poolId);
+                        const draws = await dispatch.pools.getPoolDraws({ poolId: pool.poolId, nativeDenom: pool.nativeDenom });
+                        const leaderboard = await dispatch.pools.getLeaderboard({ poolId: pool.poolId, limit: 50 });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
                             .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
@@ -74,16 +90,28 @@ export const pools = createModel<RootModel>()({
                             apy: 0,
                             draws,
                             nextDrawAt,
+                            leaderboard: {
+                                items: leaderboard || [],
+                                page: 0,
+                                fullyLoaded: false,
+                            },
                             currentPrizeToWin: null,
                             estimatedPrizeToWin: null,
                         });
                     }
 
                     dispatch.pools.setPools(pools);
+                    dispatch.pools.setMutexFetchPools(false);
 
                     return pools;
                 }
-            } catch {}
+            } catch (e) {
+                dispatch.pools.setMutexFetchPools(false);
+
+                console.warn((e as Error).message);
+            }
+
+            dispatch.pools.setMutexFetchPools(false);
         },
         async getPoolPrizes(poolId: Long) {
             try {
@@ -176,12 +204,33 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws(poolId: Long) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }, state) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
+                const draws: DrawModel[] = [];
 
                 if (res) {
-                    return res;
+                    for (const draw of res) {
+                        // If the draw already has a USD value, we don't need to fetch it again
+                        const existingUsdTokenValue = state.pools.pools
+                            .find((pool) => pool.poolId?.toString() === poolId.toString())
+                            ?.draws?.find((d) => d.drawId?.toString() === draw.drawId?.toString())?.usdTokenValue;
+
+                        if (existingUsdTokenValue) {
+                            draws.push({ ...draw, usdTokenValue: existingUsdTokenValue });
+                            continue;
+                        }
+
+                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+
+                        if (marketData && marketData.length) {
+                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
+                        } else {
+                            draws.push({ ...draw });
+                        }
+                    }
+
+                    return draws;
                 }
             } catch {}
         },
@@ -216,6 +265,36 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setDepositDelta(depositDelta);
                 }
             } catch {}
+        },
+        async getLeaderboard(payload: { poolId: Long; limit?: number }) {
+            try {
+                const [res] = await LumApi.fetchLeaderboard(payload.poolId.toString(), payload.limit);
+
+                if (res) {
+                    return res;
+                }
+            } catch {}
+        },
+        async getNextLeaderboardPage(payload: { poolId: Long; page: number; limit?: number }, state) {
+            const { poolId, page, limit } = payload;
+
+            const pools = [...state.pools.pools];
+            const pool = PoolsUtils.getPoolByPoolId(pools, poolId.toString());
+
+            if (pool && !pool.leaderboard.fullyLoaded) {
+                try {
+                    const [res, metadata] = await LumApi.fetchLeaderboard(poolId.toString(), limit, page);
+
+                    pool.leaderboard.items.push(...res);
+                    pool.leaderboard.page = page;
+
+                    if (!metadata.hasNextPage) {
+                        pool.leaderboard.fullyLoaded = true;
+                    }
+
+                    dispatch.pools.setPools(pools);
+                } catch {}
+            }
         },
     }),
 });

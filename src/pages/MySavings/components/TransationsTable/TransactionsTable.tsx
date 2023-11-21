@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
+import { LumMessages } from '@lum-network/sdk-javascript';
 
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
-import { TransactionModel } from 'models';
+import { MetadataModel, TransactionModel } from 'models';
 import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils, TransactionsUtils } from 'utils';
 
@@ -17,12 +18,7 @@ const TransactionsTable = ({
     onPageChange,
 }: {
     transactions: TransactionModel[];
-    pagination?: {
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-        pagesTotal: number;
-        page: number;
-    };
+    pagination?: Omit<MetadataModel, 'itemsCount' | 'itemsTotal' | 'limit'>;
     onPageChange: (page: number) => void;
 }) => {
     const [smallTableVisibleItem, setSmallTableVisibleItem] = useState(0);
@@ -50,12 +46,18 @@ const TransactionsTable = ({
                         <div className='d-flex flex-row align-items-baseline'>
                             {icon && (
                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                    <img src={icon} alt='tx icon' />
+                                    <img src={icon} alt='tx icon' className='no-filter' />
                                 </div>
                             )}
                             <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>
                             {transaction.messages.length > 1 ? (
-                                <span data-tooltip-id={`claim-tooltip-${transaction.hash}`} data-tooltip-html={`${transaction.messages.length} prizes claimed`}>
+                                <span
+                                    data-tooltip-id={`claim-tooltip-${transaction.hash}`}
+                                    data-tooltip-html={I18n.t(
+                                        transaction.messages[0] === LumMessages.MsgClaimPrizeUrl ? 'mySavings.transactionTooltips.claim' : 'mySavings.transactionTooltips.withdraw',
+                                        { count: transaction.messages.length },
+                                    )}
+                                >
                                     <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
                                     <Tooltip id={`claim-tooltip-${transaction.hash}`} />
                                 </span>
@@ -92,7 +94,7 @@ const TransactionsTable = ({
                         <div className='d-flex flex-row align-items-baseline table-item'>
                             {icon && (
                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
-                                    <img src={icon} alt='tx icon' />
+                                    <img src={icon} alt='tx icon' className='no-filter' />
                                 </div>
                             )}
                             <h4 className='mb-0 align-middle text-nowrap'>{type}</h4>
@@ -128,7 +130,7 @@ const TransactionsTable = ({
 
         return (
             <div className='transactions-table py-3'>
-                {renderItem(transactions[((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem)}
+                {renderItem(transactions[((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem], ((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem)}
                 <div className='d-flex flex-row mt-4'>
                     <button
                         type='button'
@@ -139,7 +141,7 @@ const TransactionsTable = ({
                                 if (pagination) {
                                     onPageChange(pagination.page - 1);
                                 }
-                                setSmallTableVisibleItem(29);
+                                setSmallTableVisibleItem(4);
                             } else {
                                 setSmallTableVisibleItem(smallTableVisibleItem - 1);
                             }
@@ -150,9 +152,9 @@ const TransactionsTable = ({
                     <button
                         type='button'
                         className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                        disabled={((pagination?.page || 1) - 1) * 30 + smallTableVisibleItem === transactions.length - 1}
+                        disabled={((pagination?.page || 1) - 1) * 5 + smallTableVisibleItem === transactions.length - 1 && !pagination?.hasNextPage}
                         onClick={() => {
-                            if (smallTableVisibleItem === 29) {
+                            if (smallTableVisibleItem === 4) {
                                 if (pagination) {
                                     onPageChange(pagination.page + 1);
                                 }
@@ -170,11 +172,13 @@ const TransactionsTable = ({
         );
     };
 
+    const normalTableTxs = pagination ? transactions.slice((pagination.page - 1) * 5, (pagination.page - 1) * 5 + 5) : transactions;
+
     return winSizes.width < Breakpoints.MD || (winSizes.width > Breakpoints.LG && winSizes.width < Breakpoints.XL) ? (
         renderSmallTable(transactions)
     ) : (
         <Table className='transactions-table' pagination={pagination} onPageChange={onPageChange}>
-            {transactions.map((transaction, index) => renderRow(transaction, index))}
+            {normalTableTxs.map((transaction, index) => renderRow(transaction, index))}
         </Table>
     );
 };

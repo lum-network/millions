@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
 
 import { Button, Card, CountDown } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, KeplrUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, WalletProvidersUtils } from 'utils';
 import Skeleton from 'react-loading-skeleton';
 import Assets from 'assets';
 
@@ -26,21 +25,14 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText,
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
 
-    const navigate = useNavigate();
-
     const [drawInProgress, setDrawInProgress] = useState(false);
 
     const price = prices?.[denom];
 
     return (
-        <Card
-            className='pool-card-container glow-bg'
-            onClick={() => {
-                navigate(`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`);
-            }}
-        >
+        <Card className='pool-card-container glow-bg'>
             <div className='prize-container'>
-                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} />
+                <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='no-filter' />
                 <div className='d-flex flex-column align-items-start ms-3'>
                     <div className='prize'>
                         {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
@@ -86,20 +78,28 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText,
             </div>
             <div className='w-100'>
                 <Button
-                    {...(!KeplrUtils.isKeplrInstalled()
-                        ? {
-                              'data-bs-target': '#get-keplr-modal',
-                              'data-bs-toggle': 'modal',
-                          }
-                        : lumWallet === null
+                    onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.VIEW_DETAILS_CLICK, { denom, pool_id: poolId })}
+                    to={`${NavigationConstants.POOL_DETAILS}/${denom}/${poolId}`}
+                    outline
+                >
+                    {I18n.t('pools.viewDetails')}
+                </Button>
+                <Button
+                    {...(WalletProvidersUtils.isAnyWalletInstalled() && lumWallet === null
                         ? {
                               'data-bs-target': '#choose-wallet-modal',
+                              'data-bs-toggle': 'modal',
+                          }
+                        : !WalletProvidersUtils.isAnyWalletInstalled()
+                        ? {
+                              'data-bs-target': '#get-keplr-modal',
                               'data-bs-toggle': 'modal',
                           }
                         : {
                               to: ctaLink ? ctaLink : `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
-                    className='deposit-cta w-100'
+                    forcePurple
+                    className='deposit-cta w-100 mt-3'
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >
                     {ctaText ? ctaText : I18n.t('pools.cta')}
