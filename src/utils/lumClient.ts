@@ -312,7 +312,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };
@@ -342,7 +342,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };
@@ -381,7 +381,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };
@@ -411,7 +411,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };
@@ -441,7 +441,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };
@@ -475,7 +475,7 @@ class LumClient {
         const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
 
         return {
-            hash: broadcastResult.hash,
+            hash: LumUtils.toHex(broadcastResult.hash),
             error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
         };
     };

@@ -80,6 +80,16 @@ interface WalletState {
     prizesMutex: boolean;
 }
 
+//FIXME: When tendermint invalid string on cosmjs has been fixed
+const txHasError = (
+    result: {
+        hash: string;
+        error: string | null | undefined;
+    } | null,
+) => {
+    return !!(!result || (result && result.error && !result.error.includes('Invalid string')));
+};
+
 export const wallet = createModel<RootModel>()({
     name: 'wallet',
     state: {
@@ -603,7 +613,7 @@ export const wallet = createModel<RootModel>()({
 
                 client.disconnect();
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || I18n.t('errors.ibcTransfer'));
                 }
 
@@ -640,7 +650,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async depositToPool(payload: DepositToPoolPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.deposit', { denom: DenomsUtils.getNormalDenom(payload.pool.nativeDenom).toUpperCase() }) });
@@ -652,7 +662,7 @@ export const wallet = createModel<RootModel>()({
 
                 const result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -669,7 +679,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId.toNumber()} to pool #${payload.poolId.toNumber()}` });
@@ -681,7 +691,7 @@ export const wallet = createModel<RootModel>()({
 
                 const result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || `Failed to retry deposit #${payload.depositId.toNumber()}`);
                 }
 
@@ -696,7 +706,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async leavePool(payload: LeavePoolPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async leavePool(payload: LeavePoolPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.leavePool', { denom: payload.denom.toUpperCase(), poolId: payload.poolId.toString() }) });
@@ -708,7 +718,7 @@ export const wallet = createModel<RootModel>()({
 
                 const result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -731,7 +741,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async leavePoolRetry(payload: LeavePoolRetryPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async leavePoolRetry(payload: LeavePoolRetryPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const toastId = ToastUtils.showLoadingToast({ content: I18n.t('pending.withdrawalRetry', { withdrawalId: payload.withdrawalId.toString(), poolId: payload.poolId.toString() }) });
@@ -743,7 +753,7 @@ export const wallet = createModel<RootModel>()({
 
                 const result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -766,7 +776,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async claimPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
             const { prizes, batch, batchTotal, onBatchComplete } = payload;
@@ -799,7 +809,7 @@ export const wallet = createModel<RootModel>()({
 
                     result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
 
-                    if (!result || (result && result.error)) {
+                    if (txHasError(result)) {
                         throw new Error(result?.error || undefined);
                     } else {
                         const newPrizes = prizesToClaim.slice(toClaim.length);
@@ -823,7 +833,7 @@ export const wallet = createModel<RootModel>()({
                 return null;
             }
         },
-        async claimAndCompoundPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: Uint8Array; error: string | null | undefined } | null> {
+        async claimAndCompoundPrizes(payload: ClaimPrizesPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { prizes } = payload;
             const claimRes = await dispatch.wallet.claimPrizes(payload);
 
@@ -865,7 +875,7 @@ export const wallet = createModel<RootModel>()({
 
                 const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
 
-                if (!result || (result && result.error)) {
+                if (txHasError(result)) {
                     throw new Error(result?.error || undefined);
                 }
 
