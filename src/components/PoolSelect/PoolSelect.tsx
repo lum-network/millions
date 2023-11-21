@@ -39,7 +39,7 @@ const PoolOption = (
         <components.Option {...props}>
             <div className='d-flex flex-row justify-content-between align-items-center custom-select-option'>
                 <div className='d-flex flex-row align-items-center'>
-                    {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2 no-filter' />} {props.data.label}
+                    {assetIcon && <img alt='menu' src={assetIcon} className='menu-asset-icon me-2 no-filter' />} {props.data.label}
                 </div>
             </div>
         </components.Option>
