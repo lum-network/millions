@@ -164,11 +164,11 @@ describe('App', () => {
             [
                 {
                     path: '/pools/:denom',
-                    element: <DepositPage />,
+                    element: <DepositPage isDrop={false} />,
                 },
                 {
                     path: '/pools/:denom/:poolId',
-                    element: <DepositPage />,
+                    element: <DepositPage isDrop={false} />,
                 },
             ],
             {

@@ -134,7 +134,6 @@ export const suggestChain = async (walletProvider: WalletProvider, chainInfo: Ch
 
 export const requestCosmostationAccount = async (chainId: string) => {
     const provider = await cosmos();
-    const account = await provider.requestAccount(chainId);
 
-    return account;
+    return await provider.requestAccount(chainId);
 };

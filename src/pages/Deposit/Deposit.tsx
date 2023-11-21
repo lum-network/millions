@@ -12,17 +12,16 @@ import { Modal as BootstrapModal } from 'bootstrap';
 import Assets from 'assets';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { Card, Lottie, Modal, Steps, Button } from 'components';
+import { Card, Lottie, Modal, Steps, Button, QuitDepositModal, IbcTransferModal } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
-import { usePrevious, useVisibilityState } from 'hooks';
+import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
+import DepositDropSteps from 'drops/components/DepositDropSteps/DepositDropSteps';
 
 import DepositSteps from './components/DepositSteps/DepositSteps';
-import QuitDepositModal from './components/Modals/QuitDeposit/QuitDeposit';
-import IbcTransferModal from './components/Modals/IbcTransfer/IbcTransfer';
 import Error404 from '../404/404';
 
 import './Deposit.scss';

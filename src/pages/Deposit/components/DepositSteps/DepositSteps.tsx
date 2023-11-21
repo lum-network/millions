@@ -40,7 +40,6 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
-    onPrevStep: (prevAmount: string, nextAmount: string) => void;
     onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
@@ -202,7 +201,6 @@ const DepositStep2 = (
         amount: string;
         onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<void>;
         initialAmount?: string;
-        onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
     const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, disabled, onDeposit } = props;
@@ -447,7 +445,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, amountFromLocationState, onNextStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet, onPrevStep } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, amountFromLocationState, onNextStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
@@ -510,7 +508,6 @@ const DepositSteps = (props: Props) => {
                         currentPool={currentPool}
                         pools={pools}
                         price={price}
-                        onPrevStep={onPrevStep}
                     />
                 )}
                 {currentStep === steps.length && txInfos && (
