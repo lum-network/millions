@@ -2,7 +2,7 @@
 
 .drops-my-deposits {
     .drops-card {
-        background-color: $color-primary-light;
+        background-color: var(--color-primary-light);
         border-radius: 8px;
         &:not(:last-child) {
             margin-bottom: 24px;
@@ -10,12 +10,12 @@
 
         .deposit-drop-title {
             font-size: 18px;
-            color: $color-primary;
+            color: var(--color-primary);
             font-weight: 400;
         }
 
         .deposit-drop-date {
-            color: $color-black;
+            color: var(--color-black);
             font-size: 12px;
             font-style: normal;
             font-weight: 300;
@@ -26,13 +26,13 @@
         .deposit-drop-amount {
             font-size: 18px;
             font-weight: 400;
-            color: $color-black;
+            color: var(--color-black);
         }
 
         .deposit-drop-amount-denom {
             font-size: 18px;
             font-weight: 400;
-            color: $color-primary;
+            color: var(--color-primary);
             text-transform: uppercase;
             line-height: 18px;
         }
@@ -40,7 +40,7 @@
         .deposit-drop-usd-amount {
             font-weight: 300;
             font-size: 12px;
-            color: $color-dark-grey;
+            color: var(--color-dark-grey);
         }
     }
 
@@ -55,11 +55,11 @@
 
         font-size: 12px;
         &.success {
-            background: $color-success;
+            background: var(--color-success);
         }
 
         &.failure {
-            background: $color-failure;
+            background: var(--color-failure);
         }
         &.pending {
             font-size: 10px;

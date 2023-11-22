@@ -40,7 +40,6 @@ interface Props {
         [denom: string]: OtherWalletModel;
     };
     onNextStep: () => void;
-    onPrevStep: (prevAmount: string, nextAmount: string) => void;
     onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: string; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;

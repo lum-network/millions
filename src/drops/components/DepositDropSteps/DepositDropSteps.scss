@@ -6,17 +6,17 @@
         border-right: none;
         border-left: none;
         border-top: none;
-        border-bottom: 2px solid $color-primary;
-        color: $color-primary;
+        border-bottom: 2px solid var(--color-primary);
+        color: var(--color-primary);
         opacity: 0.2;
         transition: opacity 0.15s ease-in-out;
-        
+
         &.active,
         &:hover {
             opacity: 1;
         }
     }
-    
+
     .deposit-drop-winner-card {
         &:not(:first-child) {
             margin-bottom: 1rem;
@@ -27,7 +27,7 @@
             border: none;
             border-radius: 8px;
             &.error {
-                border: 1px solid $color-failure;
+                border: 1px solid var(--color-failure);
             }
             &:focus {
                 outline: none;
@@ -35,7 +35,7 @@
         }
 
         .deposit-drop-address-input {
-            color: $color-primary;
+            color: var(--color-primary);
             font-size: 14px;
             padding: 15px 12px;
         }
@@ -46,11 +46,11 @@
         }
 
         label {
-            color: $color-primary;
+            color: var(--color-primary);
         }
     }
 
     p.error-message {
-        color: $color-failure;
+        color: var(--color-failure);
     }
 }

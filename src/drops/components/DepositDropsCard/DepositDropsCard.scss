@@ -3,7 +3,7 @@
 .drops-card {
     .drops-description {
         a, a:hover, a:focus, a:active {
-            color: $color-primary;
+            color: var(--color-primary);
         }
     }
 

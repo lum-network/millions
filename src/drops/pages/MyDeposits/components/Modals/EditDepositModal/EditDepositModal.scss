@@ -3,11 +3,11 @@
 #editDepositModal {
     .edit-address-input,
     .edit-amount-input {
-        background-color: $color-white;
+        background-color: var(--color-white);
         border: none;
         border-radius: 8px;
         &.error {
-            border: 1px solid $color-failure;
+            border: 1px solid var(--color-failure);
         }
         &:focus {
             outline: none;
@@ -15,7 +15,7 @@
     }
 
     .edit-address-input {
-        color: $color-primary;
+        color: var(--color-primary);
         font-size: 14px;
         padding: 15px 12px;
     }
@@ -26,10 +26,10 @@
     }
 
     label {
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     p.error-message {
-        color: $color-failure;
+        color: var(--color-failure);
     }
 }

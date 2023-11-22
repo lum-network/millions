@@ -1,33 +1,33 @@
 @import 'src/styles/main';
 
 .file-input-container {
-    border: 1px solid $color-primary-light;
+    border: 1px solid var(--color-primary-light);
 
     &.drag-entered {
         opacity: 0.8;
     }
 
     &.drag-rejected {
-        border-color: $color-failure;
+        border-color: var(--color-failure);
 
         .sublabel {
-            color: $color-failure;
+            color: var(--color-failure);
             font-size: 13px;
             font-weight: 300;
         }
     }
-    
+
     .label {
         text-align: center;
-        color: $color-primary;
+        color: var(--color-primary);
         font-size: 12px;
         line-height: normal;
         font-weight: 400;
     }
-    
+
     .sublabel {
         text-align: center;
-        color: $color-grey;
+        color: var(--color-grey);
         line-height: normal;
         font-size: 12px;
         font-weight: 400;
@@ -37,6 +37,6 @@
         width: 38px;
         height: 38px;
         border-radius: 7px;
-        background-color: white;
+        background-color: var(--color-white);
     }
 }
