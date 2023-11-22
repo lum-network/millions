@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
-import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -41,7 +41,7 @@ interface Props {
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
-    onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: Uint8Array; error: string | null | undefined } | null>;
+    onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: string; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
     lumWallet: LumWalletModel | null;
@@ -497,7 +497,7 @@ const DepositSteps = (props: Props) => {
                             if (res && !res.error) {
                                 onFinishDeposit(onNextStep);
                                 setTxInfos({
-                                    hash: LumUtils.toHex(res.hash).toUpperCase(),
+                                    hash: res.hash.toUpperCase(),
                                     amount: numeral(depositAmount).format('0,0[.]00'),
                                     denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
                                     tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),

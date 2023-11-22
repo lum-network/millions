@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
+import { LumTypes } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
@@ -189,7 +189,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setClaimOnly(false);
             setCurrentStep(2);
             setShareInfos({
-                hash: LumUtils.toHex(res.hash).toUpperCase(),
+                hash: res.hash.toUpperCase(),
                 amount,
                 tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
                 compounded: compound,
