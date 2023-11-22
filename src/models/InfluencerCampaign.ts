@@ -10,6 +10,9 @@ class InfluencerCampaign {
     username!: string;
 
     @Expose()
+    name!: string;
+
+    @Expose()
     image!: string;
 
     @Expose()

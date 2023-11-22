@@ -325,13 +325,13 @@ const MySavings = () => {
         <div id='my-savings' className='my-savings-container mt-3 mt-lg-5'>
             {activeCampaign ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
-                    <img alt='info' src={Assets.images.gift} width='45' />
+                    <img alt='info' src={Assets.images.gift} width='45' className='no-filter' />
                     <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.username })}</h3>
                     <p
                         className='mb-0'
                         dangerouslySetInnerHTML={{
                             __html: I18n.t(
-                                activeCampaign.members.find((member) => member.walletAddress === lumWallet.address)
+                                activeCampaign.members?.find((member) => member.walletAddress === lumWallet.address)
                                     ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription'
                                     : 'mySavings.influencerCampaignBanner.description',
                                 {
@@ -341,7 +341,7 @@ const MySavings = () => {
                         }}
                     />
                     <Button
-                        disabled={!!activeCampaign.members.find((member) => member.walletAddress === lumWallet.address)}
+                        disabled={!!activeCampaign.members?.find((member) => member.walletAddress === lumWallet.address)}
                         data-bs-target='#influencer-campaign-modal'
                         data-bs-toggle='modal'
                         className='ms-auto'

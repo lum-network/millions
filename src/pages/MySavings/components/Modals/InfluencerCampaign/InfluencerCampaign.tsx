@@ -10,7 +10,7 @@ import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import { Button, Card, Lottie, Modal, SmallerDecimal, Tooltip } from 'components';
 import { NavigationConstants } from 'constant';
 import { InfluencerCampaignModel } from 'models';
-import { DenomsUtils, I18n } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils } from 'utils';
 
 import './InfluencerCampaign.scss';
 
@@ -83,7 +83,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                 <div className='step-3 d-flex flex-column mt-5'>
                     <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
                         <div className='d-flex flex-row align-items-center'>
-                            <img height={50} width={50} src={Assets.images.gift} alt='gift' />
+                            <img height={50} width={50} src={Assets.images.gift} alt='gift' className='no-filter' />
                             <div className='d-flex flex-column ms-3'>
                                 <div className='deposit-amount text-start'>
                                     <SmallerDecimal nb={campaign.amount.amount} /> {DenomsUtils.getNormalDenom(campaign.amount.denom).toUpperCase()}
@@ -100,7 +100,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                     </div>
                     <div className='d-flex flex-row align-items-center justify-content-center mt-5 mb-2'>
                         <Button className='deposit-cta me-4' data-bs-dismiss='modal' outline>
-                            <img src={Assets.images.mySavings} alt='My savings' className='me-3' height={18} />
+                            <img src={Assets.images.mySavings} alt='My savings' className='me-3 no-filter' height={18} />
                             {I18n.t('deposit.goToMySavings').replace('\n', ' ')}
                         </Button>
                         <Button
@@ -150,15 +150,19 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
                                 [30, 100],
                             ]}
                         />
-                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.username, count: campaign.drops })}</h1>
+                        <h1>{I18n.t('mySavings.influencerCampaignModal.title', { influencerName: campaign.name, count: campaign.drops })}</h1>
                         <div className='d-flex flex-row mt-4'>
-                            <div className='position-relative'>
-                                <img src={campaign.image} className='influencer-picture' alt='influencer picture' />
-                                <div className='influencer-username py-2'>@{campaign.image}</div>
+                            <div className='position-relative influencer-picture-container'>
+                                <img src={campaign.image} className='influencer-picture no-filter' alt='influencer picture' />
+                                <div className='influencer-username py-2'>{campaign.username}</div>
                             </div>
                             <Card flat withoutPadding className='d-flex flex-column justify-content-center ms-3 flex-grow-1 p-4'>
                                 <span className='campaign-amount me-auto mb-3'>
-                                    <img src={Assets.images.gift} /> {I18n.t('mySavings.influencerCampaignModal.toWin', { amount: campaign.amount.amount, denom: campaign.amount.denom })}{' '}
+                                    <img src={Assets.images.gift} className='no-filter' />{' '}
+                                    {I18n.t('mySavings.influencerCampaignModal.toWin', {
+                                        amount: NumbersUtils.convertUnitNumber(campaign.amount.amount),
+                                        denom: DenomsUtils.getNormalDenom(campaign.amount.denom),
+                                    })}{' '}
                                     <span data-tooltip-id='campaign-amount-tooltip' data-tooltip-html={I18n.t('mySavings.influencerCampaignModal.hint')}>
                                         <img src={Assets.images.info} alt='info' />
                                         <Tooltip id='campaign-amount-tooltip' />
