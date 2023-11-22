@@ -4,8 +4,8 @@ import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants } from 'constant';
-import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants, NavigationConstants } from 'constant';
+import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel, DepositModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
 
@@ -384,7 +384,7 @@ export const wallet = createModel<RootModel>()({
                 console.warn((e as Error).message);
             }
         },
-        async reloadWalletInfos({ address, force = true, init = false, drops = false }: { address: string; force?: boolean; init?: boolean; drops: boolean }, state) {
+        async reloadWalletInfos({ address, force = true, init = false, drops = false }: { address: string; force?: boolean; init?: boolean; drops?: boolean }, state) {
             if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 3) {
                 return;
             }

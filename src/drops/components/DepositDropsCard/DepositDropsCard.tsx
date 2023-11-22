@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card } from 'components';
-import { I18n, KeplrUtils } from 'utils';
+import { I18n, WalletProvidersUtils } from 'utils';
 import Assets from 'assets';
 import { NavigationConstants } from 'constant';
 import { useSelector } from 'react-redux';
@@ -33,11 +33,11 @@ const DepositDropsCard = ({ className, cta, link }: IProps): JSX.Element => {
                     />
                 </div>
                 <Button
-                    disabled={KeplrUtils.isKeplrInstalled() && lumWallet === null}
-                    {...(!KeplrUtils.isKeplrInstalled()
+                    disabled={WalletProvidersUtils.isKeplrInstalled() && lumWallet === null}
+                    {...(!WalletProvidersUtils.isKeplrInstalled()
                         ? {
-                              'data-bs-target': '#get-keplr-modal',
                               'data-bs-toggle': 'modal',
+                              'data-bs-target': WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal',
                           }
                         : {
                               to: link,
