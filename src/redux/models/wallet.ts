@@ -81,7 +81,7 @@ interface WalletState {
 }
 
 //FIXME: When tendermint invalid string false error on cosmjs has been fixed
-const isTxRealError = (error: Error) => {
+const isRealError = (error: Error) => {
     return error && error.message && !error.message.includes('Invalid string');
 };
 
@@ -610,7 +610,7 @@ export const wallet = createModel<RootModel>()({
                     result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? LumConstants.MicroLumDenom : 'u' + normalDenom);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
@@ -670,7 +670,7 @@ export const wallet = createModel<RootModel>()({
                     result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
@@ -708,7 +708,7 @@ export const wallet = createModel<RootModel>()({
                     result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
@@ -744,7 +744,7 @@ export const wallet = createModel<RootModel>()({
                     result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
@@ -788,7 +788,7 @@ export const wallet = createModel<RootModel>()({
                     result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
@@ -851,7 +851,7 @@ export const wallet = createModel<RootModel>()({
                         result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
                     } catch (e) {
                         const error = e as Error;
-                        if (isTxRealError(error)) {
+                        if (isRealError(error)) {
                             throw error;
                         }
                     }
@@ -926,7 +926,7 @@ export const wallet = createModel<RootModel>()({
                     result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
                 } catch (e) {
                     const error = e as Error;
-                    if (isTxRealError(error)) {
+                    if (isRealError(error)) {
                         throw error;
                     }
                 }
