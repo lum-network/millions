@@ -22,6 +22,7 @@ interface Props {
     prizes: PrizeModel[];
     prices: { [key: string]: number };
     pools: PoolModel[];
+    limit: number;
 }
 
 type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
@@ -122,7 +123,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
     );
 };
 
-const Claim = ({ prizes, prices, pools }: Props) => {
+const Claim = ({ prizes, prices, pools, limit }: Props) => {
     const [blockedCompound, setBlockedCompound] = useState(false);
     const [claimOnly, setClaimOnly] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
@@ -150,8 +151,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CONFIRMED);
         }
 
-        const LIMIT = 6;
-        const batchCount = Math.ceil(prizes.length / LIMIT);
+        const batchCount = Math.ceil(prizes.length / limit);
 
         setBatchTotal(batchCount);
         setCurrentStep(currentStep + 1);
@@ -160,11 +160,9 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setBatch(batch);
         };
 
-        const payload = { prizes, batch, batchTotal: batchCount, onBatchComplete };
-
         const action = compound ? dispatch.wallet.claimAndCompoundPrizes : dispatch.wallet.claimPrizes;
 
-        const res = await action(payload);
+        const res = await action({ prizes, batch, batchTotal: batchCount, limit, onBatchComplete });
 
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep);

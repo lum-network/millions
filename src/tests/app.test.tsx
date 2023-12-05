@@ -143,8 +143,9 @@ describe('App', () => {
     it('render the My Savings Page without crashing', async () => {
         // Log in using a test wallet to enable My Savings page
         const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
+        const wallet = Object.assign(testWallet, { isLedger: false });
 
-        store.dispatch.wallet.signInLum(testWallet);
+        store.dispatch.wallet.signInLum(wallet);
 
         // Render My Savings page
         renderWithRematchStore(
@@ -188,10 +189,11 @@ describe('App', () => {
         expect(transferBtn.parentElement).toBeDisabled();
 
         const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
+        const wallet = Object.assign(testWallet, { isLedger: false });
 
         // Fake log in to enable the transfer button
         act(() => {
-            store.dispatch.wallet.signInLum(testWallet);
+            store.dispatch.wallet.signInLum(wallet);
             store.dispatch.wallet.setOtherWalletData({
                 denom: 'atom',
                 balances: [],
