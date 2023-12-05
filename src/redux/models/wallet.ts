@@ -85,14 +85,9 @@ interface WalletState {
     prizesMutex: boolean;
 }
 
-//FIXME: When tendermint invalid string on cosmjs has been fixed
-const txHasError = (
-    result: {
-        hash: string;
-        error: string | null | undefined;
-    } | null,
-) => {
-    return !!(!result || (result && result.error && !result.error.includes('Invalid string')));
+//FIXME: When tendermint invalid string false error on cosmjs has been fixed
+const isRealError = (error: Error) => {
+    return error && error.message && !error.message.includes('Invalid string');
 };
 
 export const wallet = createModel<RootModel>()({
@@ -621,12 +616,21 @@ export const wallet = createModel<RootModel>()({
 
                 await client.connect(rpc, offlineSigner, true);
 
-                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? LumConstants.MicroLumDenom : 'u' + normalDenom);
+                let result = null;
+
+                try {
+                    result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? LumConstants.MicroLumDenom : 'u' + normalDenom);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
 
                 client.disconnect();
 
-                if (txHasError(result)) {
-                    throw new Error(result?.error || I18n.t('errors.ibcTransfer'));
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || undefined);
                 }
 
                 while (true) {
@@ -672,9 +676,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
+                let result = null;
 
-                if (txHasError(result)) {
+                try {
+                    result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -701,10 +714,19 @@ export const wallet = createModel<RootModel>()({
                     throw new Error('errors.client.noWalletConnected');
                 }
 
-                const result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                let result = null;
 
-                if (txHasError(result)) {
-                    throw new Error(result?.error || `Failed to retry deposit #${payload.depositId.toNumber()}`);
+                try {
+                    result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
@@ -728,9 +750,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                let result = null;
 
-                if (txHasError(result)) {
+                try {
+                    result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -763,9 +794,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
+                let result = null;
 
-                if (txHasError(result)) {
+                try {
+                    result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
                 }
 
@@ -817,19 +857,26 @@ export const wallet = createModel<RootModel>()({
 
                     const toClaim = prizesToClaim.slice(0, payload.limit);
 
-                    result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
-
-                    if (txHasError(result)) {
-                        throw new Error(result?.error || undefined);
-                    } else {
-                        const newPrizes = prizesToClaim.slice(toClaim.length);
-                        prizesToClaim = [...newPrizes];
-
-                        dispatch.wallet.setLumWalletData({
-                            prizes: [...newPrizes],
-                        });
-                        onBatchComplete(i + 1);
+                    try {
+                        result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
+                    } catch (e) {
+                        const error = e as Error;
+                        if (isRealError(error)) {
+                            throw error;
+                        }
                     }
+
+                    if (!result || (result && result.error)) {
+                        throw new Error(result?.error || undefined);
+                    }
+
+                    const newPrizes = prizesToClaim.slice(toClaim.length);
+                    prizesToClaim = [...newPrizes];
+
+                    dispatch.wallet.setLumWalletData({
+                        prizes: [...newPrizes],
+                    });
+                    onBatchComplete(i + 1);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
@@ -883,9 +930,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+                let result = null;
 
-                if (txHasError(result)) {
+                try {
+                    result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
                 }
 
