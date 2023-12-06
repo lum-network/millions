@@ -1025,6 +1025,8 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
+                let result = null;
+
                 for (let i = startIndex; i < batchCount; i++) {
                     lastBatch = i;
 
@@ -1034,7 +1036,14 @@ export const wallet = createModel<RootModel>()({
 
                     const toDeposit = deposits.slice(i * limit, (i + 1) * limit).map((d) => ({ ...d, pool }));
 
-                    const result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+                    try {
+                        result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+                    } catch (e) {
+                        const error = e as Error;
+                        if (isRealError(error)) {
+                            throw error;
+                        }
+                    }
 
                     if (!result || (result && result.error)) {
                         throw new Error(result?.error || undefined);
@@ -1080,6 +1089,8 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
+                let result = null;
+
                 for (let i = startIndex; i < batchCount; i++) {
                     lastBatch = i;
 
@@ -1089,7 +1100,14 @@ export const wallet = createModel<RootModel>()({
 
                     const toCancel = deposits.slice(i * limit, (i + 1) * limit);
 
-                    const result = await LumClient.cancelDepositDrop(lumWallet.innerWallet, toCancel);
+                    try {
+                        result = await LumClient.cancelDepositDrop(lumWallet.innerWallet, toCancel);
+                    } catch (e) {
+                        const error = e as Error;
+                        if (isRealError(error)) {
+                            throw error;
+                        }
+                    }
 
                     if (!result || (result && result.error)) {
                         throw new Error(result?.error || undefined);
@@ -1125,16 +1143,25 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                const res = await LumClient.editDeposit(lumWallet.innerWallet, deposit, newWinnerAddress);
+                let result = null;
 
-                if (!res || (res && res.error)) {
-                    throw new Error(res?.error || undefined);
+                try {
+                    result = await LumClient.editDeposit(lumWallet.innerWallet, deposit, newWinnerAddress);
+                } catch (e) {
+                    const error = e as Error;
+                    if (isRealError(error)) {
+                        throw error;
+                    }
+                }
+
+                if (!result || (result && result.error)) {
+                    throw new Error(result?.error || undefined);
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', { content: I18n.t('success.editDrop') });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true, drops: true });
-                return res;
+                return result;
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', {
                     content: (e as Error).message || I18n.t('errors.deposit.generic', { denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase() }),

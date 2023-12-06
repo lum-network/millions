@@ -31,7 +31,7 @@ export const router = createBrowserRouter(
                 <Route path={NavigationConstants.DROPS_POOLS} element={<DropsPoolsPage />} />
                 <Route path={NavigationConstants.DROPS_MY_DEPOSITS} element={<DropsMyDepositsPage />} />
                 <Route path={`${NavigationConstants.DROPS_POOLS}/:denom/:poolId`} element={<DepositPage isDrop />} />
-                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom`} element={<DepositPage isDrop={false} />} />
+                <Route path={`${NavigationConstants.DROPS_POOLS}/:denom`} element={<DepositPage isDrop />} />
             </Route>
             <Route path='*' element={<Error404 />} />
         </Route>,

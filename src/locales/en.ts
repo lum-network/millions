@@ -565,7 +565,6 @@ export default {
             title: 'Swap to Cosmos Hub',
         },
         depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>',
-        faucetHint: 'You can use our <a rel="noreferrer" target="_blank" href="https://discord.gg/KwyVvnBcXF">faucet</a> on Discord to get $LUM for your deposit.',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',
