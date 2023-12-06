@@ -9,10 +9,6 @@
     overflow: hidden;
     box-sizing: border-box;
 
-    .card-info-icon {
-        filter: brightness(0) invert(1);
-    }
-
     & > .card-progress {
         position: absolute;
         top: -2px;

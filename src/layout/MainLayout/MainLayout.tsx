@@ -35,7 +35,6 @@ const MainLayout = () => {
     useEffect(() => {
         const autoConnect = async (provider: WalletProvider) => {
             await dispatch.wallet.connectWallet({ provider, silent: enableAutoConnect }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(provider);
         };
 
         const autoconnectProvider = WalletUtils.getAutoconnectProvider();

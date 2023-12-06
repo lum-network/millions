@@ -24,8 +24,11 @@ const MyDeposits = () => {
     const [selectedDepositDrop, setSelectedDepositDrop] = useState<AggregatedDepositModel | null>(null);
     const dropsDetailsModalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
-    const depositDrops = useSelector((state: RootState) => state.wallet?.lumWallet?.depositDrops);
-    const prices = useSelector((state: RootState) => state.stats?.prices);
+    const { lumWallet, depositDrops, prices } = useSelector((state: RootState) => ({
+        lumWallet: state.wallet.lumWallet,
+        depositDrops: state.wallet.lumWallet?.depositDrops,
+        prices: state.stats.prices,
+    }));
 
     useEffect(() => {
         const handler = () => {
@@ -66,7 +69,7 @@ const MyDeposits = () => {
                 <div className='row align-items-center'>
                     <div className='col-12 col-md-6 col-xl-3 order-1'>
                         <div className='d-flex'>
-                            <img width={40} height={40} alt='deposit drop' src={Assets.images.depositDrop} />
+                            <img width={40} height={40} alt='deposit drop' src={Assets.images.depositDrop} className='no-filter' />
                             <div className='ms-3 d-flex flex-column'>
                                 <span className='deposit-drop-title'>{I18n.t('depositDrops.myDeposits.depositDrops', { count: drop.deposits.length })}</span>
                                 <span className='deposit-drop-date'>{dayjs(drop.createdAt).format('ll')}</span>
@@ -85,7 +88,7 @@ const MyDeposits = () => {
                             <span className='deposit-drop-usd-amount'>{numeral(usdPrice).format('$0,0.00')}</span>
                         </div>
                     </div>
-                    <div className='col-12 col-md-6 col-xl-2 mt-3 mt-md-0 text-start text-md-end text-xl-start order-3 order-md-2 order-xl-3'>
+                    <div className='col-12 col-md-6 col-xl-2 mt-3 mt-md-0 text-start text-md-end text-xl-start order-3 order-md-2 order-xl-3 wallets-count'>
                         {drop.deposits.length} {I18n.t('depositDrops.myDeposits.wallet', { count: drop.deposits.length })}
                     </div>
                     <div className='col-12 col-md-4 col-xl-2 mt-3 mt-xl-0 order-4'>
@@ -126,7 +129,7 @@ const MyDeposits = () => {
                 onCancel={onAction}
             />
             <EditDepositModal deposit={selectedDeposit} />
-            <CancelDropModal deposits={selectedDeposit ? [selectedDeposit] : (selectedDepositDrop?.deposits as DepositModel[] | undefined)} />
+            <CancelDropModal deposits={selectedDeposit ? [selectedDeposit] : (selectedDepositDrop?.deposits as DepositModel[] | undefined)} limit={lumWallet?.isLedger ? 3 : 6} />
         </div>
     );
 };

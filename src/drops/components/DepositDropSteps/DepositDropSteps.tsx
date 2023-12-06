@@ -47,6 +47,7 @@ interface Props {
     lumWallet: LumWalletModel | null;
     transferForm: FormikProps<{ amount: string }>;
     price: number;
+    limit: number;
 }
 
 type TxInfos = {
@@ -72,9 +73,10 @@ type DepositDrop = {
 const DepositDropStep = (
     props: StepProps & {
         onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => Promise<true | null>;
+        limit: number;
     },
 ) => {
-    const { currentPool, balances, title, disabled, onDepositDrop } = props;
+    const { currentPool, balances, title, disabled, limit, onDepositDrop } = props;
 
     const [inputType, setInputType] = useState<'csv' | 'manual'>('csv');
 
@@ -209,7 +211,13 @@ const DepositDropStep = (
             </div>
             {inputType === 'csv' ? (
                 <>
-                    <CsvFileInput disabled={disabled} onValidCsv={onValidCsv} onInvalidCsv={onInvalidCsv} minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount)} />
+                    <CsvFileInput
+                        disabled={disabled}
+                        onValidCsv={onValidCsv}
+                        onInvalidCsv={onInvalidCsv}
+                        minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount)}
+                        limit={limit}
+                    />
                     <div className='download-btn-container'>
                         <a href={'/deposit_drop_template.csv'} target='_blank' className='download-csv-btn app-btn app-btn-outline w-100 mt-4' rel='noreferrer'>
                             <span>
@@ -261,7 +269,11 @@ const DepositDropStep = (
                                     }}
                                 >
                                     <span className='me-2'>
-                                        <img src={Assets.images.remove} alt='remove' />
+                                        <svg className='remove-icon' width='17' height='17' viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                                            <circle cx='8.37427' cy='8.5' r='8' fill='none' />
+                                            <path d='M10.5496 6.32349L6.19772 10.6753' stroke='white' strokeWidth='1.2' strokeLinecap='round' />
+                                            <path d='M6.19824 6.3241L10.5501 10.6759' stroke='white' strokeWidth='1.2' strokeLinecap='round' />
+                                        </svg>
                                     </span>
                                     {I18n.t('depositDrops.depositFlow.removeWinner')}
                                 </Button>
@@ -287,7 +299,11 @@ const DepositDropStep = (
                             }}
                         >
                             <span className='me-2'>
-                                <img src={Assets.images.add} alt='add' />
+                                <svg className='add-icon' width='17' height='17' viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                                    <circle cx='8.87427' cy='8.5' r='8.12549' fill='none' />
+                                    <path d='M8.87427 5.37451V11.6255' stroke='white' strokeWidth='1.2' strokeLinecap='round' />
+                                    <path d='M5.74878 8.5L11.9998 8.5' stroke='white' strokeWidth='1.2' strokeLinecap='round' />
+                                </svg>
                             </span>
                             {I18n.t('depositDrops.depositFlow.addWinner')}
                         </Button>
@@ -306,7 +322,7 @@ const DepositDropStep = (
                 </div>
                 <Card flat withoutPadding className='d-flex flex-row align-items-center justify-content-between px-4 py-3 last-step-card mt-2'>
                     <div className='asset-info d-flex flex-row'>
-                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(currentPool.nativeDenom))} className='me-3' alt='denom' />
+                        <img src={DenomsUtils.getIconFromDenom(DenomsUtils.getNormalDenom(currentPool.nativeDenom))} className='me-3 no-filter' alt='denom' />
                         <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}</span>
                     </div>
                     <div className='deposit-amount'>
@@ -321,7 +337,7 @@ const DepositDropStep = (
                 </span>
                 {I18n.t('deposit.feesWarning')}
             </Card>
-            {batch > 0 && batchTotal > 1 && <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mt-4' />}
+            {batchTotal > 1 && <TransactionBatchProgress batch={batch} batchTotal={batchTotal} className='mt-4' />}
             <Button
                 type='button'
                 onClick={async () => {
@@ -334,9 +350,17 @@ const DepositDropStep = (
                               }))),
                     ];
 
-                    setBatchTotal(Math.ceil(drops.length / 6));
+                    setBatchTotal(Math.ceil(drops.length / limit));
 
-                    await onDepositDrop(currentPool, drops, (index) => setBatch(index), batch);
+                    try {
+                        const res = await onDepositDrop(currentPool, drops, (index) => setBatch(index), batch);
+
+                        if (!res) {
+                            setBatchTotal(0);
+                        }
+                    } catch {
+                        setBatchTotal(0);
+                    }
                 }}
                 disabled={
                     disabled ||
@@ -346,10 +370,10 @@ const DepositDropStep = (
                 }
                 className='deposit-cta w-100 position-relative mt-4'
             >
-                <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
-                <img src={Assets.images.yellowStar} alt='Star' className='star me-3' style={{ zIndex: 0 }} />
+                <div className='position-absolute deposit-cta-bg w-100 h-100' />
+                <img src={Assets.images.yellowStar} alt='Star' className='star me-3 no-filter' style={{ zIndex: 0 }} />
                 <div className='deposit-cta-text'>{I18n.t('depositDrops.depositFlow.cta')}</div>
-                <img src={Assets.images.yellowStar} alt='Star' className='star ms-3' style={{ zIndex: 0 }} />
+                <img src={Assets.images.yellowStar} alt='Star' className='star ms-3 no-filter' style={{ zIndex: 0 }} />
             </Button>
         </div>
     );
@@ -367,7 +391,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
             <div className='d-flex flex-column mt-5'>
                 <div className='deposit-card d-flex flex-row justify-content-between align-items-center py-4 px-5 mb-4'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} />
+                        <img height={50} width={50} src={DenomsUtils.getIconFromDenom(txInfos.denom.toLowerCase())} alt={txInfos.denom} className='no-filter' />
                         <div className='d-flex flex-column ms-3'>
                             <div className='deposit-amount text-start'>
                                 {txInfos.amount} {DenomsUtils.getNormalDenom(txInfos.denom).toUpperCase()}
@@ -415,7 +439,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                                 navigate(NavigationConstants.DROPS_MY_DEPOSITS);
                             }}
                         >
-                            <img src={Assets.images.depositDrop} alt='My Deposit Drops' className='me-3' />
+                            <img src={Assets.images.depositDrop} alt='My Deposit Drops' className='me-3 no-filter' />
                             {I18n.t('depositDrops.depositFlow.shareStepCard.goToMyDrops')}
                         </Card>
                     </div>
@@ -432,7 +456,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                         onTwitterShare();
                     }}
                 >
-                    <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                    <div className='position-absolute deposit-cta-bg w-100 h-100' />
                     <img src={Assets.images.twitterWhite} alt='Twitter' className='me-3 twitter-icon' width={25} style={{ zIndex: 0 }} />
                     <div className='deposit-cta-text'>{I18n.t('deposit.shareTwitter')}</div>
                 </Button>
@@ -442,7 +466,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
 };
 
 const DepositDropSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, onNextStep, onDepositDrop, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, limit, onNextStep, onDepositDrop, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
     const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
@@ -457,7 +481,7 @@ const DepositDropSteps = (props: Props) => {
             <div className='card-content'>
                 {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
                     <DepositIbcTransfer
-                        disabled={!lumWallet}
+                        disabled={!otherWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
                         currentPool={currentPool}
@@ -494,6 +518,7 @@ const DepositDropSteps = (props: Props) => {
                         currentPool={currentPool}
                         pools={pools}
                         price={price}
+                        limit={limit}
                     />
                 )}
                 {currentStep === steps.length && txInfos && (

@@ -24,7 +24,7 @@ const Pools = ({}: IProps): JSX.Element => {
     return (
         <div className='pools-container mt-3'>
             <div className='d-flex align-items-center'>
-                <img src={Assets.images.depositDrop} alt='Gift' />
+                <img src={Assets.images.depositDrop} alt='Gift' className='no-filter' />
                 <h1 className='ms-3 mb-0'>{I18n.t('depositDrops.pools.title')}</h1>
             </div>
             <DepositDropsCard cta={I18n.t('depositDrops.card.ctaFromPools')} link={NavigationConstants.DROPS_MY_DEPOSITS} className='my-4' />

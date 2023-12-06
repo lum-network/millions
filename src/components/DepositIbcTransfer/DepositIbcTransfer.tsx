@@ -139,9 +139,9 @@ const DepositIbcTransfer = (props: Props) => {
                         type={isLoading ? 'button' : 'submit'}
                         onClick={() => onTransfer?.(form.values.amount)}
                         className='position-relative deposit-cta w-100 mt-4'
-                        disabled={disabled || isLoading || !form.values.amount || !!(form.touched.amount && form.errors.amount)}
+                        disabled={disabled || isLoading || !!(form.touched.amount && form.errors.amount)}
                     >
-                        <div className='position-absolute deposit-cta-bg w-100 h-100' style={{ backgroundColor: '#5634DE', borderRadius: 12 }} />
+                        <div className='position-absolute deposit-cta-bg w-100 h-100' />
                         <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
                     </Button>
                 </div>

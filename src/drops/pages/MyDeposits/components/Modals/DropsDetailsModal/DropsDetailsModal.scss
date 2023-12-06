@@ -78,5 +78,17 @@
                 border-color: var(--color-black) !important;
             }
         }
+
+        .cancel-icon {
+            path {
+                fill: var(--color-primary);
+            }
+        }
+
+        .edit-icon {
+            path {
+                fill: var(--color-background);
+            }
+        }
     }
 }

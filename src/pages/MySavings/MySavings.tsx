@@ -32,7 +32,7 @@ const MySavings = () => {
         useSelector((state: RootState) => ({
             lumWallet: state.wallet.lumWallet,
             otherWallets: state.wallet.otherWallets,
-            balances: state.wallet.lumWallet?.balances,
+            balances: state.wallet.lumWallet?.balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom),
             activities: state.wallet.lumWallet?.activities,
             deposits: state.wallet.lumWallet?.deposits,
             prizes: state.wallet.lumWallet?.prizes,
@@ -534,7 +534,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
+            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} limit={lumWallet.isLedger ? 3 : 6} />
             <LeavePoolModal deposit={depositToLeave} />
         </div>
     );

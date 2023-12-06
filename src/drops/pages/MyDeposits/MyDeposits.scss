@@ -10,7 +10,7 @@
 
         .deposit-drop-title {
             font-size: 18px;
-            color: var(--color-primary);
+            color: var(--color-purple);
             font-weight: 400;
         }
 
@@ -32,7 +32,7 @@
         .deposit-drop-amount-denom {
             font-size: 18px;
             font-weight: 400;
-            color: var(--color-primary);
+            color: var(--color-purple);
             text-transform: uppercase;
             line-height: 18px;
         }
@@ -41,6 +41,10 @@
             font-weight: 300;
             font-size: 12px;
             color: var(--color-dark-grey);
+        }
+
+        .wallets-count {
+            color: var(--color-black);
         }
     }
 

@@ -19,10 +19,11 @@ interface CsvFileInputProps {
     minDepositAmount?: number;
     className?: string;
     disabled: boolean;
+    limit: number;
 }
 
 const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
-    const { className, minDepositAmount, disabled, onValidCsv, onInvalidCsv } = props;
+    const { className, minDepositAmount, disabled, limit, onValidCsv, onInvalidCsv } = props;
     const { t } = useTranslation();
 
     const [innerLabel, setInnerLabel] = useState(t('depositDrops.depositFlow.fileInputLabel.pending'));
@@ -92,7 +93,7 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
                     } else {
                         setStatus('accepted');
                         setInnerLabel(t('depositDrops.depositFlow.fileInputLabel.success'));
-                        setInnerSubLabel(t('depositDrops.depositFlow.fileInputSubLabel.success', { walletCount: drops.length, batchCount: Math.ceil(drops.length / 6) }));
+                        setInnerSubLabel(t('depositDrops.depositFlow.fileInputSubLabel.success', { walletCount: drops.length, batchCount: Math.ceil(drops.length / limit) }));
                         onValidCsv([...drops]);
                     }
                 },

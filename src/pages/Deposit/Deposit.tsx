@@ -12,8 +12,8 @@ import { Modal as BootstrapModal } from 'bootstrap';
 import Assets from 'assets';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
-import { Card, Lottie, Modal, Steps, Button, QuitDepositModal, IbcTransferModal } from 'components';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps, IbcTransferModal, QuitDepositModal } from 'components';
+import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
@@ -25,7 +25,6 @@ import DepositSteps from './components/DepositSteps/DepositSteps';
 import Error404 from '../404/404';
 
 import './Deposit.scss';
-import PurpleBackgroundImage from 'components/PurpleBackgroundImage/PurpleBackgroundImage';
 
 const GSAP_DEFAULT_CONFIG = { ease: CustomEase.create('custom', 'M0,0 C0.092,0.834 0.26,1 1,1 ') };
 
@@ -86,39 +85,43 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         },
         walletClient: {
             enable: async (chainIds) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    for (const chainId of chainIds) {
-                        await providerFunctions.enable(chainId);
-                    }
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return;
+                }
+
+                for (const chainId of chainIds) {
+                    await providerFunctions.enable(chainId);
                 }
             },
             getKey: async (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    return await providerFunctions.getKey(chainId);
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return {
+                        address: new Uint8Array(),
+                        pubKey: new Uint8Array(),
+                        name: '',
+                        algo: '',
+                        isNanoLedger: false,
+                        bech32Address: '',
+                    };
                 }
 
-                return {
-                    address: new Uint8Array(),
-                    pubKey: new Uint8Array(),
-                    name: '',
-                    algo: '',
-                    isNanoLedger: false,
-                    bech32Address: '',
-                };
+                return await providerFunctions.getKey(chainId);
             },
             getOfflineSigner: (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
-
-                return providerFunctions.getOfflineSigner(chainId);
+                return providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
@@ -680,10 +683,10 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
             return null;
         }
 
-        const LIMIT = 6;
+        const LIMIT = lumWallet?.isLedger ? 3 : 6;
         const batchCount = Math.ceil(deposits.length / LIMIT);
 
-        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex, batchCount });
+        return await dispatch.wallet.depositDrop({ pool, deposits, onDepositCallback, startIndex, batchCount, limit: LIMIT });
     };
 
     useEffect(() => {
@@ -914,6 +917,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     }
 
     const isShareStep = currentStep >= steps.length;
+    const showSwapCard = otherWallet && process.env.NODE_ENV !== 'test';
 
     const depositComponentCommonProps = {
         transferForm,
@@ -955,7 +959,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                         <div className='col'>
                             <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                             <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                            {otherWallet && process.env.NODE_ENV !== 'test' ? (
+                            {showSwapCard ? (
                                 <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                     <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                     <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{I18n.t('deposit.swapHint.content')}</div>
@@ -1000,7 +1004,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                     />
                                 </Card>
                             ) : null}
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                            <Card flat withoutPadding className={`deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-${showSwapCard ? '3' : '5'}`}>
                                 <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
                             </Card>
@@ -1018,40 +1022,11 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                     )}
                     <div className='col'>
                         <div className={`d-flex flex-column justify-content-between px-3 px-sm-5 py-3 deposit-step-card ${isShareStep ? 'last-step glow-bg' : ''}`}>
-                            <DepositSteps
-                                transferForm={transferForm}
-                                onNextStep={startTransition}
-                                onDeposit={onDeposit}
-                                onFinishDeposit={(callback) => {
-                                    const tl = gsap.timeline({
-                                        ...GSAP_DEFAULT_CONFIG,
-                                        onComplete: () => {
-                                            callback();
-                                            gsap.set('#depositFlow .deposit-flow-container', {
-                                                opacity: 1,
-                                                delay: 0.2,
-                                            });
-                                        },
-                                    });
-
-                                    tl.to('#depositFlow .deposit-flow-container', {
-                                        opacity: 0,
-                                        y: -50,
-                                    }).set('#depositFlow .deposit-flow-container', {
-                                        y: 0,
-                                    });
-                                }}
-                                onTwitterShare={() => setShareState('sharing')}
-                                currentStep={currentStep}
-                                steps={steps}
-                                pools={pools.filter((pool) => pool.nativeDenom === 'u' + denom)}
-                                currentPool={pool}
-                                price={prices?.[denom || ''] || 0}
-                                lumWallet={lumWallet}
-                                otherWallets={otherWallets}
-                                amountFromLocationState={location.state?.amountToDeposit}
-                            />
-                            {isDrop ? <DepositDropSteps {...depositComponentCommonProps} onDepositDrop={onDepositDrop} /> : <DepositSteps {...depositComponentCommonProps} onDeposit={onDeposit} />}
+                            {isDrop ? (
+                                <DepositDropSteps {...depositComponentCommonProps} onDepositDrop={onDepositDrop} limit={lumWallet?.isLedger ? 3 : 6} />
+                            ) : (
+                                <DepositSteps {...depositComponentCommonProps} onDeposit={onDeposit} amountFromLocationState={location.state?.amountToDeposit} />
+                            )}
                             {isShareStep && (
                                 <Lottie
                                     className='cosmonaut-rocket position-absolute start-0 top-100 translate-middle'

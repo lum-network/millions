@@ -2,7 +2,7 @@ import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
 import { DrawModel, PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient, WalletUtils } from 'utils';
 import { RootModel } from '.';
 import dayjs from 'dayjs';
 import { LumConstants } from '@lum-network/sdk-javascript';
@@ -102,6 +102,12 @@ export const pools = createModel<RootModel>()({
 
                     dispatch.pools.setPools(pools);
                     dispatch.pools.setMutexFetchPools(false);
+
+                    const autoConnectProvider = WalletUtils.getAutoconnectProvider();
+
+                    if (autoConnectProvider && pools.length > 0 && Object.keys(state.wallet.otherWallets).length === 0 && state.wallet.otherWallets.constructor === Object) {
+                        dispatch.wallet.connectOtherWallets(autoConnectProvider);
+                    }
 
                     return pools;
                 }

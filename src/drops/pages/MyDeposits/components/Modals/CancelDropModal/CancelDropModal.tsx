@@ -9,7 +9,7 @@ import { DepositModel } from 'models';
 
 import './CancelDropModal.scss';
 
-const CancelDropModal = ({ deposits }: { deposits?: DepositModel[] }) => {
+const CancelDropModal = ({ deposits, limit }: { deposits?: DepositModel[]; limit: number }) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [batch, setBatch] = useState(0);
     const [batchTotal, setBatchTotal] = useState(1);
@@ -50,8 +50,7 @@ const CancelDropModal = ({ deposits }: { deposits?: DepositModel[] }) => {
             return;
         }
 
-        const LIMIT = 6;
-        const batchCount = Math.ceil(deposits.length / LIMIT);
+        const batchCount = Math.ceil(deposits.length / limit);
 
         setBatchTotal(batchCount);
 
@@ -61,6 +60,7 @@ const CancelDropModal = ({ deposits }: { deposits?: DepositModel[] }) => {
             onCancelCallback: (index) => setBatch(index),
             startIndex: batch,
             batchCount,
+            limit,
         });
 
         if (!res) {

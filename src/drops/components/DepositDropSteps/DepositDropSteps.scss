@@ -1,6 +1,17 @@
 @import 'src/styles/main';
 
 #depositDropFlow {
+    .add-icon,
+    .remove-icon {
+        & circle {
+            fill: var(--color-primary);
+        }
+
+        & path {
+            stroke: var(--color-white);
+        }
+    }
+
     .deposit-drop-input-type {
         background-color: transparent;
         border-right: none;
@@ -24,6 +35,7 @@
 
         .deposit-drop-address-input,
         .deposit-drop-amount-input {
+            background-color: var(--color-white);
             border: none;
             border-radius: 8px;
             &.error {
@@ -39,8 +51,9 @@
             font-size: 14px;
             padding: 15px 12px;
         }
-
+        
         .deposit-drop-amount-input {
+            color: var(--color-black);
             font-size: 18px;
             padding: 12px 12px;
         }

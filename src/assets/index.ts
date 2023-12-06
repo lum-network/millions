@@ -1,8 +1,6 @@
-import add from './images/add.svg';
 import arrow from './images/arrow.svg';
 import bonded from './images/bonded.svg';
 import biggestPrizePoolPlaceholder from './images/biggest_prize_pool_placeholder.svg';
-import cancel from './images/cancel.svg';
 import checkmark from './images/checkmark.svg';
 import coin from './images/coin.svg';
 import coinsStacked from './images/coins_stacked.svg';
@@ -23,7 +21,6 @@ import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import faucet from './images/faucet.svg';
 import download from './images/download.svg';
-import edit from './images/edit.svg';
 import info from './images/info.svg';
 import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
@@ -39,7 +36,6 @@ import mintscanPurple from './images/mintscan_purple.svg';
 import mySavings from './images/my_place.svg';
 import orbit from './images/orbit.svg';
 import questionMark from './images/questionmark.svg';
-import remove from './images/remove.svg';
 import sponsor from './images/sponsor.svg';
 import star from './images/star.svg';
 import starVisu from './images/star_visu.svg';
@@ -72,11 +68,9 @@ import zaki from './images/testimonials/zaki.png';
 
 const Assets = {
     images: {
-        add,
         arrow,
         bonded,
         biggestPrizePoolPlaceholder,
-        cancel,
         checkmark,
         coin,
         coinsStackedPurple,
@@ -97,7 +91,6 @@ const Assets = {
         downArrow,
         faucet,
         download,
-        edit,
         info,
         infoWhite,
         keplr,
@@ -113,7 +106,6 @@ const Assets = {
         mySavings,
         orbit,
         questionMark,
-        remove,
         sponsor,
         star,
         starVisu,

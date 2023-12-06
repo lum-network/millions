@@ -20,7 +20,7 @@ const DepositDropsCard = ({ className, cta, link }: IProps): JSX.Element => {
     return (
         <Card withoutPadding className={`${className} drops-card p-xl-3 p-4`}>
             <div className='d-flex flex-column flex-xl-row align-items-center'>
-                <img alt='cosmonaut flying' className='me-5 cosmonaut-flying' src={Assets.images.cosmonautFlying} />
+                <img alt='cosmonaut flying' className='me-5 cosmonaut-flying no-filter' src={Assets.images.cosmonautFlying} />
                 <div>
                     <h2>{I18n.t('depositDrops.card.title')}</h2>
                     <p

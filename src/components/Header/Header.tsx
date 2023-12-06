@@ -236,22 +236,26 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                     )}
                     {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
                     <li className={`nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0 ${inBurgerMenu && 'mb-5'}`}>
-                        <ConnectButton address={address} {...dismissMenuProps} />
+                        <div className='d-flex flex-row align-items-center'>
+                            <ConnectButton address={address} {...dismissMenuProps} />
+                            {address ? (
+                                <Button
+                                    textOnly
+                                    className='logout-btn ms-4'
+                                    style={{ backgroundColor: isDark ? '#482673' : 'white' }}
+                                    onClick={() => {
+                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
+                                        if (logoutModalRef.current) {
+                                            logoutModalRef.current.show();
+                                        }
+                                    }}
+                                >
+                                    <img src={Assets.images.logout} />
+                                </Button>
+                            ) : null}
+                        </div>
                     </li>
-                    {address && !inBurgerMenu ? (
-                        <Button
-                            textOnly
-                            className='ms-4'
-                            onClick={() => {
-                                Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
-                                if (logoutModalRef.current) {
-                                    logoutModalRef.current.show();
-                                }
-                            }}
-                        >
-                            <img alt='logout' src={Assets.images.logout} />
-                        </Button>
-                    ) : null}
+                    {!inBurgerMenu ? <DarkModeSwitch /> : null}
                 </ul>
             );
         }
