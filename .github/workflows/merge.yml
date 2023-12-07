@@ -28,10 +28,10 @@ jobs:
       REACT_APP_FIREBASE_MEASUREMENT_ID: "G-FZ28RMP812"
 
     steps:
-      - name: Set up Node version to 16
+      - name: Set up Node version to 18
         uses: actions/setup-node@v2
         with:
-          node-version: '16.13.0'
+          node-version: '18'
 
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
@@ -77,10 +77,10 @@ jobs:
       REACT_APP_SENTRY_DSN: "https://7421a4490ba149b888913bbd7af15b84@o1171159.ingest.sentry.io/4505589511815168"
 
     steps:
-      - name: Set up Node version to 16
+      - name: Set up Node version to 18
         uses: actions/setup-node@v2
         with:
-          node-version: '16.13.0'
+          node-version: '18'
 
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
