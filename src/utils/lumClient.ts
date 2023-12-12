@@ -1,6 +1,5 @@
-import { LumClient as Client, LumConstants, LumMessages, LumUtils, LumWallet } from '@lum-network/sdk-javascript';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
+import { getSigningLumClient, lum } from '@lum-network/sdk-javascript';
+import { getOfflineSignerAmino as getOfflineSigner } from 'cosmjs-utils';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
@@ -8,14 +7,12 @@ import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
-import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 class LumClient {
     private static instance: LumClient | null = null;
     private rpc: string = process.env.REACT_APP_RPC_LUM ?? '';
-    private client: Client | null = null;
+    private client: any | null = null;
+    private queryClient: Awaited<ReturnType<typeof lum.ClientFactory.createRPCQueryClient>> | null = null;
     private chainId: string | null = null;
 
     static get Instance() {
@@ -40,8 +37,13 @@ class LumClient {
         }
 
         try {
-            const client = await Client.connect(this.rpc);
+            const { createRPCQueryClient } = lum.ClientFactory;
+
+            const client = await getSigningLumClient({ rpcEndpoint: this.rpc, signer: getOfflineSigner()});
+            const queryClient = await createRPCQueryClient({ rpcEndpoint: this.rpc });
+
             this.client = client;
+            this.queryClient = queryClient;
             this.chainId = await client.getChainId();
         } catch (e) {
             throw e as Error;
