@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
 import { Coin } from '@keplr-wallet/types';
-import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants, LumConstants } from 'constant';
