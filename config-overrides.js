@@ -38,12 +38,13 @@ module.exports = {
             '^.+\\.(ts|tsx)$': 'ts-jest',
         };
 
-        config.transformIgnorePatterns = ['/node_modules/(?!(axios|gsap|wagmi|@wagmi|@adraffy/ens-normalize|@rainbow-me/rainbowkit))'];
+        config.transformIgnorePatterns = ['/node_modules/(?!(gsap|wagmi|@wagmi|@adraffy/ens-normalize|@rainbow-me/rainbowkit))'];
 
         config.moduleNameMapper = {
             ...config.moduleNameMapper,
             '\\.(css|scss)$': 'identity-obj-proxy',
             '@ledgerhq/devices': '@ledgerhq/devices/lib',
+            axios: 'axios/dist/node/axios.cjs',
         };
 
         config.setupFiles = ['reflect-metadata', 'jest-canvas-mock'];
