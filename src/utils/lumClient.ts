@@ -8,7 +8,7 @@ import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { Deposit, DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
 import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
@@ -115,8 +115,23 @@ class LumClient {
 
         while (true) {
             const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
+            const fixedDeposits: Deposit[] = [];
 
-            deposits.push(...resDeposits.deposits);
+            //FIXME: remove this when the chain is fixed
+            for (const deposit of resDeposits.deposits) {
+                if (deposit.state !== DepositState.DEPOSIT_STATE_SUCCESS) {
+                    const fixedDeposit = await this.client?.queryClient.millions.poolDeposit(Long.fromNumber(2), deposit.depositId);
+
+                    if (fixedDeposit) {
+                        fixedDeposits.push(fixedDeposit);
+                        continue;
+                    }
+                }
+
+                fixedDeposits.push(deposit);
+            }
+
+            deposits.push(...fixedDeposits);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
