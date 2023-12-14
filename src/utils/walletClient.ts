@@ -1,12 +1,12 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { Coin } from '@lum-network/sdk-javascript/build/types';
 import dayjs from 'dayjs';
 import { I18n, WalletUtils } from 'utils';
 import Long from 'long';
 import { showErrorToast } from './toast';
-import { LumClient } from '@lum-network/sdk-javascript';
+import { LumClient } from '@lum-network/sdk-javascript-legacy';
 import { ApiConstants } from 'constant';
+import { Coin } from '@keplr-wallet/types';
 
 const isConnectedWithSigner = (client: LumClient | SigningStargateClient, withSigner: boolean): client is SigningStargateClient => {
     return withSigner;

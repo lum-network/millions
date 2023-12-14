@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { createModel } from '@rematch/core';
-import { LumConstants, LumTypes, LumUtils, LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript';
+import { Coin } from '@keplr-wallet/types';
 import Long from 'long';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants } from 'constant';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants, LumConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
+import { LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript-legacy';
 
 type SignInLumPayload = LumWallet & {
     isLedger: boolean;
@@ -16,7 +17,7 @@ type SignInLumPayload = LumWallet & {
 interface IbcTransferPayload {
     fromAddress: string;
     toAddress: string;
-    amount: LumTypes.Coin;
+    amount: Coin;
     type: 'withdraw' | 'deposit';
     ibcChannel: string;
     normalDenom: string;
@@ -24,7 +25,7 @@ interface IbcTransferPayload {
 }
 
 interface SetWalletDataPayload {
-    balances?: LumTypes.Coin[];
+    balances?: Coin[];
     activities?: {
         result: TransactionModel[];
         currentPage: number;
@@ -42,7 +43,7 @@ interface GetActivitiesPayload {
 
 interface SetOtherWalletPayload {
     denom: string;
-    balances?: LumTypes.Coin[];
+    balances?: Coin[];
     address: string;
 }
 
@@ -60,20 +61,20 @@ interface ClaimPrizesPayload {
 }
 
 interface RetryDepositPayload {
-    poolId: Long;
-    depositId: Long;
+    poolId: bigint;
+    depositId: bigint;
 }
 
 interface LeavePoolPayload {
-    poolId: Long;
+    poolId: bigint;
     denom: string;
-    depositId: Long;
+    depositId: bigint;
 }
 
 interface LeavePoolRetryPayload {
-    poolId: Long;
+    poolId: bigint;
     denom: string;
-    withdrawalId: Long;
+    withdrawalId: bigint;
 }
 
 interface WalletState {
@@ -431,7 +432,7 @@ export const wallet = createModel<RootModel>()({
                 client.disconnect();
             }
         },
-        async getLumWalletBalances(address: string, state): Promise<LumTypes.Coin[] | undefined> {
+        async getLumWalletBalances(address: string, state): Promise<Coin[] | undefined> {
             try {
                 const result = await LumClient.getWalletBalances(address);
 
@@ -500,11 +501,11 @@ export const wallet = createModel<RootModel>()({
                         })
                         .map((prize) => ({
                             ...prize,
-                            drawId: prize.drawId.toNumber(),
-                            poolId: prize.poolId.toNumber(),
-                            prizeId: prize.prizeId.toNumber(),
-                            createdAtHeight: prize.createdAtHeight.toNumber(),
-                            updatedAtHeight: prize.updatedAtHeight.toNumber(),
+                            drawId: Number(prize.drawId),
+                            poolId: Number(prize.poolId),
+                            prizeId: Number(prize.prizeId),
+                            createdAtHeight: Number(prize.createdAtHeight),
+                            updatedAtHeight: Number(prize.updatedAtHeight),
                             amount: {
                                 amount: Number(prize.amount?.amount || '0'),
                                 denom: prize.amount?.denom ?? '',
@@ -557,7 +558,7 @@ export const wallet = createModel<RootModel>()({
                 dispatch.wallet.setPrizesMutex(false);
             }
         },
-        async getLeaderboardRank(poolId: Long, state): Promise<LeaderboardItemModel[] | null | undefined> {
+        async getLeaderboardRank(poolId: bigint, state): Promise<LeaderboardItemModel[] | null | undefined> {
             if (!state.wallet.lumWallet) {
                 return null;
             }
@@ -573,7 +574,7 @@ export const wallet = createModel<RootModel>()({
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
-            const convertedAmount = LumUtils.convertUnit(
+            const convertedAmount = NumbersUtils.convertUnit(
                 {
                     amount: amount.amount,
                     denom: LumConstants.LumDenom,
@@ -707,7 +708,7 @@ export const wallet = createModel<RootModel>()({
         async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId.toNumber()} to pool #${payload.poolId.toNumber()}` });
+            const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId} to pool #${payload.poolId}` });
 
             try {
                 if (!lumWallet) {
@@ -730,13 +731,13 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully retried deposit #${payload.depositId.toNumber()} to pool #${payload.depositId.toNumber()}`,
+                    content: `Successfully retried deposit #${payload.depositId} to pool #${payload.depositId}`,
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId.toNumber()}` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId}` });
                 return null;
             }
         },
@@ -906,9 +907,9 @@ export const wallet = createModel<RootModel>()({
             for (const prize of prizes) {
                 if (!prize.amount) continue;
 
-                const existingItemIndex = toDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
+                const existingItemIndex = toDeposit.findIndex((d) => Number(d.pool.poolId) === Number(prize.poolId));
                 if (existingItemIndex === -1) {
-                    const pool = state.pools.pools.find((p) => p.poolId.equals(prize.poolId));
+                    const pool = state.pools.pools.find((p) => Number(p.poolId) === Number(prize.poolId));
 
                     if (!pool) continue;
 

@@ -18,7 +18,7 @@ const LeavePool = ({ deposit }: Props) => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
     const dispatch = useDispatch<Dispatch>();
 
-    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId.eq(deposit?.poolId) : undefined)));
+    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId === deposit?.poolId : undefined)));
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.leavePool);
 
     const steps = I18n.t('mySavings.leavePoolModal.steps', {

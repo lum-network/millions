@@ -1,4 +1,4 @@
-import { LumTypes, LumWallet } from '@lum-network/sdk-javascript';
+import { LumTypes, LumWallet } from '@lum-network/sdk-javascript-legacy';
 import { AggregatedDepositModel } from './deposit';
 import { TransactionModel } from './transaction';
 import PrizeModel from './Prize';

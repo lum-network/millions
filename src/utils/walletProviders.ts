@@ -4,7 +4,7 @@ import { cosmos } from '@cosmostation/extension-client';
 
 import { WalletProvider, PoolsConstants } from 'constant';
 import { I18n } from 'utils';
-import { LumUtils } from '@lum-network/sdk-javascript';
+import { LumUtils } from '@lum-network/sdk-javascript-legacy';
 
 export const isKeplrInstalled = (): boolean => {
     const keplrWindow = window as Window;

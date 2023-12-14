@@ -1,17 +1,23 @@
-import { getSigningLumClient, lum } from '@lum-network/sdk-javascript';
-import { getOfflineSignerAmino as getOfflineSigner } from 'cosmjs-utils';
+import { lum } from '@lum-network/sdk-javascript';
+import { LumWallet, LumClient as Client, LumUtils, LumMessages } from '@lum-network/sdk-javascript-legacy';
 import Long from 'long';
 import { AggregatedDepositModel, DepositModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils, WalletUtils } from 'utils';
 import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
-import { ApiConstants } from 'constant';
+import { ApiConstants, LumConstants } from 'constant';
 import { LumApi } from 'api';
+import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
+import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
+import { QueryWithdrawalsResponse, QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/query';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
+import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
+import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/helpers';
 
 class LumClient {
     private static instance: LumClient | null = null;
     private rpc: string = process.env.REACT_APP_RPC_LUM ?? '';
-    private client: any | null = null;
+    private client: Client | null = null;
     private queryClient: Awaited<ReturnType<typeof lum.ClientFactory.createRPCQueryClient>> | null = null;
     private chainId: string | null = null;
 
@@ -39,7 +45,7 @@ class LumClient {
         try {
             const { createRPCQueryClient } = lum.ClientFactory;
 
-            const client = await getSigningLumClient({ rpcEndpoint: this.rpc, signer: getOfflineSigner()});
+            const client = await Client.connect(this.rpc);
             const queryClient = await createRPCQueryClient({ rpcEndpoint: this.rpc });
 
             this.client = client;
@@ -51,31 +57,31 @@ class LumClient {
     };
 
     getPools = async () => {
-        if (this.client === null) {
+        if (this.queryClient === null) {
             return null;
         }
 
-        const res = await this.client.queryClient.millions.pools();
+        const res = await this.queryClient.lum.network.millions.pools();
 
         return res.pools;
     };
 
-    getPoolDraws = async (poolId: Long) => {
-        if (this.client === null) {
+    getPoolDraws = async (poolId: bigint) => {
+        if (this.queryClient === null) {
             return null;
         }
 
         const draws: Draw[] = [];
-        let res = await this.client.queryClient.millions.poolDraws(poolId);
+        let res = await this.queryClient.lum.network.millions.poolDraws({ poolId });
         let page: Uint8Array | undefined = res.pagination?.nextKey;
 
-        const total = res.pagination?.total.toNumber() || 100;
+        const total = Number(res.pagination?.total) || 100;
 
         draws.push(...res.draws);
 
         if (total > 100 && res.draws.length === 100) {
             for (let i = 0; i < total; i += 100) {
-                res = await this.client.queryClient.millions.poolDraws(poolId, page);
+                res = await this.queryClient.lum.network.millions.poolDraws({ poolId });
                 page = res.pagination?.nextKey;
 
                 draws.push(...res.draws);
@@ -84,8 +90,8 @@ class LumClient {
         }
 
         draws.sort((a, b) => {
-            const aHeight = a.createdAtHeight.toNumber();
-            const bHeight = b.createdAtHeight.toNumber();
+            const aHeight = Number(a.createdAtHeight);
+            const bHeight = Number(b.createdAtHeight);
 
             return bHeight - aHeight;
         });
@@ -97,18 +103,18 @@ class LumClient {
         return draws;
     };
 
-    getPoolPrizes = async (poolId: Long) => {
-        if (this.client === null) {
+    getPoolPrizes = async (poolId: bigint) => {
+        if (this.queryClient === null) {
             return null;
         }
 
-        const res = await this.client.queryClient.millions.poolPrizes(poolId);
+        const res = await this.queryClient.lum.network.millions.poolPrizes({ poolId });
 
         return res.prizes;
     };
 
     getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
-        if (this.client === null) {
+        if (this.queryClient === null) {
             return null;
         }
 
@@ -116,7 +122,10 @@ class LumClient {
         const deposits: DepositModel[] = [];
 
         while (true) {
-            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
+            const resDeposits: QueryDepositsResponse = await this.queryClient.lum.network.millions.accountDeposits({
+                depositorAddress: address,
+                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
+            });
 
             deposits.push(...resDeposits.deposits);
 
@@ -134,7 +143,10 @@ class LumClient {
         const withdrawals: Withdrawal[] = [];
 
         while (true) {
-            const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
+            const resWithdrawals: QueryWithdrawalsResponse = await this.queryClient.lum.network.millions.accountWithdrawals({
+                depositorAddress: address,
+                pagination: pageWithdrawals ? ({ key: pageWithdrawals } as PageRequest) : undefined,
+            });
 
             withdrawals.push(...resWithdrawals.withdrawals);
 
@@ -175,8 +187,8 @@ class LumClient {
             for (const drop of depositsDrops) {
                 depositsDropsToDeposits.push({
                     amount: drop.amount,
-                    poolId: Long.fromNumber(drop.poolId),
-                    depositId: Long.fromNumber(drop.depositId),
+                    poolId: BigInt(drop.poolId),
+                    depositId: BigInt(drop.depositId),
                     depositorAddress: drop.depositorAddress,
                     isWithdrawing: false,
                     isDepositDrop: true,
@@ -235,12 +247,12 @@ class LumClient {
     };
 
     getWalletPrizes = async (address: string): Promise<{ prizes: Prize[] } | null> => {
-        if (this.client === null) {
+        if (this.queryClient === null) {
             return null;
         }
 
         const prizes: Prize[] = [];
-        const res = await this.client.queryClient.millions.accountPrizes(address);
+        const res = await this.queryClient.lum.network.millions.accountPrizes({ winnerAddress: address });
 
         for (const prize of res.prizes) {
             const amount = prize.amount ? { amount: prize.amount.amount, denom: await getDenomFromIbc(prize.amount.denom) } : undefined;
@@ -273,11 +285,11 @@ class LumClient {
     };
 
     getMinDepositDelta = async () => {
-        if (this.client === null) {
+        if (this.queryClient === null) {
             return null;
         }
 
-        const depositDelta = (await this.client.queryClient.millions.params()).minDepositDrawDelta?.seconds.toNumber();
+        const depositDelta = (await this.queryClient.lum.network.millions.params()).params?.minDepositDrawDelta?.seconds;
 
         if (!depositDelta) {
             return null;
@@ -292,7 +304,7 @@ class LumClient {
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgMillionsDeposit(pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
+        const message = LumMessages.BuildMsgMillionsDeposit(Long.fromNumber(Number(pool.poolId)), wallet.getAddress(), wallet.getAddress(), false, {
             amount: LumUtils.convertUnit({ amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
             denom: pool.denom,
         });
@@ -319,13 +331,13 @@ class LumClient {
         };
     };
 
-    depositRetry = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
+    depositRetry = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
         if (this.client === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgDepositRetry(poolId, depositId, wallet.getAddress());
+        const message = LumMessages.BuildMsgDepositRetry(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress());
 
         // Define fees
         const fee = WalletUtils.buildTxFee('25000', '500000');
@@ -359,7 +371,7 @@ class LumClient {
 
         for (const deposit of toDeposit) {
             messages.push(
-                LumMessages.BuildMsgMillionsDeposit(deposit.pool.poolId, wallet.getAddress(), wallet.getAddress(), false, {
+                LumMessages.BuildMsgMillionsDeposit(Long.fromNumber(Number(deposit.pool.poolId)), wallet.getAddress(), wallet.getAddress(), false, {
                     amount: deposit.amount,
                     denom: deposit.pool.denom,
                 }),
@@ -388,13 +400,13 @@ class LumClient {
         };
     };
 
-    leavePool = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
+    leavePool = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
         if (this.client === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgWithdrawDeposit(poolId, depositId, wallet.getAddress(), wallet.getAddress());
+        const message = LumMessages.BuildMsgWithdrawDeposit(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress(), wallet.getAddress());
 
         // Define fees
         const fee = WalletUtils.buildTxFee('25000', '500000');
@@ -418,13 +430,13 @@ class LumClient {
         };
     };
 
-    leavePoolRetry = async (wallet: LumWallet, poolId: Long, depositId: Long) => {
+    leavePoolRetry = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
         if (this.client === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgWithdrawDepositRetry(poolId, depositId, wallet.getAddress());
+        const message = LumMessages.BuildMsgWithdrawDepositRetry(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress());
 
         // Define fees
         const fee = WalletUtils.buildTxFee('25000', '500000');

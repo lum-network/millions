@@ -3,7 +3,7 @@ import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocat
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LumConstants } from '@lum-network/sdk-javascript';
+import { LumConstants } from '@lum-network/sdk-javascript-legacy';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';

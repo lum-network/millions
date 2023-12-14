@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumTypes } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { LumTypes } from '@lum-network/sdk-javascript-legacy';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +14,7 @@ import { PoolModel, PrizeModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import './Claim.scss';
 
@@ -169,7 +169,7 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
             setBatch(0);
             setBatchTotal(0);
         } else {
-            const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
+            const pool = pools.find((pool) => Number(pool.poolId) === prizes[0].poolId);
             const amount: LumTypes.Coin[] = [];
 
             for (const prize of prizes) {
@@ -203,9 +203,9 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
         for (const prize of prizes) {
             if (!prize.amount) continue;
 
-            const existingItemIndex = prizesToDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
+            const existingItemIndex = prizesToDeposit.findIndex((d) => Number(d.pool.poolId) === prize.poolId);
             if (existingItemIndex === -1) {
-                const pool = pools.find((p) => p.poolId.equals(prize.poolId));
+                const pool = pools.find((p) => Number(p.poolId) === prize.poolId);
 
                 if (!pool) continue;
 
@@ -259,7 +259,7 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
         let blockCompound = false;
 
         for (const pToDeposit of toDeposit) {
-            const pool = pools.find((p) => p.poolId.eq(pToDeposit.pool.poolId));
+            const pool = pools.find((p) => p.poolId === pToDeposit.pool.poolId);
             const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount);
             const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0');
 

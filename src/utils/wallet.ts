@@ -1,10 +1,10 @@
-import { LumConstants, LumTypes, LumWallet } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes, LumWallet } from '@lum-network/sdk-javascript-legacy';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
-import { Message } from '@lum-network/sdk-javascript/build/messages';
+import { Message } from '@lum-network/sdk-javascript-legacy/build/messages';
 import { AggregatedDepositModel } from 'models';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { AUTOCONNECT_STORAGE_KEY, WalletProvider } from 'constant';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 

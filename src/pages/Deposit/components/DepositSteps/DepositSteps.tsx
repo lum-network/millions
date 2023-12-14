@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript-legacy';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 
@@ -77,7 +77,7 @@ const DepositStep1 = (
     if (prizeStrat) {
         let avgPrizesDrawn = 0;
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
+            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (Number(prizeBatch.poolPercent) / 100)) / Number(prizeBatch.quantity);
         }
 
         avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;

@@ -1,6 +1,6 @@
 import Assets from 'assets';
-import { LumConstants, LumMessages, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { Any } from '@lum-network/sdk-javascript/build/codec/google/protobuf/any';
+import { LumConstants, LumMessages, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript-legacy';
+import { Any } from '@lum-network/sdk-javascript-legacy/build/codec/google/protobuf/any';
 import { TransactionModel } from 'models';
 import Long from 'long';
 import { I18n, NumbersUtils } from 'utils';

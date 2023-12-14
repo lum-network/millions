@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
-import { LumMessages } from '@lum-network/sdk-javascript';
+import { LumMessages } from '@lum-network/sdk-javascript-legacy';
 
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';

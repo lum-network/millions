@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript-legacy';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';

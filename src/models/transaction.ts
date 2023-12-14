@@ -1,4 +1,4 @@
-import { LumTypes } from '@lum-network/sdk-javascript';
+import { LumTypes } from '@lum-network/sdk-javascript-legacy';
 
 export interface TransactionModel {
     messages: string[];

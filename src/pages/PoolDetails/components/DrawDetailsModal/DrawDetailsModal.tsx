@@ -80,7 +80,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                                 <div className='tx-icon-container d-flex align-items-center justify-content-center me-3'>
                                                     <img src={Assets.images.trophyPurple} alt='' className='no-filter' />
                                                 </div>
-                                                {StringsUtils.trunc(winner.winnerAddress)}
+                                                {StringsUtils.trunc(winner.winnerAddress ?? '')}
                                             </div>
                                         </td>
                                         <td className='text-md-end'>

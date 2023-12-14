@@ -2,8 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { LumConstants, LumTypes } from '@lum-network/sdk-javascript-legacy';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
@@ -17,6 +16,7 @@ import { DepositModel, LeaderboardItemModel } from 'models';
 import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import DepositTable from './components/DepositTable/DepositTable';
 import TransactionsTable from './components/TransationsTable/TransactionsTable';

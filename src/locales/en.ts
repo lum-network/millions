@@ -301,7 +301,8 @@ export default {
         tvlDetails: {
             title: 'Total Value Locked Details',
             sponsor: 'Sponsorship',
-            sponsorDesc: 'Boosting your winning chances! These tokens only generate yield for the prizes. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/deposits-and-withdrawals#sponsorship">Learn more</a>',
+            sponsorDesc:
+                'Boosting your winning chances! These tokens only generate yield for the prizes. <a target="_blank" rel="noreferrer" href="https://docs.cosmosmillions.com/cosmos-millions/deposits-and-withdrawals#sponsorship">Learn more</a>',
             deposits: 'Cosmonauts Deposits',
         },
         winners: {
@@ -368,8 +369,8 @@ export default {
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         depositDrop: 'Deposit Drop',
-        depositDropHint: 'Congrats, you\'ve got a Deposit Drop!\n' +
-            'It means a temporary boost in your deposit, loaned to your account. You have more chances to win in upcoming draws so good luck Cosmonaut!',
+        depositDropHint:
+            "Congrats, you've got a Deposit Drop!\n" + 'It means a temporary boost in your deposit, loaned to your account. You have more chances to win in upcoming draws so good luck Cosmonaut!',
         transferWaitingCta: 'Usually ~1 minute',
         noAssets: {
             title: 'No assets yet',
@@ -556,7 +557,7 @@ export default {
         swapModal: {
             title: 'Swap to Cosmos Hub',
         },
-        depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>'
+        depositFaucet: 'You can have 1 LUM for free by using the faucet on Discord. <a href="https://discord.com/invite/PWHUMdwQ5r" rel="noreferrer" target="_blank">Click here</a>',
     },
     luckiestWinners: {
         title: 'Luckiest Winners',

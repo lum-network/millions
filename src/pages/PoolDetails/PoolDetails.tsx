@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 
 import Assets from 'assets';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
@@ -17,6 +16,7 @@ import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { LeaderboardItemModel } from 'models';
 import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -86,9 +86,9 @@ const PoolDetails = () => {
     }
 
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
-        count: prizeBatch.quantity.toNumber(),
+        count: prizeBatch.quantity,
         chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
-        value: (pool.estimatedPrizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100) * prices[denom],
+        value: (pool.estimatedPrizeToWin?.amount || 0) * (Number(prizeBatch.poolPercent) / 100) * prices[denom],
     }));
 
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
@@ -97,8 +97,8 @@ const PoolDetails = () => {
     const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
     const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
 
-    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? deposit.poolId?.equals(poolId) : deposit.amount?.denom === 'u' + denom));
-    const avgDeposit = (usersDepositsAmount / pool.depositorsCount.toNumber()) * prices[denom] || 0;
+    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? Number(deposit.poolId) === Number(poolId) : deposit.amount?.denom === 'u' + denom));
+    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * prices[denom] || 0;
 
     return (
         <div className='pool-details-container mt-5'>
@@ -284,12 +284,12 @@ const PoolDetails = () => {
                                         <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
                                             <td data-label={prizeDistributionHeaders[0]}>
                                                 <div className='d-flex flex-column'>
-                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
+                                                    <div>{numeral(prize.value / Number(prize.count)).format('$0,0[.]00')}</div>
                                                     <div className='percentage'>{I18n.t('poolDetails.prizeDistribution.chancesToWin', { percentage: numeral(prize.chances).format('0,0[.]00%') })}</div>
                                                 </div>
                                             </td>
                                             <td className='text-end' data-label={prizeDistributionHeaders[1]}>
-                                                {prize.count}
+                                                {Number(prize.count)}
                                             </td>
                                         </tr>
                                     ))}
