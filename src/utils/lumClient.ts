@@ -148,8 +148,18 @@ class LumClient {
 
         while (true) {
             const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
+            const fixedWithdrawals: Withdrawal[] = [];
 
-            withdrawals.push(...resWithdrawals.withdrawals);
+            //FIXME: remove this when the chain is fixed
+            for (const withdrawal of resWithdrawals.withdrawals) {
+                const fixedWithdrawal = await this.client?.queryClient.millions.poolWithdrawal(Long.fromNumber(2), withdrawal.withdrawalId);
+
+                if (fixedWithdrawal) {
+                    fixedWithdrawals.push(fixedWithdrawal);
+                }
+            }
+
+            withdrawals.push(...fixedWithdrawals);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resWithdrawals.pagination && resWithdrawals.pagination.nextKey && resWithdrawals.pagination.nextKey.length) {
@@ -174,7 +184,7 @@ class LumClient {
                 unbondingEndAt: withdrawal.unbondingEndsAt,
                 winnerAddress: withdrawal.toAddress,
                 withdrawalState: withdrawal.state,
-                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER,
+                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER || withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_ICA_UNDELEGATE,
             });
         }
 
