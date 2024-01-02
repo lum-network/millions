@@ -184,7 +184,7 @@ class LumClient {
                 unbondingEndAt: withdrawal.unbondingEndsAt,
                 winnerAddress: withdrawal.toAddress,
                 withdrawalState: withdrawal.state,
-                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER,
+                withdrawalCanBeRetried: withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_IBC_TRANSFER || withdrawal.errorState === WithdrawalState.WITHDRAWAL_STATE_ICA_UNDELEGATE,
             });
         }
 
