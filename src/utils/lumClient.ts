@@ -1,24 +1,30 @@
-import { lum } from '@lum-network/sdk-javascript';
-import { LumWallet, LumClient as Client, LumUtils, LumMessages } from '@lum-network/sdk-javascript-legacy';
-import Long from 'long';
-import { AggregatedDepositModel, DepositModel, PoolModel, PrizeModel } from 'models';
-import { PoolsUtils, WalletUtils } from 'utils';
-import { formatTxs } from './txs';
-import { getDenomFromIbc } from './denoms';
-import { ApiConstants, LumConstants } from 'constant';
-import { LumApi } from 'api';
+import { LUM_DENOM, MICRO_LUM_DENOM, convertUnit, getSigningLumClient, ibc, lum } from '@lum-network/sdk-javascript';
 import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
 import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
 import { QueryWithdrawalsResponse, QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/query';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
 import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/helpers';
+import { SigningStargateClient, assertIsDeliverTxSuccess, coins } from '@cosmjs/stargate';
+import { OfflineSigner } from '@cosmjs/proto-signing';
+import { Dec, IntPretty } from '@keplr-wallet/unit';
+
+import { LumApi } from 'api';
+import { ApiConstants } from 'constant';
+import { AggregatedDepositModel, DepositModel, LumWalletModel, PoolModel, PrizeModel } from 'models';
+import { PoolsUtils } from 'utils';
+
+import { formatTxs } from './txs';
+import { getDenomFromIbc } from './denoms';
+
+const { deposit, claimPrize, withdrawDeposit, withdrawDepositRetry, depositRetry } = lum.network.millions.MessageComposer.withTypeUrl;
 
 class LumClient {
     private static instance: LumClient | null = null;
     private rpc: string = process.env.REACT_APP_RPC_LUM ?? '';
-    private client: Client | null = null;
-    private queryClient: Awaited<ReturnType<typeof lum.ClientFactory.createRPCQueryClient>> | null = null;
+    private signingClient: SigningStargateClient | null = null;
+    private lumQueryClient: Awaited<ReturnType<typeof lum.ClientFactory.createRPCQueryClient>> | null = null;
+    private ibcQueryClient: Awaited<ReturnType<typeof ibc.ClientFactory.createRPCQueryClient>> | null = null;
     private chainId: string | null = null;
 
     static get Instance() {
@@ -38,41 +44,53 @@ class LumClient {
     };
 
     connect = async () => {
-        if (this.client) {
+        if (this.signingClient) {
             return;
         }
 
         try {
             const { createRPCQueryClient } = lum.ClientFactory;
+            const { createRPCQueryClient: createIbcRPCQueryClient } = ibc.ClientFactory;
 
-            const client = await Client.connect(this.rpc);
-            const queryClient = await createRPCQueryClient({ rpcEndpoint: this.rpc });
+            const lumQueryClient = await createRPCQueryClient({ rpcEndpoint: this.rpc });
+            const ibcQueryClient = await createIbcRPCQueryClient({ rpcEndpoint: this.rpc });
 
-            this.client = client;
-            this.queryClient = queryClient;
-            this.chainId = await client.getChainId();
+            this.lumQueryClient = lumQueryClient;
+            this.ibcQueryClient = ibcQueryClient;
+            this.chainId = (await ibcQueryClient.cosmos.base.tendermint.v1beta1.getNodeInfo()).nodeInfo?.network || 'lum-network-1';
         } catch (e) {
             throw e as Error;
         }
     };
 
+    connectSigner = async (offlineSigner: OfflineSigner) => {
+        try {
+            const cosmosSigningClient = await getSigningLumClient({
+                rpcEndpoint: this.rpc,
+                signer: offlineSigner,
+            });
+
+            this.signingClient = cosmosSigningClient;
+        } catch {}
+    };
+
     getPools = async () => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
-        const res = await this.queryClient.lum.network.millions.pools();
+        const res = await this.lumQueryClient.lum.network.millions.pools();
 
         return res.pools;
     };
 
     getPoolDraws = async (poolId: bigint) => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
         const draws: Draw[] = [];
-        let res = await this.queryClient.lum.network.millions.poolDraws({ poolId });
+        let res = await this.lumQueryClient.lum.network.millions.poolDraws({ poolId });
         let page: Uint8Array | undefined = res.pagination?.nextKey;
 
         const total = Number(res.pagination?.total) || 100;
@@ -81,7 +99,7 @@ class LumClient {
 
         if (total > 100 && res.draws.length === 100) {
             for (let i = 0; i < total; i += 100) {
-                res = await this.queryClient.lum.network.millions.poolDraws({ poolId });
+                res = await this.lumQueryClient.lum.network.millions.poolDraws({ poolId });
                 page = res.pagination?.nextKey;
 
                 draws.push(...res.draws);
@@ -104,17 +122,17 @@ class LumClient {
     };
 
     getPoolPrizes = async (poolId: bigint) => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
-        const res = await this.queryClient.lum.network.millions.poolPrizes({ poolId });
+        const res = await this.lumQueryClient.lum.network.millions.poolPrizes({ poolId });
 
         return res.prizes;
     };
 
     getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
@@ -122,7 +140,7 @@ class LumClient {
         const deposits: DepositModel[] = [];
 
         while (true) {
-            const resDeposits: QueryDepositsResponse = await this.queryClient.lum.network.millions.accountDeposits({
+            const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
                 depositorAddress: address,
                 pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
             });
@@ -143,7 +161,7 @@ class LumClient {
         const withdrawals: Withdrawal[] = [];
 
         while (true) {
-            const resWithdrawals: QueryWithdrawalsResponse = await this.queryClient.lum.network.millions.accountWithdrawals({
+            const resWithdrawals: QueryWithdrawalsResponse = await this.lumQueryClient.lum.network.millions.accountWithdrawals({
                 depositorAddress: address,
                 pagination: pageWithdrawals ? ({ key: pageWithdrawals } as PageRequest) : undefined,
             });
@@ -203,17 +221,17 @@ class LumClient {
     };
 
     getWalletBalances = async (address: string) => {
-        if (this.client === null) {
+        if (this.signingClient === null) {
             return null;
         }
 
-        const balances = await this.client.getAllBalances(address);
+        const balances = await this.signingClient.getAllBalances(address);
 
         return { balances };
     };
 
     getWalletActivities = async (address: string) => {
-        if (this.client === null) {
+        if (this.signingClient === null) {
             return null;
         }
 
@@ -222,21 +240,29 @@ class LumClient {
 
         const queries = [
             // Query deposits
-            `deposit.depositor='${address}' AND deposit.winner='${address}'`,
+            [
+                { key: 'deposit.depositor', value: address },
+                { key: 'deposit.winner', value: address },
+            ],
 
             // Query claim prize
-            `prize_claim.winner='${address}'`,
+            [{ key: 'prize_claim.winner', value: address }],
 
             // Query leave pool
-            `withdraw_deposit.depositor='${address}' AND withdraw_deposit.recipient='${address}'`,
+            [
+                { key: 'withdraw_deposit.depositor', value: address },
+                { key: 'withdraw_deposit.recipient', value: address },
+            ],
         ];
 
-        const res = await Promise.allSettled(queries.map((query) => this.client?.tmClient.txSearchAll({ query })));
+        // Already checked if signingClient is not null so disable eslint error
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const res = await Promise.allSettled(queries.map((query) => this.signingClient!.searchTx(query)));
 
         for (const r of res) {
             if (r.status === 'fulfilled' && r.value !== undefined) {
-                txs.push(...r.value.txs);
-                totalCount += r.value.totalCount;
+                txs.push(...r.value);
+                totalCount += r.value.length;
             }
         }
 
@@ -247,12 +273,12 @@ class LumClient {
     };
 
     getWalletPrizes = async (address: string): Promise<{ prizes: Prize[] } | null> => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
         const prizes: Prize[] = [];
-        const res = await this.queryClient.lum.network.millions.accountPrizes({ winnerAddress: address });
+        const res = await this.lumQueryClient.lum.network.millions.accountPrizes({ winnerAddress: address });
 
         for (const prize of res.prizes) {
             const amount = prize.amount ? { amount: prize.amount.amount, denom: await getDenomFromIbc(prize.amount.denom) } : undefined;
@@ -269,27 +295,27 @@ class LumClient {
     };
 
     getDenomTrace = async (ibcDenom: string) => {
-        if (this.client === null) {
+        if (this.ibcQueryClient === null) {
             return null;
         }
 
-        return this.client.queryClient.ibc.transfer.denomTrace(ibcDenom);
+        return this.ibcQueryClient.ibc.applications.transfer.v1.denomTrace({ hash: ibcDenom });
     };
 
     getFeesStakers = async () => {
-        if (this.client === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
-        return Number((await this.client.queryClient.millions.params()).feesStakers) / ApiConstants.CLIENT_PRECISION;
+        return Number((await this.lumQueryClient.lum.network.millions.params()).params?.feesStakers || '0') / ApiConstants.CLIENT_PRECISION;
     };
 
     getMinDepositDelta = async () => {
-        if (this.queryClient === null) {
+        if (this.lumQueryClient === null) {
             return null;
         }
 
-        const depositDelta = (await this.queryClient.lum.network.millions.params()).params?.minDepositDrawDelta?.seconds;
+        const depositDelta = (await this.lumQueryClient.lum.network.millions.params()).params?.minDepositDrawDelta?.seconds;
 
         if (!depositDelta) {
             return null;
@@ -298,170 +324,157 @@ class LumClient {
         return depositDelta;
     };
 
-    depositToPool = async (wallet: LumWallet, pool: PoolModel, amount: string) => {
-        if (this.client === null) {
+    depositToPool = async (wallet: LumWalletModel, pool: PoolModel, amount: string) => {
+        if (this.signingClient === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgMillionsDeposit(Long.fromNumber(Number(pool.poolId)), wallet.getAddress(), wallet.getAddress(), false, {
-            amount: LumUtils.convertUnit({ amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
-            denom: pool.denom,
+        const message = deposit({
+            poolId: pool.poolId,
+            depositorAddress: wallet.address,
+            winnerAddress: wallet.address,
+            isSponsor: false,
+            amount: {
+                amount: convertUnit({ amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
+                denom: pool.denom,
+            },
         });
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 
-    depositRetry = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
-        if (this.client === null) {
+    depositRetry = async (wallet: LumWalletModel, poolId: bigint, depositId: bigint) => {
+        if (this.signingClient === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgDepositRetry(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress());
+        const message = depositRetry({ poolId, depositId, depositorAddress: wallet.address });
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 
-    multiDeposit = async (wallet: LumWallet, toDeposit: { pool: PoolModel; amount: string }[]) => {
-        if (this.client === null) {
+    multiDeposit = async (wallet: LumWalletModel, toDeposit: { pool: PoolModel; amount: string }[]) => {
+        if (this.signingClient === null) {
             return null;
         }
 
         // Build transaction message
         const messages = [];
 
-        for (const deposit of toDeposit) {
+        for (const d of toDeposit) {
             messages.push(
-                LumMessages.BuildMsgMillionsDeposit(Long.fromNumber(Number(deposit.pool.poolId)), wallet.getAddress(), wallet.getAddress(), false, {
-                    amount: deposit.amount,
-                    denom: deposit.pool.denom,
+                deposit({
+                    poolId: d.pool.poolId,
+                    depositorAddress: wallet.address,
+                    winnerAddress: wallet.address,
+                    isSponsor: false,
+                    amount: {
+                        amount: d.amount,
+                        denom: d.pool.denom,
+                    },
                 }),
             );
         }
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 
-    leavePool = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
-        if (this.client === null) {
+    leavePool = async (wallet: LumWalletModel, poolId: bigint, depositId: bigint) => {
+        if (this.signingClient === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgWithdrawDeposit(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress(), wallet.getAddress());
+        const message = withdrawDeposit({ poolId, depositId, depositorAddress: wallet.address, toAddress: wallet.address });
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 
-    leavePoolRetry = async (wallet: LumWallet, poolId: bigint, depositId: bigint) => {
-        if (this.client === null) {
+    leavePoolRetry = async (wallet: LumWalletModel, poolId: bigint, withdrawalId: bigint) => {
+        if (this.signingClient === null) {
             return null;
         }
 
         // Build transaction message
-        const message = LumMessages.BuildMsgWithdrawDepositRetry(Long.fromNumber(Number(poolId)), Long.fromNumber(Number(depositId)), wallet.getAddress());
+        const message = withdrawDepositRetry({ poolId, withdrawalId, depositorAddress: wallet.address });
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', '500000');
+        const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, [message], this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 
-    claimPrizes = async (wallet: LumWallet, prizes: PrizeModel[]) => {
-        if (this.client === null) {
+    claimPrizes = async (wallet: LumWalletModel, prizes: PrizeModel[]) => {
+        if (this.signingClient === null) {
             return null;
         }
 
@@ -469,28 +482,23 @@ class LumClient {
         const messages = [];
 
         for (const prize of prizes) {
-            messages.push(LumMessages.BuildMsgClaimPrize(Long.fromNumber(prize.poolId), Long.fromNumber(prize.drawId), Long.fromNumber(prize.prizeId), wallet.getAddress()));
+            messages.push(claimPrize({ poolId: BigInt(prize.poolId), drawId: BigInt(prize.drawId), prizeId: BigInt(prize.prizeId), winnerAddress: wallet.address }));
         }
 
-        // Define fees
-        const fee = WalletUtils.buildTxFee('25000', (400000 + messages.length * 120000).toFixed(0));
+        const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
+        const fee = {
+            amount: coins('25000', MICRO_LUM_DENOM),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
 
-        // Create the transaction document
-        const doc = WalletUtils.buildTxDoc(fee, wallet, messages, this.getChainId(), await this.client.getAccount(wallet.getAddress()));
-
-        if (!doc) {
-            return null;
-        }
-
-        // Sign and broadcast the transaction using the client
-        const broadcastResult = await this.client.signAndBroadcastTx(wallet, doc);
+        const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
 
         // Verify the transaction was successfully broadcasted and made it into a block
-        const broadcasted = LumUtils.broadcastTxCommitSuccess(broadcastResult);
+        assertIsDeliverTxSuccess(broadcastResult);
 
         return {
-            hash: LumUtils.toHex(broadcastResult.hash),
-            error: !broadcasted ? (broadcastResult.deliverTx && broadcastResult.deliverTx.log ? broadcastResult.deliverTx.log : broadcastResult.checkTx.log) : null,
+            hash: broadcastResult.transactionHash,
+            error: broadcastResult.code !== 0 ? broadcastResult.rawLog : null,
         };
     };
 }

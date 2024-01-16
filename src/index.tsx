@@ -12,6 +12,8 @@ import '@popperjs/core';
 import 'bootstrap';
 import './styles/_main.scss';
 
+import './utils/polyfills';
+
 if (process.env.REACT_APP_SENTRY_DSN !== undefined && process.env.REACT_APP_SENTRY_DSN !== null) {
     Sentry.init({
         dsn: process.env.REACT_APP_SENTRY_DSN,

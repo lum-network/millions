@@ -1,15 +1,17 @@
 import axios from 'axios';
-import { createModel } from '@rematch/core';
+
 import { Coin } from '@keplr-wallet/types';
+import { LUM_DENOM, MICRO_LUM_DENOM, LUM_EXPONENT, LumBech32Prefixes, convertUnit } from '@lum-network/sdk-javascript';
+import { createModel } from '@rematch/core';
 
 import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
-import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants, LumConstants } from 'constant';
+import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel } from 'models';
 import { RootModel } from '.';
 import { LumApi } from 'api';
-import { LumWallet, LumWalletFactory } from '@lum-network/sdk-javascript-legacy';
 
-type SignInLumPayload = LumWallet & {
+type SignInLumPayload = {
+    address: string;
     isLedger: boolean;
 };
 
@@ -103,8 +105,7 @@ export const wallet = createModel<RootModel>()({
             return {
                 ...state,
                 lumWallet: {
-                    innerWallet: payload,
-                    address: payload.getAddress(),
+                    address: payload.address,
                     balances: [],
                     activities: {
                         result: [],
@@ -202,9 +203,9 @@ export const wallet = createModel<RootModel>()({
                     rpc,
                     rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
                     stakeCurrency: {
-                        coinDenom: LumConstants.LumDenom,
-                        coinMinimalDenom: LumConstants.MicroLumDenom,
-                        coinDecimals: LumConstants.LumExponent,
+                        coinDenom: LUM_DENOM,
+                        coinMinimalDenom: MICRO_LUM_DENOM,
+                        coinDecimals: LUM_EXPONENT,
                         coinGeckoId: LUM_COINGECKO_ID,
                     },
                     walletUrlForStaking: LUM_WALLET_LINK,
@@ -212,32 +213,27 @@ export const wallet = createModel<RootModel>()({
                         coinType: provider === WalletProvider.Cosmostation ? 880 : 118,
                     },
                     bech32Config: {
-                        bech32PrefixAccAddr: LumConstants.LumBech32PrefixAccAddr,
-                        bech32PrefixAccPub: LumConstants.LumBech32PrefixAccPub,
-                        bech32PrefixValAddr: LumConstants.LumBech32PrefixValAddr,
-                        bech32PrefixValPub: LumConstants.LumBech32PrefixValPub,
-                        bech32PrefixConsAddr: LumConstants.LumBech32PrefixConsAddr,
-                        bech32PrefixConsPub: LumConstants.LumBech32PrefixConsPub,
+                        bech32PrefixAccAddr: LumBech32Prefixes.ACC_ADDR,
+                        bech32PrefixAccPub: LumBech32Prefixes.ACC_PUB,
+                        bech32PrefixValAddr: LumBech32Prefixes.VAL_ADDR,
+                        bech32PrefixValPub: LumBech32Prefixes.VAL_PUB,
+                        bech32PrefixConsAddr: LumBech32Prefixes.CONS_ADDR,
+                        bech32PrefixConsPub: LumBech32Prefixes.CONS_PUB,
                     },
                     currencies: [
                         {
-                            coinDenom: LumConstants.LumDenom,
-                            coinMinimalDenom: LumConstants.MicroLumDenom,
-                            coinDecimals: LumConstants.LumExponent,
+                            coinDenom: LUM_DENOM,
+                            coinMinimalDenom: MICRO_LUM_DENOM,
+                            coinDecimals: LUM_EXPONENT,
                             coinGeckoId: LUM_COINGECKO_ID,
-                        },
-                        {
-                            coinDenom: 'dfr',
-                            coinMinimalDenom: 'udfr',
-                            coinDecimals: 6,
                         },
                     ],
                     // List of coin/tokens used as a fee token in this chain.
                     feeCurrencies: [
                         {
-                            coinDenom: LumConstants.LumDenom,
-                            coinMinimalDenom: LumConstants.MicroLumDenom,
-                            coinDecimals: LumConstants.LumExponent,
+                            coinDenom: LUM_DENOM,
+                            coinMinimalDenom: MICRO_LUM_DENOM,
+                            coinDecimals: LUM_EXPONENT,
                             coinGeckoId: LUM_COINGECKO_ID,
                             gasPriceStep: {
                                 low: 0.01,
@@ -261,19 +257,20 @@ export const wallet = createModel<RootModel>()({
                     await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
 
-                const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
-                const lumWallet = await LumWalletFactory.fromOfflineSigner(lumOfflineSigner);
+                const lumOfflineSigner = providerFunctions.getOfflineSigner(chainId);
 
-                if (lumWallet) {
+                if (lumOfflineSigner) {
+                    const accounts = await lumOfflineSigner.getAccounts();
+                    const address = accounts[0].address;
                     const { isNanoLedger } = await providerFunctions.getKey(chainId);
 
-                    const wallet = Object.assign(lumWallet, { isLedger: isNanoLedger });
+                    await LumClient.connectSigner(lumOfflineSigner);
 
-                    dispatch.wallet.signInLum(wallet);
+                    dispatch.wallet.signInLum({ address, isLedger: isNanoLedger });
 
                     WalletUtils.storeAutoconnectKey(provider);
 
-                    await dispatch.wallet.reloadWalletInfos({ address: lumWallet.getAddress(), force: true, init: true });
+                    await dispatch.wallet.reloadWalletInfos({ address, force: true, init: true });
                     if (!silent) ToastUtils.showSuccessToast({ content: I18n.t('success.wallet') });
 
                     Firebase.signInAnonymous().finally(() => null);
@@ -347,7 +344,7 @@ export const wallet = createModel<RootModel>()({
                         await providerFunctions.enable(pool.chainId);
                     }
 
-                    const offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
+                    const offlineSigner = providerFunctions.getOfflineSigner(pool.chainId);
                     const accounts = await offlineSigner.getAccounts();
 
                     if (accounts.length > 0) {
@@ -422,7 +419,7 @@ export const wallet = createModel<RootModel>()({
                     address,
                     balances: res
                         ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter(
-                              (balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom,
+                              (balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM,
                           )
                         : [],
                     denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
@@ -437,7 +434,7 @@ export const wallet = createModel<RootModel>()({
 
                 if (result) {
                     const balances = await DenomsUtils.translateLumIbcBalances([...result.balances]);
-                    const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom);
+                    const filteredBalances = balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM);
 
                     dispatch.wallet.setLumWalletData({ balances: filteredBalances });
 
@@ -570,15 +567,15 @@ export const wallet = createModel<RootModel>()({
                 }
             } catch {}
         },
-        async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | undefined } | null> {
+        async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
-            const convertedAmount = NumbersUtils.convertUnit(
+            const convertedAmount = convertUnit(
                 {
                     amount: amount.amount,
-                    denom: LumConstants.LumDenom,
+                    denom: LUM_DENOM,
                 },
-                LumConstants.MicroLumDenom,
+                MICRO_LUM_DENOM,
             );
 
             const coin = {
@@ -619,7 +616,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? LumConstants.MicroLumDenom : 'u' + normalDenom);
+                    result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? MICRO_LUM_DENOM : 'u' + normalDenom);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {
@@ -679,7 +676,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await LumClient.depositToPool(lumWallet.innerWallet, payload.pool, payload.amount);
+                    result = await LumClient.depositToPool(lumWallet, payload.pool, payload.amount);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {
@@ -717,7 +714,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await LumClient.depositRetry(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                    result = await LumClient.depositRetry(lumWallet, payload.poolId, payload.depositId);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {
@@ -730,7 +727,7 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully retried deposit #${payload.depositId} to pool #${payload.depositId}`,
+                    content: `Successfully retried deposit #${payload.depositId} to pool #${payload.poolId}`,
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
@@ -753,7 +750,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await LumClient.leavePool(lumWallet.innerWallet, payload.poolId, payload.depositId);
+                    result = await LumClient.leavePool(lumWallet, payload.poolId, payload.depositId);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {
@@ -797,7 +794,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await LumClient.leavePoolRetry(lumWallet.innerWallet, payload.poolId, payload.withdrawalId);
+                    result = await LumClient.leavePoolRetry(lumWallet, payload.poolId, payload.withdrawalId);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {
@@ -858,7 +855,7 @@ export const wallet = createModel<RootModel>()({
                     const toClaim = prizesToClaim.slice(0, payload.limit);
 
                     try {
-                        result = await LumClient.claimPrizes(lumWallet.innerWallet, toClaim);
+                        result = await LumClient.claimPrizes(lumWallet, toClaim);
                     } catch (e) {
                         const error = e as Error;
                         if (isRealError(error)) {
@@ -933,7 +930,7 @@ export const wallet = createModel<RootModel>()({
                 let result = null;
 
                 try {
-                    result = await LumClient.multiDeposit(lumWallet.innerWallet, toDeposit);
+                    result = await LumClient.multiDeposit(lumWallet, toDeposit);
                 } catch (e) {
                     const error = e as Error;
                     if (isRealError(error)) {

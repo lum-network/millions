@@ -1,18 +1,19 @@
-import { LumTypes } from '@lum-network/sdk-javascript-legacy';
-import { biggerCoin, convertUnitNumber } from './numbers';
-import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
-import { getDenomFromIbc, getNormalDenom } from './denoms';
-import { ApiConstants } from 'constant';
+import { Coin } from '@lum-network/sdk-javascript';
 import { WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
+
+import { ApiConstants } from 'constant';
+import { biggerCoin, convertUnitNumber } from './numbers';
+import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
+import { getDenomFromIbc, getNormalDenom } from './denoms';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
         return null;
     }
 
-    let bestPrize: LumTypes.Coin | null = null;
+    let bestPrize: Coin | null = null;
 
     for (const prize of prizes) {
         if (prize.amount === undefined) {

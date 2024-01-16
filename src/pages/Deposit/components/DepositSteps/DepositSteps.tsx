@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript-legacy';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
@@ -18,7 +18,7 @@ import './DepositSteps.scss';
 
 interface StepProps {
     currentPool: PoolModel;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     price: number;
     pools: PoolModel[];
     title: string;
@@ -129,7 +129,7 @@ const DepositStep1 = (
                     />
                 </div>
                 <div className='mt-5'>
-                    {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
+                    {pools.filter((p) => p.nativeDenom !== MICRO_LUM_DENOM).length > 1 && (
                         <AssetsSelect
                             className='asset-select'
                             isLoading={isLoading}
@@ -211,12 +211,10 @@ const DepositStep2 = (
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
     const [depositAmount, setDepositAmount] = useState<string>(
-        initialAmount
-            ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
-            : amount,
+        initialAmount ? (NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6) : amount,
     );
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
-    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
+    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === MICRO_LUM_DENOM);
     const [error, setError] = useState('');
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
@@ -233,9 +231,7 @@ const DepositStep2 = (
 
     useEffect(() => {
         if (initialAmount) {
-            setDepositAmount(
-                (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6),
-            );
+            setDepositAmount((NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6));
         }
     }, [initialAmount]);
 
@@ -287,11 +283,7 @@ const DepositStep2 = (
                         isLoading={isLoading}
                         className='mt-2'
                         onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(
-                                poolToDeposit.nativeDenom,
-                                balances,
-                                poolToDeposit.nativeDenom === LumConstants.MicroLumDenom ? 0.05 : poolToDeposit.internalInfos?.fees,
-                            );
+                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, poolToDeposit.nativeDenom === MICRO_LUM_DENOM ? 0.05 : poolToDeposit.internalInfos?.fees);
                             setDepositAmount(amount);
                         }}
                         inputProps={{
@@ -462,14 +454,14 @@ const DepositSteps = (props: Props) => {
     useEffect(() => {
         if (!amountFromLocationState) {
             const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
+            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? existsInLumBalances.amount : '0');
         }
     }, [lumWallet]);
 
     return (
         <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
             <div className='card-content'>
-                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
+                {currentStep === 0 && currentPool.nativeDenom !== MICRO_LUM_DENOM && (
                     <DepositStep1
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
@@ -479,11 +471,11 @@ const DepositSteps = (props: Props) => {
                         price={price}
                         pools={pools}
                         disabled={!otherWallet}
-                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={(currentPool.nativeDenom === MICRO_LUM_DENOM ? lumWallet?.balances : otherWallet?.balances) || []}
                         nonEmptyWallets={nonEmptyWallets}
                     />
                 )}
-                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
+                {((currentStep === 1 && currentPool.nativeDenom !== MICRO_LUM_DENOM) || (currentStep === 0 && currentPool.nativeDenom === MICRO_LUM_DENOM)) && (
                     <DepositStep2
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}

@@ -2,11 +2,13 @@ import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
 import { DrawModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
-import { RootModel } from '.';
 import dayjs from 'dayjs';
-import { LumConstants } from 'constant';
-import { LumApi } from 'api';
+import { MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
+
+import { LumApi } from 'api';
+
+import { RootModel } from '.';
 
 interface PoolsState {
     pools: PoolModel[];
@@ -135,13 +137,13 @@ export const pools = createModel<RootModel>()({
                     // Calculate Prize to win
                     const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
 
-                    if (pool.nativeDenom !== LumConstants.MicroLumDenom && !pool.internalInfos) {
+                    if (pool.nativeDenom !== MICRO_LUM_DENOM && !pool.internalInfos) {
                         continue;
                     }
 
                     const client = new WalletClient();
 
-                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
+                    await client.connect((pool.nativeDenom === MICRO_LUM_DENOM ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
 
                     const [bankBalance, stakingRewards] = await Promise.all([
                         client.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),

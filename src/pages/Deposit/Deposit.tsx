@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
 import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LumConstants } from '@lum-network/sdk-javascript-legacy';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
 import { Modal as BootstrapModal } from 'bootstrap';
+
+import { LUM_DENOM } from '@lum-network/sdk-javascript';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
@@ -45,7 +47,7 @@ const Deposit = () => {
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(
-        existsInLumBalances && denom !== LumConstants.LumDenom && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
+        existsInLumBalances && denom !== LUM_DENOM && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
     );
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
@@ -807,7 +809,7 @@ const Deposit = () => {
             timeline.add(cardTimeline(), '<0.2');
 
             if (currentStep === 0) {
-                if (denom === LumConstants.LumDenom) {
+                if (denom === LUM_DENOM) {
                     timeline.add(step2Timeline());
                 } else {
                     timeline.add(step1Timeline());
@@ -854,7 +856,7 @@ const Deposit = () => {
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (denom === LumConstants.LumDenom) {
+    if (denom === LUM_DENOM) {
         steps.splice(0, 1);
     }
 

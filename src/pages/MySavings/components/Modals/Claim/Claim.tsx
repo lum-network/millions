@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumTypes } from '@lum-network/sdk-javascript-legacy';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { Coin } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchProgress } from 'components';
@@ -14,7 +16,6 @@ import { PoolModel, PrizeModel } from 'models';
 import { Dispatch, RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { confettis } from 'utils/confetti';
-import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import './Claim.scss';
 
@@ -25,7 +26,7 @@ interface Props {
     limit: number;
 }
 
-type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
+type ShareInfos = { hash: string; amount: Coin[]; tvl: string; poolId: string; compounded: boolean };
 
 const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareInfos; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
@@ -170,7 +171,7 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
             setBatchTotal(0);
         } else {
             const pool = pools.find((pool) => Number(pool.poolId) === prizes[0].poolId);
-            const amount: LumTypes.Coin[] = [];
+            const amount: Coin[] = [];
 
             for (const prize of prizes) {
                 const denomExistIndex = amount.findIndex((am) => am.denom === DenomsUtils.getNormalDenom(prize.amount?.denom || ''));

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript-legacy';
+import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -18,7 +18,7 @@ interface Props {
     lumWallet: LumWalletModel;
     otherWallets: { [key: string]: OtherWalletModel };
     pools: PoolModel[];
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     prices: { [key: string]: number };
     modalRef: React.RefObject<ModalHandlers>;
 }
@@ -158,7 +158,7 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
                                             form.setFieldValue('denom', value);
                                         }}
                                         options={balances
-                                            .filter((balance) => balance.denom !== LumConstants.MicroLumDenom)
+                                            .filter((balance) => balance.denom !== MICRO_LUM_DENOM)
                                             .map((balance) => ({
                                                 label: DenomsUtils.getNormalDenom(balance.denom),
                                                 value: balance.denom,

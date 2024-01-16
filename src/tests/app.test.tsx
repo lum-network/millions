@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { LumWalletFactory } from '@lum-network/sdk-javascript-legacy';
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom';
 
@@ -12,6 +11,8 @@ import { renderWithRematchStore } from 'utils/tests';
 import { PoolModel } from 'models';
 import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
 import { DrawState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
+import { LumBech32Prefixes } from '@lum-network/sdk-javascript';
+import { Secp256k1HdWallet } from '@cosmjs/amino';
 
 jest.setTimeout(180000);
 
@@ -143,10 +144,14 @@ describe('App', () => {
 
     it('render the My Savings Page without crashing', async () => {
         // Log in using a test wallet to enable My Savings page
-        const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
-        const wallet = Object.assign(testWallet, { isLedger: false });
+        const wallet = await Secp256k1HdWallet.fromMnemonic(testMnemonic, {
+            prefix: LumBech32Prefixes.ACC_ADDR,
+        });
 
-        store.dispatch.wallet.signInLum(wallet);
+        const accounts = await wallet.getAccounts();
+        const address = accounts[0].address;
+
+        store.dispatch.wallet.signInLum({ address, isLedger: false });
 
         // Render My Savings page
         renderWithRematchStore(
@@ -191,12 +196,16 @@ describe('App', () => {
         expect(transferBtn).toBeInTheDocument();
         expect(transferBtn.parentElement).toBeDisabled();
 
-        const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
-        const wallet = Object.assign(testWallet, { isLedger: false });
+        const wallet = await Secp256k1HdWallet.fromMnemonic(testMnemonic, {
+            prefix: LumBech32Prefixes.ACC_ADDR,
+        });
+
+        const accounts = await wallet.getAccounts();
+        const address = accounts[0].address;
 
         // Fake log in to enable the transfer button
         act(() => {
-            store.dispatch.wallet.signInLum(wallet);
+            store.dispatch.wallet.signInLum({ address, isLedger: false });
             store.dispatch.wallet.setOtherWalletData({
                 denom: 'atom',
                 balances: [],
