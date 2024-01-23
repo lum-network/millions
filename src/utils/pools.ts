@@ -3,7 +3,6 @@ import { WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/n
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
 
-import { ApiConstants } from 'constant';
 import { biggerCoin, convertUnitNumber } from './numbers';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { getDenomFromIbc, getNormalDenom } from './denoms';
@@ -44,7 +43,7 @@ export const getWinningChances = (inputAmount: number, pool: PoolModel, prices?:
 
     if (prizeStrat) {
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION) * Number(prizeBatch.quantity);
+            avgPrizesDrawn += Number(prizeBatch.drawProbability) * Number(prizeBatch.quantity);
         }
 
         estimated = (avgPrizesDrawn * amount) / (amount + tvl - sponsorTvl);

@@ -10,7 +10,7 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
 import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, PurpleBackgroundImage, SmallerDecimal, Table, Tooltip } from 'components';
-import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
@@ -87,7 +87,7 @@ const PoolDetails = () => {
 
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
         count: prizeBatch.quantity,
-        chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
+        chances: Number(prizeBatch.drawProbability),
         value: (pool.estimatedPrizeToWin?.amount || 0) * (Number(prizeBatch.poolPercent) / 100) * prices[denom],
     }));
 
