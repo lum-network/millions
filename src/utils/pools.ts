@@ -119,5 +119,5 @@ export const getPoolByPoolId = (pools: PoolModel[], poolId: string) => {
         return undefined;
     }
 
-    return pools.find((p) => Number(p.poolId) === Number(poolId));
+    return pools.find((p) => p.poolId.toString() === poolId);
 };

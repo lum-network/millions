@@ -601,7 +601,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(`${provider} is not available`);
                 }
 
-                const offlineSigner = await providerFunctions.getOfflineSigner(chainId);
+                const offlineSigner = providerFunctions.getOfflineSigner(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
@@ -704,7 +704,7 @@ export const wallet = createModel<RootModel>()({
         async retryDeposit(payload: RetryDepositPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { lumWallet } = state.wallet;
 
-            const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId} to pool #${payload.poolId}` });
+            const toastId = ToastUtils.showLoadingToast({ content: `Retrying deposit #${payload.depositId.toString()} to pool #${payload.poolId.toString()}` });
 
             try {
                 if (!lumWallet) {
@@ -727,13 +727,13 @@ export const wallet = createModel<RootModel>()({
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: `Successfully retried deposit #${payload.depositId} to pool #${payload.poolId}`,
+                    content: `Successfully retried deposit #${payload.depositId.toString()} to pool #${payload.poolId.toString()}`,
                 });
 
                 dispatch.wallet.reloadWalletInfos({ address: lumWallet.address, force: true });
                 return result;
             } catch (e) {
-                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId}` });
+                ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || `Failed to retry deposit #${payload.depositId.toString()}` });
                 return null;
             }
         },

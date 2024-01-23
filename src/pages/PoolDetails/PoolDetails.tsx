@@ -86,7 +86,7 @@ const PoolDetails = () => {
     }
 
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
-        count: prizeBatch.quantity,
+        count: Number(prizeBatch.quantity),
         chances: Number(prizeBatch.drawProbability),
         value: (pool.estimatedPrizeToWin?.amount || 0) * (Number(prizeBatch.poolPercent) / 100) * prices[denom],
     }));
@@ -284,12 +284,12 @@ const PoolDetails = () => {
                                         <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
                                             <td data-label={prizeDistributionHeaders[0]}>
                                                 <div className='d-flex flex-column'>
-                                                    <div>{numeral(prize.value / Number(prize.count)).format('$0,0[.]00')}</div>
+                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
                                                     <div className='percentage'>{I18n.t('poolDetails.prizeDistribution.chancesToWin', { percentage: numeral(prize.chances).format('0,0[.]00%') })}</div>
                                                 </div>
                                             </td>
                                             <td className='text-end' data-label={prizeDistributionHeaders[1]}>
-                                                {Number(prize.count)}
+                                                {prize.count}
                                             </td>
                                         </tr>
                                     ))}
