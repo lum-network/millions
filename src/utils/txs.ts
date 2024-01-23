@@ -1,7 +1,6 @@
 import { Coin, LUM_DENOM, LumRegistry, MICRO_LUM_DENOM, lum, parseRawLogs, toJSON } from '@lum-network/sdk-javascript';
 import Assets from 'assets';
 import { TransactionModel } from 'models';
-import Long from 'long';
 import { I18n, NumbersUtils } from 'utils';
 
 import { getDenomFromIbc } from './denoms';
@@ -31,7 +30,7 @@ export const isMillionsDepositTx = (
         depositorAddress?: string;
         winnerAddress?: string;
         isSponsor?: boolean;
-        poolId?: Long;
+        poolId?: bigint;
     } | null,
 ): info is MillionsTxInfos => {
     return !!(info && info.amount && info.depositorAddress && info.isSponsor !== undefined && info.poolId);
