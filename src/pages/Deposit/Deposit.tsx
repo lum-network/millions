@@ -71,7 +71,7 @@ const Deposit = () => {
     const { isDark } = useColorScheme();
 
     const amountToDeposit = useMemo(() => {
-        const state = location.state as { amountToDeposit?: string };
+        const state = location.state as { amountToDeposit?: number };
 
         return state.amountToDeposit;
     }, [location]);
@@ -156,7 +156,7 @@ const Deposit = () => {
 
     const transferForm = useFormik({
         initialValues: {
-            amount: amountToDeposit || '',
+            amount: amountToDeposit?.toFixed(6) || '',
         },
         validationSchema: yup.object().shape({
             amount: yup
@@ -979,7 +979,7 @@ const Deposit = () => {
                                 price={prices?.[denom || ''] || 0}
                                 lumWallet={lumWallet}
                                 otherWallets={otherWallets}
-                                amountFromLocationState={Number(amountToDeposit)}
+                                amountFromLocationState={amountToDeposit}
                             />
                             {isShareStep && (
                                 <Lottie
