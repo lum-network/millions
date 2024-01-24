@@ -1,7 +1,7 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import dayjs from 'dayjs';
-import { I18n, WalletUtils } from 'utils';
+import { I18n, NumbersUtils, WalletUtils } from 'utils';
 import { showErrorToast } from './toast';
 import { ApiConstants } from 'constant';
 import { Coin } from '@keplr-wallet/types';
@@ -87,7 +87,9 @@ class WalletClient {
             return null;
         }
 
-        return Number((await this.queryClient.cosmos.staking.v1beta1.pool()).pool?.bondedTokens);
+        const bondedTokens = (await this.queryClient.cosmos.staking.v1beta1.pool()).pool?.bondedTokens;
+
+        return bondedTokens ? NumbersUtils.convertUnitNumber(bondedTokens) : null;
     };
 
     getSupply = async (denom: string) => {
@@ -95,7 +97,9 @@ class WalletClient {
             return null;
         }
 
-        return Number((await this.queryClient.cosmos.bank.v1beta1.supplyOf({ denom }))?.amount?.amount);
+        const supply = (await this.queryClient.cosmos.bank.v1beta1.supplyOf({ denom }))?.amount?.amount;
+
+        return supply ? NumbersUtils.convertUnitNumber(supply) : null;
     };
 
     getCommunityTaxRate = async () => {
@@ -103,7 +107,7 @@ class WalletClient {
             return null;
         }
 
-        return Number((await this.queryClient.cosmos.distribution.v1beta1.params()).params?.communityTax) / ApiConstants.CLIENT_PRECISION;
+        return Number((await this.queryClient.cosmos.distribution.v1beta1.params()).params?.communityTax);
     };
 
     getInflation = async () => {

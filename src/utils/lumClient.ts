@@ -10,7 +10,6 @@ import { OfflineSigner } from '@cosmjs/proto-signing';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 
 import { LumApi } from 'api';
-import { ApiConstants } from 'constant';
 import { AggregatedDepositModel, DepositModel, LumWalletModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils } from 'utils';
 
@@ -332,7 +331,7 @@ class LumClient {
             return null;
         }
 
-        return Number((await this.lumQueryClient.lum.network.millions.params()).params?.feesStakers || '0') / ApiConstants.CLIENT_PRECISION;
+        return Number((await this.lumQueryClient.lum.network.millions.params()).params?.feesStakers || '0');
     };
 
     getMinDepositDelta = async () => {
