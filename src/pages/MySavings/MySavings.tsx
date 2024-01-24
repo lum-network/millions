@@ -89,7 +89,7 @@ const MySavings = () => {
 
     useEffect(() => {
         if (pools && pools.length > 0) {
-            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId);
+            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId.toString());
             ScrollTrigger.refresh();
         }
     }, [pools]);
