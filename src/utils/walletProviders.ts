@@ -1,10 +1,9 @@
 import { ChainInfo, Key, Window } from '@keplr-wallet/types';
-import { getOfflineSigner } from '@cosmostation/cosmos-client';
 import { cosmos } from '@cosmostation/extension-client';
 
 import { WalletProvider, PoolsConstants } from 'constant';
 import { I18n } from 'utils';
-import { LumUtils } from '@lum-network/sdk-javascript';
+import { fromBech32 } from '@lum-network/sdk-javascript';
 
 export const isKeplrInstalled = (): boolean => {
     const keplrWindow = window as Window;
@@ -20,7 +19,15 @@ export const isAnyWalletInstalled = (): boolean => {
     return isCosmostationInstalled() || isKeplrInstalled();
 };
 
+const isProviderInstalled = (provider: WalletProvider) => {
+    return provider === WalletProvider.Cosmostation ? isCosmostationInstalled() : isKeplrInstalled();
+};
+
 export const getProviderFunctions = (provider: WalletProvider) => {
+    if (!isProviderInstalled(provider)) {
+        return null;
+    }
+
     return {
         enable: (chainId: string) => {
             if (provider === WalletProvider.Cosmostation) {
@@ -29,16 +36,16 @@ export const getProviderFunctions = (provider: WalletProvider) => {
 
             const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
-            if (keplrProvider) {
-                return keplrProvider.enable(chainId);
+            if (!keplrProvider) {
+                throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
             }
 
-            throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+            return keplrProvider.enable(chainId);
         },
         getOfflineSigner: (chainId: string) => {
             if (provider === WalletProvider.Cosmostation) {
-                if (isCosmostationInstalled()) {
-                    return getOfflineSigner(chainId);
+                if (isCosmostationInstalled() && window.cosmostation?.providers?.keplr) {
+                    return window.cosmostation.providers.keplr.getOfflineSigner(chainId);
                 } else {
                     throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
                 }
@@ -46,27 +53,15 @@ export const getProviderFunctions = (provider: WalletProvider) => {
 
             const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
 
-            if (keplrProvider) {
-                return keplrProvider.getOfflineSignerAuto(chainId);
+            if (!keplrProvider) {
+                throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
             }
 
-            throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+            return keplrProvider.getOfflineSigner(chainId);
         },
         getKey: async (chainId: string): Promise<Key> => {
             if (provider === WalletProvider.Cosmostation) {
-                if (isCosmostationInstalled()) {
-                    const account = await requestCosmostationAccount(chainId);
-
-                    return {
-                        address: LumUtils.fromBech32(account.address).data,
-                        bech32Address: account.address,
-                        name: account.name,
-                        algo: 'secp256k1',
-                        isNanoLedger: account.isLedger,
-                        pubKey: account.publicKey,
-                        isKeystone: false,
-                    };
-                } else {
+                if (!isCosmostationInstalled()) {
                     return {
                         address: new Uint8Array(),
                         pubKey: new Uint8Array(),
@@ -77,23 +72,34 @@ export const getProviderFunctions = (provider: WalletProvider) => {
                         bech32Address: '',
                     };
                 }
-            } else {
-                const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+                const account = await requestCosmostationAccount(chainId);
 
-                if (keplrProvider) {
-                    return await keplrProvider.getKey(chainId);
-                } else {
-                    return {
-                        address: new Uint8Array(),
-                        pubKey: new Uint8Array(),
-                        name: '',
-                        algo: '',
-                        isNanoLedger: false,
-                        isKeystone: false,
-                        bech32Address: '',
-                    };
-                }
+                return {
+                    address: fromBech32(account.address).data,
+                    bech32Address: account.address,
+                    name: account.name,
+                    algo: 'secp256k1',
+                    isNanoLedger: account.isLedger,
+                    pubKey: account.publicKey,
+                    isKeystone: false,
+                };
             }
+
+            const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+            if (!keplrProvider) {
+                return {
+                    address: new Uint8Array(),
+                    pubKey: new Uint8Array(),
+                    name: '',
+                    algo: '',
+                    isNanoLedger: false,
+                    isKeystone: false,
+                    bech32Address: '',
+                };
+            }
+
+            return await keplrProvider.getKey(chainId);
         },
     };
 };

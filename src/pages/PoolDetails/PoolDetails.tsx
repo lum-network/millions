@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Draw } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 
 import Assets from 'assets';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
@@ -11,12 +10,13 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
 import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, PurpleBackgroundImage, SmallerDecimal, Table, Tooltip } from 'components';
-import { ApiConstants, Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
 import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { LeaderboardItemModel } from 'models';
 import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
+import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -86,9 +86,9 @@ const PoolDetails = () => {
     }
 
     const prizes = pool.prizeStrategy?.prizeBatches.map((prizeBatch) => ({
-        count: prizeBatch.quantity.toNumber(),
-        chances: parseInt(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION,
-        value: (pool.estimatedPrizeToWin?.amount || 0) * (prizeBatch.poolPercent.toNumber() / 100) * prices[denom],
+        count: Number(prizeBatch.quantity),
+        chances: Number(prizeBatch.drawProbability),
+        value: (pool.estimatedPrizeToWin?.amount || 0) * (Number(prizeBatch.poolPercent) / 100) * prices[denom],
     }));
 
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
@@ -97,8 +97,8 @@ const PoolDetails = () => {
     const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
     const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
 
-    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? deposit.poolId?.equals(poolId) : deposit.amount?.denom === 'u' + denom));
-    const avgDeposit = (usersDepositsAmount / pool.depositorsCount.toNumber()) * prices[denom] || 0;
+    const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? Number(deposit.poolId) === Number(poolId) : deposit.amount?.denom === 'u' + denom));
+    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * prices[denom] || 0;
 
     return (
         <div className='pool-details-container mt-5'>

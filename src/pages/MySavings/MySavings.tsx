@@ -2,8 +2,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
@@ -163,7 +163,8 @@ const MySavings = () => {
                     ? deposits.findIndex(
                           (deposit) =>
                               deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
-                              deposit.poolId?.eq(campaign.poolId) &&
+                              deposit.poolId &&
+                              deposit.poolId.toString() === campaign.poolId &&
                               deposit.createdAt &&
                               dayjs(deposit.createdAt).isBefore(dayjs(campaign.startAt)) &&
                               !deposit.isDepositDrop &&
@@ -181,7 +182,7 @@ const MySavings = () => {
         computeShowBanner();
     }, [deposits]);
 
-    const renderAsset = (asset: LumTypes.Coin) => {
+    const renderAsset = (asset: Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
         const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
         const amount = NumbersUtils.convertUnitNumber(asset.amount);
@@ -208,7 +209,7 @@ const MySavings = () => {
                                 </div>
                             </div>
                             <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-lg-0'>
-                                {normalDenom !== LumConstants.LumDenom ? (
+                                {normalDenom !== LUM_DENOM ? (
                                     <Button
                                         outline
                                         className='me-0 me-sm-4 mb-3 mb-sm-0 flex-grow-1'
@@ -224,7 +225,7 @@ const MySavings = () => {
                                     </Button>
                                 ) : null}
                                 <Button
-                                    disabled={normalDenom === LumConstants.LumDenom && !pools.find((pool) => pool.nativeDenom === LumConstants.MicroLumDenom)}
+                                    disabled={normalDenom === LUM_DENOM && !pools.find((pool) => pool.nativeDenom === MICRO_LUM_DENOM)}
                                     to={`${NavigationConstants.POOLS}/${normalDenom}`}
                                     className='flex-grow-1'
                                     onClick={() => {
@@ -607,7 +608,7 @@ const MySavings = () => {
                 balances={balances || []}
                 isLoading={isTransferring}
             />
-            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} />
+            <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} limit={lumWallet.isLedger ? 3 : 6} />
             <LeavePoolModal deposit={depositToLeave} />
             <InfluencerCampaignModal
                 campaign={activeCampaign}

@@ -1,18 +1,18 @@
-import { LumTypes } from '@lum-network/sdk-javascript';
-import { Prize } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/prize';
+import { Coin } from '@lum-network/sdk-javascript';
+import { WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
+import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
+
 import { biggerCoin, convertUnitNumber } from './numbers';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { getDenomFromIbc, getNormalDenom } from './denoms';
-import { ApiConstants } from 'constant';
-import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
 export const getBestPrize = (prizes: Prize[], prices: { [key: string]: number }) => {
     if (prizes.length === 0) {
         return null;
     }
 
-    let bestPrize: LumTypes.Coin | null = null;
+    let bestPrize: Coin | null = null;
 
     for (const prize of prizes) {
         if (prize.amount === undefined) {
@@ -43,7 +43,7 @@ export const getWinningChances = (inputAmount: number, pool: PoolModel, prices?:
 
     if (prizeStrat) {
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(prizeBatch.drawProbability) / ApiConstants.CLIENT_PRECISION) * prizeBatch.quantity.toNumber();
+            avgPrizesDrawn += Number(prizeBatch.drawProbability) * Number(prizeBatch.quantity);
         }
 
         estimated = (avgPrizesDrawn * amount) / (amount + tvl - sponsorTvl);
@@ -119,5 +119,5 @@ export const getPoolByPoolId = (pools: PoolModel[], poolId: string) => {
         return undefined;
     }
 
-    return pools.find((p) => p.poolId.eq(poolId));
+    return pools.find((p) => p.poolId.toString() === poolId);
 };

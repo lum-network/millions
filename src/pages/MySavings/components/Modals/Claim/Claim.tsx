@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { Coin } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchProgress } from 'components';
@@ -22,9 +23,10 @@ interface Props {
     prizes: PrizeModel[];
     prices: { [key: string]: number };
     pools: PoolModel[];
+    limit: number;
 }
 
-type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
+type ShareInfos = { hash: string; amount: Coin[]; tvl: string; poolId: string; compounded: boolean };
 
 const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareInfos; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
@@ -122,7 +124,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
     );
 };
 
-const Claim = ({ prizes, prices, pools }: Props) => {
+const Claim = ({ prizes, prices, pools, limit }: Props) => {
     const [blockedCompound, setBlockedCompound] = useState(false);
     const [claimOnly, setClaimOnly] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
@@ -150,8 +152,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.JUST_CLAIMED_CONFIRMED);
         }
 
-        const LIMIT = 6;
-        const batchCount = Math.ceil(prizes.length / LIMIT);
+        const batchCount = Math.ceil(prizes.length / limit);
 
         setBatchTotal(batchCount);
         setCurrentStep(currentStep + 1);
@@ -160,19 +161,17 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setBatch(batch);
         };
 
-        const payload = { prizes, batch, batchTotal: batchCount, onBatchComplete };
-
         const action = compound ? dispatch.wallet.claimAndCompoundPrizes : dispatch.wallet.claimPrizes;
 
-        const res = await action(payload);
+        const res = await action({ prizes, batch, batchTotal: batchCount, limit, onBatchComplete });
 
         if (!res || (res && res.error)) {
             setCurrentStep(currentStep);
             setBatch(0);
             setBatchTotal(0);
         } else {
-            const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
-            const amount: LumTypes.Coin[] = [];
+            const pool = pools.find((pool) => Number(pool.poolId) === prizes[0].poolId);
+            const amount: Coin[] = [];
 
             for (const prize of prizes) {
                 const denomExistIndex = amount.findIndex((am) => am.denom === DenomsUtils.getNormalDenom(prize.amount?.denom || ''));
@@ -189,7 +188,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
             setClaimOnly(false);
             setCurrentStep(2);
             setShareInfos({
-                hash: LumUtils.toHex(res.hash).toUpperCase(),
+                hash: res.hash.toUpperCase(),
                 amount,
                 tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
                 compounded: compound,
@@ -205,9 +204,9 @@ const Claim = ({ prizes, prices, pools }: Props) => {
         for (const prize of prizes) {
             if (!prize.amount) continue;
 
-            const existingItemIndex = prizesToDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
+            const existingItemIndex = prizesToDeposit.findIndex((d) => Number(d.pool.poolId) === prize.poolId);
             if (existingItemIndex === -1) {
-                const pool = pools.find((p) => p.poolId.equals(prize.poolId));
+                const pool = pools.find((p) => Number(p.poolId) === prize.poolId);
 
                 if (!pool) continue;
 
@@ -261,7 +260,7 @@ const Claim = ({ prizes, prices, pools }: Props) => {
         let blockCompound = false;
 
         for (const pToDeposit of toDeposit) {
-            const pool = pools.find((p) => p.poolId.eq(pToDeposit.pool.poolId));
+            const pool = pools.find((p) => p.poolId === pToDeposit.pool.poolId);
             const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount);
             const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0');
 

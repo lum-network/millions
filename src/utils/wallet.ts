@@ -1,13 +1,12 @@
-import { LumConstants, LumTypes, LumWallet } from '@lum-network/sdk-javascript';
+import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
-import { Message } from '@lum-network/sdk-javascript/build/messages';
 import { AggregatedDepositModel } from 'models';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 
-export const getTotalBalance = (balances: LumTypes.Coin[], prices: { [denom: string]: number }) => {
+export const getTotalBalance = (balances: Coin[], prices: { [denom: string]: number }) => {
     let totalBalance = 0;
     let missingPrice = false;
 
@@ -61,7 +60,7 @@ export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] |
     return missingPrice ? null : totalBalance;
 };
 
-export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmount?: number) => {
+export const getMaxAmount = (denom?: string, balances?: Coin[], feesAmount?: number) => {
     if (!denom || !balances) {
         return '0';
     }
@@ -85,7 +84,7 @@ export const getMaxAmount = (denom?: string, balances?: LumTypes.Coin[], feesAmo
     return '0';
 };
 
-export const buildTxFee = (fee: string, gas: string, denom = LumConstants.MicroLumDenom): Fee => {
+export const buildTxFee = (fee: string, gas: string, denom = MICRO_LUM_DENOM): Fee => {
     return {
         amount: [
             {
@@ -97,29 +96,7 @@ export const buildTxFee = (fee: string, gas: string, denom = LumConstants.MicroL
     };
 };
 
-export const buildTxDoc = (fee: Fee, wallet: LumWallet, messages: Message[], chainId: string | null, account: LumTypes.Account | null): LumTypes.Doc | null => {
-    if (!account || !chainId) {
-        return null;
-    }
-
-    const { accountNumber, sequence } = account;
-
-    return {
-        chainId,
-        fee,
-        memo: '',
-        messages,
-        signers: [
-            {
-                accountNumber,
-                sequence,
-                publicKey: wallet.getPublicKey(),
-            },
-        ],
-    };
-};
-
-export const updatedBalances = (currentBalance?: LumTypes.Coin[], newBalance?: LumTypes.Coin[]) => {
+export const updatedBalances = (currentBalance?: Coin[], newBalance?: Coin[]) => {
     if (!currentBalance || !newBalance) {
         return false;
     }

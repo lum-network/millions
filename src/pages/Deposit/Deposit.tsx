@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
 import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LumConstants } from '@lum-network/sdk-javascript';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
 import { Modal as BootstrapModal } from 'bootstrap';
 
+import { LUM_DENOM } from '@lum-network/sdk-javascript';
+
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import Assets from 'assets';
 import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'components';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, I18n, NumbersUtils, StorageUtils, WalletUtils, WalletProvidersUtils } from 'utils';
@@ -45,7 +47,7 @@ const Deposit = () => {
 
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(
-        existsInLumBalances && denom !== LumConstants.LumDenom && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
+        existsInLumBalances && denom !== LUM_DENOM && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0') ? 1 : 0,
     );
     const [shareState, setShareState] = useState<('sharing' | 'shared') | null>(null);
     const [ibcModalPrevAmount, setIbcModalPrevAmount] = useState<string>('0');
@@ -82,39 +84,43 @@ const Deposit = () => {
         },
         walletClient: {
             enable: async (chainIds) => {
-                const autoConnectProvider = StorageUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    for (const chainId of chainIds) {
-                        await providerFunctions.enable(chainId);
-                    }
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return;
+                }
+
+                for (const chainId of chainIds) {
+                    await providerFunctions.enable(chainId);
                 }
             },
             getKey: async (chainId) => {
-                const autoConnectProvider = StorageUtils.getAutoconnectProvider();
-                if (autoConnectProvider) {
-                    const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
-                    return await providerFunctions.getKey(chainId);
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
+
+                if (!providerFunctions) {
+                    return {
+                        address: new Uint8Array(),
+                        pubKey: new Uint8Array(),
+                        name: '',
+                        algo: '',
+                        isNanoLedger: false,
+                        bech32Address: '',
+                    };
                 }
 
-                return {
-                    address: new Uint8Array(),
-                    pubKey: new Uint8Array(),
-                    name: '',
-                    algo: '',
-                    isNanoLedger: false,
-                    bech32Address: '',
-                };
+                return await providerFunctions.getKey(chainId);
             },
             getOfflineSigner: (chainId) => {
-                const autoConnectProvider = StorageUtils.getAutoconnectProvider();
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+
+                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider!);
-
-                return providerFunctions.getOfflineSigner(chainId);
+                return providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
@@ -803,7 +809,7 @@ const Deposit = () => {
             timeline.add(cardTimeline(), '<0.2');
 
             if (currentStep === 0) {
-                if (denom === LumConstants.LumDenom) {
+                if (denom === LUM_DENOM) {
                     timeline.add(step2Timeline());
                 } else {
                     timeline.add(step1Timeline());
@@ -850,11 +856,12 @@ const Deposit = () => {
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (denom === LumConstants.LumDenom) {
+    if (denom === LUM_DENOM) {
         steps.splice(0, 1);
     }
 
     const isShareStep = currentStep >= steps.length;
+    const showSwapCard = otherWallet && process.env.NODE_ENV !== 'test';
 
     return (
         <>
@@ -864,7 +871,7 @@ const Deposit = () => {
                         <div className='col'>
                             <h1 className='steps-title' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.title') }} />
                             <Steps currentStep={currentStep} steps={steps} lastStepChecked={shareState === 'shared'} />
-                            {otherWallet && process.env.NODE_ENV !== 'test' ? (
+                            {showSwapCard ? (
                                 <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                     <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                     <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{I18n.t('deposit.swapHint.content')}</div>
@@ -909,7 +916,7 @@ const Deposit = () => {
                                     />
                                 </Card>
                             ) : null}
-                            <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-3'>
+                            <Card flat withoutPadding className={`deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-${showSwapCard ? '3' : '5'}`}>
                                 <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
                                 <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0' dangerouslySetInnerHTML={{ __html: I18n.t('deposit.depositHint') }} />
                             </Card>
