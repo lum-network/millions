@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -69,6 +69,12 @@ const Deposit = () => {
 
     const prevStep = usePrevious(currentStep);
     const { isDark } = useColorScheme();
+
+    const amountToDeposit = useMemo(() => {
+        const state = location.state as { amountToDeposit?: string };
+
+        return state.amountToDeposit;
+    }, [location]);
 
     const wcConfig: WalletClientContext = {
         userAddress: lumWallet?.address,
@@ -150,7 +156,7 @@ const Deposit = () => {
 
     const transferForm = useFormik({
         initialValues: {
-            amount: location.state?.amountToDeposit || '',
+            amount: amountToDeposit || '',
         },
         validationSchema: yup.object().shape({
             amount: yup
@@ -973,7 +979,7 @@ const Deposit = () => {
                                 price={prices?.[denom || ''] || 0}
                                 lumWallet={lumWallet}
                                 otherWallets={otherWallets}
-                                amountFromLocationState={location.state?.amountToDeposit}
+                                amountFromLocationState={Number(amountToDeposit)}
                             />
                             {isShareStep && (
                                 <Lottie

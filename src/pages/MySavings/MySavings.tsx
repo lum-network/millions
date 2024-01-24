@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
@@ -48,9 +48,15 @@ const MySavings = () => {
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
+    const leaderboardPoolId = useMemo(() => {
+        const state = location.state as { leaderboardPoolId?: string };
+
+        return state.leaderboardPoolId;
+    }, [location]);
+
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
     const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
@@ -82,14 +88,16 @@ const MySavings = () => {
             getLeaderboardUserRank().finally(() => null);
         }
 
-        if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
+        if (leaderboardPoolId && leaderboardSectionRef.current) {
             leaderboardSectionRef.current.scrollIntoView();
         }
     }, [isReloadingInfos, leaderboardPool, lumWallet]);
 
     useEffect(() => {
         if (pools && pools.length > 0) {
-            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId.toString());
+            const poolId = leaderboardPoolId || pools[0].poolId.toString();
+
+            setLeaderboardSelectedPoolId(poolId);
             ScrollTrigger.refresh();
         }
     }, [pools]);

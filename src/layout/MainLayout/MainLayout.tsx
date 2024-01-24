@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -31,6 +31,12 @@ const MainLayout = () => {
     const dispatch = useDispatch<Dispatch>();
     const store = useStore();
     const visibilityState = useVisibilityState();
+
+    const autoConnect = useMemo(() => {
+        const state = location.state as { autoConnect?: boolean };
+
+        return state.autoConnect;
+    }, [location]);
 
     useEffect(() => {
         const autoConnect = async (provider: WalletProvider) => {
@@ -68,7 +74,7 @@ const MainLayout = () => {
             setEnableAutoConnect(false);
         }
 
-        if (location.state?.autoConnect) {
+        if (autoConnect) {
             setEnableAutoConnect(true);
         }
     }, [location]);
