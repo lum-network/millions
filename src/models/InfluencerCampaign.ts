@@ -1,4 +1,4 @@
-import { LumTypes } from '@lum-network/sdk-javascript';
+import { Coin } from '@lum-network/sdk-javascript';
 import { Expose, Type } from 'class-transformer';
 import InfluencerCampaignMember from './InfluencerCampaignMember';
 
@@ -19,7 +19,7 @@ class InfluencerCampaign {
     drops!: number;
 
     @Expose()
-    amount!: LumTypes.Coin;
+    amount!: Coin;
 
     @Expose({ name: 'start_at' })
     startAt!: Date;
