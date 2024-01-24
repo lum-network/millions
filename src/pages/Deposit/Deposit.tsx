@@ -73,6 +73,10 @@ const Deposit = () => {
     const amountToDeposit = useMemo(() => {
         const state = location.state as { amountToDeposit?: number };
 
+        if (!state) {
+            return undefined;
+        }
+
         return state.amountToDeposit;
     }, [location]);
 

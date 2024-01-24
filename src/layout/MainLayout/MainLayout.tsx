@@ -35,6 +35,10 @@ const MainLayout = () => {
     const autoConnect = useMemo(() => {
         const state = location.state as { autoConnect?: boolean };
 
+        if (!state) {
+            return undefined;
+        }
+
         return state.autoConnect;
     }, [location]);
 

@@ -51,6 +51,10 @@ const MySavings = () => {
     const leaderboardPoolId = useMemo(() => {
         const state = location.state as { leaderboardPoolId?: string };
 
+        if (!state) {
+            return undefined;
+        }
+
         return state.leaderboardPoolId;
     }, [location]);
 
