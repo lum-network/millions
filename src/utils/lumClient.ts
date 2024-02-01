@@ -8,7 +8,7 @@ import { formatTxs } from './txs';
 import { getDenomFromIbc } from './denoms';
 import { ApiConstants } from 'constant';
 import { LumApi } from 'api';
-import { Deposit, DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import { QueryDepositsResponse, QueryWithdrawalsResponse } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/query';
 import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 
