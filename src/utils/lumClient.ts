@@ -2,7 +2,7 @@ import { LUM_DENOM, MICRO_LUM_DENOM, convertUnit, getSigningLumClient, ibc, lum 
 import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
 import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
 import { QueryWithdrawalsResponse, QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/query';
-import { Deposit, DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
 import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/helpers';
 import { SigningStargateClient, assertIsDeliverTxSuccess, coins } from '@cosmjs/stargate';
@@ -139,7 +139,10 @@ class LumClient {
         const deposits: DepositModel[] = [];
 
         while (true) {
-            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
+            const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
+                depositorAddress: address,
+                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
+            });
 
             deposits.push(...resDeposits.deposits);
 
@@ -157,7 +160,10 @@ class LumClient {
         const withdrawals: Withdrawal[] = [];
 
         while (true) {
-            const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
+            const resWithdrawals: QueryWithdrawalsResponse = await this.lumQueryClient.lum.network.millions.accountWithdrawals({
+                depositorAddress: address,
+                pagination: pageWithdrawals ? ({ key: pageWithdrawals } as PageRequest) : undefined,
+            });
 
             withdrawals.push(...resWithdrawals.withdrawals);
 
