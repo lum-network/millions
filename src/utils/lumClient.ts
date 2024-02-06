@@ -139,27 +139,9 @@ class LumClient {
         const deposits: DepositModel[] = [];
 
         while (true) {
-            const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
-                depositorAddress: address,
-                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
-            });
-            const fixedDeposits: Deposit[] = [];
+            const resDeposits: QueryDepositsResponse = await this.client.queryClient.millions.accountDeposits(address, pageDeposits);
 
-            //FIXME: remove this when the chain is fixed
-            for (const deposit of resDeposits.deposits) {
-                if (deposit.state !== DepositState.DEPOSIT_STATE_SUCCESS) {
-                    const fixedDeposit = await this.lumQueryClient.lum.network.millions.poolDeposit({ poolId: BigInt(2), depositId: deposit.depositId });
-
-                    if (fixedDeposit.deposit) {
-                        fixedDeposits.push(fixedDeposit.deposit);
-                        continue;
-                    }
-                }
-
-                fixedDeposits.push(deposit);
-            }
-
-            deposits.push(...fixedDeposits);
+            deposits.push(...resDeposits.deposits);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
@@ -175,22 +157,9 @@ class LumClient {
         const withdrawals: Withdrawal[] = [];
 
         while (true) {
-            const resWithdrawals: QueryWithdrawalsResponse = await this.lumQueryClient.lum.network.millions.accountWithdrawals({
-                depositorAddress: address,
-                pagination: pageWithdrawals ? ({ key: pageWithdrawals } as PageRequest) : undefined,
-            });
-            const fixedWithdrawals: Withdrawal[] = [];
+            const resWithdrawals: QueryWithdrawalsResponse = await this.client.queryClient.millions.accountWithdrawals(address, pageWithdrawals);
 
-            //FIXME: remove this when the chain is fixed
-            for (const withdrawal of resWithdrawals.withdrawals) {
-                const fixedWithdrawal = await this.lumQueryClient.lum.network.millions.poolWithdrawal({ poolId: BigInt(2), withdrawalId: withdrawal.withdrawalId });
-
-                if (fixedWithdrawal.withdrawal) {
-                    fixedWithdrawals.push(fixedWithdrawal.withdrawal);
-                }
-            }
-
-            withdrawals.push(...fixedWithdrawals);
+            withdrawals.push(...resWithdrawals.withdrawals);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resWithdrawals.pagination && resWithdrawals.pagination.nextKey && resWithdrawals.pagination.nextKey.length) {

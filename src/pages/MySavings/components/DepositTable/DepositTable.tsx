@@ -66,6 +66,16 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                 break;
 
             case DepositState.DEPOSIT_STATE_IBC_TRANSFER:
+                // If the deposit is older than 1 hour, we consider it as failed
+                if (deposit.updatedAt && dayjs().diff(dayjs(deposit.updatedAt), 'hours') > 1) {
+                    statusClassName = 'failure';
+                    cta = <Button onClick={() => onDepositRetry(deposit as DepositModel)}>{I18n.t('common.retry')}</Button>;
+                } else {
+                    statusClassName = 'pending';
+                    cta = I18n.t('mySavings.transferWaitingCta');
+                }
+                break;
+
             case DepositState.DEPOSIT_STATE_ICA_DELEGATE:
                 statusClassName = 'pending';
                 cta = I18n.t('mySavings.transferWaitingCta');
