@@ -376,27 +376,14 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                     </div>
                     <div className='deposit-state rounded-pill text-nowrap success mt-3 mt-sm-0'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                 </div>
-                <div className='row row-cols-1 row-cols-lg-3 gx-4 gy-4 ctas-section'>
-                    <div className='col'>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                            onClick={() => {
-                                window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
-                            }}
-                        >
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                            {I18n.t('deposit.seeOnExplorer')}
-                        </Card>
-                    </div>
+                <div className='row row-cols-1 row-cols-lg-2 gx-4 gy-4 ctas-section'>
                     <div className='col'>
                         <Card
                             flat
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/lum/txs/${txInfos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/tx/${txInfos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
