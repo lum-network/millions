@@ -1,14 +1,19 @@
+import { Coin, LUM_DENOM, LumRegistry, MICRO_LUM_DENOM, lum, parseRawLogs, toJSON } from '@lum-network/sdk-javascript';
 import Assets from 'assets';
-import { LumConstants, LumMessages, LumRegistry, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { Any } from '@lum-network/sdk-javascript/build/codec/google/protobuf/any';
 import { TransactionModel } from 'models';
-import Long from 'long';
 import { I18n, NumbersUtils } from 'utils';
 
 import { getDenomFromIbc } from './denoms';
+import { IndexedTx } from '@cosmjs/stargate';
+import { decodeTxRaw } from '@cosmjs/proto-signing';
+import { Any } from '@lum-network/sdk-javascript/build/codegen/google/protobuf/any';
+
+const depositTypeUrl = lum.network.millions.MsgDeposit.typeUrl;
+const claimPrizeTypeUrl = lum.network.millions.MsgClaimPrize.typeUrl;
+const withdrawDepositTypeUrl = lum.network.millions.MsgWithdrawDeposit.typeUrl;
 
 type MillionsTxInfos = {
-    amount: LumTypes.Coin;
+    amount: Coin;
 };
 
 type MillionsWithdrawDeposit = {
@@ -21,11 +26,11 @@ type MillionsClaimPrize = {
 
 export const isMillionsDepositTx = (
     info: {
-        amount?: LumTypes.Coin;
+        amount?: Coin;
         depositorAddress?: string;
         winnerAddress?: string;
         isSponsor?: boolean;
-        poolId?: Long;
+        poolId?: bigint;
     } | null,
 ): info is MillionsTxInfos => {
     return !!(info && info.amount && info.depositorAddress && info.isSponsor !== undefined && info.poolId);
@@ -70,7 +75,7 @@ export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, l
 
         if (existingDenomIndex > -1) {
             const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
-            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM, MICRO_LUM_DENOM).toFixed();
             tx.amount[existingDenomIndex].amount = amount;
         } else {
             const existingTx = formattedTxs.find((formattedTx) => formattedTx.hash === tx.hash && formattedTx.height === tx.height);
@@ -91,7 +96,7 @@ export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, l
                 });
             } else {
                 const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount);
-                const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LumConstants.LumDenom, LumConstants.MicroLumDenom).toFixed();
+                const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM, MICRO_LUM_DENOM).toFixed();
 
                 existingTx.amount = [
                     {
@@ -106,13 +111,13 @@ export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, l
     }
 };
 
-export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumTypes.TxResponse[], desc = false): Promise<TransactionModel[]> => {
+export const formatTxs = async (rawTxs: IndexedTx[], desc = false): Promise<TransactionModel[]> => {
     const formattedTxs: TransactionModel[] = [];
 
     for (const rawTx of rawTxs) {
         // Decode TX to human-readable format
-        const txData = LumRegistry.decodeTx(rawTx.tx);
-        const hash = LumUtils.toHex(rawTx.hash).toUpperCase();
+        const decodedTxBody = decodeTxRaw(rawTx.tx).body;
+        const hash = rawTx.hash.toUpperCase();
 
         if (hashExists(formattedTxs, hash)) {
             continue;
@@ -127,25 +132,25 @@ export const formatTxs = async (rawTxs: readonly LumTypes.TxResponse[] | LumType
             amount: [],
         };
 
-        if (txData.body && txData.body.messages) {
-            for (const [index, msg] of txData.body.messages.entries()) {
+        if (decodedTxBody.messages) {
+            for (const [index, msg] of decodedTxBody.messages.entries()) {
                 try {
-                    const txInfos = LumUtils.toJSON(LumRegistry.decode(msg));
+                    const txInfos = toJSON(LumRegistry.decode(msg));
 
                     if (typeof txInfos === 'object') {
                         tx.messages.push(msg.typeUrl);
 
                         if (msg.typeUrl.includes('millions')) {
                             if (isMillionsDepositTx(txInfos)) {
-                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
+                                const logs = parseRawLogs(rawTx.rawLog);
 
                                 await parseLogs(tx, msg, index, logs, 'deposit', formattedTxs);
                             } else if (isMillionsWithdrawDeposit(txInfos)) {
-                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
+                                const logs = parseRawLogs(rawTx.rawLog);
 
                                 tx.amount = await findAmountInLogs(logs, 'withdraw_deposit', index);
                             } else if (isMillionsClaimPrize(txInfos)) {
-                                const logs = LumUtils.parseRawLogs(rawTx.result.log);
+                                const logs = parseRawLogs(rawTx.rawLog);
 
                                 await parseLogs(tx, msg, index, logs, 'prize_claim', formattedTxs);
                             }
@@ -172,15 +177,15 @@ export const getTxTypeAndIcon = (transaction: TransactionModel) => {
     let icon = '';
 
     switch (transaction.messages[0]) {
-        case LumMessages.MsgMillionsDepositUrl:
+        case depositTypeUrl:
             type = I18n.t('mySavings.transactionTypes.deposit');
             icon = Assets.images.deposit;
             break;
-        case LumMessages.MsgWithdrawDepositUrl:
+        case withdrawDepositTypeUrl:
             type = I18n.t('mySavings.transactionTypes.leavePool');
             icon = Assets.images.leavePool;
             break;
-        case LumMessages.MsgClaimPrizeUrl:
+        case claimPrizeTypeUrl:
             type = I18n.t('mySavings.transactionTypes.claimPrize');
             icon = Assets.images.trophyPurple;
             break;

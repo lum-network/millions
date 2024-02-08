@@ -4,6 +4,10 @@ import { Cosmos } from '@cosmostation/extension-client';
 declare global {
     interface Window extends KeplrWindow {
         leap?: Keplr;
-        cosmostation?: Cosmos;
+        cosmostation?: Cosmos & {
+            providers?: {
+                keplr?: Keplr;
+            };
+        };
     }
 }

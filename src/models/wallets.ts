@@ -1,12 +1,12 @@
-import { LumTypes, LumWallet } from '@lum-network/sdk-javascript';
+import { Coin } from '@lum-network/sdk-javascript';
+
 import { AggregatedDepositModel } from './deposit';
 import { TransactionModel } from './transaction';
 import PrizeModel from './Prize';
 
 export interface LumWalletModel {
-    innerWallet: LumWallet;
     address: string;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     activities: {
         result: TransactionModel[];
         currentPage: number;
@@ -20,5 +20,5 @@ export interface LumWalletModel {
 
 export interface OtherWalletModel {
     address: string;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
 }

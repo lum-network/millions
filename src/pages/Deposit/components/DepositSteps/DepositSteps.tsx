@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 
@@ -18,7 +18,7 @@ import './DepositSteps.scss';
 
 interface StepProps {
     currentPool: PoolModel;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     price: number;
     pools: PoolModel[];
     title: string;
@@ -37,7 +37,7 @@ interface Props {
         cardSubtitle?: string;
     }[];
     otherWallets: {
-        [denom: string]: OtherWalletModel;
+        [denom: string]: OtherWalletModel | undefined;
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
@@ -77,7 +77,7 @@ const DepositStep1 = (
     if (prizeStrat) {
         let avgPrizesDrawn = 0;
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
+            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (Number(prizeBatch.poolPercent) / 100)) / Number(prizeBatch.quantity);
         }
 
         avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;
@@ -129,7 +129,7 @@ const DepositStep1 = (
                     />
                 </div>
                 <div className='mt-5'>
-                    {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
+                    {pools.filter((p) => p.nativeDenom !== MICRO_LUM_DENOM).length > 1 && (
                         <AssetsSelect
                             className='asset-select'
                             isLoading={isLoading}
@@ -211,12 +211,10 @@ const DepositStep2 = (
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
     const [depositAmount, setDepositAmount] = useState<string>(
-        initialAmount
-            ? (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6)
-            : amount,
+        initialAmount ? (NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6) : amount,
     );
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
-    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === LumConstants.MicroLumDenom);
+    const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === MICRO_LUM_DENOM);
     const [error, setError] = useState('');
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.depositToPool);
@@ -233,9 +231,7 @@ const DepositStep2 = (
 
     useEffect(() => {
         if (initialAmount) {
-            setDepositAmount(
-                (NumbersUtils.convertUnitNumber(initialAmount, LumConstants.MicroLumDenom, LumConstants.LumDenom) - (currentPool.nativeDenom === LumConstants.MicroLumDenom ? 0.005 : 0)).toFixed(6),
-            );
+            setDepositAmount((NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6));
         }
     }, [initialAmount]);
 
@@ -287,11 +283,7 @@ const DepositStep2 = (
                         isLoading={isLoading}
                         className='mt-2'
                         onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(
-                                poolToDeposit.nativeDenom,
-                                balances,
-                                poolToDeposit.nativeDenom === LumConstants.MicroLumDenom ? 0.05 : poolToDeposit.internalInfos?.fees,
-                            );
+                            const amount = WalletUtils.getMaxAmount(poolToDeposit.nativeDenom, balances, poolToDeposit.nativeDenom === MICRO_LUM_DENOM ? 0.05 : poolToDeposit.internalInfos?.fees);
                             setDepositAmount(amount);
                         }}
                         inputProps={{
@@ -384,27 +376,14 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                     </div>
                     <div className='deposit-state rounded-pill text-nowrap success mt-3 mt-sm-0'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                 </div>
-                <div className='row row-cols-1 row-cols-lg-3 gx-4 gy-4 ctas-section'>
-                    <div className='col'>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                            onClick={() => {
-                                window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${txInfos.hash}`, '_blank');
-                            }}
-                        >
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                            {I18n.t('deposit.seeOnExplorer')}
-                        </Card>
-                    </div>
+                <div className='row row-cols-1 row-cols-lg-2 gx-4 gy-4 ctas-section'>
                     <div className='col'>
                         <Card
                             flat
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/lum/txs/${txInfos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/tx/${txInfos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -451,25 +430,29 @@ const DepositSteps = (props: Props) => {
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-    const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+    const [nonEmptyWallets, setNonEmptyWallets] = useState<OtherWalletModel[]>(
+        Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+    );
     const [initialAmount, setInitialAmount] = useState(amountFromLocationState ? amountFromLocationState.toFixed() : '0');
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-        setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+        setNonEmptyWallets(
+            Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+        );
     }, [otherWallets, currentPool]);
 
     useEffect(() => {
         if (!amountFromLocationState) {
             const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== LumConstants.MicroLumDenom ? existsInLumBalances.amount : '0');
+            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? existsInLumBalances.amount : '0');
         }
     }, [lumWallet]);
 
     return (
         <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
             <div className='card-content'>
-                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
+                {currentStep === 0 && currentPool.nativeDenom !== MICRO_LUM_DENOM && (
                     <DepositStep1
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
@@ -479,11 +462,11 @@ const DepositSteps = (props: Props) => {
                         price={price}
                         pools={pools}
                         disabled={!otherWallet}
-                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={(currentPool.nativeDenom === MICRO_LUM_DENOM ? lumWallet?.balances : otherWallet?.balances) || []}
                         nonEmptyWallets={nonEmptyWallets}
                     />
                 )}
-                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
+                {((currentStep === 1 && currentPool.nativeDenom !== MICRO_LUM_DENOM) || (currentStep === 0 && currentPool.nativeDenom === MICRO_LUM_DENOM)) && (
                     <DepositStep2
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}

@@ -1,18 +1,19 @@
-import Long from 'long';
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
 import { DrawModel, PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
-import { RootModel } from '.';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient, WalletUtils } from 'utils';
 import dayjs from 'dayjs';
-import { LumConstants } from '@lum-network/sdk-javascript';
-import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
+import { MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
+
 import { LumApi } from 'api';
+
+import { RootModel } from '.';
 
 interface PoolsState {
     pools: PoolModel[];
     bestPoolPrize: PoolModel | null;
-    depositDelta: number | null;
+    depositDelta: bigint | null;
     mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
 }
@@ -39,7 +40,7 @@ export const pools = createModel<RootModel>()({
                 bestPoolPrize,
             };
         },
-        setDepositDelta: (state: PoolsState, depositDelta: number) => {
+        setDepositDelta: (state: PoolsState, depositDelta: bigint) => {
             return {
                 ...state,
                 depositDelta,
@@ -81,7 +82,7 @@ export const pools = createModel<RootModel>()({
                         const leaderboard = await dispatch.pools.getLeaderboard({ poolId: pool.poolId, limit: 50 });
 
                         const nextDrawAt = dayjs(pool.lastDrawCreatedAt || pool.drawSchedule?.initialDrawAt)
-                            .add(pool.lastDrawCreatedAt ? pool.drawSchedule?.drawDelta?.seconds.toNumber() || 0 : 0, 'seconds')
+                            .add(pool.lastDrawCreatedAt ? Number(pool.drawSchedule?.drawDelta?.seconds) || 0 : 0, 'seconds')
                             .toDate();
 
                         pools.push({
@@ -103,7 +104,17 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setPools(pools);
                     dispatch.pools.setMutexFetchPools(false);
 
-                    return pools;
+                    // Reload balances to ensure pools related balances are correctly fetched
+                    dispatch.wallet.getLumWalletBalances(null);
+
+                    // If no otherWallets found, connect them after fetching pools
+                    if (Object.keys(state.wallet.otherWallets).length === 0) {
+                        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
+
+                        if (autoconnectProvider) {
+                            dispatch.wallet.connectOtherWallets(autoconnectProvider);
+                        }
+                    }
                 }
             } catch (e) {
                 dispatch.pools.setMutexFetchPools(false);
@@ -113,7 +124,7 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexFetchPools(false);
         },
-        async getPoolPrizes(poolId: Long) {
+        async getPoolPrizes(poolId: bigint) {
             try {
                 const res = await LumClient.getPoolPrizes(poolId);
 
@@ -136,13 +147,13 @@ export const pools = createModel<RootModel>()({
                     // Calculate Prize to win
                     const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
 
-                    if (pool.nativeDenom !== LumConstants.MicroLumDenom && !pool.internalInfos) {
+                    if (pool.nativeDenom !== MICRO_LUM_DENOM && !pool.internalInfos) {
                         continue;
                     }
 
                     const client = new WalletClient();
 
-                    await client.connect((pool.nativeDenom === LumConstants.MicroLumDenom ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
+                    await client.connect((pool.nativeDenom === MICRO_LUM_DENOM ? process.env.REACT_APP_RPC_LUM : pool.internalInfos?.rpc) || '', undefined, true);
 
                     const [bankBalance, stakingRewards] = await Promise.all([
                         client.getIcaAccountBankBalance(pool.icaPrizepoolAddress, pool.nativeDenom),
@@ -204,7 +215,7 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws({ poolId, nativeDenom }: { poolId: Long; nativeDenom: string }, state) {
+        async getPoolDraws({ poolId, nativeDenom }: { poolId: bigint; nativeDenom: string }, state) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
                 const draws: DrawModel[] = [];
@@ -266,7 +277,7 @@ export const pools = createModel<RootModel>()({
                 }
             } catch {}
         },
-        async getLeaderboard(payload: { poolId: Long; limit?: number }) {
+        async getLeaderboard(payload: { poolId: bigint; limit?: number }) {
             try {
                 const [res] = await LumApi.fetchLeaderboard(payload.poolId.toString(), payload.limit);
 
@@ -275,7 +286,7 @@ export const pools = createModel<RootModel>()({
                 }
             } catch {}
         },
-        async getNextLeaderboardPage(payload: { poolId: Long; page: number; limit?: number }, state) {
+        async getNextLeaderboardPage(payload: { poolId: bigint; page: number; limit?: number }, state) {
             const { poolId, page, limit } = payload;
 
             const pools = [...state.pools.pools];

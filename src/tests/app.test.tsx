@@ -1,11 +1,7 @@
 import React from 'react';
 
-import { LumWalletFactory } from '@lum-network/sdk-javascript';
-import { PoolState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/pool';
-import { DrawState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/draw';
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom';
-import Long from 'long';
 
 import App from 'App';
 import { DepositPage, HomePage, LandingPage, MySavingsPage, PoolDetailsPage, PoolsPage, Winners } from 'pages';
@@ -13,13 +9,17 @@ import store from 'redux/store';
 import { DenomsUtils, I18n } from 'utils';
 import { renderWithRematchStore } from 'utils/tests';
 import { PoolModel } from 'models';
+import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
+import { DrawState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
+import { LumBech32Prefixes } from '@lum-network/sdk-javascript';
+import { Secp256k1HdWallet } from '@cosmjs/amino';
 
 jest.setTimeout(180000);
 
 describe('App', () => {
     const testMnemonic = 'silver section assault success awesome arrest close problem trick robot loop fluid';
-    const testPool: PoolModel = {
-        poolId: Long.fromNumber(2),
+    const testPool: Partial<PoolModel> = {
+        poolId: BigInt(2),
         denom: 'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2',
         nativeDenom: 'uatom',
         chainId: 'gaia-devnet',
@@ -43,14 +43,14 @@ describe('App', () => {
         localAddress: '',
         icaDepositAddress: '',
         icaPrizepoolAddress: '',
-        nextDrawId: Long.fromNumber(1),
+        nextDrawId: BigInt(1),
         tvlAmount: '100000',
-        depositorsCount: Long.fromNumber(0),
+        depositorsCount: BigInt(0),
         sponsorshipAmount: '0',
         state: PoolState.POOL_STATE_READY,
         lastDrawState: DrawState.DRAW_STATE_UNSPECIFIED,
-        createdAtHeight: Long.fromNumber(0),
-        updatedAtHeight: Long.fromNumber(0),
+        createdAtHeight: BigInt(0),
+        updatedAtHeight: BigInt(0),
         leaderboard: {
             items: [],
             page: 0,
@@ -119,11 +119,13 @@ describe('App', () => {
         );
 
         // Dispatch new pool in store
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         store.dispatch.pools.setPools([testPool]);
 
         renderWithRematchStore(<RouterProvider router={router} />, store);
 
-        const poolDetailPageTitle = screen.getByText(`${DenomsUtils.getNormalDenom(testPool.nativeDenom).toUpperCase()} ${I18n.t('common.pool')}`);
+        const poolDetailPageTitle = screen.getByText(`${DenomsUtils.getNormalDenom(testPool.nativeDenom ?? '').toUpperCase()} ${I18n.t('common.pool')}`);
         expect(poolDetailPageTitle).toBeInTheDocument();
     });
 
@@ -142,10 +144,14 @@ describe('App', () => {
 
     it('render the My Savings Page without crashing', async () => {
         // Log in using a test wallet to enable My Savings page
-        const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
-        const wallet = Object.assign(testWallet, { isLedger: false });
+        const wallet = await Secp256k1HdWallet.fromMnemonic(testMnemonic, {
+            prefix: LumBech32Prefixes.ACC_ADDR,
+        });
 
-        store.dispatch.wallet.signInLum(wallet);
+        const accounts = await wallet.getAccounts();
+        const address = accounts[0].address;
+
+        store.dispatch.wallet.signInLum({ address, isLedger: false });
 
         // Render My Savings page
         renderWithRematchStore(
@@ -178,6 +184,8 @@ describe('App', () => {
         );
 
         // Dispatch new pool in store
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         store.dispatch.pools.setPools([testPool]);
 
         // Render Deposit page
@@ -188,12 +196,16 @@ describe('App', () => {
         expect(transferBtn).toBeInTheDocument();
         expect(transferBtn.parentElement).toBeDisabled();
 
-        const testWallet = await LumWalletFactory.fromMnemonic(testMnemonic);
-        const wallet = Object.assign(testWallet, { isLedger: false });
+        const wallet = await Secp256k1HdWallet.fromMnemonic(testMnemonic, {
+            prefix: LumBech32Prefixes.ACC_ADDR,
+        });
+
+        const accounts = await wallet.getAccounts();
+        const address = accounts[0].address;
 
         // Fake log in to enable the transfer button
         act(() => {
-            store.dispatch.wallet.signInLum(wallet);
+            store.dispatch.wallet.signInLum({ address, isLedger: false });
             store.dispatch.wallet.setOtherWalletData({
                 denom: 'atom',
                 balances: [],

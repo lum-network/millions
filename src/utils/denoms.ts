@@ -1,7 +1,7 @@
-import { LumTypes } from '@lum-network/sdk-javascript';
 import { DenomsConstants } from 'constant';
 import CryptoJS from 'crypto-js';
 import { LumClient } from 'utils';
+import { Coin } from '@keplr-wallet/types';
 
 export const getNormalDenom = (denom: string) => {
     if (denom.startsWith('u')) {
@@ -47,8 +47,8 @@ export const getIbcDenom = (channel: string, denom: string) => {
     return 'ibc/' + CryptoJS.SHA256(`transfer/${channel}/${denom}`).toString().toUpperCase();
 };
 
-export const translateLumIbcBalances = async (balances: LumTypes.Coin[]) => {
-    const translatedBalances: LumTypes.Coin[] = [];
+export const translateLumIbcBalances = async (balances: Coin[]) => {
+    const translatedBalances: Coin[] = [];
 
     for (const balance of balances) {
         let translatedBalance = balance;
@@ -73,7 +73,7 @@ export const translateLumIbcBalances = async (balances: LumTypes.Coin[]) => {
     return translatedBalances;
 };
 
-export const translateIbcBalances = (balances: LumTypes.Coin[], sourceChannel: string, minimalDenom: string) => {
+export const translateIbcBalances = (balances: Coin[], sourceChannel: string, minimalDenom: string) => {
     return balances.map((balance) => {
         if (!balance.denom.startsWith('ibc/')) {
             return balance;

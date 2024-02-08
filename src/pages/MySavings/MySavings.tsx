@@ -1,9 +1,9 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Assets from 'assets';
@@ -48,9 +48,19 @@ const MySavings = () => {
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
+    const leaderboardPoolId = useMemo(() => {
+        const state = location.state as { leaderboardPoolId?: string };
+
+        if (!state) {
+            return undefined;
+        }
+
+        return state.leaderboardPoolId;
+    }, [location]);
+
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
     const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
@@ -82,14 +92,16 @@ const MySavings = () => {
             getLeaderboardUserRank().finally(() => null);
         }
 
-        if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
+        if (leaderboardPoolId && leaderboardSectionRef.current) {
             leaderboardSectionRef.current.scrollIntoView();
         }
     }, [isReloadingInfos, leaderboardPool, lumWallet]);
 
     useEffect(() => {
         if (pools && pools.length > 0) {
-            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId);
+            const poolId = leaderboardPoolId || pools[0].poolId.toString();
+
+            setLeaderboardSelectedPoolId(poolId);
             ScrollTrigger.refresh();
         }
     }, [pools]);
@@ -135,7 +147,7 @@ const MySavings = () => {
         };
     }, []);
 
-    const renderAsset = (asset: LumTypes.Coin) => {
+    const renderAsset = (asset: Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
         const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
         const amount = NumbersUtils.convertUnitNumber(asset.amount);
@@ -162,7 +174,7 @@ const MySavings = () => {
                                 </div>
                             </div>
                             <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-lg-0'>
-                                {normalDenom !== LumConstants.LumDenom ? (
+                                {normalDenom !== LUM_DENOM ? (
                                     <Button
                                         outline
                                         className='me-0 me-sm-4 mb-3 mb-sm-0 flex-grow-1'
@@ -178,7 +190,7 @@ const MySavings = () => {
                                     </Button>
                                 ) : null}
                                 <Button
-                                    disabled={normalDenom === LumConstants.LumDenom && !pools.find((pool) => pool.nativeDenom === LumConstants.MicroLumDenom)}
+                                    disabled={normalDenom === LUM_DENOM && !pools.find((pool) => pool.nativeDenom === MICRO_LUM_DENOM)}
                                     to={`${NavigationConstants.POOLS}/${normalDenom}`}
                                     className='flex-grow-1'
                                     onClick={() => {
