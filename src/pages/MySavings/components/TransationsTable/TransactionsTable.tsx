@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import numeral from 'numeral';
-import { LumMessages } from '@lum-network/sdk-javascript';
+import { lum } from '@lum-network/sdk-javascript';
 
 import { Pagination, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
@@ -11,6 +11,8 @@ import { RootState } from 'redux/store';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils, TransactionsUtils } from 'utils';
 
 import './TransactionsTable.scss';
+
+const claimPrizeTypeUrl = lum.network.millions.MsgClaimPrize.typeUrl;
 
 const TransactionsTable = ({
     transactions,
@@ -53,17 +55,16 @@ const TransactionsTable = ({
                             {transaction.messages.length > 1 ? (
                                 <span
                                     data-tooltip-id={`claim-tooltip-${transaction.hash}`}
-                                    data-tooltip-html={I18n.t(
-                                        transaction.messages[0] === LumMessages.MsgClaimPrizeUrl ? 'mySavings.transactionTooltips.claim' : 'mySavings.transactionTooltips.withdraw',
-                                        { count: transaction.messages.length },
-                                    )}
+                                    data-tooltip-html={I18n.t(transaction.messages[0] === claimPrizeTypeUrl ? 'mySavings.transactionTooltips.claim' : 'mySavings.transactionTooltips.withdraw', {
+                                        count: transaction.messages.length,
+                                    })}
                                 >
                                     <div className='msg-count-badge d-flex align-items-center justify-content-center ms-2 rounded-pill px-2 py-1'>+{transaction.messages.length - 1}</div>
                                     <Tooltip id={`claim-tooltip-${transaction.hash}`} />
                                 </span>
                             ) : null}
                         </div>
-                        <a className='tx-height ms-0 ms-sm-3 mt-3 mt-md-0 mt-lg-3 mt-xl-0' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
+                        <a className='tx-height ms-0 ms-sm-3 mt-3 mt-md-0 mt-lg-3 mt-xl-0' href={`${NavigationConstants.MINTSCAN}/tx/${transaction.hash}`} rel='noreferrer' target='_blank'>
                             {StringsUtils.trunc(transaction.hash)}
                         </a>
                     </div>
@@ -109,7 +110,7 @@ const TransactionsTable = ({
                     <div className='d-flex flex-column my-2'>
                         <label>{headers[1]}</label>
                         <div className='table-item'>
-                            <a className='tx-height' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
+                            <a className='tx-height' href={`${NavigationConstants.MINTSCAN}/tx/${transaction.hash}`} rel='noreferrer' target='_blank'>
                                 {StringsUtils.trunc(transaction.hash)}
                             </a>
                         </div>

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LumTypes } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { Coin } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Steps, Tooltip, TransactionBatchProgress } from 'components';
@@ -25,7 +26,7 @@ interface Props {
     limit: number;
 }
 
-type ShareInfos = { hash: string; amount: LumTypes.Coin[]; tvl: string; poolId: string; compounded: boolean };
+type ShareInfos = { hash: string; amount: Coin[]; tvl: string; poolId: string; compounded: boolean };
 
 const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareInfos; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers>; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
@@ -55,27 +56,14 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                         <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                     </div>
                 ))}
-                <div className='row row-cols-3 gx-4'>
-                    <div className='col'>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                            onClick={() => {
-                                window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${infos.hash}`, '_blank');
-                            }}
-                        >
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                            {I18n.t('deposit.seeOnExplorer')}
-                        </Card>
-                    </div>
+                <div className='row row-cols-2 gx-4'>
                     <div className='col'>
                         <Card
                             flat
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/lum/txs/${infos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/tx/${infos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -169,8 +157,8 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
             setBatch(0);
             setBatchTotal(0);
         } else {
-            const pool = pools.find((pool) => pool.poolId.equals(prizes[0].poolId));
-            const amount: LumTypes.Coin[] = [];
+            const pool = pools.find((pool) => Number(pool.poolId) === prizes[0].poolId);
+            const amount: Coin[] = [];
 
             for (const prize of prizes) {
                 const denomExistIndex = amount.findIndex((am) => am.denom === DenomsUtils.getNormalDenom(prize.amount?.denom || ''));
@@ -203,9 +191,9 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
         for (const prize of prizes) {
             if (!prize.amount) continue;
 
-            const existingItemIndex = prizesToDeposit.findIndex((d) => d.pool.poolId.equals(prize.poolId));
+            const existingItemIndex = prizesToDeposit.findIndex((d) => Number(d.pool.poolId) === prize.poolId);
             if (existingItemIndex === -1) {
-                const pool = pools.find((p) => p.poolId.equals(prize.poolId));
+                const pool = pools.find((p) => Number(p.poolId) === prize.poolId);
 
                 if (!pool) continue;
 
@@ -259,7 +247,7 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
         let blockCompound = false;
 
         for (const pToDeposit of toDeposit) {
-            const pool = pools.find((p) => p.poolId.eq(pToDeposit.pool.poolId));
+            const pool = pools.find((p) => p.poolId === pToDeposit.pool.poolId);
             const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount);
             const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0');
 

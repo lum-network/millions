@@ -1,22 +1,24 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
 import { useParams, unstable_useBlocker as useBlocker, useBeforeUnload, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LumConstants } from '@lum-network/sdk-javascript';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
 import { Modal as BootstrapModal } from 'bootstrap';
 
 import Assets from 'assets';
+import { LUM_DENOM } from '@lum-network/sdk-javascript';
+
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
 import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps, IbcTransferModal, QuitDepositModal } from 'components';
 import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils, ToastUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 import DepositDropSteps from 'drops/components/DepositDropSteps/DepositDropSteps';
@@ -45,7 +47,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     const existsInLumBalances = lumWallet?.balances?.find((balance) => DenomsUtils.getNormalDenom(balance.denom) === denom);
     const [currentStep, setCurrentStep] = useState(
         existsInLumBalances &&
-            denom !== LumConstants.LumDenom &&
+            denom !== LUM_DENOM &&
             ((!isDrop && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0')) || isDrop)
             ? 1
             : 0,
@@ -70,6 +72,16 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
     const prevStep = usePrevious(currentStep);
     const { isDark } = useColorScheme();
+
+    const amountToDeposit = useMemo(() => {
+        const state = location.state as { amountToDeposit?: number };
+
+        if (!state) {
+            return undefined;
+        }
+
+        return state.amountToDeposit;
+    }, [location]);
 
     const wcConfig: WalletClientContext = {
         userAddress: lumWallet?.address,
@@ -151,7 +163,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
     const transferForm = useFormik({
         initialValues: {
-            amount: location.state?.amountToDeposit || '',
+            amount: amountToDeposit?.toFixed(6) || '',
         },
         validationSchema: yup.object().shape({
             amount: yup
@@ -166,23 +178,36 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         onSubmit: async (values) => {
             const amount = values.amount.toString();
 
-            if (pool && pool.internalInfos) {
-                const res = await dispatch.wallet.ibcTransfer({
-                    type: 'deposit',
-                    fromAddress: otherWallet.address,
-                    toAddress: lumWallet?.address || '',
-                    amount: {
-                        amount,
-                        denom: pool.nativeDenom,
-                    },
-                    normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                    ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
-                    chainId: pool.chainId,
-                });
+            if (!otherWallet) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Wallet not found' });
+                return;
+            }
 
-                if (res && !res.error) {
-                    startTransition();
-                }
+            if (!pool) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool not found' });
+                return;
+            }
+
+            if (!pool.internalInfos) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool infos not found' });
+                return;
+            }
+
+            const res = await dispatch.wallet.ibcTransfer({
+                type: 'deposit',
+                fromAddress: otherWallet.address,
+                toAddress: lumWallet?.address || '',
+                amount: {
+                    amount,
+                    denom: pool.nativeDenom,
+                },
+                normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
+                chainId: pool.chainId,
+            });
+
+            if (res && !res.error) {
+                startTransition();
             }
         },
     });
@@ -864,7 +889,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
             timeline.add(cardTimeline(), '<0.2');
 
             if (currentStep === 0) {
-                if (denom === LumConstants.LumDenom) {
+                if (denom === LUM_DENOM) {
                     timeline.add(step2Timeline());
                 } else {
                     timeline.add(step1Timeline());
@@ -912,7 +937,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
     const otherWallet = otherWallets[denom || ''];
 
-    if (denom === LumConstants.LumDenom) {
+    if (denom === LUM_DENOM) {
         steps.splice(0, 1);
     }
 
@@ -997,9 +1022,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                             },
                                         }}
                                         onClose={() => {
-                                            if (otherWallet) {
-                                                dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
-                                            }
+                                            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
                                         }}
                                     />
                                 </Card>
@@ -1042,21 +1065,26 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                 </div>
             </div>
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
-            <IbcTransferModal
-                modalRef={ibcModalRef}
-                denom={denom || ''}
-                prevAmount={ibcModalPrevAmount}
-                nextAmount={ibcModalDepositAmount}
-                isLoading={isTransferring}
-                price={prices[denom || ''] || 0}
-                onConfirm={async () => {
-                    const amount = transferForm.values.amount.toString();
+            {pool && lumWallet && otherWallet ? (
+                <IbcTransferModal
+                    modalRef={ibcModalRef}
+                    denom={denom || ''}
+                    prevAmount={ibcModalPrevAmount}
+                    nextAmount={ibcModalDepositAmount}
+                    isLoading={isTransferring}
+                    price={prices[denom || ''] || 0}
+                    onConfirm={async () => {
+                        const amount = transferForm.values.amount.toString();
 
-                    if (pool && pool.internalInfos) {
+                        if (!pool.internalInfos) {
+                            ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool infos not found' });
+                            return;
+                        }
+
                         const res = await dispatch.wallet.ibcTransfer({
                             type: 'deposit',
                             fromAddress: otherWallet.address,
-                            toAddress: lumWallet?.address || '',
+                            toAddress: lumWallet.address || '',
                             amount: {
                                 amount,
                                 denom: pool.nativeDenom,
@@ -1071,9 +1099,9 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                 ibcModalRef.current.hide();
                             }
                         }
-                    }
-                }}
-            />
+                    }}
+                />
+            ) : null}
         </>
     );
 };

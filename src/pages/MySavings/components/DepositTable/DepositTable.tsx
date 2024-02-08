@@ -1,6 +1,4 @@
 import React from 'react';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
 import numeral from 'numeral';
 
 import { Button, Collapsible, PurpleBackgroundImage, SmallerDecimal, Tooltip } from 'components';
@@ -10,6 +8,8 @@ import { useWindowSize } from 'hooks';
 import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
 import Assets from 'assets';
 import dayjs from 'dayjs';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
+import { WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
 
 import './DepositTable.scss';
 
@@ -66,6 +66,16 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                 break;
 
             case DepositState.DEPOSIT_STATE_IBC_TRANSFER:
+                // If the deposit is older than 1 hour, we consider it as failed
+                if (deposit.updatedAt && dayjs().diff(dayjs(deposit.updatedAt), 'hours') > 1) {
+                    statusClassName = 'failure';
+                    cta = <Button onClick={() => onDepositRetry(deposit as DepositModel)}>{I18n.t('common.retry')}</Button>;
+                } else {
+                    statusClassName = 'pending';
+                    cta = I18n.t('mySavings.transferWaitingCta');
+                }
+                break;
+
             case DepositState.DEPOSIT_STATE_ICA_DELEGATE:
                 statusClassName = 'pending';
                 cta = I18n.t('mySavings.transferWaitingCta');
@@ -75,7 +85,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
         if (deposit.isWithdrawing) {
             switch (deposit.withdrawalState) {
                 case WithdrawalState.WITHDRAWAL_STATE_ICA_UNBONDING:
-                    const pool = pools.find((p) => deposit.poolId && p.poolId.eq(deposit.poolId));
+                    const pool = pools.find((p) => deposit.poolId && p.poolId === deposit.poolId);
 
                     const expiration = deposit.unbondingEndAt
                         ? dayjs(deposit.unbondingEndAt).toNow(true)

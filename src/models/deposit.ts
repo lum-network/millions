@@ -1,9 +1,8 @@
-import { Deposit as MillionsDeposit } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
-import { WithdrawalState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/withdrawal';
-import Long from 'long';
+import { Deposit as MillionsDeposit } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
+import { WithdrawalState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/withdrawal';
 
 export interface DepositModel extends MillionsDeposit {
-    withdrawalId?: Long;
+    withdrawalId?: bigint;
     isWithdrawing?: boolean;
     isDepositDrop?: boolean;
     unbondingEndAt?: Date;
