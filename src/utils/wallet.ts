@@ -1,11 +1,9 @@
-import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { Coin, LumBech32Prefixes, fromBech32 } from '@lum-network/sdk-javascript';
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
 import { AggregatedDepositModel } from 'models';
 import { AUTOCONNECT_STORAGE_KEY, WalletProvider } from 'constant';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
-
-type Fee = { amount: { amount: string; denom: string }[]; gas: string };
 
 export const getTotalBalance = (balances: Coin[], prices: { [denom: string]: number }) => {
     let totalBalance = 0;
@@ -85,16 +83,13 @@ export const getMaxAmount = (denom?: string, balances?: Coin[], feesAmount?: num
     return '0';
 };
 
-export const buildTxFee = (fee: string, gas: string, denom = MICRO_LUM_DENOM): Fee => {
-    return {
-        amount: [
-            {
-                amount: fee,
-                denom,
-            },
-        ],
-        gas,
-    };
+export const isAddressValid = (address: string, prefix: string | undefined = LumBech32Prefixes.ACC_ADDR): boolean => {
+    try {
+        const decoded = fromBech32(address);
+        return (!prefix || prefix === decoded.prefix) && decoded.data.length === 20;
+    } catch (err) {
+        return false;
+    }
 };
 
 export const updatedBalances = (currentBalance?: Coin[], newBalance?: Coin[]) => {

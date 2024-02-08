@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormikProps } from 'formik';
 import numeral from 'numeral';
-import { LumConstants, LumTypes, LumUtils } from '@lum-network/sdk-javascript';
-import { DepositState } from '@lum-network/sdk-javascript/build/codec/lum/network/millions/deposit';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM, convertUnit } from '@lum-network/sdk-javascript';
+import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
 import { Button, Card, TransactionBatchProgress, SmallerDecimal, Tooltip, DepositIbcTransfer } from 'components';
 import { NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
-import { DenomsUtils, I18n, NumbersUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 import { RootState } from 'redux/store';
 
 import CsvFileInput from '../CsvFileInput/CsvFileInput';
@@ -19,7 +19,7 @@ import './DepositDropSteps.scss';
 
 interface StepProps {
     currentPool: PoolModel;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     price: number;
     pools: PoolModel[];
     title: string;
@@ -38,7 +38,7 @@ interface Props {
         cardSubtitle?: string;
     }[];
     otherWallets: {
-        [denom: string]: OtherWalletModel;
+        [denom: string]: OtherWalletModel | undefined;
     };
     onNextStep: () => void;
     onDepositDrop: (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => Promise<true | null>;
@@ -98,7 +98,7 @@ const DepositDropStep = (
             const amountToNumber = Number(input.amount);
             const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount);
 
-            if (Object.keys(input.errors).length > 0 || !LumUtils.isAddressValid(input.winnerAddress) || Number.isNaN(amountToNumber) || amountToNumber < minDeposit) {
+            if (Object.keys(input.errors).length > 0 || !WalletUtils.isAddressValid(input.winnerAddress) || Number.isNaN(amountToNumber) || amountToNumber < minDeposit) {
                 isValid = false;
             }
         }
@@ -126,7 +126,7 @@ const DepositDropStep = (
 
         input.winnerAddress = text;
 
-        if (!LumUtils.isAddressValid(text)) {
+        if (!WalletUtils.isAddressValid(text)) {
             input.errors = {
                 winnerAddress: I18n.t('errors.generic.invalid', { field: 'lum address' }),
             };
@@ -345,7 +345,7 @@ const DepositDropStep = (
                         ...(inputType === 'csv'
                             ? depositDrops
                             : manualInputs.map((input) => ({
-                                  amount: LumUtils.convertUnit({ amount: input.amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
+                                  amount: convertUnit({ amount: input.amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
                                   winnerAddress: input.winnerAddress,
                               }))),
                     ];
@@ -403,27 +403,14 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                     </div>
                     <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                 </div>
-                <div className='row row-cols-1 row-cols-lg-3 gx-4 gy-4 ctas-section'>
-                    <div className='col'>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                            onClick={() => {
-                                window.open(`${NavigationConstants.LUM_EXPLORER}/account/${txInfos.depositorAddress}`, '_blank');
-                            }}
-                        >
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                            {I18n.t('deposit.seeOnExplorer')}
-                        </Card>
-                    </div>
+                <div className='row row-cols-1 row-cols-lg-2 gx-4 gy-4 ctas-section'>
                     <div className='col'>
                         <Card
                             flat
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/lum/account/${txInfos.depositorAddress}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/address/${txInfos.depositorAddress}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -469,17 +456,21 @@ const DepositDropSteps = (props: Props) => {
     const { currentStep, steps, otherWallets, price, pools, currentPool, limit, onNextStep, onDepositDrop, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-    const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+    const [nonEmptyWallets, setNonEmptyWallets] = useState(
+        Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+    );
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-        setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+        setNonEmptyWallets(
+            Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+        );
     }, [otherWallets, currentPool]);
 
     return (
         <div id='depositDropFlow' className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
             <div className='card-content'>
-                {currentStep === 0 && currentPool.nativeDenom !== LumConstants.MicroLumDenom && (
+                {currentStep === 0 && currentPool.nativeDenom !== MICRO_LUM_DENOM && (
                     <DepositIbcTransfer
                         disabled={!otherWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
@@ -488,11 +479,11 @@ const DepositDropSteps = (props: Props) => {
                         form={transferForm}
                         price={price}
                         pools={pools}
-                        balances={(currentPool.nativeDenom === LumConstants.MicroLumDenom ? lumWallet?.balances : otherWallet?.balances) || []}
+                        balances={(currentPool.nativeDenom === MICRO_LUM_DENOM ? lumWallet?.balances : otherWallet?.balances) || []}
                         nonEmptyWallets={nonEmptyWallets}
                     />
                 )}
-                {((currentStep === 1 && currentPool.nativeDenom !== LumConstants.MicroLumDenom) || (currentStep === 0 && currentPool.nativeDenom === LumConstants.MicroLumDenom)) && (
+                {((currentStep === 1 && currentPool.nativeDenom !== MICRO_LUM_DENOM) || (currentStep === 0 && currentPool.nativeDenom === MICRO_LUM_DENOM)) && (
                     <DepositDropStep
                         disabled={!lumWallet}
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}

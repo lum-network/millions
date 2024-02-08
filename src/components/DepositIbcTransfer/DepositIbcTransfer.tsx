@@ -1,18 +1,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { LumConstants, LumTypes } from '@lum-network/sdk-javascript';
+import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { FormikProps } from 'formik';
 
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Tooltip } from 'components';
 import { OtherWalletModel, PoolModel } from 'models';
-import { FormikProps } from 'formik';
 import { RootState } from 'redux/store';
 import { I18n, NumbersUtils, DenomsUtils, WalletUtils, PoolsUtils } from 'utils';
 
 interface Props {
     currentPool: PoolModel;
-    balances: LumTypes.Coin[];
+    balances: Coin[];
     price: number;
     pools: PoolModel[];
     title: string;
@@ -36,7 +36,7 @@ const DepositIbcTransfer = (props: Props) => {
     if (prizeStrat) {
         let avgPrizesDrawn = 0;
         for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (prizeBatch.poolPercent.toNumber() / 100)) / prizeBatch.quantity.toNumber();
+            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (Number(prizeBatch.poolPercent) / 100)) / Number(prizeBatch.quantity);
         }
 
         avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;
@@ -88,8 +88,9 @@ const DepositIbcTransfer = (props: Props) => {
                     />
                 </div>
                 <div className='mt-5'>
-                    {pools.filter((p) => p.nativeDenom !== LumConstants.MicroLumDenom).length > 1 && (
+                    {pools.filter((p) => p.nativeDenom !== MICRO_LUM_DENOM).length > 1 && (
                         <AssetsSelect
+                            className='asset-select'
                             disabled={disabled}
                             isLoading={isLoading}
                             balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
@@ -115,7 +116,7 @@ const DepositIbcTransfer = (props: Props) => {
                         <div className='winning-chance d-flex flex-row justify-content-between'>
                             <div>
                                 {I18n.t('deposit.chancesHint.winning.title')}
-                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} className='ms-2'>
+                                <span data-tooltip-id='winning-chance-tooltip' data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')} data-tooltip-place='left' className='ms-2'>
                                     <img src={Assets.images.info} alt='info' />
                                     <Tooltip id='winning-chance-tooltip' />
                                 </span>
