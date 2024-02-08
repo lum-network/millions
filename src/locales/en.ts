@@ -650,7 +650,11 @@ export default {
                 invalidAddress: 'The address provided at row {{ row }} in your CSV is invalid, please check that everything is valid before processing',
                 invalidAmount: 'The amount provided at row {{ row }} is invalid, please check your CSV entries',
                 lessThanMinDeposit: 'The amount provided at row {{ row }} is less than the minimum deposit amount, please check your CSV entries',
-                success: '{{ walletCount }} unique wallets will receive a deposit drop.\nYou will have to sign {{ batchCount }} transactions',
+                success: '$t(depositDrops.depositFlow.fileInputSubLabel.uniqueWallets, { "count": {{walletCount}} }) will receive a deposit drop.\nYou will have to sign $t(depositDrops.depositFlow.fileInputSubLabel.transactions, { "count": {{batchCount}} })',
+                uniqueWallets_one: '{{ count }} unique wallet',
+                uniqueWallets_other: '{{ count }} unique wallets',
+                transactions_one: '{{ count }} transaction',
+                transactions_other: '{{ count }} transactions',
             },
             manualInputsErrors: {
                 greaterThanAvailable: 'Total deposits amount is greater than your available balance',
