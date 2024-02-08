@@ -89,11 +89,6 @@ interface WalletState {
     prizesMutex: boolean;
 }
 
-//FIXME: When tendermint invalid string false error on cosmjs has been fixed
-const isRealError = (error: Error) => {
-    return error && error.message && !error.message.includes('Invalid string');
-};
-
 export const wallet = createModel<RootModel>()({
     name: 'wallet',
     state: {
@@ -577,16 +572,7 @@ export const wallet = createModel<RootModel>()({
 
                 await client.connect(rpc, offlineSigner, true);
 
-                let result = null;
-
-                try {
-                    result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? MICRO_LUM_DENOM : 'u' + normalDenom);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await client.ibcTransfer(fromAddress, toAddress, coin, ibcChannel, type === 'withdraw' ? MICRO_LUM_DENOM : 'u' + normalDenom);
 
                 client.disconnect();
 
@@ -637,16 +623,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                let result = null;
-
-                try {
-                    result = await LumClient.depositToPool(lumWallet, payload.pool, payload.amount);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await LumClient.depositToPool(lumWallet, payload.pool, payload.amount);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
@@ -675,16 +652,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error('errors.client.noWalletConnected');
                 }
 
-                let result = null;
-
-                try {
-                    result = await LumClient.depositRetry(lumWallet, payload.poolId, payload.depositId);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await LumClient.depositRetry(lumWallet, payload.poolId, payload.depositId);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
@@ -711,16 +679,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                let result = null;
-
-                try {
-                    result = await LumClient.leavePool(lumWallet, payload.poolId, payload.depositId);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await LumClient.leavePool(lumWallet, payload.poolId, payload.depositId);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
@@ -755,16 +714,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                let result = null;
-
-                try {
-                    result = await LumClient.leavePoolRetry(lumWallet, payload.poolId, payload.withdrawalId);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await LumClient.leavePoolRetry(lumWallet, payload.poolId, payload.withdrawalId);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
@@ -818,14 +768,7 @@ export const wallet = createModel<RootModel>()({
 
                     const toClaim = prizesToClaim.slice(0, payload.limit);
 
-                    try {
-                        result = await LumClient.claimPrizes(lumWallet, toClaim);
-                    } catch (e) {
-                        const error = e as Error;
-                        if (isRealError(error)) {
-                            throw error;
-                        }
-                    }
+                    result = await LumClient.claimPrizes(lumWallet, toClaim);
 
                     if (!result || (result && result.error)) {
                         throw new Error(result?.error || undefined);
@@ -891,16 +834,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                let result = null;
-
-                try {
-                    result = await LumClient.multiDeposit(lumWallet, toDeposit);
-                } catch (e) {
-                    const error = e as Error;
-                    if (isRealError(error)) {
-                        throw error;
-                    }
-                }
+                const result = await LumClient.multiDeposit(lumWallet, toDeposit);
 
                 if (!result || (result && result.error)) {
                     throw new Error(result?.error || undefined);
