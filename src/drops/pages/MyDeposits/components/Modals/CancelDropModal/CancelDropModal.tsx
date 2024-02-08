@@ -17,7 +17,7 @@ const CancelDropModal = ({ deposits, limit }: { deposits?: DepositModel[]; limit
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.cancelDrop);
-    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposits && deposits.length > 0 ? p.poolId.eq(deposits[0]?.poolId) : undefined)));
+    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposits && deposits.length > 0 ? p.poolId === deposits[0]?.poolId : undefined)));
 
     const dispatch = useDispatch<Dispatch>();
     const steps = I18n.t('depositDrops.cancelDropModal.steps', {

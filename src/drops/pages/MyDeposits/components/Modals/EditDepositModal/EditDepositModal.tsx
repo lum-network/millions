@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { LumUtils } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
 
@@ -18,7 +17,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
     const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.editDrop);
-    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId.eq(deposit.poolId) : undefined)));
+    const pool = useSelector((state: RootState) => state.pools.pools.find((p) => (deposit ? p.poolId === deposit.poolId : undefined)));
 
     const dispatch = useDispatch<Dispatch>();
     const steps = I18n.t('depositDrops.editDropModal.steps', {
@@ -53,7 +52,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
     const onAddressChange = (newAddress: string) => {
         setAddress(newAddress);
 
-        if (newAddress && !LumUtils.isAddressValid(newAddress)) {
+        if (newAddress && !WalletUtils.isAddressValid(newAddress)) {
             setAddressError(I18n.t('errors.generic.invalid', { field: 'lum address' }));
         } else if (newAddress === deposit?.winnerAddress) {
             setAddressError(I18n.t('depositDrops.editDropModal.sameAddressError'));

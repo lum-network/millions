@@ -32,7 +32,7 @@ const MySavings = () => {
         useSelector((state: RootState) => ({
             lumWallet: state.wallet.lumWallet,
             otherWallets: state.wallet.otherWallets,
-            balances: state.wallet.lumWallet?.balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === LumConstants.MicroLumDenom),
+            balances: state.wallet.lumWallet?.balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM),
             activities: state.wallet.lumWallet?.activities,
             deposits: state.wallet.lumWallet?.deposits,
             prizes: state.wallet.lumWallet?.prizes,

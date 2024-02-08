@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDropzone, ErrorCode } from 'react-dropzone';
 import Papa from 'papaparse';
-import { LumConstants, LumUtils } from '@lum-network/sdk-javascript';
+import { LUM_DENOM, MICRO_LUM_DENOM, convertUnit } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
 import { Card } from 'components';
+import { WalletUtils } from 'utils';
 
 import './CsvFileInput.scss';
 
@@ -74,13 +75,13 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
                             break;
                         }
 
-                        if (!LumUtils.isAddressValid(winnerAddress, 'lum')) {
+                        if (!WalletUtils.isAddressValid(winnerAddress, 'lum')) {
                             error = t('depositDrops.depositFlow.fileInputSubLabel.invalidAddress', { row: i + 1 });
                             break;
                         }
 
                         drops.push({
-                            amount: LumUtils.convertUnit({ amount: amount, denom: LumConstants.LumDenom }, LumConstants.MicroLumDenom),
+                            amount: convertUnit({ amount: amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
                             winnerAddress,
                         });
                     }
