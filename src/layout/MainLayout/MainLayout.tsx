@@ -43,11 +43,6 @@ const MainLayout = () => {
     }, [location]);
 
     useEffect(() => {
-        const autoConnect = async (provider: WalletProvider) => {
-            await dispatch.wallet.connectWallet({ provider, silent: enableAutoConnect }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(provider);
-        };
-
         const autoconnectProvider = WalletUtils.getAutoconnectProvider();
 
         if (
@@ -60,7 +55,7 @@ const MainLayout = () => {
             TERMS_VERSION >= Number(approvedTermsVersion) &&
             autoconnectProvider
         ) {
-            autoConnect(autoconnectProvider).finally(() => null);
+            dispatch.wallet.connect({ provider: autoconnectProvider, silent: true }).finally(() => null);
         }
     }, [wallet, location, enableAutoConnect, approvedTermsVersion, appInitialized]);
 
@@ -196,7 +191,7 @@ const MainLayout = () => {
                         withoutPadding
                         className='d-flex flex-column flex-sm-row align-items-center p-4 mt-4'
                         onClick={() => {
-                            WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect(WalletProvider.Keplr) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
+                            WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect({ provider: WalletProvider.Keplr }) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
                         }}
                         data-bs-dismiss='modal'
                     >
@@ -218,7 +213,7 @@ const MainLayout = () => {
                     withoutPadding
                     className='d-flex flex-column flex-sm-row align-items-center p-4 my-4'
                     onClick={() => {
-                        WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect(WalletProvider.Leap) : window.open(NavigationConstants.LEAP_EXTENSION_URL, '_blank');
+                        WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect({ provider: WalletProvider.Leap }) : window.open(NavigationConstants.LEAP_EXTENSION_URL, '_blank');
                     }}
                     data-bs-dismiss='modal'
                 >
@@ -241,7 +236,7 @@ const MainLayout = () => {
                         className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'
                         onClick={() => {
                             WalletProvidersUtils.isCosmostationInstalled()
-                                ? dispatch.wallet.connect(WalletProvider.Cosmostation)
+                                ? dispatch.wallet.connect({ provider: WalletProvider.Cosmostation })
                                 : window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
                         }}
                         data-bs-dismiss='modal'

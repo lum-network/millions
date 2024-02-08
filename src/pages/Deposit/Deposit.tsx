@@ -18,7 +18,7 @@ import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps } from 'compo
 import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils, ToastUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 
@@ -175,23 +175,36 @@ const Deposit = () => {
         onSubmit: async (values) => {
             const amount = values.amount.toString();
 
-            if (pool && pool.internalInfos) {
-                const res = await dispatch.wallet.ibcTransfer({
-                    type: 'deposit',
-                    fromAddress: otherWallet.address,
-                    toAddress: lumWallet?.address || '',
-                    amount: {
-                        amount,
-                        denom: pool.nativeDenom,
-                    },
-                    normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
-                    ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
-                    chainId: pool.chainId,
-                });
+            if (!otherWallet) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Wallet not found' });
+                return;
+            }
 
-                if (res && !res.error) {
-                    startTransition();
-                }
+            if (!pool) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool not found' });
+                return;
+            }
+
+            if (!pool.internalInfos) {
+                ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool infos not found' });
+                return;
+            }
+
+            const res = await dispatch.wallet.ibcTransfer({
+                type: 'deposit',
+                fromAddress: otherWallet.address,
+                toAddress: lumWallet?.address || '',
+                amount: {
+                    amount,
+                    denom: pool.nativeDenom,
+                },
+                normalDenom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                ibcChannel: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetSourceChannel : pool.internalInfos.ibcSourceChannel,
+                chainId: pool.chainId,
+            });
+
+            if (res && !res.error) {
+                startTransition();
             }
         },
     });
@@ -919,9 +932,7 @@ const Deposit = () => {
                                             },
                                         }}
                                         onClose={() => {
-                                            if (otherWallet) {
-                                                dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
-                                            }
+                                            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
                                         }}
                                     />
                                 </Card>
@@ -1000,21 +1011,26 @@ const Deposit = () => {
                 </div>
             </div>
             <QuitDepositModal modalRef={quitModalRef} blocker={blocker} />
-            <IbcTransferModal
-                modalRef={ibcModalRef}
-                denom={denom || ''}
-                prevAmount={ibcModalPrevAmount}
-                nextAmount={ibcModalDepositAmount}
-                isLoading={isTransferring}
-                price={prices[denom || ''] || 0}
-                onConfirm={async () => {
-                    const amount = transferForm.values.amount.toString();
+            {pool && lumWallet && otherWallet ? (
+                <IbcTransferModal
+                    modalRef={ibcModalRef}
+                    denom={denom || ''}
+                    prevAmount={ibcModalPrevAmount}
+                    nextAmount={ibcModalDepositAmount}
+                    isLoading={isTransferring}
+                    price={prices[denom || ''] || 0}
+                    onConfirm={async () => {
+                        const amount = transferForm.values.amount.toString();
 
-                    if (pool && pool.internalInfos) {
+                        if (!pool.internalInfos) {
+                            ToastUtils.showErrorToast({ content: denom?.toUpperCase() + ' Pool infos not found' });
+                            return;
+                        }
+
                         const res = await dispatch.wallet.ibcTransfer({
                             type: 'deposit',
                             fromAddress: otherWallet.address,
-                            toAddress: lumWallet?.address || '',
+                            toAddress: lumWallet.address || '',
                             amount: {
                                 amount,
                                 denom: pool.nativeDenom,
@@ -1029,9 +1045,9 @@ const Deposit = () => {
                                 ibcModalRef.current.hide();
                             }
                         }
-                    }
-                }}
-            />
+                    }}
+                />
+            ) : null}
         </>
     );
 };

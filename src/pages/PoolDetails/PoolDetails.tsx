@@ -31,7 +31,6 @@ const PoolDetails = () => {
     const { isDark } = useColorScheme();
 
     const { lumWallet, prices, pools, pool, biggestPrizes, prizesStats } = useSelector((state: RootState) => ({
-        otherWallets: state.wallet.otherWallets,
         lumWallet: state.wallet.lumWallet,
         prices: state.stats.prices,
         pools: state.pools.pools,

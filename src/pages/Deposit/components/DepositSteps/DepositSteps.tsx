@@ -37,7 +37,7 @@ interface Props {
         cardSubtitle?: string;
     }[];
     otherWallets: {
-        [denom: string]: OtherWalletModel;
+        [denom: string]: OtherWalletModel | undefined;
     };
     onNextStep: () => void;
     onPrevStep: (prevAmount: string, nextAmount: string) => void;
@@ -430,12 +430,16 @@ const DepositSteps = (props: Props) => {
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-    const [nonEmptyWallets, setNonEmptyWallets] = useState(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+    const [nonEmptyWallets, setNonEmptyWallets] = useState<OtherWalletModel[]>(
+        Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+    );
     const [initialAmount, setInitialAmount] = useState(amountFromLocationState ? amountFromLocationState.toFixed() : '0');
 
     useEffect(() => {
         setOtherWallet(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
-        setNonEmptyWallets(Object.values(otherWallets).filter((otherWallet) => otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0));
+        setNonEmptyWallets(
+            Object.values(otherWallets).filter((otherWallet): otherWallet is OtherWalletModel => !!(otherWallet && otherWallet.balances.length > 0 && Number(otherWallet.balances[0].amount) > 0)),
+        );
     }, [otherWallets, currentPool]);
 
     useEffect(() => {

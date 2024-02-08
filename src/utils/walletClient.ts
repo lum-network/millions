@@ -1,11 +1,16 @@
-import { OfflineSigner } from '@cosmjs/proto-signing';
-import { SigningStargateClient } from '@cosmjs/stargate';
 import dayjs from 'dayjs';
-import { I18n, NumbersUtils, WalletUtils } from 'utils';
-import { showErrorToast } from './toast';
-import { ApiConstants } from 'constant';
+import { OfflineSigner, coins } from '@cosmjs/proto-signing';
+import { SigningStargateClient, assertIsDeliverTxSuccess } from '@cosmjs/stargate';
 import { Coin } from '@keplr-wallet/types';
-import { cosmos, fromAscii, getSigningIbcClient } from '@lum-network/sdk-javascript';
+import { Dec, IntPretty } from '@keplr-wallet/unit';
+import { cosmos, fromAscii, getSigningIbcClient, ibc } from '@lum-network/sdk-javascript';
+
+import { ApiConstants } from 'constant';
+import { I18n, NumbersUtils } from 'utils';
+
+import { showErrorToast } from './toast';
+
+const { transfer } = ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
 
 class WalletClient {
     private chainId: string | null = null;
@@ -127,8 +132,28 @@ class WalletClient {
             return null;
         }
 
-        const fee = WalletUtils.buildTxFee('25000', '500000', feesDenom);
-        const res = await this.walletClient.sendIbcTokens(fromWallet, toAddress, amount, 'transfer', channel, undefined, dayjs().utc().add(5, 'minutes').unix().valueOf(), fee);
+        const timeoutTimestampNanoseconds = BigInt(dayjs().utc().add(5, 'minutes').unix().valueOf()) * BigInt(1_000_000_000);
+
+        const msg = transfer({
+            sender: fromWallet,
+            receiver: toAddress,
+            sourceChannel: channel,
+            sourcePort: 'transfer',
+            timeoutHeight: undefined,
+            timeoutTimestamp: timeoutTimestampNanoseconds,
+            token: amount,
+        });
+
+        const gasEstimated = await this.walletClient.simulate(fromWallet, [msg], '');
+        const fee = {
+            amount: coins('25000', feesDenom),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+        };
+
+        const res = await this.walletClient.signAndBroadcast(fromWallet, [msg], fee);
+
+        // Verify the transaction was successfully broadcasted and made it into a block
+        assertIsDeliverTxSuccess(res);
 
         return {
             hash: res.transactionHash,

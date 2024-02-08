@@ -1,7 +1,7 @@
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
 import { DrawModel, PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient } from 'utils';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient, WalletUtils } from 'utils';
 import dayjs from 'dayjs';
 import { MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
@@ -104,7 +104,17 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setPools(pools);
                     dispatch.pools.setMutexFetchPools(false);
 
-                    return pools;
+                    // Reload balances to ensure pools related balances are correctly fetched
+                    dispatch.wallet.getLumWalletBalances(null);
+
+                    // If no otherWallets found, connect them after fetching pools
+                    if (Object.keys(state.wallet.otherWallets).length === 0) {
+                        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
+
+                        if (autoconnectProvider) {
+                            dispatch.wallet.connectOtherWallets(autoconnectProvider);
+                        }
+                    }
                 }
             } catch (e) {
                 dispatch.pools.setMutexFetchPools(false);
