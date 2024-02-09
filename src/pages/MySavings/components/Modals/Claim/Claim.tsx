@@ -97,7 +97,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                                     denom: infos.amount[0].denom,
                                     tvl: infos.tvl + ' ' + infos.amount[0].denom,
                                 }),
-                            )}`,
+                            ).replaceAll('#', '%23')}`,
                             '_blank',
                         );
                         onTwitterShare();

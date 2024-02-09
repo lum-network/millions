@@ -8,6 +8,7 @@ import coinsStacked2 from './images/coins_stacked_2.svg';
 import coinsStackedPurple from './images/coins_stacked_purple.svg';
 import cosmonautCoin from './images/cosmonaut_coin.png';
 import cosmostation from './images/cosmostation.svg';
+import cosmonautFlying from './images/cosmonaut_flying.svg';
 import claim from './images/claim.svg';
 import clock from './images/clock.svg';
 import deposit from './images/deposit.svg';
@@ -19,6 +20,7 @@ import dollarIcon from './images/dollar_icon.svg';
 import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import faucet from './images/faucet.svg';
+import download from './images/download.svg';
 import info from './images/info.svg';
 import infoWhite from './images/info_white.svg';
 import keplr from './images/keplr.svg';
@@ -75,6 +77,7 @@ const Assets = {
         coinsStacked,
         coinsStacked2,
         cosmonautCoin,
+        cosmonautFlying,
         cosmostation,
         claim,
         clock,
@@ -87,6 +90,7 @@ const Assets = {
         dollarWhite,
         downArrow,
         faucet,
+        download,
         info,
         infoWhite,
         keplr,

@@ -69,7 +69,7 @@ export default {
         },
         deposit: {
             lessThanZero: 'Amount must be greater than 0',
-            lessThanMinDeposit: 'Amount must be equal to or greather than {{ minDeposit }} {{ denom }}',
+            lessThanMinDeposit: 'Amount must be equal to or greater than {{ minDeposit }} {{ denom }}',
             greaterThanBalance: 'Amount must be less than available balance',
             fees: 'Not enough LUM to pay fees',
             generic: 'Failed to deposit to {{ denom }} pool',
@@ -93,6 +93,10 @@ export default {
         claimPrize: 'Successfully claimed prizes',
         claimAndCompound: 'Successfully compounded prizes',
         logOut: 'You have been logged out.',
+        multiDeposit: 'Successfully made {{ count }} deposits',
+        cancelDrop: 'Successfully cancelled your deposit drop',
+        cancelDropMulti: 'Successfully cancelled your deposit drops',
+        editDrop: 'Successfully edited your deposit drop',
         withdrawalRetry: 'Successfully retried withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
     pending: {
@@ -103,6 +107,10 @@ export default {
         claimPrizeBatch: 'Claiming prizes batch {{ count }}/{{ total }}...',
         claimAndCompound: 'Compounding prizes...',
         withdrawalRetry: 'Retrying withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
+        multiDeposit: 'Depositing batch {{ index }}/{{ count }}...',
+        cancelDrop: 'Cancelling deposit drops...',
+        cancelDropMulti: 'Cancelling deposit drops batch {{ index }}/{{ count }}...',
+        editDrop: 'Editing your deposit drop...',
     },
     landing: {
         howItWorks: 'How it Works',
@@ -581,5 +589,119 @@ export default {
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
         newRanking: 'You new ranking will be displayed in a few minutes',
+    },
+    depositDrops: {
+        myDeposits: {
+            title: 'My Deposit Drops',
+            depositDrops_one: 'Deposit Drop',
+            depositDrops_other: 'Deposit Drops',
+            wallet_one: 'Wallet',
+            wallet_other: 'Wallets',
+            activeSince_zero: 'Active since today',
+            activeSince_one: 'Active since {{ count }} day',
+            activeSince_other: 'Active since {{ count }} days',
+            seeAll: 'See all',
+        },
+        pools: {
+            title: 'Deposit Drops Tool',
+            ctaText: 'Deposit drop',
+        },
+        card: {
+            title: 'Deposit Drops',
+            description:
+                'By making a deposit drop, you\'re boosting the winning chances of the recipient address, all while maintaining control over your deposit.<br /><a target="_blank" rel="noreferrer" href="{{ link }}">Read the docs</a>',
+            ctaFromPools: 'My Deposit drops',
+            ctaFromDeposits: 'New Deposit drop',
+        },
+        depositFlow: {
+            csv: 'CSV',
+            manual: 'Manual',
+            downloadTemplate: 'Download our CSV template',
+            addWinner: 'Add Another Winner',
+            removeWinner: 'Delete This Winner',
+            cta: 'Deposit Drop',
+            winnerAddress: 'Winner Address',
+            amount: 'Amount',
+            steps: [
+                {
+                    title: 'Transfer {{ denom }} to Lum Network',
+                    subtitle: 'Transfer your {{ denom }} from {{ chainName }} to Lum Network',
+                },
+                {
+                    title: 'Make your Deposit Drop to the {{ denom }} Pool',
+                    subtitle: "Boost someone 's day!",
+                    cardTitle: 'Deposit Drop into {{ denom }} Pool',
+                },
+            ],
+            fileInputLabel: {
+                pending: 'Click or drag & drop to upload',
+                success: 'Your CSV has been uploaded',
+            },
+            depositLabel: 'Total amount of {{ denom }} to deposit in the Pool',
+            batch: 'Transactions batch {{ count }}/{{ total }}',
+            batchTooltip: '',
+            fileInputSubLabel: {
+                pending: 'Only CSV file of 20 Mb max',
+                tooManyFileError: 'Too many files uploaded, we support only one file at a time.',
+                fileTooBigError: 'File is too large, we support only 20 Mb CSV files',
+                fileTypeError: 'Only CSV files are supported, try another file',
+                invalidFile: 'This CSV file is invalid. Please use our template below.',
+                invalidRow: 'The row {{ row }} of your CSV file is invalid. Please use our template below.',
+                invalidAddress: 'The address provided at row {{ row }} in your CSV is invalid, please check that everything is valid before processing',
+                invalidAmount: 'The amount provided at row {{ row }} is invalid, please check your CSV entries',
+                lessThanMinDeposit: 'The amount provided at row {{ row }} is less than the minimum deposit amount, please check your CSV entries',
+                success: '$t(depositDrops.depositFlow.fileInputSubLabel.uniqueWallets, { "count": {{walletCount}} }) will receive a deposit drop.\nYou will have to sign $t(depositDrops.depositFlow.fileInputSubLabel.transactions, { "count": {{batchCount}} })',
+                uniqueWallets_one: '{{ count }} unique wallet',
+                uniqueWallets_other: '{{ count }} unique wallets',
+                transactions_one: '{{ count }} transaction',
+                transactions_other: '{{ count }} transactions',
+            },
+            manualInputsErrors: {
+                greaterThanAvailable: 'Total deposits amount is greater than your available balance',
+            },
+            infoCards: {
+                deposit: {
+                    content: 'Tip:\nYour deposit operates on a no-loss principle and you can withdraw it whenever you like.',
+                    howItWorks: 'See how it works',
+                },
+            },
+            shareTwitterContent: 'Boosted a Cosmonaut @cosmosmillions savings with a deposit drop! 🎁 🏆 🚀\n\nJoin us and help skyrocket our pool of {{ tvl }} {{ denom }} and stand a chance to win hundreds of prizes every week! 🧑‍🚀 #Cosmos https://cosmosmillions.com' ,
+            shareStepCard: {
+                goToMyDrops: 'Go to\nMy Deposit Drops'
+            }
+        },
+        cancelDropModal: {
+            title: 'Is it time to end the boosted chances, Cosmonaut?',
+            steps: [
+                {
+                    title: 'Choose the pool you want to leave',
+                    subtitle: 'Redeem your savings',
+                },
+                {
+                    title: 'Select the deposit drop to redeem',
+                    subtitle: 'Select the savings you want to redeem and accept the transaction on your {{ provider }} wallet',
+                    cardTitle: 'Cancel Deposit Drop',
+                    cardSubtitle: 'Redeem your savings is submitted to an unbonding period',
+                },
+            ],
+            cta: 'Cancel Deposit Drop',
+        },
+        editDropModal: {
+            cta: 'Edit Deposit',
+            title: 'Need to change the lucky winner for your Deposit Drop ?',
+            sameAddressError: 'You cannot edit your deposit with the same winner address',
+            steps: [
+                {
+                    title: 'Edit your Deposit Drop',
+                    subtitle: 'Enter the address of the lucky winner to profit from your deposit',
+                    cardTitle: '',
+                    cardSubtitle: ''
+                },
+                {
+                    title: 'Confirm the transaction on {{ provider }}',
+                    subtitle: 'Update the winner address of your Deposit Drop\nand accept the transaction on your {{ provider }} wallet',
+                }
+            ]
+        }
     },
 };

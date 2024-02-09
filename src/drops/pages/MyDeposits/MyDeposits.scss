@@ -1,0 +1,72 @@
+@import 'src/styles/main';
+
+.drops-my-deposits {
+    .drops-card {
+        background-color: var(--color-primary-light);
+        border-radius: 8px;
+        &:not(:last-child) {
+            margin-bottom: 24px;
+        }
+
+        .deposit-drop-title {
+            font-size: 18px;
+            color: var(--color-purple);
+            font-weight: 400;
+        }
+
+        .deposit-drop-date {
+            color: var(--color-black);
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            text-transform: uppercase;
+        }
+
+        .deposit-drop-amount {
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--color-black);
+        }
+
+        .deposit-drop-amount-denom {
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--color-purple);
+            text-transform: uppercase;
+            line-height: 18px;
+        }
+
+        .deposit-drop-usd-amount {
+            font-weight: 300;
+            font-size: 12px;
+            color: var(--color-dark-grey);
+        }
+
+        .wallets-count {
+            color: var(--color-black);
+        }
+    }
+
+    .deposit-drop-state {
+        width: fit-content;
+        padding: 7px 14px;
+
+        box-shadow: 0 4px 23px #f1edff;
+
+        background: #8c8c8c;
+        color: white;
+
+        font-size: 12px;
+        &.success {
+            background: var(--color-success);
+        }
+
+        &.failure {
+            background: var(--color-failure);
+        }
+        &.pending {
+            font-size: 10px;
+        }
+    }
+}

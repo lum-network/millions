@@ -1,0 +1,19 @@
+@import 'src/styles/main';
+
+.drops-card {
+    .drops-description {
+        a, a:hover, a:focus, a:active {
+            color: var(--color-primary);
+        }
+    }
+
+    .cta-drops {
+        width: 270px;
+    }
+
+    .cosmonaut-flying {
+        @include media-breakpoint-down(xl) {
+            margin-top: -50px;
+        }
+    }
+}

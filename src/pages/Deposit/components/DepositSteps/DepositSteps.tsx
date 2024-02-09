@@ -8,11 +8,11 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/netw
 
 import Assets from 'assets';
 
-import { AmountInput, AssetsSelect, Button, Card, PoolSelect, SmallerDecimal, Tooltip } from 'components';
+import { AmountInput, Button, Card, DepositIbcTransfer, PoolSelect, SmallerDecimal, Tooltip } from 'components';
 import { NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
 import { RootState } from 'redux/store';
-import { DenomsUtils, I18n, NumbersUtils, PoolsUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
 
 import './DepositSteps.scss';
 
@@ -40,7 +40,6 @@ interface Props {
         [denom: string]: OtherWalletModel | undefined;
     };
     onNextStep: () => void;
-    onPrevStep: (prevAmount: string, nextAmount: string) => void;
     onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<{ hash: string; error: string | null | undefined } | null>;
     onFinishDeposit: (callback: () => void) => void;
     onTwitterShare: () => void;
@@ -58,151 +57,11 @@ type TxInfos = {
     poolId: string;
 };
 
-const DepositStep1 = (
-    props: StepProps & {
-        nonEmptyWallets: OtherWalletModel[];
-        form: FormikProps<{ amount: string }>;
-        onTransfer: (amount: string) => void;
-    },
-) => {
-    const { currentPool, balances, price, pools, form, nonEmptyWallets, title, subtitle, disabled, onTransfer } = props;
-
-    const navigate = useNavigate();
-
-    const isLoading = useSelector((state: RootState) => state.loading.effects.wallet.ibcTransfer);
-    const prizeStrat = currentPool.prizeStrategy;
-
-    let avgPrize = 0;
-
-    if (prizeStrat) {
-        let avgPrizesDrawn = 0;
-        for (const prizeBatch of prizeStrat.prizeBatches) {
-            avgPrizesDrawn += (Number(currentPool.estimatedPrizeToWin?.amount || '0') * (Number(prizeBatch.poolPercent) / 100)) / Number(prizeBatch.quantity);
-        }
-
-        avgPrize = avgPrizesDrawn / prizeStrat.prizeBatches.length / prizeStrat.prizeBatches.length;
-    }
-
-    return (
-        <div className={`step-1 ${disabled && 'disabled'}`}>
-            <div className='d-flex flex-column mb-3 mb-sm-5 mb-lg-0'>
-                <div className='card-step-title' dangerouslySetInnerHTML={{ __html: title }} />
-                <div className='card-step-subtitle' dangerouslySetInnerHTML={{ __html: subtitle }} />
-            </div>
-            <form onSubmit={form.handleSubmit} className={isLoading ? 'd-flex flex-column align-items-stretch w-100' : ''}>
-                <div className='w-100 mt-5'>
-                    <AmountInput
-                        isLoading={isLoading}
-                        label={I18n.t('withdraw.amountInput.label')}
-                        sublabel={I18n.t('withdraw.amountInput.sublabel', {
-                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
-                            denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
-                        })}
-                        onMax={() => {
-                            const amount = WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees);
-                            form.setFieldValue('amount', amount);
-                        }}
-                        inputProps={{
-                            type: 'number',
-                            min: 0,
-                            max: balances.length > 0 ? balances[0].amount : '0',
-                            step: 'any',
-                            lang: 'en',
-                            placeholder: (100 / price).toFixed(6),
-                            disabled,
-                            ...form.getFieldProps('amount'),
-                            onChange: (e) => {
-                                const inputAmount = Number(e.target.value);
-                                const maxAmount = Number(WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees));
-
-                                if (Number.isNaN(inputAmount) || inputAmount < 0) {
-                                    e.target.value = '0';
-                                } else if (inputAmount > maxAmount) {
-                                    e.target.value = maxAmount > 0 ? maxAmount.toString() : '0';
-                                }
-
-                                form.handleChange(e);
-                            },
-                        }}
-                        price={price}
-                        error={form.touched.amount ? form.errors.amount : ''}
-                    />
-                </div>
-                <div className='mt-5'>
-                    {pools.filter((p) => p.nativeDenom !== MICRO_LUM_DENOM).length > 1 && (
-                        <AssetsSelect
-                            className='asset-select'
-                            isLoading={isLoading}
-                            disabled={disabled}
-                            balances={nonEmptyWallets.reduce<{ amount: string; denom: string }[]>((result, { balances }) => {
-                                if (balances.length > 0) {
-                                    result.push({
-                                        amount: balances[0].amount,
-                                        denom: balances[0].denom,
-                                    });
-                                }
-                                return result;
-                            }, [])}
-                            value={currentPool.nativeDenom}
-                            onChange={(value) => {
-                                navigate(`/pools/${DenomsUtils.getNormalDenom(value)}`, { replace: true });
-                            }}
-                            options={nonEmptyWallets.map((wallet) => ({
-                                label: DenomsUtils.getNormalDenom(wallet.balances[0].denom),
-                                value: wallet.balances[0].denom,
-                            }))}
-                        />
-                    )}
-                    <Card flat withoutPadding className='winning-chance-card mt-4 px-4'>
-                        <div className='winning-chance d-flex flex-row justify-content-between'>
-                            <div className='text-start'>
-                                {I18n.t('deposit.chancesHint.winning.title')}
-                                <span
-                                    data-tooltip-id='winning-chance-tooltip'
-                                    data-tooltip-place='left'
-                                    data-tooltip-html={I18n.t('deposit.chancesHint.winning.hint')}
-                                    className='deposit-tooltip ms-2'
-                                >
-                                    <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='winning-chance-tooltip' />
-                                </span>
-                            </div>
-                            <div>{NumbersUtils.float2ratio(PoolsUtils.getWinningChances(form.values.amount ? Number(form.values.amount) : 100 / price, currentPool))}</div>
-                        </div>
-                        <div className='average-prize d-flex flex-row justify-content-between mt-4'>
-                            <div className='text-start'>
-                                {I18n.t('deposit.chancesHint.averagePrize.title')}
-                                <span data-tooltip-id='average-prize-tooltip' data-tooltip-place='left' data-tooltip-html={I18n.t('deposit.chancesHint.averagePrize.hint')} className='ms-2'>
-                                    <img src={Assets.images.info} alt='info' />
-                                    <Tooltip id='average-prize-tooltip' />
-                                </span>
-                            </div>
-                            <div>
-                                {avgPrize.toFixed(2)} {DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase()}
-                            </div>
-                        </div>
-                    </Card>
-                    <Button
-                        type={isLoading ? 'button' : 'submit'}
-                        onClick={() => onTransfer(form.values.amount)}
-                        className='position-relative deposit-cta w-100 mt-4'
-                        disabled={disabled || isLoading || !!(form.touched.amount && form.errors.amount)}
-                    >
-                        <div className='position-absolute deposit-cta-bg w-100 h-100' />
-                        <div className='deposit-cta-text'>{I18n.t('deposit.transferBtn')}</div>
-                    </Button>
-                </div>
-            </form>
-        </div>
-    );
-};
-
-const DepositStep2 = (
+const DepositStep = (
     props: StepProps & {
         amount: string;
         onDeposit: (poolToDeposit: PoolModel, depositAmount: string) => Promise<void>;
         initialAmount?: string;
-        onPrevStep: (prevAmount: string, nextAmount: string) => void;
     },
 ) => {
     const { pools, currentPool, price, balances, amount, initialAmount, title, subtitle, disabled, onDeposit } = props;
@@ -352,7 +211,7 @@ const DepositStep2 = (
     );
 };
 
-const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfos: TxInfos; title: string; subtitle: string; price: number; onTwitterShare: () => void }) => {
+const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfos: TxInfos; title: string; subtitle: string; price: number; onTwitterShare: () => void }) => {
     const navigate = useNavigate();
 
     return (
@@ -410,7 +269,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
                         window.open(
                             `${NavigationConstants.TWEET_URL}?text=${encodeURI(
                                 I18n.t('deposit.shareTwitterContent', txInfos ? { amount: txInfos.amount, denom: txInfos.denom, tvl: txInfos.tvl + ' ' + txInfos.denom } : {}),
-                            )}`,
+                            ).replaceAll('#', '%23')}`,
                             '_blank',
                         );
                         onTwitterShare();
@@ -426,7 +285,7 @@ const DepositStep3 = ({ txInfos, price, title, subtitle, onTwitterShare }: { txI
 };
 
 const DepositSteps = (props: Props) => {
-    const { currentStep, steps, otherWallets, price, pools, currentPool, amountFromLocationState, onNextStep, onPrevStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
+    const { currentStep, steps, otherWallets, price, pools, currentPool, amountFromLocationState, onNextStep, onDeposit, onFinishDeposit, onTwitterShare, transferForm, lumWallet } = props;
     const [amount, setAmount] = useState('');
     const [txInfos, setTxInfos] = useState<TxInfos | null>(null);
     const [otherWallet, setOtherWallet] = useState<OtherWalletModel | undefined>(otherWallets[DenomsUtils.getNormalDenom(currentPool.nativeDenom)]);
@@ -453,7 +312,7 @@ const DepositSteps = (props: Props) => {
         <div className='deposit-steps h-100 d-flex flex-column justify-content-between text-center py-sm-4'>
             <div className='card-content'>
                 {currentStep === 0 && currentPool.nativeDenom !== MICRO_LUM_DENOM && (
-                    <DepositStep1
+                    <DepositIbcTransfer
                         title={steps[currentStep].cardTitle ?? steps[currentStep].title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
                         currentPool={currentPool}
@@ -467,7 +326,7 @@ const DepositSteps = (props: Props) => {
                     />
                 )}
                 {((currentStep === 1 && currentPool.nativeDenom !== MICRO_LUM_DENOM) || (currentStep === 0 && currentPool.nativeDenom === MICRO_LUM_DENOM)) && (
-                    <DepositStep2
+                    <DepositStep
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         subtitle={steps[currentStep].cardSubtitle ?? steps[currentStep].subtitle ?? ''}
                         balances={lumWallet?.balances || []}
@@ -491,11 +350,10 @@ const DepositSteps = (props: Props) => {
                         currentPool={currentPool}
                         pools={pools}
                         price={price}
-                        onPrevStep={onPrevStep}
                     />
                 )}
                 {currentStep === steps.length && txInfos && (
-                    <DepositStep3 title={I18n.t('deposit.shareStep.title')} subtitle={I18n.t('deposit.shareStep.subtitle')} txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />
+                    <ShareStep title={I18n.t('deposit.shareStep.title')} subtitle={I18n.t('deposit.shareStep.subtitle')} txInfos={txInfos} price={price} onTwitterShare={onTwitterShare} />
                 )}
             </div>
         </div>
