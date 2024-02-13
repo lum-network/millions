@@ -44,12 +44,12 @@
             translate: -1.5px -1.5px;
             transform: rotateY(180deg);
         }
-        
+
         .index-default-border {
             background: conic-gradient(var(--color-light-grey) 100%, 0, transparent);
         }
-        
-        .index-border {            
+
+        .index-border {
             background: conic-gradient(var(--border-color) var(--border-progress), 0, transparent);
         }
 
@@ -75,11 +75,11 @@
 
         &.active {
             --border-color: var(--color-purple);
-            
+
             .index-container {
                 color: var(--color-primary);
             }
-            
+
             .title {
                 opacity: 1;
             }

@@ -6,3 +6,4 @@ import dayjsLocalizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(dayjsUTC);
 dayjs.extend(dayjsDuration);
 dayjs.extend(dayjsLocalizedFormat);
+dayjs().format('L LT');

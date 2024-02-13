@@ -28,7 +28,7 @@ class InfluencerCampaign {
     endAt!: Date;
 
     @Expose({ name: 'pool_id' })
-    poolId!: string;
+    poolId!: number;
 
     @Expose()
     password!: string;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -32,12 +32,17 @@ const MainLayout = () => {
     const store = useStore();
     const visibilityState = useVisibilityState();
 
-    useEffect(() => {
-        const autoConnect = async (provider: WalletProvider) => {
-            await dispatch.wallet.connectWallet({ provider, silent: enableAutoConnect }).finally(() => null);
-            await dispatch.wallet.connectOtherWallets(provider);
-        };
+    const autoConnect = useMemo(() => {
+        const state = location.state as { autoConnect?: boolean };
 
+        if (!state) {
+            return undefined;
+        }
+
+        return state.autoConnect;
+    }, [location]);
+
+    useEffect(() => {
         const autoconnectProvider = StorageUtils.getAutoconnectProvider();
 
         if (
@@ -50,7 +55,7 @@ const MainLayout = () => {
             TERMS_VERSION >= Number(approvedTermsVersion) &&
             autoconnectProvider
         ) {
-            autoConnect(autoconnectProvider).finally(() => null);
+            dispatch.wallet.connect({ provider: autoconnectProvider, silent: true }).finally(() => null);
         }
     }, [wallet, location, enableAutoConnect, approvedTermsVersion, appInitialized]);
 
@@ -68,7 +73,7 @@ const MainLayout = () => {
             setEnableAutoConnect(false);
         }
 
-        if (location.state?.autoConnect) {
+        if (autoConnect) {
             setEnableAutoConnect(true);
         }
     }, [location]);
@@ -77,6 +82,9 @@ const MainLayout = () => {
         if (visibilityState === 'visible') {
             if (wallet && (location.pathname === NavigationConstants.HOME || location.pathname === NavigationConstants.POOLS || location.pathname === NavigationConstants.MY_SAVINGS)) {
                 dispatch.wallet.reloadWalletInfos({ address: wallet.address, force: false });
+            }
+            if (wallet && location.pathname.includes(NavigationConstants.DROPS)) {
+                dispatch.wallet.reloadWalletInfos({ address: wallet.address, drops: true, force: false });
             }
         }
     }, [visibilityState, location.pathname]);
@@ -186,7 +194,7 @@ const MainLayout = () => {
                         withoutPadding
                         className='d-flex flex-column flex-sm-row align-items-center p-4 mt-4'
                         onClick={() => {
-                            WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect(WalletProvider.Keplr) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
+                            WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect({ provider: WalletProvider.Keplr }) : window.open(NavigationConstants.KEPLR_EXTENSION_URL, '_blank');
                         }}
                         data-bs-dismiss='modal'
                     >
@@ -208,7 +216,7 @@ const MainLayout = () => {
                     withoutPadding
                     className='d-flex flex-column flex-sm-row align-items-center p-4 my-4'
                     onClick={() => {
-                        WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect(WalletProvider.Leap) : window.open(NavigationConstants.LEAP_EXTENSION_URL, '_blank');
+                        WalletProvidersUtils.isKeplrInstalled() ? dispatch.wallet.connect({ provider: WalletProvider.Leap }) : window.open(NavigationConstants.LEAP_EXTENSION_URL, '_blank');
                     }}
                     data-bs-dismiss='modal'
                 >
@@ -231,7 +239,7 @@ const MainLayout = () => {
                         className='d-flex flex-column flex-sm-row align-items-center mb-4 p-4'
                         onClick={() => {
                             WalletProvidersUtils.isCosmostationInstalled()
-                                ? dispatch.wallet.connect(WalletProvider.Cosmostation)
+                                ? dispatch.wallet.connect({ provider: WalletProvider.Cosmostation })
                                 : window.open(NavigationConstants.COSMOSTATION_EXTENSION_URL, '_blank');
                         }}
                         data-bs-dismiss='modal'

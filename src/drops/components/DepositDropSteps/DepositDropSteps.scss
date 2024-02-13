@@ -1,0 +1,69 @@
+@import 'src/styles/main';
+
+#depositDropFlow {
+    .add-icon,
+    .remove-icon {
+        & circle {
+            fill: var(--color-primary);
+        }
+
+        & path {
+            stroke: var(--color-white);
+        }
+    }
+
+    .deposit-drop-input-type {
+        background-color: transparent;
+        border-right: none;
+        border-left: none;
+        border-top: none;
+        border-bottom: 2px solid var(--color-primary);
+        color: var(--color-primary);
+        opacity: 0.2;
+        transition: opacity 0.15s ease-in-out;
+
+        &.active,
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .deposit-drop-winner-card {
+        &:not(:first-child) {
+            margin-bottom: 1rem;
+        }
+
+        .deposit-drop-address-input,
+        .deposit-drop-amount-input {
+            background-color: var(--color-white);
+            border: none;
+            border-radius: 8px;
+            &.error {
+                border: 1px solid var(--color-failure);
+            }
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .deposit-drop-address-input {
+            color: var(--color-primary);
+            font-size: 14px;
+            padding: 15px 12px;
+        }
+        
+        .deposit-drop-amount-input {
+            color: var(--color-black);
+            font-size: 18px;
+            padding: 12px 12px;
+        }
+
+        label {
+            color: var(--color-primary);
+        }
+    }
+
+    p.error-message {
+        color: var(--color-failure);
+    }
+}

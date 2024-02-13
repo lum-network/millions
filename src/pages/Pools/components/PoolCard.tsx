@@ -16,9 +16,11 @@ interface IProps {
     estimatedPrize?: number;
     drawEndAt: Date;
     apy: number;
+    ctaText?: string;
+    ctaLink?: string;
 }
 
-const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps) => {
+const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText, ctaLink }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats?.prices);
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
     const lumWallet = useSelector((state: RootState) => state.wallet.lumWallet);
@@ -94,13 +96,13 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy }: IProps
                               'data-bs-toggle': 'modal',
                           }
                         : {
-                              to: `${NavigationConstants.POOLS}/${denom}/${poolId}`,
+                              to: ctaLink ? ctaLink : `${NavigationConstants.POOLS}/${denom}/${poolId}`,
                           })}
                     forcePurple
                     className='deposit-cta w-100 mt-3'
                     onClick={() => Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSIT_CLICK, { denom, pool_id: poolId })}
                 >
-                    {I18n.t('pools.cta')}
+                    {ctaText ? ctaText : I18n.t('pools.cta')}
                 </Button>
             </div>
         </Card>

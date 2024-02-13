@@ -64,7 +64,7 @@ const TransactionsTable = ({
                                 </span>
                             ) : null}
                         </div>
-                        <a className='tx-height ms-0 ms-sm-3 mt-3 mt-md-0 mt-lg-3 mt-xl-0' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
+                        <a className='tx-height ms-0 ms-sm-3 mt-3 mt-md-0 mt-lg-3 mt-xl-0' href={`${NavigationConstants.MINTSCAN}/tx/${transaction.hash}`} rel='noreferrer' target='_blank'>
                             {StringsUtils.trunc(transaction.hash)}
                         </a>
                     </div>
@@ -110,7 +110,7 @@ const TransactionsTable = ({
                     <div className='d-flex flex-column my-2'>
                         <label>{headers[1]}</label>
                         <div className='table-item'>
-                            <a className='tx-height' href={`${NavigationConstants.LUM_EXPLORER}/txs/${transaction.hash}`} rel='noreferrer' target='_blank'>
+                            <a className='tx-height' href={`${NavigationConstants.MINTSCAN}/tx/${transaction.hash}`} rel='noreferrer' target='_blank'>
                                 {StringsUtils.trunc(transaction.hash)}
                             </a>
                         </div>

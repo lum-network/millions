@@ -1,35 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import Assets from 'assets';
 import { AmountInput, AssetsSelect, Button, Card, Modal, Steps, Tooltip } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase, StorageUtils } from 'utils';
+import { FirebaseConstants } from 'constant';
+import { DenomsUtils, I18n, LumClient, NumbersUtils, WalletUtils, Firebase, ToastUtils, StorageUtils } from 'utils';
 import { LumWalletModel, OtherWalletModel, PoolModel } from 'models';
-import { Dispatch, RootState } from 'redux/store';
-import { FirebaseConstants } from '../../../../../constant';
+import { Dispatch } from 'redux/store';
 
 interface Props {
     asset: string | null;
     isLoading: boolean;
     lumWallet: LumWalletModel;
-    otherWallets: { [key: string]: OtherWalletModel };
+    otherWallets: { [key: string]: OtherWalletModel | undefined };
     pools: PoolModel[];
     balances: Coin[];
     prices: { [key: string]: number };
     modalRef: React.RefObject<ModalHandlers>;
 }
 
-const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Props) => {
+const TransferOut = ({ lumWallet, otherWallets, asset, isLoading, balances, prices, pools, modalRef }: Props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [assetToTransfer, setAssetToTransfer] = useState<string>(asset || '');
-    const { lumWallet, otherWallets } = useSelector((state: RootState) => ({
-        lumWallet: state.wallet.lumWallet,
-        otherWallets: state.wallet.otherWallets,
-    }));
 
     const dispatch = useDispatch<Dispatch>();
 
@@ -46,33 +42,45 @@ const TransferOut = ({ asset, isLoading, balances, prices, pools, modalRef }: Pr
         }),
         onSubmit: async (values) => {
             const normalDenom = DenomsUtils.getNormalDenom(values.denom);
-            const destWallet = otherWallets[normalDenom];
             const amount = values.amount.toString();
             const pool = pools.find((pool) => pool.nativeDenom === values.denom);
 
-            if (lumWallet && destWallet && pool && pool.internalInfos) {
-                setCurrentStep(currentStep + 1);
+            if (!pool) {
+                ToastUtils.showErrorToast({ content: normalDenom.toUpperCase() + ' Pool not found' });
+                return;
+            }
 
-                const res = await dispatch.wallet.ibcTransfer({
-                    toAddress: values.withdrawAddress,
-                    fromAddress: lumWallet.address,
-                    type: 'withdraw',
-                    amount: {
-                        amount,
-                        denom: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetDenom : pool.internalInfos.ibcDenom,
-                    },
-                    normalDenom: normalDenom,
-                    ibcChannel: pool.transferChannelId,
-                    chainId: LumClient.getChainId() || '',
-                });
+            if (!pool.internalInfos) {
+                ToastUtils.showErrorToast({ content: normalDenom.toUpperCase() + ' Pool infos not found' });
+                return;
+            }
 
-                if (res && !res.error) {
-                    if (modalRef.current) {
-                        modalRef.current.hide();
-                    }
-                } else {
-                    setCurrentStep(currentStep);
+            if (!values.withdrawAddress) {
+                ToastUtils.showErrorToast({ content: 'Invalid withdraw address' });
+                return;
+            }
+
+            setCurrentStep(currentStep + 1);
+
+            const res = await dispatch.wallet.ibcTransfer({
+                toAddress: values.withdrawAddress,
+                fromAddress: lumWallet.address,
+                type: 'withdraw',
+                amount: {
+                    amount,
+                    denom: pool.chainId.includes('testnet') || pool.chainId.includes('devnet') ? pool.internalInfos.ibcTestnetDenom : pool.internalInfos.ibcDenom,
+                },
+                normalDenom: normalDenom,
+                ibcChannel: pool.transferChannelId,
+                chainId: LumClient.getChainId() || '',
+            });
+
+            if (res && !res.error) {
+                if (modalRef.current) {
+                    modalRef.current.hide();
                 }
+            } else {
+                setCurrentStep(currentStep);
             }
         },
     });

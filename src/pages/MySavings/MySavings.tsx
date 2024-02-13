@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import numeral from 'numeral';
@@ -31,7 +31,6 @@ import dayjs from 'dayjs';
 
 const MySavings = () => {
     const {
-        activeCampaigns,
         lumWallet,
         otherWallets,
         balances,
@@ -45,10 +44,11 @@ const MySavings = () => {
         isLoadingNextLeaderboardPage,
         alreadySeenConfetti,
         totalPrizesWon,
+        activeCampaigns,
     } = useSelector((state: RootState) => ({
         lumWallet: state.wallet.lumWallet,
         otherWallets: state.wallet.otherWallets,
-        balances: state.wallet.lumWallet?.balances,
+        balances: state.wallet.lumWallet?.balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM),
         activities: state.wallet.lumWallet?.activities,
         deposits: state.wallet.lumWallet?.deposits,
         prizes: state.wallet.lumWallet?.prizes,
@@ -65,9 +65,19 @@ const MySavings = () => {
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
 
+    const leaderboardPoolId = useMemo(() => {
+        const state = location.state as { leaderboardPoolId?: string };
+
+        if (!state) {
+            return undefined;
+        }
+
+        return state.leaderboardPoolId;
+    }, [location]);
+
     const [assetToTransferOut, setAssetToTransferOut] = useState<string | null>(null);
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
-    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? location.state?.leaderboardPoolId || pools[0].poolId.toString() : null);
+    const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
     const [activeCampaign, setActiveCampaign] = useState<InfluencerCampaignModel | undefined>(undefined);
@@ -100,14 +110,16 @@ const MySavings = () => {
             getLeaderboardUserRank().finally(() => null);
         }
 
-        if (location.state?.leaderboardPoolId && leaderboardSectionRef.current) {
+        if (leaderboardPoolId && leaderboardSectionRef.current) {
             leaderboardSectionRef.current.scrollIntoView();
         }
     }, [isReloadingInfos, leaderboardPool, lumWallet]);
 
     useEffect(() => {
         if (pools && pools.length > 0) {
-            setLeaderboardSelectedPoolId(location.state?.leaderboardPoolId || pools[0].poolId);
+            const poolId = leaderboardPoolId || pools[0].poolId.toString();
+
+            setLeaderboardSelectedPoolId(poolId);
             ScrollTrigger.refresh();
         }
     }, [pools]);
@@ -162,11 +174,11 @@ const MySavings = () => {
                 const userDeposited = deposits
                     ? deposits.findIndex(
                           (deposit) =>
-                              deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
+                              //deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
                               deposit.poolId &&
-                              deposit.poolId.toString() === campaign.poolId &&
+                              deposit.poolId.toString() === campaign.poolId.toFixed() &&
                               deposit.createdAt &&
-                              dayjs(deposit.createdAt).isBefore(dayjs(campaign.startAt)) &&
+                              dayjs(deposit.createdAt).isBefore(dayjs(campaign.endAt)) &&
                               !deposit.isDepositDrop &&
                               !deposit.isSponsor &&
                               !deposit.isWithdrawing,

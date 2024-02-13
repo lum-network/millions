@@ -27,6 +27,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
     const prizes = useSelector((state: RootState) => state.wallet.lumWallet?.prizes);
     const timeline = useRef<gsap.core.Timeline>();
     const [isLanding, setIsLanding] = useState(false);
+    const [isDrops, setIsDrops] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const headerRef = useRef(null);
@@ -36,6 +37,8 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
 
     useEffect(() => {
         setIsLanding(window.location.pathname === NavigationConstants.LANDING);
+
+        setIsDrops(window.location.pathname.startsWith(NavigationConstants.DROPS));
     }, [location.pathname]);
 
     useEffect(() => {
@@ -210,6 +213,47 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                         >
                             {I18n.t('landing.openTheApp')}
                         </Button>
+                    </li>
+                    {!inBurgerMenu ? <DarkModeSwitch /> : null}
+                </ul>
+            );
+        }
+
+        if (isDrops) {
+            return (
+                <ul className='navbar-nav flex-row align-items-center ms-auto'>
+                    <li className='nav-item' {...dismissMenuProps}>
+                        <NavLink to={NavigationConstants.DROPS_POOLS} className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}>
+                            {I18n.t('pools.title')}
+                        </NavLink>
+                    </li>
+                    {address && (
+                        <li className='nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0' {...dismissMenuProps}>
+                            <NavLink to={NavigationConstants.DROPS_MY_DEPOSITS} className={({ isActive }) => `navlink position-relative ${isActive ? 'active' : ''}`}>
+                                {I18n.t('depositDrops.myDeposits.title')}
+                            </NavLink>
+                        </li>
+                    )}
+                    {inBurgerMenu ? <Lottie className='cosmonaut-rocket' animationData={cosmonautWithRocket} /> : null}
+                    <li className={`nav-item ms-0 ms-lg-4 ms-xl-5 mt-4 mt-lg-0 ${inBurgerMenu && 'mb-5'}`}>
+                        <div className='d-flex flex-row align-items-center'>
+                            <ConnectButton address={address} {...dismissMenuProps} />
+                            {address ? (
+                                <Button
+                                    textOnly
+                                    className='logout-btn ms-4'
+                                    style={{ backgroundColor: isDark ? '#482673' : 'white' }}
+                                    onClick={() => {
+                                        Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LOGOUT_CLICK);
+                                        if (logoutModalRef.current) {
+                                            logoutModalRef.current.show();
+                                        }
+                                    }}
+                                >
+                                    <img src={Assets.images.logout} />
+                                </Button>
+                            ) : null}
+                        </div>
                     </li>
                     {!inBurgerMenu ? <DarkModeSwitch /> : null}
                 </ul>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
-import bcrypt from 'bcryptjs';
 
 import Assets from 'assets';
 import cosmonautWithCoin from 'assets/lotties/cosmonaut_with_coin.json';
@@ -53,8 +52,7 @@ const InfluencerCampaignModal = ({ campaign, prices, onApply }: Props) => {
         if (!password) {
             setPwdError(I18n.t('errors.generic.required', { field: 'Code' }));
         } else {
-            const hashedPwd = await bcrypt.hash(password, 10);
-            const res = await onApply(campaign.id, hashedPwd);
+            const res = await onApply(campaign.id, password);
 
             if (res.error) {
                 setPwdError(res.error);

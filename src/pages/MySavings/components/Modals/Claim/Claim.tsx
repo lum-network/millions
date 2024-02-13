@@ -56,27 +56,14 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                         <div className='deposit-state rounded-pill text-nowrap success'>{I18n.t('mySavings.depositStates', { returnObjects: true })[DepositState.DEPOSIT_STATE_SUCCESS]}</div>
                     </div>
                 ))}
-                <div className='row row-cols-3 gx-4'>
-                    <div className='col'>
-                        <Card
-                            flat
-                            withoutPadding
-                            className='step-3-cta-container d-flex flex-row align-items-center flex-grow-1 text-start p-4 w-100'
-                            onClick={() => {
-                                window.open(`${NavigationConstants.LUM_EXPLORER}/txs/${infos.hash}`, '_blank');
-                            }}
-                        >
-                            <img src={Assets.images.lumLogoPurple} alt='Lum Network logo purple' className='me-4' />
-                            {I18n.t('deposit.seeOnExplorer')}
-                        </Card>
-                    </div>
+                <div className='row row-cols-2 gx-4'>
                     <div className='col'>
                         <Card
                             flat
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/lum/txs/${infos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN}/tx/${infos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -110,7 +97,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                                     denom: infos.amount[0].denom,
                                     tvl: infos.tvl + ' ' + infos.amount[0].denom,
                                 }),
-                            )}`,
+                            ).replaceAll('#', '%23')}`,
                             '_blank',
                         );
                         onTwitterShare();

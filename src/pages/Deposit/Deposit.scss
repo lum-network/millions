@@ -66,6 +66,10 @@
         @include media-breakpoint-down(lg) {
             margin-right: 0;
         }
+
+        a {
+            color: var(--color-primary);
+        }
     }
 }
 
@@ -91,7 +95,6 @@
         font-size: 12px;
         line-height: 16px;
         margin-bottom: 0.5rem;
-        color: var(--color-black);
         color: var(--color-black);
     }
 

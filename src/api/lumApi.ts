@@ -47,8 +47,8 @@ class LumApi extends HttpClient {
                 url: '/millions/campaigns/participate',
                 method: 'POST',
                 data: {
-                    campaignId,
-                    address,
+                    campaign_id: campaignId,
+                    wallet_address: address,
                     password,
                 },
             },

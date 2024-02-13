@@ -23,7 +23,7 @@
     padding: 40px;
 
     &.with-anim {
-        padding-bottom: 0px;
+        padding-bottom: 0;
     }
 
     @include media-breakpoint-down(md) {
@@ -59,7 +59,7 @@
     }
 
     &.white-bg {
-        box-shadow: 0px 4px 23px 0px #f1edff;
+        box-shadow: 0 4px 23px 0 #f1edff;
     }
 
     &.flat {
