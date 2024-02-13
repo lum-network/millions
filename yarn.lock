@@ -4325,26 +4325,19 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@keplr-wallet/types@0.12.58":
-  version "0.12.58"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.12.58.tgz#7157b16656d04d99826323326da63b1d1507bd86"
-  integrity sha512-cUBpdtfn5w2m9M3Lsn69TvvA4rG9NHiTkBuFlZUoUrXTBLYimRC3M/gDwEPhFHW+Jr8HM6G7Zwphjwh1j5Fspg==
+"@keplr-wallet/types@0.12.67", "@keplr-wallet/types@^0.12.67":
+  version "0.12.67"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.12.67.tgz#4ca57ad467078a28fbcdd05b052898e46be37562"
+  integrity sha512-HDEYOezWq//ug/R0lkOQWsaOYh3b9ECA8LN+tAA+baWMo81X9m9L63ux7NYw0QmoLxWqWrRO/T9F28+q2dw6+A==
   dependencies:
     long "^4.0.0"
 
-"@keplr-wallet/types@^0.12.6":
-  version "0.12.6"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.12.6.tgz#3bb395cafab8b935d6bef32dc2202c63447ef828"
-  integrity sha512-Uo4rZh3bRnOq9oeisd1DqyU9dHXjdmhu5SfC9w8mNLGTy89BtMrYwvQVr8Z2iaAP51o32YjxisNlgVkhrA+P3w==
+"@keplr-wallet/unit@^0.12.67":
+  version "0.12.67"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.12.67.tgz#bf69a1d96696e576577c06329d9b93c5e4610a51"
+  integrity sha512-Mzlrh0j65i6+qoTNg1/Um4Hywpu9mmaZn8HRiX01HdPyaEcLREFkf18eJMklWuHx4nERg+EzvU5E/9J2fuRPdA==
   dependencies:
-    long "^4.0.0"
-
-"@keplr-wallet/unit@^0.12.58":
-  version "0.12.58"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.12.58.tgz#0d6bd0477462d9f1e34a5309a730361c48671687"
-  integrity sha512-zHPuwg5BQzASmsJZa/W3YQmWEb7GivSOfPqZ2ErcKWObIqKR5nxDEAQNL7sZDanNnzJYiGe3sXeZyXHUQZbHEA==
-  dependencies:
-    "@keplr-wallet/types" "0.12.58"
+    "@keplr-wallet/types" "0.12.67"
     big-integer "^1.6.48"
     utility-types "^3.10.0"
 
