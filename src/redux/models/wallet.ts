@@ -284,16 +284,12 @@ export const wallet = createModel<RootModel>()({
                     await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
 
-                let lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
+                const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
 
                 if (lumOfflineSigner) {
                     const accounts = await lumOfflineSigner.getAccounts();
                     const address = accounts[0].address;
                     const { isNanoLedger } = await providerFunctions.getKey(chainId);
-
-                    if (isNanoLedger) {
-                        lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId, true);
-                    }
 
                     await LumClient.connectSigner(lumOfflineSigner);
 
@@ -335,13 +331,7 @@ export const wallet = createModel<RootModel>()({
                         await providerFunctions.enable(pool.chainId);
                     }
 
-                    let offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
-
-                    const { isNanoLedger } = await providerFunctions.getKey(pool.chainId);
-
-                    if (isNanoLedger) {
-                        offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId, true);
-                    }
+                    const offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
 
                     const accounts = await offlineSigner.getAccounts();
                     if (accounts.length > 0) {
@@ -612,13 +602,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(`${provider} is not available`);
                 }
 
-                let offlineSigner = await providerFunctions.getOfflineSigner(chainId);
-
-                const { isNanoLedger } = await providerFunctions.getKey(chainId);
-
-                if (isNanoLedger) {
-                    offlineSigner = await providerFunctions.getOfflineSigner(chainId, true);
-                }
+                const offlineSigner = await providerFunctions.getOfflineSigner(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
