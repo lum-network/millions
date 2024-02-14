@@ -130,6 +130,14 @@ class LumClient {
         return res.prizes;
     };
 
+    getFeesStakers = async () => {
+        if (this.lumQueryClient === null) {
+            return null;
+        }
+
+        return Number((await this.lumQueryClient.lum.network.millions.params()).params?.feesStakers || '0');
+    };
+
     getDepositsAndWithdrawals = async (address: string): Promise<null | AggregatedDepositModel[]> => {
         if (this.lumQueryClient === null) {
             return null;
