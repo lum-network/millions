@@ -678,7 +678,7 @@ const PoolDetails = () => {
                     ]}
                 />
             </Card>
-            <DrawDetailsModal draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
+            <DrawDetailsModal usdTokenValue={selectedDraw ? drawsUsdTokenValue[Number(selectedDraw.drawId)] : undefined} draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
         </div>
     );
 };
