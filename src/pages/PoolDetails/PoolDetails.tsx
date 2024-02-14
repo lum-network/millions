@@ -95,8 +95,6 @@ const PoolDetails = () => {
                         continue;
                     }
 
-                    console.log('draw: ', draw.createdAt);
-
                     try {
                         const [marketData] = await LumApi.fetchMarketData(draw.createdAt);
 
