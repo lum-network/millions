@@ -175,20 +175,20 @@ export const pools = createModel<RootModel>()({
                     pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
                     // Calculate APY
-                    const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
+                    const [bonding, supply, communityTaxRate, inflation] = await Promise.all([
                         client.getBonding(),
                         client.getSupply(pool.nativeDenom),
                         client.getCommunityTaxRate(),
                         client.getInflation(),
-                        LumClient.getFeesStakers(),
                     ]);
 
                     const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
                     const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
+                    const feeTakers = pool.feeTakers.reduce((acc, feeTaker) => acc + Number(feeTaker.amount), 0);
 
                     const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
-                    const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+                    const variableApy = (nativeApy * (1 - feeTakers) * poolTvl) / (poolTvl - poolSponsorTvl);
 
                     pool.apy = variableApy * 100;
 
