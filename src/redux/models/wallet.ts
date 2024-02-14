@@ -228,7 +228,7 @@ export const wallet = createModel<RootModel>()({
                     chainId: chainId,
                     chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                     rpc,
-                    rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
+                    rest: rpc.replace(rpc.includes('rpc') ? 'rpc' : '26657', rpc.includes('rpc') ? 'lcd' : '1317'),
                     stakeCurrency: {
                         coinDenom: LUM_DENOM,
                         coinMinimalDenom: MICRO_LUM_DENOM,
@@ -284,7 +284,7 @@ export const wallet = createModel<RootModel>()({
                     await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
 
-                const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
+                const lumOfflineSigner = providerFunctions.getOfflineSigner(chainId);
 
                 if (lumOfflineSigner) {
                     const accounts = await lumOfflineSigner.getAccounts();
@@ -331,7 +331,7 @@ export const wallet = createModel<RootModel>()({
                         await providerFunctions.enable(pool.chainId);
                     }
 
-                    const offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
+                    const offlineSigner = providerFunctions.getOfflineSigner(pool.chainId);
                     const accounts = await offlineSigner.getAccounts();
 
                     if (accounts.length > 0) {
@@ -602,7 +602,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(`${provider} is not available`);
                 }
 
-                const offlineSigner = await providerFunctions.getOfflineSigner(chainId);
+                const offlineSigner = providerFunctions.getOfflineSigner(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 

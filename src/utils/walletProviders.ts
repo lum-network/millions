@@ -42,10 +42,10 @@ export const getProviderFunctions = (provider: WalletProvider) => {
 
             return keplrProvider.enable(chainId);
         },
-        getOfflineSigner: async (chainId: string) => {
+        getOfflineSigner: (chainId: string) => {
             if (provider === WalletProvider.Cosmostation) {
                 if (isCosmostationInstalled() && window.cosmostation?.providers?.keplr) {
-                    return await window.cosmostation.providers.keplr.getOfflineSignerAuto(chainId);
+                    return window.cosmostation.providers.keplr.getOfflineSignerOnlyAmino(chainId);
                 } else {
                     throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
                 }
@@ -57,7 +57,7 @@ export const getProviderFunctions = (provider: WalletProvider) => {
                 throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
             }
 
-            return await keplrProvider.getOfflineSignerAuto(chainId);
+            return keplrProvider.getOfflineSignerOnlyAmino(chainId);
         },
         getKey: async (chainId: string): Promise<Key> => {
             if (provider === WalletProvider.Cosmostation) {
