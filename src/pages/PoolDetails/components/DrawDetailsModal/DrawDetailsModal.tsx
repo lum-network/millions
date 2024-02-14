@@ -12,7 +12,19 @@ import { DrawModel } from 'models';
 
 import './DrawDetailsModal.scss';
 
-const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | null; poolDenom: string; prices: { [key: string]: number }; modalRef: React.RefObject<ModalHandlers> }) => {
+const DrawDetails = ({
+    draw,
+    poolDenom,
+    prices,
+    modalRef,
+    usdTokenValue,
+}: {
+    draw: DrawModel | null;
+    poolDenom: string;
+    prices: { [key: string]: number };
+    modalRef: React.RefObject<ModalHandlers>;
+    usdTokenValue?: number;
+}) => {
     const [view, setView] = useState<'winners' | 'redelegated'>('winners');
     const [winnersPage, setWinnersPage] = useState(1);
 
@@ -86,7 +98,11 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                         <td className='text-md-end'>
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                                 <div className='amount text-nowrap'>
-                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (draw.usdTokenValue || prices[poolDenom] || 0)).format('$0,0[.]00')} />
+                                                    <SmallerDecimal
+                                                        nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (usdTokenValue ?? draw.usdTokenValue ?? prices[poolDenom] ?? 0)).format(
+                                                            '$0,0[.]00',
+                                                        )}
+                                                    />
                                                 </div>
                                                 <span className='usd-price'>
                                                     <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} /> {poolDenom.toUpperCase()}
@@ -106,7 +122,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                                 <SmallerDecimal
                                                     nb={numeral(
                                                         (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) *
-                                                            (draw.usdTokenValue || prices[poolDenom] || 0),
+                                                            (usdTokenValue ?? draw.usdTokenValue ?? prices[poolDenom] ?? 0),
                                                     ).format('$0,0[.]00')}
                                                 />
                                             </div>

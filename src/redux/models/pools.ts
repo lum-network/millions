@@ -215,7 +215,7 @@ export const pools = createModel<RootModel>()({
 
             dispatch.pools.setMutexAdditionalInfos(false);
         },
-        async getPoolDraws({ poolId, nativeDenom }: { poolId: bigint; nativeDenom: string }, state) {
+        async getPoolDraws({ poolId }: { poolId: bigint; nativeDenom: string }, state) {
             try {
                 const res = await LumClient.getPoolDraws(poolId);
                 const draws: DrawModel[] = [];
@@ -232,13 +232,7 @@ export const pools = createModel<RootModel>()({
                             continue;
                         }
 
-                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
-
-                        if (marketData && marketData.length) {
-                            draws.push({ ...draw, usdTokenValue: marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(nativeDenom))?.price || undefined });
-                        } else {
-                            draws.push({ ...draw });
-                        }
+                        draws.push({ ...draw });
                     }
 
                     return draws;
