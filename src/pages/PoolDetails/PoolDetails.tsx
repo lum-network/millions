@@ -9,6 +9,7 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
+import { LumApi } from 'api';
 import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, PurpleBackgroundImage, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
@@ -79,6 +80,32 @@ const PoolDetails = () => {
             setEstimatedChances(chances);
         }
     }, [estimationAmount]);
+
+    useEffect(() => {
+        const fetchMarketData = async () => {
+            if (pool?.draws?.length && drawsHistoryPage > 0) {
+                for (const draw of pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5)) {
+                    console.log('draw: ', draw.createdAt);
+                    if (!draw.createdAt) {
+                        continue;
+                    }
+
+                    const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+
+                    if (marketData && marketData.length) {
+                        const tokenValue = marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(pool.nativeDenom))?.price;
+
+                        if (tokenValue) {
+                            draw.usdTokenValue = tokenValue;
+                            draw.drawId = BigInt(4);
+                        }
+                    }
+                }
+            }
+        };
+
+        fetchMarketData();
+    }, [pool?.draws, drawsHistoryPage]);
 
     if (!pool || !denom) {
         return <Error404 />;
