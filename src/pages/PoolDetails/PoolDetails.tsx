@@ -49,6 +49,8 @@ const PoolDetails = () => {
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [drawsUsdTokenValue, setDrawsUsdTokenValue] = useState<{ [key: number]: number }>({});
+    const [loadingMarketData, setLoadingMarketData] = useState(false);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -81,26 +83,35 @@ const PoolDetails = () => {
         }
     }, [estimationAmount]);
 
+    // Effect to fetch the draws market data
     useEffect(() => {
         const fetchMarketData = async () => {
             if (pool?.draws?.length && drawsHistoryPage > 0) {
+                setLoadingMarketData(true);
+                let newDrawsUsdTokenValue = drawsUsdTokenValue;
+
                 for (const draw of pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5)) {
-                    console.log('draw: ', draw.createdAt);
-                    if (!draw.createdAt) {
+                    if (!draw.createdAt || newDrawsUsdTokenValue[Number(draw.drawId)]) {
                         continue;
                     }
 
-                    const [marketData] = await LumApi.fetchMarketData(draw.createdAt || new Date());
+                    console.log('draw: ', draw.createdAt);
 
-                    if (marketData && marketData.length) {
-                        const tokenValue = marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(pool.nativeDenom))?.price;
+                    try {
+                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt);
 
-                        if (tokenValue) {
-                            draw.usdTokenValue = tokenValue;
-                            draw.drawId = BigInt(4);
+                        if (marketData && marketData.length) {
+                            const tokenValue = marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(pool.nativeDenom))?.price;
+
+                            if (tokenValue) {
+                                newDrawsUsdTokenValue = { ...newDrawsUsdTokenValue, [Number(draw.drawId)]: tokenValue };
+                            }
                         }
-                    }
+                    } catch {}
                 }
+
+                setDrawsUsdTokenValue(newDrawsUsdTokenValue);
+                setLoadingMarketData(false);
             }
         };
 
@@ -627,9 +638,16 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        <SmallerDecimal
-                                                            nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (draw.usdTokenValue || prices[denom] || 0)).format('$0,0[.]00')}
-                                                        />
+                                                        {loadingMarketData ? (
+                                                            <Skeleton width={100} />
+                                                        ) : (
+                                                            <SmallerDecimal
+                                                                nb={numeral(
+                                                                    NumbersUtils.convertUnitNumber(draw.totalWinAmount) *
+                                                                        (drawsUsdTokenValue[Number(draw.drawId)] ?? draw.usdTokenValue ?? prices[denom] ?? 0),
+                                                                ).format('$0,0[.]00')}
+                                                            />
+                                                        )}
                                                         <div className='draw-token'>
                                                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
                                                             &nbsp;
