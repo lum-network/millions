@@ -6,7 +6,7 @@ export const POOLS: {
     atom: PoolInternalInfosModel;
 } = {
     atom: {
-        rpc: process.env.REACT_APP_RPC_ATOM ?? 'https://rpc.cosmoshub.strange.love/',
+        rpc: process.env.REACT_APP_RPC_ATOM || 'https://rpc.cosmoshub.strange.love/',
         chainName: 'Cosmos Hub',
         ibcSourceChannel: 'channel-566',
         ibcTestnetSourceChannel: 'channel-0',
