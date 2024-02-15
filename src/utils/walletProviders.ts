@@ -1,9 +1,12 @@
-import { ChainInfo, Key, Window } from '@keplr-wallet/types';
+import { ChainInfo, Key, Window, SignDoc as KeplrSignDoc, OfflineAminoSigner, OfflineDirectSigner } from '@keplr-wallet/types';
 import { cosmos } from '@cosmostation/extension-client';
 
 import { WalletProvider, PoolsConstants } from 'constant';
 import { I18n } from 'utils';
 import { fromBech32 } from '@lum-network/sdk-javascript';
+import { SignDoc } from '@lum-network/sdk-javascript/build/codegen/cosmos/tx/v1beta1/tx';
+import Long from 'long';
+import { DirectSignResponse, OfflineSigner } from '@cosmjs/proto-signing';
 
 export const isKeplrInstalled = (): boolean => {
     const keplrWindow = window as Window;
@@ -21,6 +24,10 @@ export const isAnyWalletInstalled = (): boolean => {
 
 const isProviderInstalled = (provider: WalletProvider) => {
     return provider === WalletProvider.Cosmostation ? isCosmostationInstalled() : isKeplrInstalled();
+};
+
+export const isOfflineDirectSigner = (signer: OfflineAminoSigner | OfflineDirectSigner): signer is OfflineDirectSigner => {
+    return (signer as OfflineDirectSigner).signDirect !== undefined;
 };
 
 export const getProviderFunctions = (provider: WalletProvider) => {
@@ -85,7 +92,7 @@ export const getProviderFunctions = (provider: WalletProvider) => {
         return await keplrProvider.getKey(chainId);
     };
 
-    const getOfflineSigner = async (chainId: string) => {
+    const getOfflineSigner = async (chainId: string): Promise<OfflineSigner> => {
         if (provider === WalletProvider.Cosmostation) {
             if (isCosmostationInstalled() && window.cosmostation?.providers?.keplr) {
                 const { isNanoLedger } = await getKey(chainId);
@@ -103,14 +110,41 @@ export const getProviderFunctions = (provider: WalletProvider) => {
         }
 
         const { isNanoLedger } = await getKey(chainId);
+        const offlineSigner: OfflineAminoSigner | (OfflineAminoSigner & OfflineDirectSigner) = isNanoLedger
+            ? keplrProvider.getOfflineSignerOnlyAmino(chainId)
+            : keplrProvider.getOfflineSigner(chainId);
 
-        return isNanoLedger ? keplrProvider.getOfflineSignerOnlyAmino(chainId) : keplrProvider.getOfflineSigner(chainId);
+        if (isOfflineDirectSigner(offlineSigner)) {
+            return {
+                getAccounts: async () => {
+                    return offlineSigner.getAccounts();
+                },
+                signDirect: async (signerAddress: string, signDoc: SignDoc): Promise<DirectSignResponse> => {
+                    const patchedSignDoc: KeplrSignDoc = {
+                        ...signDoc,
+                        accountNumber: Long.fromString(signDoc.accountNumber.toString()),
+                    };
+
+                    const res = await offlineSigner.signDirect(signerAddress, patchedSignDoc);
+
+                    return {
+                        signed: {
+                            ...res.signed,
+                            accountNumber: BigInt(res.signed.accountNumber.toString()),
+                        },
+                        signature: res.signature,
+                    };
+                },
+            };
+        }
+
+        return offlineSigner;
     };
 
     return {
         enable,
-        getOfflineSigner,
         getKey,
+        getOfflineSigner,
     };
 };
 

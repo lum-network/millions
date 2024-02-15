@@ -8,9 +8,13 @@ import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { Tabs, LiquidityModal, ThemeDefinition, WalletClientContext, defaultBlurs, defaultBorderRadii } from '@leapwallet/elements';
 import { Modal as BootstrapModal } from 'bootstrap';
+import { isOfflineDirectSigner } from '@cosmjs/proto-signing';
+import { LUM_DENOM } from '@lum-network/sdk-javascript';
+import { SignDoc as CosmjsSignDoc } from '@lum-network/sdk-javascript/build/codegen/cosmos/tx/v1beta1/tx';
+import { DirectSignResponse, SignDoc } from '@keplr-wallet/types';
+import Long from 'long';
 
 import Assets from 'assets';
-import { LUM_DENOM } from '@lum-network/sdk-javascript';
 
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 
@@ -127,13 +131,36 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
                 return await providerFunctions.getKey(chainId);
             },
-            getOfflineSigner: (chainId) => {
+            getOfflineSigner: async (chainId) => {
                 const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return providerFunctions!.getOfflineSigner(chainId);
+                const offlineSigner = await providerFunctions!.getOfflineSigner(chainId);
+
+                if (isOfflineDirectSigner(offlineSigner)) {
+                    return {
+                        getAccounts: async () => offlineSigner.getAccounts(),
+                        signDirect: async (signerAddress: string, signDoc: SignDoc): Promise<DirectSignResponse> => {
+                            const patchedSignDoc: CosmjsSignDoc = {
+                                ...signDoc,
+                                accountNumber: BigInt(signDoc.accountNumber.toString()),
+                            };
+
+                            const res = await offlineSigner.signDirect(signerAddress, patchedSignDoc);
+
+                            return {
+                                signed: {
+                                    ...res.signed,
+                                    accountNumber: Long.fromString(res.signed.accountNumber.toString()),
+                                },
+                                signature: res.signature,
+                            };
+                        },
+                    };
+                }
+                return offlineSigner;
             },
         },
     };
