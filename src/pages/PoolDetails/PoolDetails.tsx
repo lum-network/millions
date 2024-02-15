@@ -458,7 +458,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
+                                    price={prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}

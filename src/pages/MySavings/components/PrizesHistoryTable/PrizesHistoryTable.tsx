@@ -120,7 +120,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
                                     {prize.amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount), 3)} /> : '--'}
                                     <span className='denom ms-2'>{DenomsUtils.getNormalDenom(prize.amount.denom || '').toUpperCase()}</span>
                                 </div>
-                                {price && <small className='usd-price'>{numeral(amount * (prize.usdTokenValue || price)).format('$0,0[.]00')}</small>}
+                                {price && <small className='usd-price'>{numeral(amount * price).format('$0,0[.]00')}</small>}
                             </div>
                         </div>
                     </div>
