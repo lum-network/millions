@@ -133,7 +133,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return providerFunctions!.getOfflineSigner(chainId);
+                return await providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
