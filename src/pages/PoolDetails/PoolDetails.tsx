@@ -9,7 +9,6 @@ import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import cosmonautWithDuck from 'assets/lotties/cosmonaut_with_duck.json';
 
-import { LumApi } from 'api';
 import { BigWinnerCard, Button, Card, CountDown, Leaderboard, Lottie, Modal, Pagination, PurpleBackgroundImage, SmallerDecimal, Table, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
@@ -49,8 +48,6 @@ const PoolDetails = () => {
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
-    const [drawsUsdTokenValue, setDrawsUsdTokenValue] = useState<{ [key: number]: number }>({});
-    const [loadingMarketData, setLoadingMarketData] = useState(false);
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -82,39 +79,6 @@ const PoolDetails = () => {
             setEstimatedChances(chances);
         }
     }, [estimationAmount]);
-
-    // Effect to fetch the draws market data
-    useEffect(() => {
-        const fetchMarketData = async () => {
-            if (pool?.draws?.length && drawsHistoryPage > 0) {
-                setLoadingMarketData(true);
-                let newDrawsUsdTokenValue = drawsUsdTokenValue;
-
-                for (const draw of pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5)) {
-                    if (!draw.createdAt || newDrawsUsdTokenValue[Number(draw.drawId)]) {
-                        continue;
-                    }
-
-                    try {
-                        const [marketData] = await LumApi.fetchMarketData(draw.createdAt);
-
-                        if (marketData && marketData.length) {
-                            const tokenValue = marketData[0].marketData?.find((data) => data.denom === DenomsUtils.getNormalDenom(pool.nativeDenom))?.price;
-
-                            if (tokenValue) {
-                                newDrawsUsdTokenValue = { ...newDrawsUsdTokenValue, [Number(draw.drawId)]: tokenValue };
-                            }
-                        }
-                    } catch {}
-                }
-
-                setDrawsUsdTokenValue(newDrawsUsdTokenValue);
-                setLoadingMarketData(false);
-            }
-        };
-
-        fetchMarketData();
-    }, [pool?.draws, drawsHistoryPage]);
 
     if (!pool || !denom) {
         return <Error404 />;
@@ -494,7 +458,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
+                                    price={prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}
@@ -636,20 +600,11 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        {loadingMarketData ? (
-                                                            <Skeleton width={100} />
-                                                        ) : (
-                                                            <SmallerDecimal
-                                                                nb={numeral(
-                                                                    NumbersUtils.convertUnitNumber(draw.totalWinAmount) *
-                                                                        (drawsUsdTokenValue[Number(draw.drawId)] ?? draw.usdTokenValue ?? prices[denom] ?? 0),
-                                                                ).format('$0,0[.]00')}
-                                                            />
-                                                        )}
+                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
+                                                        &nbsp;
+                                                        {denom.toUpperCase()}
                                                         <div className='draw-token'>
-                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
-                                                            &nbsp;
-                                                            {denom.toUpperCase()}
+                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] ?? 0)).format('$0,0[.]00')} />
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -678,7 +633,7 @@ const PoolDetails = () => {
                     ]}
                 />
             </Card>
-            <DrawDetailsModal usdTokenValue={selectedDraw ? drawsUsdTokenValue[Number(selectedDraw.drawId)] : undefined} draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
+            <DrawDetailsModal draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
         </div>
     );
 };
