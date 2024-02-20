@@ -6,7 +6,7 @@ export const POOLS: {
     atom: PoolInternalInfosModel;
 } = {
     atom: {
-        rpc: process.env.REACT_APP_RPC_ATOM || 'https://rpc.cosmoshub.strange.love/',
+        rpc: process.env.REACT_APP_RPC_ATOM ?? 'https://rpc.cosmoshub.strange.love',
         chainName: 'Cosmos Hub',
         ibcSourceChannel: 'channel-566',
         ibcTestnetSourceChannel: 'channel-0',
@@ -16,6 +16,17 @@ export const POOLS: {
         fees: 0.025,
         illustration: Assets.chains.atomIllustration,
     },
+    huahua: {
+        rpc: process.env.REACT_APP_RPC_HUAHUA || 'https://chihuahua-rpc.publicnode.com:443',
+        chainName: 'Chihuahua',
+        ibcSourceChannel: 'channel-81',
+        ibcTestnetSourceChannel: 'channel-0',
+        ibcDenom: 'ibc/51A818D8BBC385C152415882286C62169C05498B8EBCFB38310B1367583860FF',
+        ibcTestnetDenom: 'ibc/51A818D8BBC385C152415882286C62169C05498B8EBCFB38310B1367583860FF',
+        unbondingTime: 21,
+        fees: 1250,
+        illustration: '',
+    },
 };
 
-export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'gaia-devnet', 'lum-network-testnet-2'];
+export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'chihuahua-1'];

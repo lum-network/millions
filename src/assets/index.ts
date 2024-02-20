@@ -57,6 +57,7 @@ import cro from './images/chains/cro.svg';
 import evmos from './images/chains/evmos.svg';
 import lum from './images/chains/lum.svg';
 import osmo from './images/chains/osmo.svg';
+import huahua from './images/chains/huahua.svg';
 
 import atomIllustration from './images/chains/atom_illu.png';
 import osmoIllustration from './images/chains/osmo_illu.png';
@@ -136,6 +137,7 @@ const Assets = {
         lum,
         osmo,
         osmoIllustration,
+        huahua,
     },
 };
 
