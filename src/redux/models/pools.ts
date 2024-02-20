@@ -1,5 +1,6 @@
 import { createModel } from '@rematch/core';
 import { ApiConstants, PoolsConstants } from 'constant';
+import { POOLS } from 'constant/pools';
 import { DrawModel, PoolModel } from 'models';
 import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient, WalletUtils } from 'utils';
 import dayjs from 'dayjs';
@@ -69,12 +70,13 @@ export const pools = createModel<RootModel>()({
 
             try {
                 const res = await LumClient.getPools();
+                const supportedPools = Object.keys(POOLS);
 
                 if (res) {
                     const pools: PoolModel[] = [];
 
                     for (const pool of res) {
-                        if (pool.state !== PoolState.POOL_STATE_READY) {
+                        if (pool.state !== PoolState.POOL_STATE_READY || supportedPools.findIndex((denom) => DenomsUtils.getNormalDenom(pool.nativeDenom) === denom) === -1) {
                             continue;
                         }
 
