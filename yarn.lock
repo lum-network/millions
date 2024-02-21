@@ -4471,10 +4471,10 @@
   dependencies:
     "@lit-labs/ssr-dom-shim" "^1.0.0"
 
-"@lum-network/sdk-javascript@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-1.0.1.tgz#d742128bdfb788f36210cda54b8f747c03e18053"
-  integrity sha512-15LGJErETiNUB9stnA5jCaEtCjAPsIaFqG9hOLHvI+k0KicCW2DoIK/yCgnS3qgZLoatewR6XxNpLlKQc+tKzQ==
+"@lum-network/sdk-javascript@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@lum-network/sdk-javascript/-/sdk-javascript-1.0.2.tgz#5d9f6ee1935468204139a9a45b4e407aa42df75f"
+  integrity sha512-jLMJ7p23fiFaM4EU8gCDScs+u9+htbtp7loCN2RCA792S0VgqzYgvwIj3g4C79d6DSaC/p6f4isLesGI9P609w==
   dependencies:
     "@cosmjs/amino" "^0.32.2"
     "@cosmjs/crypto" "^0.32.2"

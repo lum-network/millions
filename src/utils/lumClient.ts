@@ -6,7 +6,7 @@ import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/netw
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
 import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/cosmos/base/query/v1beta1/pagination';
 import { SigningStargateClient, assertIsDeliverTxSuccess, coins } from '@cosmjs/stargate';
-import { OfflineSigner } from '@cosmjs/proto-signing';
+import { EncodeObject, OfflineSigner } from '@cosmjs/proto-signing';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 
 import { LumApi } from 'api';
@@ -333,7 +333,11 @@ class LumClient {
         }
 
         // Build transaction message
-        const message = deposit({
+
+        // FIXME: booleans (isSponsor here) create errors for ledger signing
+        // so we must create manually the message while we don't have a proper solution for that for the lum sdk
+
+        /* const message = deposit({
             poolId: pool.poolId,
             depositorAddress: wallet.address,
             winnerAddress: wallet.address,
@@ -342,7 +346,21 @@ class LumClient {
                 amount: convertUnit({ amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
                 denom: pool.denom,
             },
-        });
+        }); */
+
+        const message: EncodeObject = {
+            typeUrl: '/lum.network.millions.MsgDeposit',
+            value: {
+                poolId: pool.poolId,
+                depositorAddress: wallet.address,
+                winnerAddress: wallet.address,
+                amount: {
+                    amount: convertUnit({ amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
+                    denom: pool.denom,
+                },
+                //isSponsor: false,
+            },
+        };
 
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {

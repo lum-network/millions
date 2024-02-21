@@ -12,7 +12,7 @@
     "@keplr-wallet/types": "^0.12.67",
     "@keplr-wallet/unit": "^0.12.67",
     "@leapwallet/elements": "^0.6.6",
-    "@lum-network/sdk-javascript": "1.0.1",
+    "@lum-network/sdk-javascript": "^1.0.2",
     "@popperjs/core": "^2.11.6",
     "@rematch/core": "^2.2.0",
     "@rematch/loading": "^2.1.2",
