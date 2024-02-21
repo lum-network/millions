@@ -18,7 +18,7 @@ const Counter = ({ number, duration = 1500, delay = 500 }: IProps) => {
         }, delay);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [number]);
 
     const countSpring = useSpring({
         to: { count, transform: `translateY(0px)` },

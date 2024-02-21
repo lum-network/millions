@@ -25,7 +25,7 @@ export const POOLS: {
         ibcTestnetDenom: 'ibc/51A818D8BBC385C152415882286C62169C05498B8EBCFB38310B1367583860FF',
         unbondingTime: 21,
         fees: 1250,
-        illustration: '',
+        illustration: Assets.chains.huahuaIllustration,
     },
 };
 

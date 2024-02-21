@@ -61,6 +61,7 @@ import huahua from './images/chains/huahua.svg';
 
 import atomIllustration from './images/chains/atom_illu.png';
 import osmoIllustration from './images/chains/osmo_illu.png';
+import huahuaIllustration from './images/chains/huahua_illu.png';
 
 import chjango from './images/testimonials/chjango.png';
 import ethan from './images/testimonials/ethan.png';
@@ -138,6 +139,7 @@ const Assets = {
         osmo,
         osmoIllustration,
         huahua,
+        huahuaIllustration,
     },
 };
 

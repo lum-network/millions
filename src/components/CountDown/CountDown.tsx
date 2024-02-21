@@ -7,9 +7,10 @@ interface IProps {
     to: Date;
     onCountdownEnd?: () => void;
     homePage?: boolean;
+    simple?: boolean;
 }
 
-const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
+const RoundTimer = ({ to, onCountdownEnd, homePage, simple }: IProps) => {
     const [remainingTime, setRemainingTime] = useState(0);
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
@@ -44,6 +45,14 @@ const RoundTimer = ({ to, onCountdownEnd, homePage }: IProps) => {
         setMinutes(minutes);
         setSeconds(seconds);
     }, [remainingTime]);
+
+    if (simple) {
+        return (
+            <div>
+                <span>{days ? `${days}d ` : hours ? `${hours}h ` : minutes ? `${minutes}m ` : seconds ? `${seconds}s ` : ''}</span>
+            </div>
+        );
+    }
 
     if (homePage) {
         return (
