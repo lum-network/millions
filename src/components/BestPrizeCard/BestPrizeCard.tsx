@@ -22,7 +22,7 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
     const prices = useSelector((state: RootState) => state.stats.prices);
     const pools = useSelector((state: RootState) => state.pools.pools);
 
-    const sortedPools = useMemo(() => {
+    const sortedPoolsByDate = useMemo(() => {
         return pools.sort((a, b) => (a.nextDrawAt?.getTime() ?? 1) - (b.nextDrawAt?.getTime() ?? 2));
     }, [pools]);
 
@@ -46,10 +46,18 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
 
     // Effect to set the current pool to the first pool when the pools are fetched
     useEffect(() => {
-        if (sortedPools.length > 0) {
-            setCurrentPool(sortedPools[0]);
+        // Set the highest prize pool as the current pool
+        if (sortedPoolsByDate.length > 0) {
+            const tmpPools = sortedPoolsByDate.slice(0);
+            setCurrentPool(
+                tmpPools.sort(
+                    (a, b) =>
+                        (b.estimatedPrizeToWin?.amount ?? 0) * prices[DenomsUtils.getNormalDenom(b.nativeDenom)] -
+                        (a.estimatedPrizeToWin?.amount ?? 0) * prices[DenomsUtils.getNormalDenom(a.nativeDenom)],
+                )[0],
+            );
         }
-    }, [sortedPools]);
+    }, [sortedPoolsByDate]);
 
     // Effect to play the carousel
     useEffect(() => {
@@ -64,14 +72,14 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
         if (playCarousel) {
             const interval = setInterval(() => {
                 if (currentPool) {
-                    const index = sortedPools.findIndex((pool) => pool.poolId === currentPool.poolId);
-                    setCurrentPool(sortedPools[(index + 1) % sortedPools.length]);
+                    const index = sortedPoolsByDate.findIndex((pool) => pool.poolId === currentPool.poolId);
+                    setCurrentPool(sortedPoolsByDate[(index + 1) % sortedPoolsByDate.length]);
                 }
             }, 10000);
 
             return () => clearInterval(interval);
         }
-    }, [currentPool, playCarousel, sortedPools]);
+    }, [currentPool, playCarousel, sortedPoolsByDate]);
 
     const renderIllu = () => {
         switch (DenomsUtils.getNormalDenom(currentPool?.nativeDenom ?? '')) {
@@ -96,7 +104,7 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
     return (
         <div>
             <Card withoutPadding className='p-3 p-xxl-4 mb-4 d-flex justify-content-center align-items-center'>
-                {sortedPools.map((pool, index) => (
+                {sortedPoolsByDate.map((pool, index) => (
                     <div
                         onClick={() => {
                             setPlayCarousel(false);
