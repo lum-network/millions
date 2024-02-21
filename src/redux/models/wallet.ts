@@ -645,9 +645,13 @@ export const wallet = createModel<RootModel>()({
 
                 if (!chainId.includes('testnet') && !chainId.includes('devnet') && type === 'deposit') {
                     // Bot API call to send lum via faucet
-                    await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
-                        address: toAddress,
-                    });
+                    try {
+                        await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
+                            address: toAddress,
+                        });
+                    } catch (e) {
+                        console.warn(e);
+                    }
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {
