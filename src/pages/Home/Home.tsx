@@ -3,7 +3,7 @@ import numeral from 'numeral';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie, PurpleBackgroundImage } from 'components';
+import { BestPrizeCard, BigWinnerCard, Card, Lottie, PurpleBackgroundImage } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
