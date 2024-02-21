@@ -559,7 +559,7 @@ export default {
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
         depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
         swapHint: {
-            content: "Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first",
+            content: "Don't have {{ denom }} on {{ chainName }}, but on other chains ? Swap your {{ denom }} to {{ chainName }} first",
             cta: 'Swap',
         },
         swapModal: {
