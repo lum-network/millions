@@ -28,66 +28,9 @@ export const getProviderFunctions = (provider: WalletProvider) => {
         return null;
     }
 
-    return {
-        enable: (chainId: string) => {
-            if (provider === WalletProvider.Cosmostation) {
-                return null;
-            }
-
-            const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
-
-            if (!keplrProvider) {
-                throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
-            }
-
-            return keplrProvider.enable(chainId);
-        },
-        getOfflineSigner: (chainId: string) => {
-            if (provider === WalletProvider.Cosmostation) {
-                if (isCosmostationInstalled() && window.cosmostation?.providers?.keplr) {
-                    return window.cosmostation.providers.keplr.getOfflineSigner(chainId);
-                } else {
-                    throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
-                }
-            }
-
-            const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
-
-            if (!keplrProvider) {
-                throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
-            }
-
-            return keplrProvider.getOfflineSigner(chainId);
-        },
-        getKey: async (chainId: string): Promise<Key> => {
-            if (provider === WalletProvider.Cosmostation) {
-                if (!isCosmostationInstalled()) {
-                    return {
-                        address: new Uint8Array(),
-                        pubKey: new Uint8Array(),
-                        name: '',
-                        algo: '',
-                        isNanoLedger: false,
-                        isKeystone: false,
-                        bech32Address: '',
-                    };
-                }
-                const account = await requestCosmostationAccount(chainId);
-
-                return {
-                    address: fromBech32(account.address).data,
-                    bech32Address: account.address,
-                    name: account.name,
-                    algo: 'secp256k1',
-                    isNanoLedger: account.isLedger,
-                    pubKey: account.publicKey,
-                    isKeystone: false,
-                };
-            }
-
-            const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
-
-            if (!keplrProvider) {
+    const getKey = async (chainId: string): Promise<Key> => {
+        if (provider === WalletProvider.Cosmostation) {
+            if (!isCosmostationInstalled()) {
                 return {
                     address: new Uint8Array(),
                     pubKey: new Uint8Array(),
@@ -98,9 +41,84 @@ export const getProviderFunctions = (provider: WalletProvider) => {
                     bech32Address: '',
                 };
             }
+            const account = await requestCosmostationAccount(chainId);
 
-            return await keplrProvider.getKey(chainId);
-        },
+            return {
+                address: fromBech32(account.address).data,
+                bech32Address: account.address,
+                name: account.name,
+                algo: 'secp256k1',
+                isNanoLedger: account.isLedger,
+                pubKey: account.publicKey,
+                isKeystone: false,
+            };
+        }
+
+        const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+        if (!keplrProvider) {
+            return {
+                address: new Uint8Array(),
+                pubKey: new Uint8Array(),
+                name: '',
+                algo: '',
+                isNanoLedger: false,
+                isKeystone: false,
+                bech32Address: '',
+            };
+        }
+
+        return await keplrProvider.getKey(chainId);
+    };
+
+    const getOfflineSigner = async (chainId: string) => {
+        if (provider === WalletProvider.Cosmostation) {
+            if (isCosmostationInstalled() && window.cosmostation?.providers?.keplr) {
+                const { isNanoLedger } = await getKey(chainId);
+
+                if (isNanoLedger) {
+                    return window.cosmostation.providers.keplr.getOfflineSignerOnlyAmino(chainId);
+                }
+
+                return window.cosmostation.providers.keplr.getOfflineSigner(chainId);
+            } else {
+                throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+            }
+        }
+
+        const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+        if (!keplrProvider) {
+            throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+        }
+
+        const { isNanoLedger } = await getKey(chainId);
+
+        if (isNanoLedger) {
+            return keplrProvider.getOfflineSignerOnlyAmino(chainId);
+        }
+
+        return keplrProvider.getOfflineSigner(chainId);
+    };
+
+    const enable = (chainId: string) => {
+        if (provider === WalletProvider.Cosmostation) {
+            return null;
+        }
+
+        const keplrProvider = provider === WalletProvider.Keplr ? window.keplr : window.leap;
+
+        if (!keplrProvider) {
+            throw new Error(I18n.t('errors.walletProvider.notInstalled', { provider }));
+        }
+
+        return keplrProvider.enable(chainId);
+    };
+
+    return {
+        enable,
+        getOfflineSigner,
+        getKey,
     };
 };
 

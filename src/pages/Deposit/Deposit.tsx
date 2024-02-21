@@ -85,7 +85,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
     const wcConfig: WalletClientContext = {
         userAddress: lumWallet?.address,
-        connectWallet: () => {
+        connectWallet: async () => {
             const modal = BootstrapModal.getOrCreateInstance(WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal');
 
             if (modal && leapSwapModalRef.current) {
@@ -127,13 +127,13 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
                 return await providerFunctions.getKey(chainId);
             },
-            getOfflineSigner: (chainId) => {
+            getOfflineSigner: async (chainId) => {
                 const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return providerFunctions!.getOfflineSigner(chainId);
+                return await providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
@@ -1013,10 +1013,10 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                                 [Tabs.TRANSFER]: {
                                                     enabled: false,
                                                 },
-                                                [Tabs.SQUID]: {
+                                                [Tabs.KADO]: {
                                                     enabled: false,
                                                 },
-                                                [Tabs.KADO]: {
+                                                [Tabs.SQUID]: {
                                                     enabled: false,
                                                 },
                                             },

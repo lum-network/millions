@@ -176,13 +176,14 @@ export const pools = createModel<RootModel>()({
 
                     pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
 
+                    const feesStakers = pool.feeTakers.reduce((acc, taker) => acc + Number(taker.amount), 0);
+
                     // Calculate APY
-                    const [bonding, supply, communityTaxRate, inflation, feesStakers] = await Promise.all([
+                    const [bonding, supply, communityTaxRate, inflation] = await Promise.all([
                         client.getBonding(),
                         client.getSupply(pool.nativeDenom),
                         client.getCommunityTaxRate(),
                         client.getInflation(),
-                        LumClient.getFeesStakers(),
                     ]);
 
                     const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
