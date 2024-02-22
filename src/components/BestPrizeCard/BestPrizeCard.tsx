@@ -75,7 +75,7 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
                     const index = sortedPoolsByDate.findIndex((pool) => pool.poolId === currentPool.poolId);
                     setCurrentPool(sortedPoolsByDate[(index + 1) % sortedPoolsByDate.length]);
                 }
-            }, 10000);
+            }, 5000);
 
             return () => clearInterval(interval);
         }
@@ -114,7 +114,7 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
                         className={`me-4 d-flex flex-column align-items-center select-pool-button ${pool.poolId === currentPool?.poolId && 'active'}`}
                     >
                         <img src={pool ? DenomsUtils.getIconFromDenom(pool.nativeDenom) : '-'} alt='denom' height={64} width={64} className='no-filter mb-1' />
-                        {pool.nextDrawAt ? <CountDown to={pool.nextDrawAt} simple /> : null}
+                        <div className='text-countdown'>{pool.nextDrawAt ? <CountDown to={pool.nextDrawAt} simple /> : null}</div>
                     </div>
                 ))}
             </Card>

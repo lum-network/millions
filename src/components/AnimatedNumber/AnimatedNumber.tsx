@@ -13,11 +13,11 @@ const Counter = ({ number, duration = 1500, delay = 500 }: IProps) => {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        const timeout = setTimeout(() => {
             setCount(number);
         }, delay);
 
-        return () => clearInterval(interval);
+        return () => clearTimeout(timeout);
     }, [number]);
 
     const countSpring = useSpring({

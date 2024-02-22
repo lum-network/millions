@@ -15,6 +15,10 @@
     }
 }
 
+.text-countdown {
+    color: var(--color-black);
+}
+
 .best-prize-card {
     overflow: hidden;
     height: 580px;
@@ -59,18 +63,16 @@
     .huahua {
         position: absolute;
         bottom: -90px;
-        height: 510px;
-        width: 455px;
-        transform: translateX(-50px);
+        height: 500px;
+        transform: translateX(-70px);
 
         @include media-breakpoint-down(xxl) {
             bottom: -120px;
         }
 
-        @include media-breakpoint-down(md) {
+        @include media-breakpoint-down(lg) {
             bottom: -50px;
             height: 255px;
-            width: 228px;
         }
 
         @include media-breakpoint-down(sm) {
