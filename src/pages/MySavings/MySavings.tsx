@@ -62,7 +62,7 @@ const MySavings = () => {
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
     const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
-    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>(undefined);
     const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -82,9 +82,7 @@ const MySavings = () => {
             if (leaderboardPool && lumWallet) {
                 const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardPool.poolId);
 
-                if (userRankItems) {
-                    setUserRankItems([...userRankItems]);
-                }
+                setUserRankItems(userRankItems && userRankItems.length > 0 ? [...userRankItems] : undefined);
             }
         };
 
