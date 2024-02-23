@@ -49,9 +49,8 @@
 
         .pool-illustration {
             position: absolute;
-            right: 3rem;
+            right: -15px;
             bottom: 0;
-            width: 232px;
             height: 235px;
         }
 
@@ -242,7 +241,7 @@
                 background-color: transparent !important;
                 color: color-mix(in srgb, var(--color-primary) 30%, transparent) !important;
             }
-            
+
             .page-item.disabled .page-link {
                 color: color-mix(in srgb, var(--color-primary) 30%, transparent) !important;
             }

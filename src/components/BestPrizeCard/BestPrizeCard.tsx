@@ -96,6 +96,8 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
                 );
             case 'huahua':
                 return <img alt='huahua' src={Assets.chains.huahuaIllustration} className='huahua no-filter' />;
+            case 'osmo':
+                return <img alt='osmo' src={Assets.chains.osmoIllustration} className='osmo no-filter' />;
             default:
                 return null;
         }

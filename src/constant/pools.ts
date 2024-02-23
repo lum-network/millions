@@ -17,7 +17,7 @@ export const POOLS: {
         illustration: Assets.chains.atomIllustration,
     },
     huahua: {
-        rpc: process.env.REACT_APP_RPC_HUAHUA || 'https://chihuahua-rpc.publicnode.com:443',
+        rpc: process.env.REACT_APP_RPC_HUAHUA ?? 'https://chihuahua-rpc.publicnode.com:443',
         chainName: 'Chihuahua',
         ibcSourceChannel: 'channel-81',
         ibcTestnetSourceChannel: 'channel-0',
@@ -27,6 +27,17 @@ export const POOLS: {
         fees: 1250,
         illustration: Assets.chains.huahuaIllustration,
     },
+    osmo: {
+        rpc: process.env.REACT_APP_RPC_OSMO ?? 'https://private-rpc-cm-osmosis.imperator.co',
+        chainName: 'Osmosis',
+        ibcSourceChannel: 'channel-115',
+        ibcTestnetSourceChannel: 'channel-0',
+        ibcDenom: 'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23',
+        ibcTestnetDenom: 'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23',
+        unbondingTime: 14,
+        fees: 0.025,
+        illustration: Assets.chains.osmoIllustration,
+    },
 };
 
-export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'chihuahua-1'];
+export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'chihuahua-1', 'osmosis-1'];

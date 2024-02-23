@@ -52,9 +52,6 @@ import warning from './images/warning.svg';
 import yellowStar from './images/yellow_star.svg';
 
 import atom from './images/chains/atom.svg';
-import cre from './images/chains/cre.svg';
-import cro from './images/chains/cro.svg';
-import evmos from './images/chains/evmos.svg';
 import lum from './images/chains/lum.svg';
 import osmo from './images/chains/osmo.svg';
 import huahua from './images/chains/huahua.svg';
@@ -132,9 +129,6 @@ const Assets = {
     chains: {
         atom,
         atomIllustration,
-        cre,
-        cro,
-        evmos,
         lum,
         osmo,
         osmoIllustration,
