@@ -153,6 +153,7 @@
             position: absolute;
             bottom: 50px;
             padding: 0 56px;
+            z-index: 2;
 
             @include media-breakpoint-down(md) {
                 padding-bottom: 70px;
