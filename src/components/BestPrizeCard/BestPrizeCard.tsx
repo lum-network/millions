@@ -23,7 +23,9 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
     const pools = useSelector((state: RootState) => state.pools.pools);
 
     const sortedPoolsByDate = useMemo(() => {
-        return pools.sort((a, b) => (a.nextDrawAt?.getTime() ?? 1) - (b.nextDrawAt?.getTime() ?? 2));
+        const tmpPools = pools.slice(0);
+
+        return tmpPools.sort((a, b) => (a.nextDrawAt?.getTime() ?? 1) - (b.nextDrawAt?.getTime() ?? 2));
     }, [pools]);
 
     const { width } = useWindowSize();

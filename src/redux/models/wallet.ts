@@ -359,7 +359,7 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async reloadWalletInfos({ address, force = true, init = false, drops = false }: { address: string; force?: boolean; init?: boolean; drops?: boolean }, state) {
-            if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 3) {
+            if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 30) {
                 return;
             }
 
