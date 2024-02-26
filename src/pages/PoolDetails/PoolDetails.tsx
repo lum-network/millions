@@ -47,7 +47,7 @@ const PoolDetails = () => {
     const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
-    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>();
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -61,9 +61,7 @@ const PoolDetails = () => {
             if (pool && lumWallet) {
                 const userRankItems = await dispatch.wallet.getLeaderboardRank(pool.poolId);
 
-                if (userRankItems) {
-                    setUserRankItems([...userRankItems]);
-                }
+                setUserRankItems(userRankItems && userRankItems.length > 0 ? [...userRankItems] : undefined);
             } else {
                 setUserRankItems(undefined);
             }
