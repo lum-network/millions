@@ -13,7 +13,6 @@ import { RootModel } from '.';
 
 interface PoolsState {
     pools: PoolModel[];
-    bestPoolPrize: PoolModel | null;
     depositDelta: bigint | null;
     mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
@@ -23,7 +22,6 @@ export const pools = createModel<RootModel>()({
     name: 'pools',
     state: {
         pools: [],
-        bestPoolPrize: null,
         depositDelta: null,
         mutexFetchPools: false,
         mutexAdditionalInfos: false,
@@ -33,12 +31,6 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 pools,
-            };
-        },
-        setBestPoolPrize: (state: PoolsState, bestPoolPrize: PoolModel | null): PoolsState => {
-            return {
-                ...state,
-                bestPoolPrize,
             };
         },
         setDepositDelta: (state: PoolsState, depositDelta: bigint) => {
@@ -209,7 +201,6 @@ export const pools = createModel<RootModel>()({
                 }
 
                 dispatch.pools.setPools(pools);
-                await dispatch.pools.getNextBestPrize(null);
             } catch (e) {
                 dispatch.pools.setMutexAdditionalInfos(false);
 
@@ -240,29 +231,6 @@ export const pools = createModel<RootModel>()({
 
                     return draws;
                 }
-            } catch {}
-        },
-        async getNextBestPrize(_, state) {
-            try {
-                const pools = state.pools.pools;
-
-                if (!pools || pools.length === 0) {
-                    return;
-                }
-
-                const prices = state.stats.prices;
-
-                const sortedPools = pools.sort(
-                    (a, b) =>
-                        (b.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(b.estimatedPrizeToWin?.denom || 'uatom')] -
-                        (a.estimatedPrizeToWin?.amount || 0) * prices[DenomsUtils.getNormalDenom(a.estimatedPrizeToWin?.denom || 'uatom')],
-                );
-
-                if (sortedPools.length === 0) {
-                    return;
-                }
-
-                dispatch.pools.setBestPoolPrize(sortedPools[0]);
             } catch {}
         },
         async getDepositDelta() {
