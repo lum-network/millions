@@ -589,7 +589,7 @@ export default {
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
         newRanking: 'You new ranking will be displayed in a few minutes',
-        noDepositYet: 'No deposits yet',
+        noDepositYet: 'No deposit yet',
     },
     depositDrops: {
         myDeposits: {
