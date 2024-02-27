@@ -5,3 +5,5 @@ export enum WalletProvider {
 }
 
 export const AUTOCONNECT_STORAGE_KEY = 'autoconnect_storage_key';
+
+export const GAS_MULTIPLIER = 2;

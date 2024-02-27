@@ -10,6 +10,7 @@ import { EncodeObject, OfflineSigner } from '@cosmjs/proto-signing';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 
 import { LumApi } from 'api';
+import { GAS_MULTIPLIER } from 'constant';
 import { AggregatedDepositModel, DepositModel, LumWalletModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils } from 'utils';
 
@@ -365,7 +366,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -390,7 +391,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -430,7 +431,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -455,7 +456,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -480,7 +481,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -509,7 +510,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -583,7 +584,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -614,7 +615,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
