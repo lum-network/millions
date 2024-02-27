@@ -6,16 +6,16 @@ import { gsap } from 'gsap';
 import { Button, Card, Loading, SmallerDecimal } from 'components';
 import { Breakpoints, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
-import { LeaderboardItemModel, LumWalletModel } from 'models';
+import { LeaderboardItemModel, LumWalletModel, PoolModel } from 'models';
 import { DenomsUtils, I18n, WalletProvidersUtils, NumbersUtils, StringsUtils } from 'utils';
 import numeral from 'numeral';
 
 import './Leaderboard.scss';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
-    items: LeaderboardItemModel[];
+    pool: PoolModel;
     price: number | undefined;
-    poolId: string;
     hasMore?: boolean;
     lumWallet?: LumWalletModel | null;
     totalDeposited?: number | null;
@@ -32,10 +32,11 @@ interface Props {
 }
 
 const Leaderboard = (props: Props) => {
-    const { items, className, limit, lumWallet, price, poolId, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
+    const { className, limit, lumWallet, price, pool, totalDeposited, flat, userRank, hasMore, enableAnimation, withSeeMoreBtn, onBottomReached } = props;
 
     const { width: windowWidth } = useWindowSize();
     const { isDark } = useColorScheme();
+    const { t } = useTranslation();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const tl = useRef<gsap.core.Timeline>();
@@ -122,7 +123,7 @@ const Leaderboard = (props: Props) => {
 
             return () => ctx.revert();
         }
-    }, [userRank, items]);
+    }, [userRank, pool]);
 
     const LeaderboardContainer = ({ children, containerClassName }: { children: React.ReactNode; containerClassName: string }) => {
         if (isMobile || windowWidth < Breakpoints.MD) {
@@ -168,7 +169,7 @@ const Leaderboard = (props: Props) => {
                 {!(lumWallet && item.address === lumWallet.address) && userRank && userRank.rank > item.rank && totalUserDeposits ? (
                     <Button
                         className='deposit-more-btn'
-                        to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${poolId}`}
+                        to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${pool.poolId.toString()}`}
                         locationState={{
                             amountToDeposit: Math.ceil(amount - totalUserDeposits),
                         }}
@@ -186,82 +187,96 @@ const Leaderboard = (props: Props) => {
         );
     };
 
-    return (
-        <LeaderboardContainer containerClassName={`leaderboard ${enableAnimation && 'position-relative with-anim'} ${className}`}>
-            {!enableAnimation && windowWidth < Breakpoints.MD && userRank && (
-                <div className={`user-rank leaderboard-rank me d-flex flex-row justify-content-between align-items-center`}>
-                    <div className='d-flex flex-row align-items-center'>
-                        <div className='me-3 rank'>#{userRank.rank}</div>
-                        <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
-                    </div>
-                    <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
-                        <div className='crypto-amount me-3'>
-                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), 3)} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
-                        </div>
-                        {price && (
-                            <div className='usd-amount'>
-                                $<SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
-                            </div>
-                        )}
-                    </div>
+    const renderLeaderboardContent = () => {
+        if (pool.leaderboard.items.length === 0) {
+            return (
+                <div className='d-flex flex-column align-items-center justify-content-center'>
+                    <h3 className='mb-4'>{t('leaderboard.noDepositYet')}</h3>
+                    <Button to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(pool.nativeDenom)}/${pool.poolId.toString()}`} forcePurple>
+                        {I18n.t('mySavings.deposit')}
+                    </Button>
                 </div>
-            )}
-            {onBottomReached ? (
-                <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />} className='position-relative'>
-                    {enableAnimation && userRank ? (
-                        <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
-                            <div className='d-flex flex-row align-items-center'>
-                                <div className='me-3 rank'>#{userRank.rank}</div>
-                                <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
-                            </div>
-                            <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
-                                <div className='crypto-amount me-3'>
-                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), windowWidth < Breakpoints.MD ? 3 : 6)} />{' '}
-                                    {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
-                                </div>
-                                {price ? (
-                                    <div className='usd-amount'>
-                                        $
-                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
-                                    </div>
-                                ) : null}
-                            </div>
+            );
+        }
+
+        return (
+            <>
+                {!enableAnimation && windowWidth < Breakpoints.MD && userRank && (
+                    <div className={`user-rank leaderboard-rank me d-flex flex-row justify-content-between align-items-center`}>
+                        <div className='d-flex flex-row align-items-center'>
+                            <div className='me-3 rank'>#{userRank.rank}</div>
+                            <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
                         </div>
-                    ) : null}
-                    {(limit ? items.slice(0, limit) : items).map(renderRow)}
-                </InfiniteScroll>
-            ) : (
-                (limit ? items.slice(0, limit) : items).map(renderRow)
-            )}
-            {!enableAnimation && windowWidth > Breakpoints.MD && userRank && (
-                <>
-                    <hr />
-                    {userRankList.map(renderRow)}
-                </>
-            )}
-            {withSeeMoreBtn && (
-                <Button
-                    className='mx-sm-auto my-4'
-                    style={{
-                        width: windowWidth < Breakpoints.MD ? '100%' : 'fit-content',
-                    }}
-                    {...(!lumWallet
-                        ? {
-                              'data-bs-toggle': 'modal',
-                              'data-bs-target': WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal',
-                          }
-                        : {
-                              to: NavigationConstants.MY_SAVINGS,
-                              locationState: {
-                                  leaderboardPoolId: poolId,
-                              },
-                          })}
-                >
-                    {I18n.t(lumWallet ? 'leaderboard.cta' : 'leaderboard.notConnectedCta')}
-                </Button>
-            )}
-        </LeaderboardContainer>
-    );
+                        <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                            <div className='crypto-amount me-3'>
+                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), 3)} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
+                            </div>
+                            {price && (
+                                <div className='usd-amount'>
+                                    $<SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                {onBottomReached ? (
+                    <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />} className='position-relative'>
+                        {enableAnimation && userRank ? (
+                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                                <div className='d-flex flex-row align-items-center'>
+                                    <div className='me-3 rank'>#{userRank.rank}</div>
+                                    <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
+                                </div>
+                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                    <div className='crypto-amount me-3'>
+                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), windowWidth < Breakpoints.MD ? 3 : 6)} />{' '}
+                                        {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
+                                    </div>
+                                    {price ? (
+                                        <div className='usd-amount'>
+                                            $
+                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+                        ) : null}
+                        {(limit ? pool.leaderboard.items.slice(0, limit) : pool.leaderboard.items).map(renderRow)}
+                    </InfiniteScroll>
+                ) : (
+                    (limit ? pool.leaderboard.items.slice(0, limit) : pool.leaderboard.items).map(renderRow)
+                )}
+                {!enableAnimation && windowWidth > Breakpoints.MD && userRank && (
+                    <>
+                        <hr />
+                        {userRankList.map(renderRow)}
+                    </>
+                )}
+                {withSeeMoreBtn && (
+                    <Button
+                        className='mx-sm-auto my-4'
+                        style={{
+                            width: windowWidth < Breakpoints.MD ? '100%' : 'fit-content',
+                        }}
+                        {...(!lumWallet
+                            ? {
+                                  'data-bs-toggle': 'modal',
+                                  'data-bs-target': WalletProvidersUtils.isAnyWalletInstalled() ? '#choose-wallet-modal' : '#get-keplr-modal',
+                              }
+                            : {
+                                  to: NavigationConstants.MY_SAVINGS,
+                                  locationState: {
+                                      leaderboardPoolId: pool.poolId.toString(),
+                                  },
+                              })}
+                    >
+                        {I18n.t(lumWallet ? 'leaderboard.cta' : 'leaderboard.notConnectedCta')}
+                    </Button>
+                )}
+            </>
+        );
+    };
+    return <LeaderboardContainer containerClassName={`leaderboard ${enableAnimation && 'position-relative with-anim'} ${className}`}>{renderLeaderboardContent()}</LeaderboardContainer>;
 };
 
 export default Leaderboard;
