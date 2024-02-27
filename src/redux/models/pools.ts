@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import { MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
 
-import { LumApi } from 'api';
+import { ImperatorApi, LumApi } from 'api';
 
 import { RootModel } from '.';
 
@@ -171,18 +171,28 @@ export const pools = createModel<RootModel>()({
                     const feesStakers = pool.feeTakers.reduce((acc, taker) => acc + Number(taker.amount), 0);
 
                     // Calculate APY
-                    const [bonding, supply, communityTaxRate, inflation] = await Promise.all([
-                        client.getBonding(),
-                        client.getSupply(pool.nativeDenom),
-                        client.getCommunityTaxRate(),
-                        client.getInflation(),
-                    ]);
+                    let nativeApy = 0;
 
-                    const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
+                    if (DenomsUtils.getNormalDenom(pool.nativeDenom) === 'osmo') {
+                        const [osmoApy] = await ImperatorApi.getOsmoApy();
+
+                        nativeApy = osmoApy / 100;
+                    } else {
+                        const [bonding, supply, communityTaxRate, inflation] = await Promise.all([
+                            client.getBonding(),
+                            client.getSupply(pool.nativeDenom),
+                            client.getCommunityTaxRate(),
+                            client.getInflation(),
+                        ]);
+
+                        const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
+
+                        nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
+                    }
+
                     const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
 
-                    const nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
                     const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
 
                     pool.apy = variableApy * 100;
