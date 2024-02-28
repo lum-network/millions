@@ -162,6 +162,7 @@ class LumClient {
         }
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
+        const aggregatedDepositDropsSent = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits);
 
         let withdrawalsNextPageKey = new Uint8Array();
         const withdrawals: Withdrawal[] = [];
@@ -229,7 +230,7 @@ class LumClient {
 
         const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits, true);
 
-        return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedWithdrawals];
+        return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedDepositDropsSent, ...aggregatedWithdrawals];
     };
 
     getWalletBalances = async (address: string) => {
@@ -530,20 +531,26 @@ class LumClient {
             return null;
         }
 
-        let pageDeposits: Uint8Array | undefined = undefined;
+        let nextPageKey = new Uint8Array();
         const deposits: DepositModel[] = [];
 
         while (true) {
             const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
                 depositorAddress,
-                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
+                pagination: PageRequest.fromPartial({
+                    key: nextPageKey,
+                    limit: BigInt(0),
+                    offset: BigInt(0),
+                    reverse: false,
+                    countTotal: false,
+                }),
             });
 
             deposits.push(...resDeposits.deposits);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
-                pageDeposits = resDeposits.pagination.nextKey;
+                nextPageKey = resDeposits.pagination.nextKey;
             } else {
                 break;
             }
