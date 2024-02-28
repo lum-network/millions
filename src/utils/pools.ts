@@ -124,13 +124,18 @@ export const getPoolByPoolId = (pools: PoolModel[], poolId: string) => {
 };
 
 // DROPS
-export const reduceDepositDropsByPoolIdAndDays = async (deposits: Partial<DepositModel>[]) => {
+export const reduceDepositDropsByPoolIdAndDays = async (deposits: Partial<DepositModel>[], options: { reduceBy: 'poolId' | 'date' } = { reduceBy: 'date' }) => {
     const aggregatedDeposits: AggregatedDepositModel[] = [];
 
     for (const deposit of deposits) {
         const poolId = deposit.poolId;
+        const reduceByDate = options.reduceBy === 'date';
 
-        if (poolId === undefined || deposit.createdAt === undefined) {
+        if (poolId === undefined) {
+            continue;
+        }
+
+        if (reduceByDate && deposit.createdAt === undefined) {
             continue;
         }
 
@@ -140,7 +145,13 @@ export const reduceDepositDropsByPoolIdAndDays = async (deposits: Partial<Deposi
             continue;
         }
 
-        const existingDeposit = aggregatedDeposits.find((d) => d.poolId?.toString() === poolId.toString() && dayjs(d.createdAt).format('YYYY-MM-DD') === createdAt);
+        const existingDeposit = aggregatedDeposits.find((d) => {
+            if (reduceByDate) {
+                return d.poolId?.toString() === poolId.toString() && dayjs(d.createdAt).format('YYYY-MM-DD') === createdAt;
+            } else {
+                return d.poolId?.toString() === poolId.toString();
+            }
+        });
 
         if (
             existingDeposit &&

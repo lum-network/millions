@@ -162,7 +162,7 @@ class LumClient {
         }
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
-        const aggregatedDepositDropsSent = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits);
+        const aggregatedDepositDropsSent = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits, { reduceBy: 'poolId' });
 
         let withdrawalsNextPageKey = new Uint8Array();
         const withdrawals: Withdrawal[] = [];
