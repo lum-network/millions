@@ -95,7 +95,7 @@ const PoolDetails = () => {
     const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
 
     const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? Number(deposit.poolId) === Number(poolId) : deposit.amount?.denom === 'u' + denom));
-    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * prices[denom] || 0;
+    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * (prices[denom] ?? 0);
 
     return (
         <div className='pool-details-container mt-5'>
@@ -416,7 +416,7 @@ const PoolDetails = () => {
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
+                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesAmount).format('$0,0')}</div>
                                     </div>
                                     <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
@@ -425,13 +425,8 @@ const PoolDetails = () => {
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
-                                            $
-                                            {numeral(
-                                                NumbersUtils.convertUnitNumber(
-                                                    biggestPrizes && biggestPrizes.length && biggestPrizes[0].usdTokenValue ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0,
-                                                ),
-                                            )
-                                                .format('0,0')
+                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount) * (prices[denom] ?? 0))
+                                                .format('$0,0.00')
                                                 .toUpperCase()}
                                         </div>
                                     </div>

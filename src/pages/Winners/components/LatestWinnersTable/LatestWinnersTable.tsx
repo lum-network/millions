@@ -1,12 +1,15 @@
 import React from 'react';
+
 import dayjs from 'dayjs';
 import numeral from 'numeral';
+import { useSelector } from 'react-redux';
 
 import { Pagination, SmallerDecimal, Table } from 'components';
 import { Breakpoints } from 'constant';
 import { useWindowSize } from 'hooks';
 import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 import { MetadataModel, PrizeModel } from 'models';
+import { RootState } from 'redux/store';
 
 import './LatestWinnersTable.scss';
 
@@ -20,6 +23,8 @@ interface IProps {
 
 const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onItemChange }: IProps) => {
     const winSizes = useWindowSize();
+
+    const prices = useSelector((state: RootState) => state.stats.prices);
 
     const headers = I18n.t('luckiestWinners.winnersHeaders', { returnObjects: true });
 
@@ -43,7 +48,9 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                             <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                             <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                         </div>
-                        <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
+                        <small className='usd-price'>
+                            {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
+                        </small>
                     </div>
                 </td>
             </tr>
@@ -89,7 +96,9 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                                 <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
                                 <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                             </div>
-                            <small className='usd-price'>${numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prize.usdTokenValue || 0)).format('0,0.00')}</small>
+                            <small className='usd-price'>
+                                {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
+                            </small>
                         </div>
                     </div>
                 </div>

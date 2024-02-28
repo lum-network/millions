@@ -7,8 +7,8 @@ class PrizeStatsModel {
     @Expose({ name: 'total_pool_prizes' })
     totalPoolPrizes!: number;
 
-    @Expose({ name: 'total_prizes_usd_amount' })
-    totalPrizesUsdAmount!: number;
+    @Expose({ name: 'total_prizes_amount' })
+    totalPrizesAmount!: number;
 }
 
 export default PrizeStatsModel;

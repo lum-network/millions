@@ -37,13 +37,7 @@ export const app = createModel<RootModel>()({
             await LumClient.connect();
 
             try {
-                await Promise.allSettled([
-                    dispatch.stats.fetchStats(),
-                    dispatch.pools.fetchPools(null),
-                    dispatch.pools.getDepositDelta(),
-                    dispatch.prizes.fetchBiggestPrizes(),
-                    dispatch.prizes.fetchBiggestAprPrizes(),
-                ]);
+                await Promise.allSettled([dispatch.stats.fetchStats(), dispatch.pools.fetchPools(null), dispatch.pools.getDepositDelta(), dispatch.prizes.fetchBiggestAprPrizes()]);
             } catch (e) {
                 console.error(e);
                 dispatch.app.SET_INIT_MUTEX(false);
