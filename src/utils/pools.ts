@@ -123,6 +123,35 @@ export const getPoolByPoolId = (pools: PoolModel[], poolId: string) => {
     return pools.find((p) => p.poolId.toString() === poolId);
 };
 
+export const sortDepositsByState = async (deposits: AggregatedDepositModel[]) => {
+    const pendingDeposits: AggregatedDepositModel[] = [];
+    const successDeposits: AggregatedDepositModel[] = [];
+    const failedDeposits: AggregatedDepositModel[] = [];
+
+    for (const deposit of deposits) {
+        if (deposit.isWithdrawing) {
+            if (deposit.withdrawalState === WithdrawalState.WITHDRAWAL_STATE_FAILURE) {
+                failedDeposits.push(deposit);
+            } else {
+                pendingDeposits.push(deposit);
+            }
+        } else {
+            if (deposit.state === DepositState.DEPOSIT_STATE_SUCCESS) {
+                successDeposits.push(deposit);
+            } else if (
+                deposit.state === DepositState.DEPOSIT_STATE_FAILURE ||
+                (deposit.state === DepositState.DEPOSIT_STATE_IBC_TRANSFER && deposit.updatedAt && dayjs().diff(dayjs(deposit.updatedAt), 'hours') > 1)
+            ) {
+                failedDeposits.push(deposit);
+            } else {
+                pendingDeposits.push(deposit);
+            }
+        }
+    }
+
+    return [...failedDeposits, ...successDeposits, ...pendingDeposits];
+};
+
 // DROPS
 export const reduceDepositDropsByPoolIdAndDays = async (deposits: Partial<DepositModel>[], options: { reduceBy: 'poolId' | 'date' } = { reduceBy: 'date' }) => {
     const aggregatedDeposits: AggregatedDepositModel[] = [];

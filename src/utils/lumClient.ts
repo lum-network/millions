@@ -230,7 +230,7 @@ class LumClient {
 
         const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits, true);
 
-        return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedDepositDropsSent, ...aggregatedWithdrawals];
+        return PoolsUtils.sortDepositsByState([...aggregatedDeposits, ...aggregatedDepositDropsSent, ...aggregatedDepositsDrops, ...aggregatedWithdrawals]);
     };
 
     getWalletBalances = async (address: string) => {
