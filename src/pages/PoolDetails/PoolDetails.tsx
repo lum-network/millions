@@ -416,7 +416,7 @@ const PoolDetails = () => {
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesAmount).format('$0,0')}</div>
+                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesAmount * (prices[denom] ?? 0)).format('$0,0')}</div>
                                     </div>
                                     <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
