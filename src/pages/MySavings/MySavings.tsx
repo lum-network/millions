@@ -340,7 +340,7 @@ const MySavings = () => {
             {activeCampaign ? (
                 <Card flat withoutPadding className='d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.gift} width='45' className='no-filter' />
-                    <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.username })}</h3>
+                    <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.name })}</h3>
                     <p
                         className='mb-0'
                         dangerouslySetInnerHTML={{

@@ -965,13 +965,20 @@ export const wallet = createModel<RootModel>()({
         },
         async registerForCampaign(payload: RegisterForCampaignPayload, state): Promise<{ error: string | null }> {
             const { lumWallet } = state.wallet;
+            const activeCampaigns = [...state.pools.activeCampaigns];
 
             try {
                 if (!lumWallet) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
                 }
 
-                await LumApi.participateForCampaign(payload.campaignId, lumWallet.address, payload.password);
+                const [newCampaign] = await LumApi.participateForCampaign(payload.campaignId, lumWallet.address, payload.password);
+
+                const campaignIndex = activeCampaigns.findIndex((campaign) => campaign.id === payload.campaignId);
+
+                activeCampaigns[campaignIndex] = newCampaign;
+
+                dispatch.pools.setActiveCampaigns(activeCampaigns);
 
                 ToastUtils.showSuccessToast({ content: I18n.t('success.participatedInCampaign') });
                 return { error: null };

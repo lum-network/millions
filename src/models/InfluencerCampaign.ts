@@ -31,9 +31,6 @@ class InfluencerCampaign {
     poolId!: number;
 
     @Expose()
-    password!: string;
-
-    @Expose()
     @Type(() => InfluencerCampaignMember)
     members!: InfluencerCampaignMember[];
 }
