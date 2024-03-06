@@ -64,6 +64,10 @@
             .draw-in-progress {
                 font-size: 18px;
             }
+
+            @include media-breakpoint-down(sm) {
+                width: auto;
+            }
         }
 
         @include media-breakpoint-down(lg) {
@@ -139,6 +143,10 @@
         .prize-distribution-table {
             .table thead tr th {
                 color: var(--color-primary);
+
+                @include media-breakpoint-down(sm) {
+                    font-size: 11px;
+                }
             }
 
             .table tbody tr td {
@@ -151,25 +159,36 @@
                 padding: 1.5rem 1.5rem;
             }
 
-            .rank, .rank td {
+            .rank,
+            .rank td {
                 background-color: var(--color-primary) !important;
                 color: var(--color-white) !important;
             }
 
-            .rank.first, .rank.first td {
+            .rank.first,
+            .rank.first td {
                 background-color: #ffba20 !important;
             }
 
-            .rank.second, .rank.second td {
+            .rank.second,
+            .rank.second td {
                 background-color: #cdcdcd !important;
             }
 
-            .rank.third, .rank.third td {
+            .rank.third,
+            .rank.third td {
                 background-color: #c07a50 !important;
             }
 
             .percentage {
                 font-size: 12px;
+            }
+
+            @include media-breakpoint-down(sm) {
+                .prize-value,
+                .prize-count {
+                    font-size: 18px;
+                }
             }
         }
 

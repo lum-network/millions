@@ -456,8 +456,8 @@ const MySavings = () => {
                         ) : null}
                         {leaderboardPool ? (
                             <div ref={leaderboardSectionRef} className='leaderboard-section'>
-                                <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
-                                    <div className='d-flex align-items-center'>
+                                <div className='mt-5 mb-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between'>
+                                    <div className='d-flex align-items-center mb-3 mb-sm-0'>
                                         <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
                                         <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
                                             <img src={Assets.images.info} alt='info' />
