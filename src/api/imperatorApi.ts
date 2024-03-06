@@ -25,6 +25,15 @@ class ImperatorApi extends HttpClient {
             },
             TokenModel,
         );
+
+    getOsmoApy = async () =>
+        this.request<number>(
+            {
+                url: '/apr/v2/staking',
+                method: 'GET',
+            },
+            Number,
+        );
 }
 
 export default ImperatorApi.getInstance();

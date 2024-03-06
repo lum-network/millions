@@ -47,7 +47,7 @@ const PoolDetails = () => {
     const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
-    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>();
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
 
@@ -61,9 +61,7 @@ const PoolDetails = () => {
             if (pool && lumWallet) {
                 const userRankItems = await dispatch.wallet.getLeaderboardRank(pool.poolId);
 
-                if (userRankItems) {
-                    setUserRankItems([...userRankItems]);
-                }
+                setUserRankItems(userRankItems && userRankItems.length > 0 ? [...userRankItems] : undefined);
             } else {
                 setUserRankItems(undefined);
             }
@@ -97,7 +95,7 @@ const PoolDetails = () => {
     const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
 
     const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? Number(deposit.poolId) === Number(poolId) : deposit.amount?.denom === 'u' + denom));
-    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * prices[denom] || 0;
+    const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * (prices[denom] ?? 0);
 
     return (
         <div className='pool-details-container mt-5'>
@@ -375,8 +373,7 @@ const PoolDetails = () => {
                             </div>
                             <Leaderboard
                                 flat
-                                items={pool.leaderboard.items}
-                                poolId={pool.poolId.toString()}
+                                pool={pool}
                                 limit={5}
                                 withSeeMoreBtn
                                 lumWallet={lumWallet}
@@ -419,7 +416,7 @@ const PoolDetails = () => {
                                 <Card flat withoutPadding className='d-flex flex-column flex-lg-row justify-content-between align-items-lg-center p-4'>
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPrizes')}</small>
-                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesUsdAmount).format('$0,0')}</div>
+                                        <div className='stat-bg-white mb-0 mt-2'>{numeral(prizesStats.totalPrizesAmount * (prices[denom] ?? 0)).format('$0,0')}</div>
                                     </div>
                                     <div className='w-100 my-4 my-lg-0 mx-0 mx-lg-3'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.totalPoolPrizes')}</small>
@@ -428,13 +425,8 @@ const PoolDetails = () => {
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
-                                            $
-                                            {numeral(
-                                                NumbersUtils.convertUnitNumber(
-                                                    biggestPrizes && biggestPrizes.length && biggestPrizes[0].usdTokenValue ? biggestPrizes[0].amount.amount * biggestPrizes[0].usdTokenValue : 0,
-                                                ),
-                                            )
-                                                .format('0,0')
+                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount) * (prices[denom] ?? 0))
+                                                .format('$0,0.00')
                                                 .toUpperCase()}
                                         </div>
                                     </div>
@@ -458,7 +450,7 @@ const PoolDetails = () => {
                             {biggestPrizes.slice(0, 3).map((prize, index) => (
                                 <BigWinnerCard
                                     className={index > 0 ? 'ms-lg-3' : ''}
-                                    price={prize.usdTokenValue || prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 0}
+                                    price={prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0}
                                     key={index}
                                     denom={prize.amount.denom}
                                     address={prize.winnerAddress}
@@ -600,13 +592,11 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        <SmallerDecimal
-                                                            nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (draw.usdTokenValue || prices[denom] || 0)).format('$0,0[.]00')}
-                                                        />
+                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
+                                                        &nbsp;
+                                                        {denom.toUpperCase()}
                                                         <div className='draw-token'>
-                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
-                                                            &nbsp;
-                                                            {denom.toUpperCase()}
+                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] ?? 0)).format('$0,0[.]00')} />
                                                         </div>
                                                     </td>
                                                 </tr>

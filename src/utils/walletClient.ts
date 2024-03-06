@@ -5,7 +5,7 @@ import { Coin } from '@keplr-wallet/types';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { cosmos, fromAscii, getSigningIbcClient, ibc } from '@lum-network/sdk-javascript';
 
-import { ApiConstants } from 'constant';
+import { ApiConstants, GAS_MULTIPLIER } from 'constant';
 import { I18n, NumbersUtils } from 'utils';
 
 import { showErrorToast } from './toast';
@@ -149,7 +149,7 @@ class WalletClient {
         const gasEstimated = await this.walletClient.simulate(fromWallet, [msg], '');
         const fee = {
             amount: coins('25000', feesDenom),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const res = await this.walletClient.signAndBroadcast(fromWallet, [msg], fee);

@@ -1,6 +1,6 @@
 import { HttpClient } from 'utils';
 import { ApiConstants } from 'constant';
-import { DepositDropModel, LeaderboardItemModel, MarketDataModel, PrizeModel, PrizeStatsModel, BiggestAprPrizeModel, InfluencerCampaignModel } from 'models';
+import { DepositDropModel, LeaderboardItemModel, PrizeModel, PrizeStatsModel, BiggestAprPrizeModel, InfluencerCampaignModel } from 'models';
 
 class LumApi extends HttpClient {
     private static instance?: LumApi;
@@ -16,8 +16,6 @@ class LumApi extends HttpClient {
 
         return this.instance;
     }
-
-    fetchBiggestPrizes = async () => this.request<PrizeModel[]>({ url: '/millions/prizes/biggest?limit=4', method: 'GET' }, PrizeModel);
 
     fetchBiggestAprPrizes = async () => this.request<BiggestAprPrizeModel[]>({ url: '/millions/prizes/biggest-apr?limit=30', method: 'GET' }, BiggestAprPrizeModel);
 
@@ -36,8 +34,6 @@ class LumApi extends HttpClient {
 
     fetchLeaderboardUserRank = async (poolId: string, address: string) =>
         this.request<LeaderboardItemModel[]>({ url: `/millions/depositors/${poolId}/${address}`, method: 'GET' }, LeaderboardItemModel);
-
-    fetchMarketData = async (since: Date) => this.request<MarketDataModel[]>({ url: `/market/data/since?limit=1`, method: 'POST', data: { since } }, MarketDataModel);
 
     fetchCampaigns = async () => this.request<InfluencerCampaignModel[]>({ url: '/millions/campaigns', method: 'GET' }, InfluencerCampaignModel);
 

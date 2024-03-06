@@ -33,11 +33,12 @@ $utilities: map-merge(
 
 html body {
     font-family: 'Gotham Rounded', sans-serif;
+    background-color: var(--color-background);
 }
 
 .Toastify__toast-container {
     width: 485px;
-    
+
     @include media-breakpoint-down(sm) {
         width: 95%;
     }

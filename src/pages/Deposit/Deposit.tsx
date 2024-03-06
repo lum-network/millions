@@ -127,13 +127,13 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
                 return await providerFunctions.getKey(chainId);
             },
-            getOfflineSigner: (chainId) => {
+            getOfflineSigner: async (chainId) => {
                 const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return providerFunctions!.getOfflineSigner(chainId);
+                return await providerFunctions!.getOfflineSigner(chainId);
             },
         },
     };
@@ -987,7 +987,9 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                             {showSwapCard ? (
                                 <Card flat withoutPadding className='deposit-delta-card d-flex flex-column flex-sm-row align-items-center mt-5'>
                                     <PurpleBackgroundImage src={Assets.images.questionMark} alt='' className='no-filter rounded-circle' width={42} height={42} />
-                                    <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0'>{I18n.t('deposit.swapHint.content')}</div>
+                                    <div className='text-center text-sm-start ms-0 ms-sm-4 mt-3 mt-sm-0 me-0 me-sm-3 mb-3 mb-sm-0'>
+                                        {I18n.t('deposit.swapHint.content', { denom: denom?.toUpperCase(), chainName: pool.internalInfos?.chainName || 'Native Chain' })}
+                                    </div>
                                     <LiquidityModal
                                         renderLiquidityButton={({ onClick }) => <Button onClick={onClick}>{I18n.t('deposit.swapHint.cta')}</Button>}
                                         walletClientConfig={wcConfig}
@@ -1001,12 +1003,12 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                                     title: 'Swaps',
                                                     defaults: {
                                                         sourceChainId: 'osmosis-1',
-                                                        sourceAssetDenom: 'uatom',
+                                                        sourceAssetDenom: pool.nativeDenom,
                                                     },
                                                     allowedDestinationChains: [
                                                         {
-                                                            chainId: 'cosmoshub-4',
-                                                            assetDenoms: ['uatom'],
+                                                            chainId: pool.chainId,
+                                                            assetDenoms: [pool.nativeDenom],
                                                         },
                                                     ],
                                                 },

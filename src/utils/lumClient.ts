@@ -4,12 +4,13 @@ import { Withdrawal, WithdrawalState } from '@lum-network/sdk-javascript/build/c
 import { QueryWithdrawalsResponse, QueryDepositsResponse } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/query';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 import { Prize } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/prize';
-import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/helpers';
+import { PageRequest } from '@lum-network/sdk-javascript/build/codegen/cosmos/base/query/v1beta1/pagination';
 import { SigningStargateClient, assertIsDeliverTxSuccess, coins } from '@cosmjs/stargate';
-import { OfflineSigner } from '@cosmjs/proto-signing';
+import { EncodeObject, OfflineSigner } from '@cosmjs/proto-signing';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 
 import { LumApi } from 'api';
+import { GAS_MULTIPLIER } from 'constant';
 import { AggregatedDepositModel, DepositModel, LumWalletModel, PoolModel, PrizeModel } from 'models';
 import { PoolsUtils } from 'utils';
 
@@ -135,41 +136,54 @@ class LumClient {
             return null;
         }
 
-        let pageDeposits: Uint8Array | undefined = undefined;
+        let depositsNextPageKey = new Uint8Array();
         const deposits: DepositModel[] = [];
 
         while (true) {
             const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
                 depositorAddress: address,
-                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
+                pagination: PageRequest.fromPartial({
+                    key: depositsNextPageKey,
+                    limit: BigInt(0),
+                    offset: BigInt(0),
+                    reverse: false,
+                    countTotal: false,
+                }),
             });
 
             deposits.push(...resDeposits.deposits);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
-                pageDeposits = resDeposits.pagination.nextKey;
+                depositsNextPageKey = resDeposits.pagination.nextKey;
             } else {
                 break;
             }
         }
 
         const aggregatedDeposits = await PoolsUtils.reduceDepositsByPoolId(deposits);
+        const aggregatedDepositDropsSent = await PoolsUtils.reduceDepositDropsByPoolIdAndDays(deposits, { reduceBy: 'poolId' });
 
-        let pageWithdrawals: Uint8Array | undefined = undefined;
+        let withdrawalsNextPageKey = new Uint8Array();
         const withdrawals: Withdrawal[] = [];
 
         while (true) {
             const resWithdrawals: QueryWithdrawalsResponse = await this.lumQueryClient.lum.network.millions.accountWithdrawals({
                 depositorAddress: address,
-                pagination: pageWithdrawals ? ({ key: pageWithdrawals } as PageRequest) : undefined,
+                pagination: PageRequest.fromPartial({
+                    key: withdrawalsNextPageKey,
+                    limit: BigInt(0),
+                    offset: BigInt(0),
+                    reverse: false,
+                    countTotal: false,
+                }),
             });
 
             withdrawals.push(...resWithdrawals.withdrawals);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resWithdrawals.pagination && resWithdrawals.pagination.nextKey && resWithdrawals.pagination.nextKey.length) {
-                pageWithdrawals = resWithdrawals.pagination.nextKey;
+                withdrawalsNextPageKey = resWithdrawals.pagination.nextKey;
             } else {
                 break;
             }
@@ -216,7 +230,7 @@ class LumClient {
 
         const aggregatedDepositsDrops = await PoolsUtils.reduceDepositsByPoolId(depositsDropsToDeposits, true);
 
-        return [...aggregatedDeposits, ...aggregatedDepositsDrops, ...aggregatedWithdrawals];
+        return PoolsUtils.sortDepositsByState([...aggregatedDeposits, ...aggregatedDepositDropsSent, ...aggregatedDepositsDrops, ...aggregatedWithdrawals]);
     };
 
     getWalletBalances = async (address: string) => {
@@ -301,14 +315,6 @@ class LumClient {
         return this.ibcQueryClient.ibc.applications.transfer.v1.denomTrace({ hash: ibcDenom });
     };
 
-    getFeesStakers = async () => {
-        if (this.lumQueryClient === null) {
-            return null;
-        }
-
-        return Number((await this.lumQueryClient.lum.network.millions.params()).params?.feesStakers || '0');
-    };
-
     getMinDepositDelta = async () => {
         if (this.lumQueryClient === null) {
             return null;
@@ -329,7 +335,11 @@ class LumClient {
         }
 
         // Build transaction message
-        const message = deposit({
+
+        // FIXME: booleans (isSponsor here) create errors for ledger signing
+        // so we must create manually the message while we don't have a proper solution for that for the lum sdk
+
+        /* const message = deposit({
             poolId: pool.poolId,
             depositorAddress: wallet.address,
             winnerAddress: wallet.address,
@@ -338,12 +348,26 @@ class LumClient {
                 amount: convertUnit({ amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
                 denom: pool.denom,
             },
-        });
+        }); */
+
+        const message: EncodeObject = {
+            typeUrl: '/lum.network.millions.MsgDeposit',
+            value: {
+                poolId: pool.poolId,
+                depositorAddress: wallet.address,
+                winnerAddress: wallet.address,
+                amount: {
+                    amount: convertUnit({ amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
+                    denom: pool.denom,
+                },
+                //isSponsor: false,
+            },
+        };
 
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -368,7 +392,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -408,7 +432,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -433,7 +457,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -458,7 +482,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);
@@ -487,7 +511,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -507,20 +531,26 @@ class LumClient {
             return null;
         }
 
-        let pageDeposits: Uint8Array | undefined = undefined;
+        let nextPageKey = new Uint8Array();
         const deposits: DepositModel[] = [];
 
         while (true) {
             const resDeposits: QueryDepositsResponse = await this.lumQueryClient.lum.network.millions.accountDeposits({
                 depositorAddress,
-                pagination: pageDeposits ? ({ key: pageDeposits } as PageRequest) : undefined,
+                pagination: PageRequest.fromPartial({
+                    key: nextPageKey,
+                    limit: BigInt(0),
+                    offset: BigInt(0),
+                    reverse: false,
+                    countTotal: false,
+                }),
             });
 
             deposits.push(...resDeposits.deposits);
 
             // If we have pagination key, we just patch it, and it will process in the next loop
             if (resDeposits.pagination && resDeposits.pagination.nextKey && resDeposits.pagination.nextKey.length) {
-                pageDeposits = resDeposits.pagination.nextKey;
+                nextPageKey = resDeposits.pagination.nextKey;
             } else {
                 break;
             }
@@ -561,7 +591,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, messages, '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, messages, fee);
@@ -592,7 +622,7 @@ class LumClient {
         const gasEstimated = await this.signingClient.simulate(wallet.address, [message], '');
         const fee = {
             amount: coins('25000', MICRO_LUM_DENOM),
-            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(1.3))).maxDecimals(0).locale(false).toString(),
+            gas: new IntPretty(new Dec(gasEstimated).mul(new Dec(GAS_MULTIPLIER))).maxDecimals(0).locale(false).toString(),
         };
 
         const broadcastResult = await this.signingClient.signAndBroadcast(wallet.address, [message], fee);

@@ -11,7 +11,7 @@ This service use **Lum Network - Chain** (code hosted [here](https://github.com/
 
 This service is a React full typescript v4 application with these main libraries:
 
-- [Lum Network SDK](https://github.com/lum-network/sdk-javascript)
+- [Lum Network SDK](https://github.com/lum-network/lumjs)
 - [CosmJS](https://github.com/cosmos/cosmjs) (amino, proto-signing and stargate packages)
 - [Redux](https://react-redux.js.org/) and [Rematch](https://rematchjs.org/)
 - [Class-transformer](https://github.com/typestack/class-transformer)
@@ -37,9 +37,9 @@ Install dependencies with:
 
 > $ yarn
 
-Copy the `.env.dev` file to `.env`
+Copy the `.env.prod` file to `.env`
 
-> $ cp .env.dev .env
+> $ cp .env.prod .env
 
 ### Running your app
 

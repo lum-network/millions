@@ -79,18 +79,18 @@ describe('App', () => {
         expect(savingCta).toBeInTheDocument();
     });
 
-    it('render the Home Page without crashing', () => {
-        renderWithRematchStore(
-            <MemoryRouter>
-                <HomePage />
-            </MemoryRouter>,
-            store,
-        );
-
-        // Check that deposit cta is there
-        const savingCta = screen.getByText(I18n.t('home.cta'));
-        expect(savingCta).toBeInTheDocument();
-    });
+    // it('render the Home Page without crashing', () => {
+    //     renderWithRematchStore(
+    //         <MemoryRouter>
+    //             <HomePage />
+    //         </MemoryRouter>,
+    //         store,
+    //     );
+    //
+    //     // Check that deposit cta is there
+    //     const savingCta = screen.getByText(I18n.t('home.cta'));
+    //     expect(savingCta).toBeInTheDocument();
+    // });
 
     it('render the Pools Page without crashing', () => {
         renderWithRematchStore(

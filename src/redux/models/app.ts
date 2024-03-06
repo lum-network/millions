@@ -42,7 +42,6 @@ export const app = createModel<RootModel>()({
                     dispatch.pools.fetchPools(null),
                     dispatch.pools.getDepositDelta(),
                     dispatch.pools.getActiveCampaigns(),
-                    dispatch.prizes.fetchBiggestPrizes(),
                     dispatch.prizes.fetchBiggestAprPrizes(),
                 ]);
             } catch (e) {

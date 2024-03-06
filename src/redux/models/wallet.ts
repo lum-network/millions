@@ -233,7 +233,7 @@ export const wallet = createModel<RootModel>()({
                     chainId: chainId,
                     chainName: rpc.includes('testnet') || chainId.includes('testnet') ? 'Lum Network [Test]' : 'Lum Network',
                     rpc,
-                    rest: rpc.replace(rpc.includes('/rpc') ? '/rpc' : '26657', rpc.includes('/rpc') ? '/rest' : '1317'),
+                    rest: rpc.replace(rpc.includes('rpc') ? 'rpc' : '26657', rpc.includes('rpc') ? 'lcd' : '1317'),
                     stakeCurrency: {
                         coinDenom: LUM_DENOM,
                         coinMinimalDenom: MICRO_LUM_DENOM,
@@ -289,7 +289,7 @@ export const wallet = createModel<RootModel>()({
                     await WalletProvidersUtils.requestCosmostationAccount(chainId);
                 }
 
-                const lumOfflineSigner = providerFunctions.getOfflineSigner(chainId);
+                const lumOfflineSigner = await providerFunctions.getOfflineSigner(chainId);
 
                 if (lumOfflineSigner) {
                     const accounts = await lumOfflineSigner.getAccounts();
@@ -336,7 +336,7 @@ export const wallet = createModel<RootModel>()({
                         await providerFunctions.enable(pool.chainId);
                     }
 
-                    const offlineSigner = providerFunctions.getOfflineSigner(pool.chainId);
+                    const offlineSigner = await providerFunctions.getOfflineSigner(pool.chainId);
                     const accounts = await offlineSigner.getAccounts();
 
                     if (accounts.length > 0) {
@@ -364,7 +364,7 @@ export const wallet = createModel<RootModel>()({
             }
         },
         async reloadWalletInfos({ address, force = true, init = false, drops = false }: { address: string; force?: boolean; init?: boolean; drops?: boolean }, state) {
-            if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 3) {
+            if (!force && Date.now() - state.wallet.autoReloadTimestamp < 1000 * 60 * 30) {
                 return;
             }
 
@@ -607,7 +607,7 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(`${provider} is not available`);
                 }
 
-                const offlineSigner = providerFunctions.getOfflineSigner(chainId);
+                const offlineSigner = await providerFunctions.getOfflineSigner(chainId);
 
                 const rpc = type === 'withdraw' ? LumClient.getRpc() : state.pools.pools.find((pool) => pool.chainId === chainId)?.internalInfos?.rpc;
 
@@ -650,9 +650,13 @@ export const wallet = createModel<RootModel>()({
 
                 if (!chainId.includes('testnet') && !chainId.includes('devnet') && type === 'deposit') {
                     // Bot API call to send lum via faucet
-                    await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
-                        address: toAddress,
-                    });
+                    try {
+                        await axios.post(`${ApiConstants.BOT_API_URL}/faucet`, {
+                            address: toAddress,
+                        });
+                    } catch (e) {
+                        console.warn(e);
+                    }
                 }
 
                 ToastUtils.updateLoadingToast(toastId, 'success', {

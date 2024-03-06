@@ -79,7 +79,7 @@ const MySavings = () => {
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
     const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
-    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[]>();
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>();
     const [activeCampaign, setActiveCampaign] = useState<InfluencerCampaignModel | undefined>(undefined);
     const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
 
@@ -92,17 +92,18 @@ const MySavings = () => {
     const totalDeposited = WalletUtils.getTotalBalanceFromDeposits(deposits, prices);
     const totalDepositedCrypto = WalletUtils.getTotalBalanceFromDeposits(deposits);
     const totalBalancePrice = balances ? numeral(totalDeposited).format('$0,0[.]00') : '';
-    const leaderboardPool = leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
     const prizesToClaim = prizes && prizes.filter((prize) => prize.state === PrizesConstants.PrizeState.PENDING);
+
+    const leaderboardPool = useMemo(() => {
+        return leaderboardSelectedPoolId ? PoolsUtils.getPoolByPoolId(pools, leaderboardSelectedPoolId) : undefined;
+    }, [leaderboardSelectedPoolId]);
 
     useEffect(() => {
         const getLeaderboardUserRank = async () => {
             if (leaderboardPool && lumWallet) {
                 const userRankItems = await dispatch.wallet.getLeaderboardRank(leaderboardPool.poolId);
 
-                if (userRankItems) {
-                    setUserRankItems([...userRankItems]);
-                }
+                setUserRankItems(userRankItems && userRankItems.length > 0 ? [...userRankItems] : undefined);
             }
         };
 
@@ -527,7 +528,7 @@ const MySavings = () => {
                                 </Card>
                             </>
                         ) : null}
-                        {leaderboardPool && leaderboardPool.leaderboard?.items.length ? (
+                        {leaderboardPool ? (
                             <div ref={leaderboardSectionRef} className='leaderboard-section'>
                                 <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
                                     <div className='d-flex align-items-center'>
@@ -552,7 +553,7 @@ const MySavings = () => {
                                     />
                                 </div>
                                 <Leaderboard
-                                    items={leaderboardPool.leaderboard.items}
+                                    pool={leaderboardPool}
                                     enableAnimation={!!userRankItems}
                                     userRank={
                                         userRankItems
@@ -563,10 +564,9 @@ const MySavings = () => {
                                               }
                                             : undefined
                                     }
-                                    poolId={leaderboardPool.poolId.toString()}
                                     price={prices[DenomsUtils.getNormalDenom(leaderboardPool.nativeDenom)]}
                                     hasMore={!leaderboardPool.leaderboard.fullyLoaded}
-                                    onBottomReached={async () => {
+                                    onBottomReached={() => {
                                         if (isLoadingNextLeaderboardPage) {
                                             return;
                                         }

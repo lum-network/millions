@@ -12,7 +12,7 @@ import cosmonautInPool from 'assets/lotties/cosmonaut_in_pool.json';
 import cosmonautWithRocket from 'assets/lotties/cosmonaut_with_rocket.json';
 import cosmonautDab from 'assets/lotties/cosmonaut_dab.json';
 import Assets from 'assets';
-import { Button, Card, Lottie, Collapsible, BestPrizeCard, PurpleBackgroundImage } from 'components';
+import { Button, Card, Lottie, Collapsible, PoolTvlCard, PurpleBackgroundImage } from 'components';
 import { FirebaseConstants, LandingConstants, NavigationConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
 import numeral from 'numeral';
@@ -199,11 +199,7 @@ const Landing = () => {
                             </Button>
                         </div>
                         <div style={{ flex: 2 }}>
-                            <BestPrizeCard
-                                title={'ATOM Pool TVL'}
-                                biggestPrize={pools && pools.length ? { amount: NumbersUtils.convertUnitNumber(pools[0].tvlAmount), denom: 'uatom' } : null}
-                                poolId='2'
-                            />
+                            <PoolTvlCard title={'Total Value Locked'} tvl={tvl} />
                         </div>
                     </Card>
                 </div>

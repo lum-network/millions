@@ -2,7 +2,7 @@ import React from 'react';
 import numeral from 'numeral';
 
 import { Button, Collapsible, PurpleBackgroundImage, SmallerDecimal, Tooltip } from 'components';
-import { Breakpoints, FirebaseConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { AggregatedDepositModel, DepositModel, PoolModel } from 'models';
 import { useWindowSize } from 'hooks';
 import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
@@ -28,6 +28,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
     const renderGenericRow = (deposit: AggregatedDepositModel | Partial<DepositModel>, index: number, className?: string) => {
         let statusClassName = '';
         let cta: string | JSX.Element = '';
+        const isSentDrop = deposit.depositorAddress !== deposit.winnerAddress;
 
         switch (deposit.state) {
             case DepositState.DEPOSIT_STATE_SUCCESS:
@@ -38,6 +39,10 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                         <p className='me-3 mb-0'>{I18n.t('mySavings.depositDrop')}</p>
                         <img alt='Deposit drop' src={Assets.images.depositDrop} className='no-filter' />
                     </span>
+                ) : isSentDrop ? (
+                    <Button to={NavigationConstants.DROPS_MY_DEPOSITS} forcePurple textOnly>
+                        {I18n.t('mySavings.manageDropCta')}
+                    </Button>
                 ) : (
                     <Button
                         textOnly

@@ -379,6 +379,7 @@ export default {
         deposits: 'Pool Deposits',
         leavePoolCta: 'Leave Pool',
         depositDrop: 'Deposit Drop',
+        manageDropCta: 'Manage Deposit Drop',
         depositDropHint:
             "Congrats, you've got a Deposit Drop!\n" + 'It means a temporary boost in your deposit, loaned to your account. You have more chances to win in upcoming draws so good luck Cosmonaut!',
         transferWaitingCta: 'Usually ~1 minute',
@@ -580,7 +581,7 @@ export default {
             '<a href="https://docs.cosmosmillions.com/cosmos-millions/draw-mechanism#time-weighted-balance-twb" rel="noreferrer" target="_blank">See why.</a>',
         depositHint: 'No-loss for the win: you can’t lose your deposit! <a href="https://docs.cosmosmillions.com/welcome/faq" rel="noreferrer" target="_blank">See how it works</a>',
         swapHint: {
-            content: "Don't have ATOM on Cosmos Hub, but on other chains ? Swap your ATOM to Cosmos Hub first",
+            content: "Don't have {{ denom }} on {{ chainName }}, but on other chains ? Swap your {{ denom }} to {{ chainName }} first",
             cta: 'Swap',
         },
         swapModal: {
@@ -610,6 +611,7 @@ export default {
         notConnectedCta: 'Log in to see more',
         depositBtn: 'Deposit {{ amount }} {{ denom }} to take his place',
         newRanking: 'You new ranking will be displayed in a few minutes',
+        noDepositYet: 'No deposit yet',
     },
     depositDrops: {
         myDeposits: {

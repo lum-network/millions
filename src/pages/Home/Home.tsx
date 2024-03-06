@@ -3,7 +3,7 @@ import numeral from 'numeral';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { BestPrizeCard, BigWinnerCard, Button, Card, Lottie, PurpleBackgroundImage } from 'components';
+import { BestPrizeCard, BigWinnerCard, Card, Lottie, PurpleBackgroundImage } from 'components';
 import { FirebaseConstants, NavigationConstants } from 'constant';
 import { RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, NumbersUtils } from 'utils';
@@ -14,7 +14,7 @@ import Assets from 'assets';
 import './Home.scss';
 
 const Home = () => {
-    const bestPoolPrize = useSelector((state: RootState) => state.pools.bestPoolPrize);
+    // const bestPoolPrize = useSelector((state: RootState) => state.pools.bestPoolPrize);
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
     const biggestAprPrizes = useSelector((state: RootState) => state.prizes.biggestAprPrizes);
@@ -26,13 +26,7 @@ const Home = () => {
         <div className='home-container mt-3 mt-lg-5'>
             <div className='row g-4'>
                 <div className='col-xxl-7 col-12'>
-                    <BestPrizeCard
-                        delay={150}
-                        className='min-height-550'
-                        biggestPrize={bestPoolPrize?.estimatedPrizeToWin || null}
-                        poolId={bestPoolPrize?.poolId.toString()}
-                        countdownTo={bestPoolPrize?.nextDrawAt}
-                    />
+                    <BestPrizeCard delay={150} />
                 </div>
                 <div className='col-xxl-5 col-12'>
                     <div className='row g-4'>
@@ -88,13 +82,6 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className='start-50 translate-middle-x save-and-win-btn-container'>
-                <Button className='save-btn' forcePurple to={`${NavigationConstants.POOL_DETAILS}/atom/2`}>
-                    <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />
-                    {I18n.t('home.cta')}
-                    <img src={Assets.images.yellowStar} alt='Star' className='no-filter' />
-                </Button>
             </div>
         </div>
     );
