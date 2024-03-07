@@ -81,7 +81,6 @@ const Core = () => {
         if (location.search && location.search.includes('campaign_id')) {
             const campaignKey = location.search.replace('?campaign_id=', '');
 
-            console.log(campaignKey);
             StorageUtils.storeCampaignKey(campaignKey);
         }
 

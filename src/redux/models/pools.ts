@@ -295,7 +295,7 @@ export const pools = createModel<RootModel>()({
                 const [activeCampaigns] = await LumApi.fetchCampaigns();
 
                 if (activeCampaigns) {
-                    dispatch.pools.setActiveCampaigns(activeCampaigns);
+                    dispatch.pools.setActiveCampaigns(activeCampaigns.filter((campaign) => dayjs(campaign.endAt).isAfter(dayjs())));
                 }
             } catch {}
         },

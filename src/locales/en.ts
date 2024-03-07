@@ -495,7 +495,8 @@ export default {
         influencerCampaignBanner: {
             title: 'Gift from {{ influencerName }}',
             description: "You might have won a gift, you should check if you're eligible",
-            hasParticipatedDescription: "You are in. Results in a few days, the draw will happen the {{ endDate }}"
+            hasParticipatedDescription: "You are in. Results in a few days",
+            hasParticipatedCta: "Draw will happen the {{ endDate }}"
         },
         influencerCampaignModal: {
             title: '{{ influencerName }} is offering\n{{ count }} deposit drops!',

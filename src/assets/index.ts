@@ -20,6 +20,7 @@ import dollarIcon from './images/dollar_icon.svg';
 import dollarWhite from './images/dollar_white.svg';
 import downArrow from './images/down_arrow.svg';
 import gift from './images/gift.svg';
+import giftSuccess from './images/gift_success.svg';
 import faucet from './images/faucet.svg';
 import download from './images/download.svg';
 import info from './images/info.svg';
@@ -90,6 +91,7 @@ const Assets = {
         dollarWhite,
         downArrow,
         gift,
+        giftSuccess,
         faucet,
         download,
         info,
