@@ -317,7 +317,7 @@ const MySavings = () => {
                 </Card>
             ) : null}
             <div className='row'>
-                <div className='col-12 col-lg-8 col-xxl-9'>
+                <div className='col-12 col-lg-8'>
                     <div>
                         <h2>{I18n.t('mySavings.totalBalance')}</h2>
                         <Card className='balance-card'>
@@ -505,7 +505,7 @@ const MySavings = () => {
                         ) : null}
                     </div>
                 </div>
-                <div className='col-12 col-lg-4 col-xxl-3 side-bar'>
+                <div className='col-12 col-lg-4 side-bar'>
                     <div className='row'>
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
