@@ -32,7 +32,7 @@ const MySavings = () => {
         useSelector((state: RootState) => ({
             lumWallet: state.wallet.lumWallet,
             otherWallets: state.wallet.otherWallets,
-            balances: state.wallet.lumWallet?.balances.filter((balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM),
+            balances: state.wallet.lumWallet?.balances,
             activities: state.wallet.lumWallet?.activities,
             deposits: state.wallet.lumWallet?.deposits,
             prizes: state.wallet.lumWallet?.prizes,
@@ -154,6 +154,7 @@ const MySavings = () => {
         const amount = NumbersUtils.convertUnitNumber(asset.amount);
         const bondedAmount = 0;
         const price = prices?.[normalDenom];
+        const usdAmount = price ? amount * price : 0;
 
         return (
             <Collapsible
@@ -168,10 +169,10 @@ const MySavings = () => {
                             <div className='d-flex flex-row align-items-center'>
                                 {icon ? <img src={icon} alt={`${asset.denom} icon`} className='denom-icon no-filter' /> : <div className='denom-unknown-icon no-filter'>?</div>}
                                 <div className='d-flex flex-column asset-amount'>
-                                    <span>
+                                    <span title={amount.toString()}>
                                         <SmallerDecimal nb={numeral(amount).format(amount >= 1000 ? '0,0' : '0,0.000')} /> {normalDenom.toUpperCase()}
                                     </span>
-                                    <small className='p-0'>{price ? numeral(amount * price).format('$0,0[.]00') : '$ --'}</small>
+                                    <small className='p-0'>{price ? numeral(usdAmount < 0.001 ? 0 : usdAmount).format('$0,0[.]00') : '$ --'}</small>
                                 </div>
                             </div>
                             <div className='action-buttons d-flex flex-column flex-sm-row align-items-stretch align-items-md-center justify-content-stretch justiy-content-md-between mt-3 mt-lg-0'>
