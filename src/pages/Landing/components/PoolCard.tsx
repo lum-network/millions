@@ -25,7 +25,7 @@ const PoolCard = ({ denom, tvl, prize }: IProps) => {
             </div>
             <div className='tvl-container d-flex flex-column align-items-center'>
                 <span className='tvl-legend mb-3'>{I18n.t('landing.pools.deposited')}</span>
-                <span className='tvl mb-1'>
+                <span className='tvl mb-1 text-center'>
                     {numeral(NumbersUtils.convertUnitNumber(tvl)).format('0,0')} {denom}
                 </span>
                 <span className='tvl-value'>≃${price ? numeral(NumbersUtils.convertUnitNumber(tvl) * price).format('0,0') : ' --'}</span>

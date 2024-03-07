@@ -6,9 +6,10 @@ import numeral from 'numeral';
 import Assets from 'assets';
 import { Button, Card, Modal, SmallerDecimal, Table } from 'components';
 import { ModalHandlers } from 'components/Modal/Modal';
-import { NavigationConstants } from 'constant';
-import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
+import { Breakpoints, NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
 import { DrawModel } from 'models';
+import { DenomsUtils, I18n, NumbersUtils, StringsUtils } from 'utils';
 
 import './DrawDetailsModal.scss';
 
@@ -17,6 +18,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
     const [winnersPage, setWinnersPage] = useState(1);
 
     const navigate = useNavigate();
+    const { width: windowWidth } = useWindowSize();
 
     return (
         <Modal id='drawDetailsModal' ref={modalRef} modalWidth={700}>
@@ -100,11 +102,13 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                             <>
                                 <p className='next-pool-info my-3'>{I18n.t('poolDetails.drawDetails.nextPool')}</p>
                                 <Card flat className='redelegated-prizes-card'>
-                                    <div className='d-flex flex-row justify-content-between'>
-                                        <div className='d-flex flex-column text-start'>
+                                    <div className='d-flex flex-column flex-sm-row justify-content-between'>
+                                        <div className='d-flex flex-column text-start mb-3 mb-sm-0'>
                                             <div className='display-6 prize-remaining-amount'>
                                                 <SmallerDecimal
-                                                    nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0')}
+                                                    nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount))
+                                                        .format(windowWidth < Breakpoints.SM ? '0[.]0a' : '0,0')
+                                                        .toUpperCase()}
                                                 />{' '}
                                                 {poolDenom.toUpperCase()}
                                             </div>

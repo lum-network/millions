@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Assets from 'assets';
 import cosmonautOnTheMoon from 'assets/lotties/cosmonaut_on_the_moon.json';
 import { AnimatedNumber, Button, Card, CountDown, Lottie } from 'components';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
 import { useWindowSize } from 'hooks';
 import { PoolModel } from 'models';
 import { DenomsUtils, Firebase, FontsUtils, I18n } from 'utils';
@@ -117,7 +117,13 @@ const BestPrizeCard = ({ delay, title }: IProps) => {
                         key={index}
                         className={`me-4 d-flex flex-column align-items-center select-pool-button ${pool.poolId === currentPool?.poolId && 'active'}`}
                     >
-                        <img src={pool ? DenomsUtils.getIconFromDenom(pool.nativeDenom) : '-'} alt='denom' height={64} width={64} className='no-filter mb-1' />
+                        <img
+                            src={pool ? DenomsUtils.getIconFromDenom(pool.nativeDenom) : '-'}
+                            alt='denom'
+                            height={width < Breakpoints.SM ? 56 : 64}
+                            width={width < Breakpoints.SM ? 56 : 64}
+                            className='no-filter mb-1'
+                        />
                         <div className='text-countdown'>{pool.nextDrawAt ? <CountDown to={pool.nextDrawAt} simple /> : null}</div>
                     </div>
                 ))}

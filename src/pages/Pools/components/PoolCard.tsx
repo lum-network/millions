@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import Skeleton from 'react-loading-skeleton';
 import numeral from 'numeral';
 
+import Assets from 'assets';
 import { Button, Card, CountDown } from 'components';
-import { FirebaseConstants, NavigationConstants } from 'constant';
+import { Breakpoints, FirebaseConstants, NavigationConstants } from 'constant';
+import { useWindowSize } from 'hooks';
 import { RootState } from 'redux/store';
 import { DenomsUtils, Firebase, I18n, WalletProvidersUtils } from 'utils';
-import Skeleton from 'react-loading-skeleton';
-import Assets from 'assets';
 
 interface IProps {
     denom: string;
@@ -27,6 +28,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText,
 
     const [drawInProgress, setDrawInProgress] = useState(false);
 
+    const winSizes = useWindowSize();
     const price = prices?.[denom];
 
     return (
@@ -34,16 +36,17 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText,
             <div className='prize-container'>
                 <img width={68} height={68} src={DenomsUtils.getIconFromDenom(denom)} alt={denom} className='no-filter' />
                 <div className='d-flex flex-column align-items-start ms-3'>
-                    <div className='prize'>
-                        {denom.toUpperCase()} {I18n.t('poolDetails.prizePool')}
+                    <div className='prize text-start text-lg-nowrap'>
+                        {winSizes.width > Breakpoints.SM ? denom.toUpperCase() + ' ' : ''}
+                        {I18n.t('poolDetails.prizePool')}
                     </div>
                     {loadingAdditionalInfo ? (
-                        <Skeleton height={26} width={190} />
+                        <Skeleton height={26} width={winSizes.width < Breakpoints.SM ? 140 : 190} />
                     ) : (
                         <div className='prize-value'>${price && estimatedPrize ? numeral(estimatedPrize * price).format('0,0') : ' --'}</div>
                     )}
                     {loadingAdditionalInfo ? (
-                        <Skeleton height={12} width={170} />
+                        <Skeleton height={12} width={winSizes.width < Breakpoints.SM ? 120 : 170} />
                     ) : (
                         <div className='prize-amount'>
                             {estimatedPrize ? numeral(estimatedPrize).format('0,0') : ' --'} {denom}

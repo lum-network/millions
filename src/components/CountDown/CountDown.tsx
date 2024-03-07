@@ -82,23 +82,18 @@ const RoundTimer = ({ to, onCountdownEnd, homePage, simple }: IProps) => {
         );
     }
 
-    return (
-        <div>
-            {!!days && (
-                <div>
-                    <span>{days}</span>&nbsp;<span>{I18n.t('countDown.days', { count: days })}</span> <span>{hours}</span>&nbsp;<span>{I18n.t('countDown.hours', { count: hours })}</span>
-                </div>
-            )}
-            {!days && (
-                <>
-                    <div>
-                        <span>
-                            {numeral(hours).format('00')}:{numeral(minutes).format('00')}:{numeral(seconds).format('00')}
-                        </span>
-                    </div>
-                </>
-            )}
-        </div>
+    return !!days ? (
+        <>
+            {days} {I18n.t('countDown.days', { count: days })} {hours} {I18n.t('countDown.hours', { count: hours })}
+        </>
+    ) : (
+        <>
+            <div>
+                <span>
+                    {numeral(hours).format('00')}:{numeral(minutes).format('00')}:{numeral(seconds).format('00')}
+                </span>
+            </div>
+        </>
     );
 };
 

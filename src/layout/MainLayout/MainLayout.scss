@@ -9,7 +9,7 @@
 .custom-container {
     padding-top: 130px;
     @include media-breakpoint-down(sm) {
-        @include make-container(32px);
+        @include make-container(12px);
     }
 }
 
