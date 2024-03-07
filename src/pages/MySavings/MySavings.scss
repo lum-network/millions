@@ -13,6 +13,14 @@
         }
     }
 
+    .campaign-banner-registered {
+        background-color: var(--color-success-light);
+        
+        h3, p {
+            color: var(--color-success);
+        }
+    }
+
     .side-bar {
         position: sticky;
         height: 100%;

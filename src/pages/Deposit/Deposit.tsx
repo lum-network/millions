@@ -18,7 +18,7 @@ import { Button, Card, Lottie, Modal, PurpleBackgroundImage, Steps, IbcTransferM
 import { FirebaseConstants, NavigationConstants, WalletProvider } from 'constant';
 import { useColorScheme, usePrevious, useVisibilityState } from 'hooks';
 import { PoolModel } from 'models';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils, WalletProvidersUtils, ToastUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, StorageUtils, WalletUtils, WalletProvidersUtils, ToastUtils } from 'utils';
 import { confettis } from 'utils/confetti';
 import { RootState, Dispatch } from 'redux/store';
 import DepositDropSteps from 'drops/components/DepositDropSteps/DepositDropSteps';
@@ -97,7 +97,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         },
         walletClient: {
             enable: async (chainIds) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
@@ -110,7 +110,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                 }
             },
             getKey: async (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
@@ -128,7 +128,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                 return await providerFunctions.getKey(chainId);
             },
             getOfflineSigner: async (chainId) => {
-                const autoConnectProvider = WalletUtils.getAutoconnectProvider() || WalletProvider.Keplr;
+                const autoConnectProvider = StorageUtils.getAutoconnectProvider() || WalletProvider.Keplr;
 
                 const providerFunctions = WalletProvidersUtils.getProviderFunctions(autoConnectProvider);
 
@@ -219,7 +219,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
         returnObjects: true,
         denom: DenomsUtils.getNormalDenom(denom || '').toUpperCase(),
         chainName: pool?.internalInfos?.chainName || 'Native Chain',
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     const now = Date.now();

@@ -39,7 +39,10 @@ class WalletClient {
             this.queryClient = queryClient;
             this.chainId = (await queryClient.cosmos.base.tendermint.v1beta1.getNodeInfo()).nodeInfo?.network || 'lum-network-1';
         } catch (e) {
-            if (!silent) showErrorToast({ content: I18n.t('errors.client.rpc') });
+            if (!silent) {
+                showErrorToast({ content: I18n.t('errors.client.rpc') });
+            }
+
             throw e;
         }
     };
@@ -126,7 +129,6 @@ class WalletClient {
     };
 
     // Operations
-
     ibcTransfer = async (fromWallet: string, toAddress: string, amount: Coin, channel: string, feesDenom: string) => {
         if (this.walletClient === null) {
             return null;

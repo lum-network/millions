@@ -13,8 +13,8 @@ import cosmonautWithBalloons from 'assets/lotties/cosmonaut_with_balloons.json';
 import { Button, Card, SmallerDecimal, Lottie, Collapsible, Modal, Leaderboard, PoolSelect, Tooltip } from 'components';
 import { Breakpoints, FirebaseConstants, NavigationConstants, PrizesConstants } from 'constant';
 import { useColorScheme, useWindowSize } from 'hooks';
-import { DepositModel, LeaderboardItemModel } from 'models';
-import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils } from 'utils';
+import { DepositModel, InfluencerCampaignModel, LeaderboardItemModel } from 'models';
+import { DenomsUtils, FontsUtils, I18n, NumbersUtils, WalletUtils, Firebase, PoolsUtils, StorageUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { confettis } from 'utils/confetti';
 
@@ -23,27 +23,44 @@ import TransactionsTable from './components/TransationsTable/TransactionsTable';
 import ClaimModal from './components/Modals/Claim/Claim';
 import TransferOutModal from './components/Modals/TransferOut/TransferOut';
 import LeavePoolModal from './components/Modals/LeavePool/LeavePool';
+import InfluencerCampaignModal from './components/Modals/InfluencerCampaign/InfluencerCampaign';
 import PrizesHistoryTable from './components/PrizesHistoryTable/PrizesHistoryTable';
 
 import './MySavings.scss';
+import dayjs from 'dayjs';
 
 const MySavings = () => {
-    const { lumWallet, otherWallets, balances, activities, prizes, prices, pools, isTransferring, deposits, isReloadingInfos, isLoadingNextLeaderboardPage, alreadySeenConfetti, totalPrizesWon } =
-        useSelector((state: RootState) => ({
-            lumWallet: state.wallet.lumWallet,
-            otherWallets: state.wallet.otherWallets,
-            balances: state.wallet.lumWallet?.balances,
-            activities: state.wallet.lumWallet?.activities,
-            deposits: state.wallet.lumWallet?.deposits,
-            prizes: state.wallet.lumWallet?.prizes,
-            prices: state.stats.prices,
-            pools: state.pools.pools,
-            isTransferring: state.loading.effects.wallet.ibcTransfer,
-            isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
-            isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
-            alreadySeenConfetti: state.prizes.alreadySeenConfetti,
-            totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
-        }));
+    const {
+        lumWallet,
+        otherWallets,
+        balances,
+        activities,
+        prizes,
+        prices,
+        pools,
+        isTransferring,
+        deposits,
+        isReloadingInfos,
+        isLoadingNextLeaderboardPage,
+        alreadySeenConfetti,
+        totalPrizesWon,
+        activeCampaigns,
+    } = useSelector((state: RootState) => ({
+        lumWallet: state.wallet.lumWallet,
+        otherWallets: state.wallet.otherWallets,
+        balances: state.wallet.lumWallet?.balances,
+        activities: state.wallet.lumWallet?.activities,
+        deposits: state.wallet.lumWallet?.deposits,
+        prizes: state.wallet.lumWallet?.prizes,
+        prices: state.stats.prices,
+        pools: state.pools.pools,
+        isTransferring: state.loading.effects.wallet.ibcTransfer,
+        isReloadingInfos: state.loading.effects.wallet.reloadWalletInfos,
+        isLoadingNextLeaderboardPage: state.loading.effects.pools.getNextLeaderboardPage,
+        alreadySeenConfetti: state.prizes.alreadySeenConfetti,
+        totalPrizesWon: state.wallet.lumWallet?.totalPrizesWon,
+        activeCampaigns: state.pools.activeCampaigns,
+    }));
 
     const location = useLocation();
     const dispatch = useDispatch<Dispatch>();
@@ -62,7 +79,8 @@ const MySavings = () => {
     const [depositToLeave, setDepositToLeave] = useState<DepositModel | null>(null);
     const [leaderboardSelectedPoolId, setLeaderboardSelectedPoolId] = useState<string | null>(pools && pools.length > 0 ? leaderboardPoolId || pools[0].poolId.toString() : null);
     const [leaderboardPage, setLeaderboardPage] = useState(0);
-    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>(undefined);
+    const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>();
+    const [activeCampaign, setActiveCampaign] = useState<InfluencerCampaignModel | undefined>(undefined);
     const [prizesHistoryPage, setPrizesHistoryPage] = useState(1);
 
     const transferOutModalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -147,6 +165,31 @@ const MySavings = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        const campaignKey = StorageUtils.getCampaignKey();
+        const campaign = activeCampaigns.find((campaign) => campaign.id === campaignKey);
+
+        if (campaignKey && campaign) {
+            const userDeposited = deposits
+                ? deposits.findIndex(
+                      (deposit) =>
+                          deposit.state === DepositState.DEPOSIT_STATE_SUCCESS &&
+                          deposit.poolId &&
+                          deposit.poolId.toString() === campaign.poolId.toFixed() &&
+                          deposit.createdAt &&
+                          dayjs(deposit.createdAt).isAfter(dayjs(campaign.startAt)) &&
+                          !deposit.isDepositDrop &&
+                          !deposit.isSponsor &&
+                          !deposit.isWithdrawing,
+                  ) > -1
+                : false;
+
+            if (userDeposited) {
+                setActiveCampaign(campaign);
+            }
+        }
+    }, [deposits, activeCampaigns]);
 
     const renderAsset = (asset: Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
@@ -289,8 +332,38 @@ const MySavings = () => {
         return <Navigate to={NavigationConstants.HOME} replace />;
     }
 
+    const hasRegisteredInCampaign = activeCampaign?.members?.find((member) => member.walletAddress === lumWallet.address);
+
     return (
         <div id='my-savings' className='my-savings-container mt-3 mt-lg-5'>
+            {activeCampaign ? (
+                <Card flat withoutPadding className={`d-flex flex-column flex-sm-row align-items-sm-center mb-5 p-4 campaign-banner${hasRegisteredInCampaign ? '-registered' : ''}`}>
+                    <div className='d-flex flex-row align-items-center mb-3 mb-sm-0'>
+                        <img alt='info' src={hasRegisteredInCampaign ? Assets.images.giftSuccess : Assets.images.gift} width='45' className='no-filter' />
+                        <h3 className='mx-3 mb-0'>{I18n.t('mySavings.influencerCampaignBanner.title', { influencerName: activeCampaign.name })}</h3>
+                    </div>
+                    <p
+                        className='mb-0'
+                        dangerouslySetInnerHTML={{
+                            __html: I18n.t(hasRegisteredInCampaign ? 'mySavings.influencerCampaignBanner.hasParticipatedDescription' : 'mySavings.influencerCampaignBanner.description'),
+                        }}
+                    />
+                    {!hasRegisteredInCampaign ? (
+                        <Button data-bs-target='#influencer-campaign-modal' data-bs-toggle='modal' className='ms-auto'>
+                            {I18n.t('mySavings.influencerCampaignModal.cta')}
+                        </Button>
+                    ) : (
+                        <p
+                            className='ms-sm-auto mb-0'
+                            dangerouslySetInnerHTML={{
+                                __html: I18n.t('mySavings.influencerCampaignBanner.hasParticipatedCta', {
+                                    endDate: dayjs(activeCampaign.endAt).add(1, 'day').format('L'),
+                                }),
+                            }}
+                        />
+                    )}
+                </Card>
+            ) : null}
             {deposits && deposits.find((deposit) => deposit.state === DepositState.DEPOSIT_STATE_FAILURE) ? (
                 <Card flat withoutPadding className='deposit-error-card d-flex flex-row align-items-center mb-5 p-4'>
                     <img alt='info' src={Assets.images.info} width='45' />
@@ -549,6 +622,16 @@ const MySavings = () => {
             />
             <ClaimModal prizes={prizesToClaim || []} prices={prices} pools={pools} limit={lumWallet.isLedger ? 3 : 6} />
             <LeavePoolModal deposit={depositToLeave} />
+            <InfluencerCampaignModal
+                campaign={activeCampaign}
+                prices={prices}
+                onApply={(campaignId, password) =>
+                    dispatch.wallet.registerForCampaign({
+                        campaignId,
+                        password,
+                    })
+                }
+            />
         </div>
     );
 };

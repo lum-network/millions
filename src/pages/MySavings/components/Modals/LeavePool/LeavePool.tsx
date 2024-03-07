@@ -4,7 +4,7 @@ import { DepositModel } from 'models';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, RootState } from 'redux/store';
-import { DenomsUtils, Firebase, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, Firebase, I18n, NumbersUtils, StorageUtils } from 'utils';
 import { FirebaseConstants } from 'constant';
 
 import './LeavePool.scss';
@@ -23,7 +23,7 @@ const LeavePool = ({ deposit }: Props) => {
 
     const steps = I18n.t('mySavings.leavePoolModal.steps', {
         returnObjects: true,
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     const onLeavePool = async () => {

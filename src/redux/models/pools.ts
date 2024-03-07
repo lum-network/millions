@@ -1,13 +1,13 @@
 import { createModel } from '@rematch/core';
-import { ApiConstants, PoolsConstants } from 'constant';
-import { POOLS } from 'constant/pools';
-import { DrawModel, PoolModel } from 'models';
-import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, WalletClient, WalletUtils } from 'utils';
-import dayjs from 'dayjs';
 import { MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { PoolState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/pool';
+import dayjs from 'dayjs';
 
 import { ImperatorApi, LumApi } from 'api';
+import { ApiConstants, PoolsConstants } from 'constant';
+import { POOLS } from 'constant/pools';
+import { DrawModel, InfluencerCampaignModel, PoolModel } from 'models';
+import { DenomsUtils, LumClient, NumbersUtils, PoolsUtils, StorageUtils, WalletClient } from 'utils';
 
 import { RootModel } from '.';
 
@@ -16,6 +16,7 @@ interface PoolsState {
     depositDelta: bigint | null;
     mutexFetchPools: boolean;
     mutexAdditionalInfos: boolean;
+    activeCampaigns: InfluencerCampaignModel[];
 }
 
 export const pools = createModel<RootModel>()({
@@ -25,6 +26,7 @@ export const pools = createModel<RootModel>()({
         depositDelta: null,
         mutexFetchPools: false,
         mutexAdditionalInfos: false,
+        activeCampaigns: [],
     } as PoolsState,
     reducers: {
         setPools: (state: PoolsState, pools: PoolModel[]): PoolsState => {
@@ -49,6 +51,12 @@ export const pools = createModel<RootModel>()({
             return {
                 ...state,
                 mutexFetchPools,
+            };
+        },
+        setActiveCampaigns: (state: PoolsState, activeCampaigns: InfluencerCampaignModel[]): PoolsState => {
+            return {
+                ...state,
+                activeCampaigns,
             };
         },
     },
@@ -103,7 +111,7 @@ export const pools = createModel<RootModel>()({
 
                     // If no otherWallets found, connect them after fetching pools
                     if (Object.keys(state.wallet.otherWallets).length === 0) {
-                        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
+                        const autoconnectProvider = StorageUtils.getAutoconnectProvider();
 
                         if (autoconnectProvider) {
                             dispatch.wallet.connectOtherWallets(autoconnectProvider);
@@ -281,6 +289,15 @@ export const pools = createModel<RootModel>()({
                     dispatch.pools.setPools(pools);
                 } catch {}
             }
+        },
+        async getActiveCampaigns() {
+            try {
+                const [activeCampaigns] = await LumApi.fetchCampaigns();
+
+                if (activeCampaigns) {
+                    dispatch.pools.setActiveCampaigns(activeCampaigns.filter((campaign) => dayjs(campaign.endAt).isAfter(dayjs())));
+                }
+            } catch {}
         },
     }),
 });

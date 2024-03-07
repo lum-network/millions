@@ -1,0 +1,85 @@
+@import 'src/styles/main';
+
+#influencer-campaign-modal {
+    .cosmonaut-with-coin {
+        position: absolute;
+        top: -170px;
+        right: -160px;
+        width: 208px;
+        height: 304px;
+    }
+
+    .cosmonaut-with-rocket {
+        position: absolute;
+        bottom: -250px;
+        left: -160px;
+        width: 208px;
+        height: 304px;
+    }
+
+    .influencer-picture-container,
+    .influencer-picture {
+        width: 295px;
+        height: 295px;
+        border-radius: 23px;
+    }
+
+    h1 {
+        font-size: 32px;
+        color: var(--color-black);
+    }
+
+    input {
+        border-radius: 0.75rem;
+        border: none;
+    }
+
+    .influencer-username {
+        position: absolute;
+        bottom: 1.44rem;
+        left: 1.44rem;
+        right: 1.44rem;
+        border-radius: 0.9375rem;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
+        color: var(--color-primary);
+    }
+
+    .campaign-amount {
+        color: var(--color-primary);
+        font-size: 26px;
+
+        #campaign-amount-tooltip {
+            font-size: 14px;
+        }
+    }
+
+    .campaign-expiration {
+        background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+        border-radius: 0.75rem;
+        color: var(--color-primary);
+        font-size: 12px;
+    }
+
+    .code-error {
+        color: var(--color-failure);
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .share-step-title {
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 38px;
+        text-align: left;
+    }
+
+    .share-step-subtitle {
+        margin-left: 6rem;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-weight: 350;
+        line-height: 14px;
+        text-align: left;
+    }
+}

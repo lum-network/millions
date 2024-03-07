@@ -6,7 +6,7 @@ import { createModel } from '@rematch/core';
 import { LumApi } from 'api';
 import { DenomsConstants, LUM_COINGECKO_ID, LUM_WALLET_LINK, WalletProvider, FirebaseConstants, ApiConstants, PrizesConstants, NavigationConstants } from 'constant';
 import { LumWalletModel, OtherWalletModel, PoolModel, PrizeModel, TransactionModel, AggregatedDepositModel, LeaderboardItemModel, DepositModel } from 'models';
-import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils } from 'utils';
+import { ToastUtils, I18n, LumClient, DenomsUtils, WalletClient, WalletUtils, NumbersUtils, Firebase, WalletProvidersUtils, StorageUtils } from 'utils';
 import { getMillionsDevnetKeplrConfig } from 'utils/devnet';
 
 import { RootModel } from '.';
@@ -90,6 +90,11 @@ interface LeavePoolRetryPayload {
     poolId: bigint;
     denom: string;
     withdrawalId: bigint;
+}
+
+interface RegisterForCampaignPayload {
+    campaignId: string;
+    password: string;
 }
 
 interface CancelDropPayload {
@@ -295,7 +300,7 @@ export const wallet = createModel<RootModel>()({
 
                     dispatch.wallet.signInLum({ address, isLedger: isNanoLedger });
 
-                    WalletUtils.storeAutoconnectKey(provider);
+                    StorageUtils.storeAutoconnectKey(provider);
 
                     if (location.pathname.includes(NavigationConstants.DROPS)) {
                         await dispatch.wallet.reloadWalletInfos({ address, force: true, init: true, drops: true });
@@ -590,7 +595,7 @@ export const wallet = createModel<RootModel>()({
                 if (!chainId) {
                     throw new Error(I18n.t('errors.client.chainId', { denom: normalDenom.toUpperCase() }));
                 }
-                const provider = WalletUtils.getAutoconnectProvider();
+                const provider = StorageUtils.getAutoconnectProvider();
 
                 if (provider === null) {
                     throw new Error(I18n.t('errors.client.noWalletConnected'));
@@ -956,6 +961,32 @@ export const wallet = createModel<RootModel>()({
             } catch (e) {
                 ToastUtils.updateLoadingToast(toastId, 'error', { content: (e as Error).message || I18n.t('errors.claimAndCompound') });
                 return null;
+            }
+        },
+        async registerForCampaign(payload: RegisterForCampaignPayload, state): Promise<{ error: string | null }> {
+            const { lumWallet } = state.wallet;
+            const activeCampaigns = [...state.pools.activeCampaigns];
+
+            try {
+                if (!lumWallet) {
+                    throw new Error(I18n.t('errors.client.noWalletConnected'));
+                }
+
+                const [newCampaign] = await LumApi.participateForCampaign(payload.campaignId, lumWallet.address, payload.password);
+
+                const campaignIndex = activeCampaigns.findIndex((campaign) => campaign.id === payload.campaignId);
+
+                activeCampaigns[campaignIndex] = newCampaign;
+
+                dispatch.pools.setActiveCampaigns(activeCampaigns);
+
+                ToastUtils.showSuccessToast({ content: I18n.t('success.participatedInCampaign') });
+                return { error: null };
+            } catch (e) {
+                const content = (e as Error).message || I18n.t('errors.participatedInCampaign');
+
+                ToastUtils.showErrorToast({ content });
+                return { error: content };
             }
         },
 

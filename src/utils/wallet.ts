@@ -2,7 +2,6 @@ import { Coin, LumBech32Prefixes, fromBech32 } from '@lum-network/sdk-javascript
 import { getNormalDenom } from './denoms';
 import { convertUnitNumber } from './numbers';
 import { AggregatedDepositModel } from 'models';
-import { AUTOCONNECT_STORAGE_KEY, WalletProvider } from 'constant';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 export const getTotalBalance = (balances: Coin[], prices: { [denom: string]: number }) => {
@@ -106,12 +105,4 @@ export const updatedBalances = (currentBalance?: Coin[], newBalance?: Coin[]) =>
 
         return newBalanceAmount !== balance.amount;
     });
-};
-
-export const storeAutoconnectKey = (provider: WalletProvider) => {
-    localStorage.setItem(AUTOCONNECT_STORAGE_KEY, provider);
-};
-
-export const getAutoconnectProvider = () => {
-    return localStorage.getItem(AUTOCONNECT_STORAGE_KEY) as WalletProvider | null;
 };

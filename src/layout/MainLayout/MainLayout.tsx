@@ -10,7 +10,7 @@ import { useVisibilityState } from 'hooks';
 import { Dispatch, RootState } from 'redux/store';
 import { LOGOUT } from 'redux/constants';
 import { RouteListener } from 'navigation';
-import { I18n, WalletProvidersUtils, ToastUtils, WalletUtils, Firebase } from 'utils';
+import { I18n, WalletProvidersUtils, ToastUtils, StorageUtils, Firebase } from 'utils';
 
 import './MainLayout.scss';
 
@@ -43,7 +43,7 @@ const MainLayout = () => {
     }, [location]);
 
     useEffect(() => {
-        const autoconnectProvider = WalletUtils.getAutoconnectProvider();
+        const autoconnectProvider = StorageUtils.getAutoconnectProvider();
 
         if (
             !wallet &&
@@ -91,7 +91,7 @@ const MainLayout = () => {
 
     useEffect(() => {
         const keystoreChangeHandler = (provider: WalletProvider) => {
-            if (wallet && provider === WalletUtils.getAutoconnectProvider()) {
+            if (wallet && provider === StorageUtils.getAutoconnectProvider()) {
                 ToastUtils.showInfoToast({
                     content: I18n.t(provider === WalletProvider.Cosmostation ? 'cosmostationKeystoreChange' : provider === WalletProvider.Leap ? 'leapKeystoreChange' : 'keplrKeystoreChange'),
                 });

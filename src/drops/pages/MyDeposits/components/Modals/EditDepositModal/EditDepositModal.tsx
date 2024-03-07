@@ -6,7 +6,7 @@ import Assets from 'assets';
 import { Button, Card, Modal, Steps, Tooltip } from 'components';
 import { DepositModel } from 'models';
 import { RootState, Dispatch } from 'redux/store';
-import { I18n, NumbersUtils, WalletUtils } from 'utils';
+import { I18n, NumbersUtils, StorageUtils, WalletUtils } from 'utils';
 
 import './EditDepositModal.scss';
 
@@ -22,7 +22,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
     const dispatch = useDispatch<Dispatch>();
     const steps = I18n.t('depositDrops.editDropModal.steps', {
         returnObjects: true,
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     useEffect(() => {

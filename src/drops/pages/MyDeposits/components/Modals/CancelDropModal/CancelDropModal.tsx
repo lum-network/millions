@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Assets from 'assets';
 import { Button, Card, Modal, TransactionBatchProgress, SmallerDecimal, Steps, Tooltip } from 'components';
-import { DenomsUtils, I18n, NumbersUtils, WalletUtils } from 'utils';
+import { DenomsUtils, I18n, NumbersUtils, StorageUtils } from 'utils';
 import { Dispatch, RootState } from 'redux/store';
 import { DepositModel } from 'models';
 
@@ -22,7 +22,7 @@ const CancelDropModal = ({ deposits, limit }: { deposits?: DepositModel[]; limit
     const dispatch = useDispatch<Dispatch>();
     const steps = I18n.t('depositDrops.cancelDropModal.steps', {
         returnObjects: true,
-        provider: WalletUtils.getAutoconnectProvider(),
+        provider: StorageUtils.getAutoconnectProvider(),
     });
 
     const depositsTotalAmount = deposits ? deposits.reduce((acc, deposit) => NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') + acc, 0) : 0;
