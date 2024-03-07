@@ -165,7 +165,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             {I18n.t('landing.howItWorks')}
                         </a>
                     </li>
-                    <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
+                    <li className='nav-item mx-0 mx-lg-3 mx-xl-4 my-3 my-lg-0' {...dismissMenuProps}>
                         <a
                             href={NavigationConstants.DOCUMENTATION}
                             target='_blank'
@@ -181,7 +181,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             {I18n.t('landing.faq')}
                         </a>
                     </li>
-                    <li className='nav-item mx-0 mx-lg-3 mx-lg-4 my-3 my-lg-0' {...dismissMenuProps}>
+                    <li className='nav-item mx-0 mx-lg-3 mx-xl-4 my-3 my-lg-0' {...dismissMenuProps}>
                         <a
                             href={NavigationConstants.TWITTER}
                             target='_blank'
@@ -203,7 +203,7 @@ const Header = ({ logoutModalRef }: { logoutModalRef: RefObject<ModalHandlers> }
                             <img className='scale-hover' src={Assets.images.discordButton} alt='Discord' />
                         </a>
                     </li>
-                    <li className='nav-item ms-0 ms-lg-3 ms-lg-4 mt-3 mt-lg-0'>
+                    <li className='nav-item ms-0 ms-lg-3 ms-xl-4 mt-3 mt-lg-0'>
                         <Button
                             to={NavigationConstants.HOME}
                             {...dismissMenuProps}

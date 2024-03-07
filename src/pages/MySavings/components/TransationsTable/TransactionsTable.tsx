@@ -117,7 +117,7 @@ const TransactionsTable = ({
                     </div>
                     <div className='d-flex flex-column'>
                         <label>{headers[2]}</label>
-                        <div className='d-flex flex-row justify-content-between align-items-center tx-amount table-item'>
+                        <div className='d-flex flex-column flex-sm-row justify-content-between align-items-sm-center tx-amount table-item'>
                             <div className='amount text-nowrap'>
                                 {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
                                 <span className='denom ms-2'>{DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}</span>

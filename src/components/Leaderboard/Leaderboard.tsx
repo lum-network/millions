@@ -11,7 +11,6 @@ import { DenomsUtils, I18n, WalletProvidersUtils, NumbersUtils, StringsUtils } f
 import numeral from 'numeral';
 
 import './Leaderboard.scss';
-import { useTranslation } from 'react-i18next';
 
 interface Props {
     pool: PoolModel;
@@ -36,7 +35,6 @@ const Leaderboard = (props: Props) => {
 
     const { width: windowWidth } = useWindowSize();
     const { isDark } = useColorScheme();
-    const { t } = useTranslation();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const tl = useRef<gsap.core.Timeline>();
@@ -148,15 +146,15 @@ const Leaderboard = (props: Props) => {
         return (
             <div
                 key={`depositor-rank-${index}`}
-                className={`position-relative d-flex flex-row align-items-center justify-content-between leaderboard-rank ${flat ? 'flat' : ''} ${isDark ? 'dark' : ''} ${
+                className={`position-relative d-flex flex-column flex-sm-row align-items-sm-center justify-content-between leaderboard-rank ${flat ? 'flat' : ''} ${isDark ? 'dark' : ''} ${
                     item.address === lumWallet?.address ? 'me' : !isDark && (isMobile || windowWidth < Breakpoints.MD) ? 'white-bg' : ''
                 }`}
             >
                 <div className='d-flex flex-row align-items-center'>
                     <div className={'me-3 rank' + ' ' + (item.rank === 1 ? 'first' : item.rank === 2 ? 'second' : item.rank === 3 ? 'third' : '')}>#{item.rank}</div>
-                    <div className='address'>{StringsUtils.trunc(item.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
+                    <div className='address'>{StringsUtils.trunc(item.address, windowWidth > Breakpoints.SM ? 6 : windowWidth < 350 ? 3 : 8)}</div>
                 </div>
-                <div className='position-relative overflow-visible d-flex flex-row align-items-center justify-content-end'>
+                <div className='position-relative overflow-visible d-flex flex-row align-items-center justify-content-sm-end justify-content-between mt-2 mt-sm-0'>
                     <div className='crypto-amount me-3'>
                         <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, windowWidth < Breakpoints.MD ? 3 : 6)} /> {DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase()}
                     </div>
@@ -166,22 +164,30 @@ const Leaderboard = (props: Props) => {
                         </div>
                     ) : null}
                 </div>
-                {!(lumWallet && item.address === lumWallet.address) && userRank && userRank.rank > item.rank && totalUserDeposits ? (
-                    <Button
-                        className='deposit-more-btn'
-                        to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${pool.poolId.toString()}`}
-                        locationState={{
-                            amountToDeposit: Math.ceil(amount - totalUserDeposits),
-                        }}
-                        forcePurple
-                    >
-                        {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalUserDeposits), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
-                    </Button>
-                ) : null}
-                {!(lumWallet && item.address === lumWallet.address) && totalDeposited && userRank && userRank.rank > item.rank && NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
-                    <Button className='deposit-more-btn' forcePurple>
-                        {I18n.t('leaderboard.newRanking')}
-                    </Button>
+                {windowWidth > Breakpoints.SM ? (
+                    <>
+                        {!(lumWallet && item.address === lumWallet.address) && userRank && userRank.rank > item.rank && totalUserDeposits ? (
+                            <Button
+                                className='deposit-more-btn'
+                                to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(item.nativeDenom)}/${pool.poolId.toString()}`}
+                                locationState={{
+                                    amountToDeposit: Math.ceil(amount - totalUserDeposits),
+                                }}
+                                forcePurple
+                            >
+                                {I18n.t('leaderboard.depositBtn', { amount: Math.ceil(amount - totalUserDeposits), denom: DenomsUtils.getNormalDenom(item.nativeDenom).toUpperCase() })}
+                            </Button>
+                        ) : null}
+                        {!(lumWallet && item.address === lumWallet.address) &&
+                        totalDeposited &&
+                        userRank &&
+                        userRank.rank > item.rank &&
+                        NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
+                            <Button className='deposit-more-btn' forcePurple>
+                                {I18n.t('leaderboard.newRanking')}
+                            </Button>
+                        ) : null}
+                    </>
                 ) : null}
             </div>
         );
@@ -191,7 +197,7 @@ const Leaderboard = (props: Props) => {
         if (pool.leaderboard.items.length === 0) {
             return (
                 <div className='d-flex flex-column align-items-center justify-content-center'>
-                    <h3 className='mb-4'>{t('leaderboard.noDepositYet')}</h3>
+                    <h3 className='mb-4'>{I18n.t('leaderboard.noDepositYet')}</h3>
                     <Button to={`${NavigationConstants.POOLS}/${DenomsUtils.getNormalDenom(pool.nativeDenom)}/${pool.poolId.toString()}`} forcePurple>
                         {I18n.t('mySavings.deposit')}
                     </Button>
@@ -202,12 +208,12 @@ const Leaderboard = (props: Props) => {
         return (
             <>
                 {!enableAnimation && windowWidth < Breakpoints.MD && userRank && (
-                    <div className={`user-rank leaderboard-rank me d-flex flex-row justify-content-between align-items-center`}>
+                    <div className={`user-rank leaderboard-rank me d-flex flex-column flex-sm-row align-items-sm-center justify-content-between`}>
                         <div className='d-flex flex-row align-items-center'>
                             <div className='me-3 rank'>#{userRank.rank}</div>
                             <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
                         </div>
-                        <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                        <div className='position-relative d-flex flex-row align-items-center justify-content-sm-end justify-content-between mt-2 mt-sm-0'>
                             <div className='crypto-amount me-3'>
                                 <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), 3)} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
                             </div>
@@ -222,12 +228,12 @@ const Leaderboard = (props: Props) => {
                 {onBottomReached ? (
                     <InfiniteScroll hasMore={hasMore || false} loadMore={onBottomReached} loader={<Loading key={0} />} className='position-relative'>
                         {enableAnimation && userRank ? (
-                            <div className={`user-rank leaderboard-rank animated me d-flex flex-row justify-content-between align-items-center`}>
+                            <div className={`user-rank leaderboard-rank animated me d-flex flex-column flex-sm-row align-items-sm-center justify-content-between`}>
                                 <div className='d-flex flex-row align-items-center'>
                                     <div className='me-3 rank'>#{userRank.rank}</div>
                                     <div className='address'>{StringsUtils.trunc(userRank.address, windowWidth < Breakpoints.SM ? 3 : 6)}</div>
                                 </div>
-                                <div className='position-relative d-flex flex-row align-items-center justify-content-end'>
+                                <div className='position-relative d-flex flex-row align-items-center justify-content-sm-end justify-content-between mt-2 mt-sm-0'>
                                     <div className='crypto-amount me-3'>
                                         <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), windowWidth < Breakpoints.MD ? 3 : 6)} />{' '}
                                         {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}

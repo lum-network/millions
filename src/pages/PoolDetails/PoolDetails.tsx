@@ -184,14 +184,18 @@ const PoolDetails = () => {
                             <Skeleton height={20} width={150} />
                         ) : (
                             <div className='d-flex estimated-prize'>
-                                <SmallerDecimal nb={pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0.000000') : '--'} />
+                                {pool.estimatedPrizeToWin && winSizes.width < Breakpoints.SM ? (
+                                    numeral(pool.estimatedPrizeToWin.amount).format('0[.]0a')
+                                ) : (
+                                    <SmallerDecimal nb={pool.estimatedPrizeToWin ? numeral(pool.estimatedPrizeToWin.amount).format('0,0.000000') : '--'} />
+                                )}
                                 &nbsp;{denom.toUpperCase()}
                             </div>
                         )}
                     </div>
-                    <div className='next-draw-container'>
+                    <div className='d-flex flex-column next-draw-container'>
                         <h2 className='mb-0'>{I18n.t('poolDetails.nextDraw')}</h2>
-                        <div className={`display-6 next-draw ${drawInProgress ? 'draw-in-progress' : ''}`}>
+                        <div className={`display-6 next-draw ${drawInProgress ? 'draw-in-progress' : 'text-break'}`}>
                             {drawInProgress ? I18n.t('common.drawInProgress') : <CountDown to={pool.nextDrawAt || new Date()} onCountdownEnd={() => setDrawInProgress(true)} />}
                         </div>
                     </div>
@@ -219,7 +223,10 @@ const PoolDetails = () => {
                                     </div>
                                     <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                         <div className='tvl-detail-amount'>
-                                            {numeral(sponsorshipAmount).format('0,0')} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                            {numeral(sponsorshipAmount)
+                                                .format(winSizes.width < Breakpoints.SM ? '0,0a' : '0,0')
+                                                .toUpperCase()}{' '}
+                                            <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
                                         </div>
                                         <small className='usd-amount'>{numeral(sponsorshipAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
                                     </div>
@@ -232,7 +239,10 @@ const PoolDetails = () => {
                                 </div>
                                 <div className='d-flex flex-column justify-content-md-end text-md-end mt-3 mt-md-0'>
                                     <div className='tvl-detail-amount'>
-                                        {numeral(usersDepositsAmount).format('0,0')} <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
+                                        {numeral(usersDepositsAmount)
+                                            .format(winSizes.width < Breakpoints.SM ? '0[.]0a' : '0,0')
+                                            .toUpperCase()}{' '}
+                                        <span className='denom'>{DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase()}</span>
                                     </div>
                                     <small className='usd-amount'>{numeral(usersDepositsAmount * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 0)).format('$0,0[.]00')}</small>
                                 </div>
@@ -281,11 +291,11 @@ const PoolDetails = () => {
                                         <tr key={`prize-${index}`} className={'rank' + ' ' + (index + 1 === 1 ? 'first' : index + 1 === 2 ? 'second' : index + 1 === 3 ? 'third' : '')}>
                                             <td data-label={prizeDistributionHeaders[0]}>
                                                 <div className='d-flex flex-column'>
-                                                    <div>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
+                                                    <div className='prize-value'>{numeral(prize.value / prize.count).format('$0,0[.]00')}</div>
                                                     <div className='percentage'>{I18n.t('poolDetails.prizeDistribution.chancesToWin', { percentage: numeral(prize.chances).format('0,0[.]00%') })}</div>
                                                 </div>
                                             </td>
-                                            <td className='text-end' data-label={prizeDistributionHeaders[1]}>
+                                            <td className='text-end prize-count' data-label={prizeDistributionHeaders[1]}>
                                                 {prize.count}
                                             </td>
                                         </tr>
@@ -330,7 +340,10 @@ const PoolDetails = () => {
                                             </div>
                                             {estimationAmount && (
                                                 <div className='crypto-amount text-nowrap'>
-                                                    {numeral(Number(estimationAmount) / (prices[denom] || 1)).format('0,0[.]00')} {denom.toUpperCase()}
+                                                    {numeral(Number(estimationAmount) / (prices[denom] || 1))
+                                                        .format(winSizes.width < Breakpoints.SM ? '0[.]0a' : '0,0[.]00')
+                                                        .toUpperCase()}{' '}
+                                                    {denom.toUpperCase()}
                                                 </div>
                                             )}
                                         </div>

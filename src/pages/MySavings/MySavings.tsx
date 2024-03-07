@@ -317,7 +317,7 @@ const MySavings = () => {
                 </Card>
             ) : null}
             <div className='row'>
-                <div className='col-12 col-lg-8 col-xxl-9'>
+                <div className='col-12 col-lg-8'>
                     <div>
                         <h2>{I18n.t('mySavings.totalBalance')}</h2>
                         <Card className='balance-card'>
@@ -456,8 +456,8 @@ const MySavings = () => {
                         ) : null}
                         {leaderboardPool ? (
                             <div ref={leaderboardSectionRef} className='leaderboard-section'>
-                                <div className='mt-5 mb-3 d-flex flex-row align-items-center justify-content-between'>
-                                    <div className='d-flex align-items-center'>
+                                <div className='mt-5 mb-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between'>
+                                    <div className='d-flex align-items-center mb-3 mb-sm-0'>
                                         <h2 className='mb-0'>{I18n.t('mySavings.depositorsRanking')}</h2>
                                         <span data-tooltip-id='depositor-ranking-hint' data-tooltip-html={I18n.t('leaderboard.hint')} className='ms-2 mb-2'>
                                             <img src={Assets.images.info} alt='info' />
@@ -505,7 +505,7 @@ const MySavings = () => {
                         ) : null}
                     </div>
                 </div>
-                <div className='col-12 col-lg-4 col-xxl-3 side-bar'>
+                <div className='col-12 col-lg-4 side-bar'>
                     <div className='row'>
                         {winSizes.width > Breakpoints.LG ? (
                             <div className='col-12 col-md-6 col-lg-12 mt-5 mt-lg-0'>
