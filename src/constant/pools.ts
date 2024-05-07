@@ -38,6 +38,17 @@ export const POOLS: {
         fees: 0.025,
         illustration: Assets.chains.osmoIllustration,
     },
+    inj: {
+        rpc: process.env.REACT_APP_RPC_INJ ?? '',
+        chainName: 'Injective',
+        ibcSourceChannel: 'channel-273',
+        ibcTestnetSourceChannel: 'channel-0',
+        ibcDenom: 'ibc/110A26548C514042AFDDEB1D4B46E71C1D43D9672659A3C958D7365FEECD9388',
+        ibcTestnetDenom: 'ibc/110A26548C514042AFDDEB1D4B46E71C1D43D9672659A3C958D7365FEECD9388',
+        unbondingTime: 21,
+        fees: 0.016,
+        illustration: undefined,
+    },
 };
 
-export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'chihuahua-1', 'osmosis-1'];
+export const USED_CHAIN_IDS = ['cosmoshub-4', 'lum-network-1', 'chihuahua-1', 'osmosis-1', 'injective-1'];

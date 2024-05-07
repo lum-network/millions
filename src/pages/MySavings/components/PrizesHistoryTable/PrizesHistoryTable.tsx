@@ -26,7 +26,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
     const renderRow = (prize: PrizeModel, index: number) => {
         const icon = DenomsUtils.getIconFromDenom(prize.amount.denom);
         const normalDenom = DenomsUtils.getNormalDenom(prize.amount.denom);
-        const amount = NumbersUtils.convertUnitNumber(prize.amount.amount);
+        const amount = NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom);
         const price = prices?.[normalDenom];
         let tagType = TagsConstants.Types.UNCLAIMED;
 
@@ -81,7 +81,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
 
             const icon = DenomsUtils.getIconFromDenom(prize.amount.denom);
             const normalDenom = DenomsUtils.getNormalDenom(prize.amount.denom);
-            const amount = NumbersUtils.convertUnitNumber(prize.amount.amount);
+            const amount = NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom);
             const price = prices?.[normalDenom];
             let tagType = TagsConstants.Types.UNCLAIMED;
 

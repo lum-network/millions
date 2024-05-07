@@ -54,7 +54,7 @@ const DepositIbcTransfer = (props: Props) => {
                         isLoading={isLoading}
                         label={I18n.t('withdraw.amountInput.label')}
                         sublabel={I18n.t('withdraw.amountInput.sublabel', {
-                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0', balances.length > 0 ? balances[0].denom : undefined)),
                             denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                         })}
                         onMax={() => {
@@ -64,7 +64,7 @@ const DepositIbcTransfer = (props: Props) => {
                         inputProps={{
                             type: 'number',
                             min: 0,
-                            max: balances.length > 0 ? balances[0].amount : '0',
+                            max: WalletUtils.getMaxAmount(currentPool.nativeDenom, balances, currentPool.internalInfos?.fees),
                             step: 'any',
                             lang: 'en',
                             disabled,

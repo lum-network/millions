@@ -11,7 +11,7 @@ export const getTotalBalance = (balances: Coin[], prices: { [denom: string]: num
 
     balances.forEach((balance) => {
         const price = Object.entries(prices).find((price) => price[0] === getNormalDenom(balance.denom));
-        const convertedAmount = convertUnitNumber(balance.amount);
+        const convertedAmount = convertUnitNumber(balance.amount, balance.denom);
 
         if (price) {
             totalBalance += convertedAmount * price[1];
@@ -43,7 +43,7 @@ export const getTotalBalanceFromDeposits = (deposits: AggregatedDepositModel[] |
         .filter((deposit) => deposit.state === DepositState.DEPOSIT_STATE_SUCCESS)
         .forEach((deposit) => {
             const price = prices ? Object.entries(prices).find((price) => price[0] === getNormalDenom(deposit.amount?.denom || '')) : null;
-            const convertedAmount = convertUnitNumber(deposit.amount?.amount || '0');
+            const convertedAmount = convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom);
 
             if (prices && !price) {
                 missingPrice = true;
@@ -67,7 +67,7 @@ export const getMaxAmount = (denom?: string, balances?: Coin[], feesAmount?: num
     const balance = balances?.find((b) => b.denom === denom);
 
     if (balance) {
-        let amount = convertUnitNumber(balance.amount);
+        let amount = convertUnitNumber(balance.amount, balance.denom);
 
         if (feesAmount) {
             amount -= feesAmount;

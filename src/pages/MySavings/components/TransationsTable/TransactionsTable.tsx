@@ -72,10 +72,14 @@ const TransactionsTable = ({
                 <td data-label={headers[2]} className='align-bottom align-md-middle text-sm-end'>
                     <div className='d-flex flex-column justify-content-center tx-amount'>
                         <div className='amount text-nowrap'>
-                            {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
+                            {transaction.amount.length > 0 ? (
+                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount, transaction.amount[0].denom))} />
+                            ) : (
+                                '--'
+                            )}
                             <span className='denom ms-2'>{DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}</span>
                         </div>
-                        {price && <small className='usd-price'>{numeral(NumbersUtils.convertUnitNumber(transaction.amount[0].amount) * price).format('$0,0[.]00')}</small>}
+                        {price && <small className='usd-price'>{numeral(NumbersUtils.convertUnitNumber(transaction.amount[0].amount, transaction.amount[0].denom) * price).format('$0,0[.]00')}</small>}
                     </div>
                 </td>
             </tr>
@@ -119,10 +123,16 @@ const TransactionsTable = ({
                         <label>{headers[2]}</label>
                         <div className='d-flex flex-column flex-sm-row justify-content-between align-items-sm-center tx-amount table-item'>
                             <div className='amount text-nowrap'>
-                                {transaction.amount.length > 0 ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount))} /> : '--'}
+                                {transaction.amount.length > 0 ? (
+                                    <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(transaction.amount[0].amount, transaction.amount[0].denom))} />
+                                ) : (
+                                    '--'
+                                )}
                                 <span className='denom ms-2'>{DenomsUtils.getNormalDenom(transaction.amount[0]?.denom || 'ulum').toUpperCase()}</span>
                             </div>
-                            {price && <small className='usd-price'>{numeral(NumbersUtils.convertUnitNumber(transaction.amount[0].amount) * price).format('$0,0[.]00')}</small>}
+                            {price && (
+                                <small className='usd-price'>{numeral(NumbersUtils.convertUnitNumber(transaction.amount[0].amount, transaction.amount[0].denom) * price).format('$0,0[.]00')}</small>
+                            )}
                         </div>
                     </div>
                 </div>

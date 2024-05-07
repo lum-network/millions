@@ -87,14 +87,14 @@ class WalletClient {
         return this.queryClient.cosmos.distribution.v1beta1.delegationTotalRewards({ delegatorAddress: address });
     };
 
-    getBonding = async () => {
+    getBonding = async (denom: string) => {
         if (this.queryClient === null) {
             return null;
         }
 
         const bondedTokens = (await this.queryClient.cosmos.staking.v1beta1.pool()).pool?.bondedTokens;
 
-        return bondedTokens ? NumbersUtils.convertUnitNumber(bondedTokens) : null;
+        return bondedTokens ? NumbersUtils.convertUnitNumber(bondedTokens, denom) : null;
     };
 
     getSupply = async (denom: string) => {
@@ -104,7 +104,7 @@ class WalletClient {
 
         const supply = (await this.queryClient.cosmos.bank.v1beta1.supplyOf({ denom }))?.amount?.amount;
 
-        return supply ? NumbersUtils.convertUnitNumber(supply) : null;
+        return supply ? NumbersUtils.convertUnitNumber(supply, denom) : null;
     };
 
     getCommunityTaxRate = async () => {

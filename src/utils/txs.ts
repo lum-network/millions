@@ -1,4 +1,4 @@
-import { Coin, LUM_DENOM, LumRegistry, MICRO_LUM_DENOM, lum, parseRawLogs, toJSON } from '@lum-network/sdk-javascript';
+import { Coin, LUM_DENOM, LumRegistry, lum, parseRawLogs, toJSON } from '@lum-network/sdk-javascript';
 import Assets from 'assets';
 import { TransactionModel } from 'models';
 import { I18n, NumbersUtils } from 'utils';
@@ -69,13 +69,13 @@ export const findAmountInLogs = async (logs: any, event: string, index: number) 
 export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, logs: any, event: string, formattedTxs: TransactionModel[]) => {
     if (tx.amount.length > 0) {
         const msgAmount = await findAmountInLogs(logs, event, index);
-        const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount);
+        const msgAmountNumber = NumbersUtils.convertUnitNumber(msgAmount[0].amount, msgAmount[0].denom);
 
         const existingDenomIndex = tx.amount.findIndex((amount) => amount.denom === msgAmount[0].denom);
 
         if (existingDenomIndex > -1) {
-            const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount);
-            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM, MICRO_LUM_DENOM).toFixed();
+            const prevAmountNumber = NumbersUtils.convertUnitNumber(tx.amount[0].amount, tx.amount[0].denom);
+            const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM).toFixed();
             tx.amount[existingDenomIndex].amount = amount;
         } else {
             const existingTx = formattedTxs.find((formattedTx) => formattedTx.hash === tx.hash && formattedTx.height === tx.height);
@@ -95,8 +95,8 @@ export const parseLogs = async (tx: TransactionModel, msg: Any, index: number, l
                     ],
                 });
             } else {
-                const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount);
-                const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM, MICRO_LUM_DENOM).toFixed();
+                const prevAmountNumber = NumbersUtils.convertUnitNumber(existingTx.amount[0].amount, existingTx.amount[0].denom);
+                const amount = NumbersUtils.convertUnitNumber(prevAmountNumber + msgAmountNumber, LUM_DENOM).toFixed();
 
                 existingTx.amount = [
                     {

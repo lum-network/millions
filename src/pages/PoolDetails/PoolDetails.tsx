@@ -91,8 +91,8 @@ const PoolDetails = () => {
     const drawHistoryHeaders = I18n.t('poolDetails.drawsHistory.tableHeaders', { returnObjects: true });
     const prizeDistributionHeaders = I18n.t('poolDetails.prizeDistribution.tableHeaders', { returnObjects: true });
 
-    const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
-    const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0') - sponsorshipAmount;
+    const sponsorshipAmount = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount, pool.nativeDenom);
+    const usersDepositsAmount = NumbersUtils.convertUnitNumber(pool.tvlAmount || '0', pool.nativeDenom) - sponsorshipAmount;
 
     const userDeposits = lumWallet?.deposits.find((deposit) => (poolId ? Number(deposit.poolId) === Number(poolId) : deposit.amount?.denom === 'u' + denom));
     const avgDeposit = (usersDepositsAmount / Number(pool.depositorsCount)) * (prices[denom] ?? 0);
@@ -131,7 +131,7 @@ const PoolDetails = () => {
                             <PurpleBackgroundImage alt='coin stacked' src={Assets.images.coinsStacked2} className='no-filter' height={42} width={42} />
                             <div className='d-flex flex-column align-items-start justify-content-center ms-3'>
                                 <h4 className='mb-0 text-nowrap'>{I18n.t('home.totalValueLocked')}</h4>
-                                <div className='total-value-locked text-nowrap'>${numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[denom] || 1)).format('0,0')}</div>
+                                <div className='total-value-locked text-nowrap'>${numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom) * (prices[denom] || 1)).format('0,0')}</div>
                             </div>
                         </div>
                         <Button
@@ -263,7 +263,9 @@ const PoolDetails = () => {
                                     </h3>
                                     <span className='user-deposit-amount'>
                                         <SmallerDecimal
-                                            nb={NumbersUtils.formatTo6digit(userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'), 0))}
+                                            nb={NumbersUtils.formatTo6digit(
+                                                userDeposits.deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', pool.nativeDenom), 0),
+                                            )}
                                         />{' '}
                                         {denom.toUpperCase()}
                                     </span>
@@ -438,7 +440,7 @@ const PoolDetails = () => {
                                     <div className='w-100'>
                                         <small className='sub-title'>{I18n.t('poolDetails.winners.bestPrizeWon')}</small>
                                         <div className='stat-bg-white mb-0 mt-2'>
-                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount) * (prices[denom] ?? 0))
+                                            {numeral(NumbersUtils.convertUnitNumber(prizesStats.biggestPrizeAmount, pool.nativeDenom) * (prices[denom] ?? 0))
                                                 .format('$0,0.00')
                                                 .toUpperCase()}
                                         </div>
@@ -514,8 +516,10 @@ const PoolDetails = () => {
                                                 <div className='stat-bg-white'>
                                                     <SmallerDecimal
                                                         nb={numeral(
-                                                            NumbersUtils.convertUnitNumber(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinAmount || '0') *
-                                                                (prices[denom] || 1),
+                                                            NumbersUtils.convertUnitNumber(
+                                                                pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinAmount || '0',
+                                                                pool.nativeDenom,
+                                                            ) * (prices[denom] || 1),
                                                         ).format('$0,0[.]00')}
                                                     />
                                                 </div>
@@ -605,11 +609,13 @@ const PoolDetails = () => {
                                                         {draw.totalWinCount.toString()}
                                                     </td>
                                                     <td data-label={drawHistoryHeaders[4]} className='text-end'>
-                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount)).format('0,0.000000')} />
+                                                        <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount, pool.nativeDenom)).format('0,0.000000')} />
                                                         &nbsp;
                                                         {denom.toUpperCase()}
                                                         <div className='draw-token'>
-                                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount) * (prices[denom] ?? 0)).format('$0,0[.]00')} />
+                                                            <SmallerDecimal
+                                                                nb={numeral(NumbersUtils.convertUnitNumber(draw.totalWinAmount, pool.nativeDenom) * (prices[denom] ?? 0)).format('$0,0[.]00')}
+                                                            />
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -638,7 +644,7 @@ const PoolDetails = () => {
                     ]}
                 />
             </Card>
-            <DrawDetailsModal draw={selectedDraw} poolDenom={denom} prices={prices} modalRef={modalRef} />
+            <DrawDetailsModal draw={selectedDraw} poolDenom={pool.nativeDenom} prices={prices} modalRef={modalRef} />
         </div>
     );
 };

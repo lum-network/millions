@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
@@ -117,6 +117,8 @@ const TransferOut = ({ lumWallet, otherWallets, asset, isLoading, balances, pric
         provider: WalletUtils.getAutoconnectProvider(),
     });
 
+    const balance = useMemo(() => balances.find((balance) => balance.denom === form.values.denom), [form]);
+
     return (
         <Modal id='withdrawModal' ref={modalRef} modalWidth={1080}>
             <div className='row row-cols-1 row-cols-lg-2'>
@@ -138,7 +140,7 @@ const TransferOut = ({ lumWallet, otherWallets, asset, isLoading, balances, pric
                                         className='mt-5'
                                         label={I18n.t('mySavings.transferOutModal.amountInput.label')}
                                         sublabel={I18n.t('mySavings.transferOutModal.amountInput.sublabel', {
-                                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.length > 0 ? balances[0].amount : '0')),
+                                            amount: balance ? NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount, balance.denom)) : 0,
                                             denom: DenomsUtils.getNormalDenom(form.values.denom).toUpperCase(),
                                         })}
                                         onMax={() => {

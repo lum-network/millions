@@ -90,9 +90,11 @@ const DropsDetails = ({ drops, poolDenom, prices, modalRef, onCancel, onEdit }: 
                                     </td>
                                     <td className='text-md-end'>
                                         <div className='d-flex flex-column justify-content-center tx-amount'>
-                                            <div className='amount text-nowrap'>{numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0) * (prices[poolDenom] || 0)).format('$0,0[.]00')}</div>
+                                            <div className='amount text-nowrap'>
+                                                {numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0, drop.amount?.denom) * (prices[poolDenom] || 0)).format('$0,0[.]00')}
+                                            </div>
                                             <small className='usd-price'>
-                                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0)).format('0,0.00')} /> {poolDenom.toUpperCase()}
+                                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0, drop.amount?.denom)).format('0,0.00')} /> {poolDenom.toUpperCase()}
                                             </small>
                                         </div>
                                     </td>

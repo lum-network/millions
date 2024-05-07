@@ -50,7 +50,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                             Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_CLICK, {
                                 pool_id: deposit.poolId?.toString(),
                                 deposit_id: deposit.depositId?.toString(),
-                                amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0),
+                                amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0, deposit.amount?.denom),
                                 denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
                             });
                             onLeavePool(deposit as DepositModel);
@@ -117,7 +117,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
             }
         }
 
-        const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
+        const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom) * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
 
         const ActionsContainer = ({ children }: { children: JSX.Element[] }) => {
             if (winSizes.width < Breakpoints.MD) {
@@ -134,7 +134,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                         <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' className='no-filter' />
                         <div className='d-flex flex-column ms-3'>
                             <h3 className='mb-0'>
-                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
+                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom))} />{' '}
                                 {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                 {deposit.isSponsor && (
                                     <span data-tooltip-id={`deposit-${deposit.depositId?.toString() || index}-sponsor`} data-tooltip-html={I18n.t('mySavings.sponsorHint')} className='ms-2'>
@@ -170,7 +170,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
 
     const renderRow = (deposit: AggregatedDepositModel, index: number) => {
         if (deposit.deposits.length > 1) {
-            const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
+            const usdPrice = NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom) * prices[DenomsUtils.getNormalDenom(deposit.amount?.denom || '')] || 0;
 
             return (
                 <Collapsible
@@ -183,7 +183,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.DEPOSITS_OPEN_DETAILS_CLICK, {
                             pool_id: deposit.poolId?.toString() || '',
                             deposits_number: deposit.deposits.length,
-                            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || ''),
+                            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || '', deposit.amount?.denom),
                             denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
                         })
                     }
@@ -194,7 +194,7 @@ const DepositTable = ({ deposits, pools, prices, onLeavePool, onDepositRetry, on
                                     <img src={DenomsUtils.getIconFromDenom(deposit.amount?.denom || '')} alt='coin icon' width='40' height='40' className='no-filter' />
                                     <div className='d-flex flex-column ms-3'>
                                         <h3 className='mb-0'>
-                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0'))} />{' '}
+                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom))} />{' '}
                                             {DenomsUtils.getNormalDenom(deposit.amount?.denom || '').toUpperCase()}
                                         </h3>
                                         <p className='mb-0'>

@@ -45,7 +45,7 @@ const AssetOption = (
                 <div className='d-flex flex-row align-items-center'>
                     {assetIcon && <img src={assetIcon} className='menu-asset-icon me-2 no-filter' />} {props.data.label}
                 </div>
-                {balance && <SmallerDecimal className='asset-amount' nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount))} />}
+                {balance && <SmallerDecimal className='asset-amount' nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balance.amount, balance.denom))} />}
             </div>
         </components.Option>
     );

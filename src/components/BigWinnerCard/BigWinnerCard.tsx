@@ -31,14 +31,14 @@ const BigWinnerCard = ({ apr, denom, address, prize, className, price }: IProps)
                 Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LUCKIEST_WINNERS_CARD_CLICK, {
                     denom: DenomsUtils.getNormalDenom(denom),
                     address: address,
-                    amount: NumbersUtils.convertUnitNumber(prize),
+                    amount: NumbersUtils.convertUnitNumber(prize, denom),
                 })
             }
             forcePurple
         >
             <span className='prize text-nowrap'>
                 <img width={20} height={20} src={DenomsUtils.getIconFromDenom(denom)} className='me-3 d-none d-sm-inline-block no-filter' alt={denom} />
-                {apr ? `APR: ${numeral(apr / 100).format('0,0%')}` : `$${numeral(NumbersUtils.convertUnitNumber(prize * price)).format('0,0[.]00a')}`}
+                {apr ? `APR: ${numeral(apr / 100).format('0,0%')}` : `$${numeral(NumbersUtils.convertUnitNumber(prize * price, denom)).format('0,0[.]00a')}`}
             </span>
             <div className='address'>{StringsUtils.trunc(address, windowWidth <= Breakpoints.SM ? 3 : 6)}</div>
             <img src={Assets.images.arrow} alt='arrow' />

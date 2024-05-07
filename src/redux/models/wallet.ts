@@ -491,8 +491,8 @@ export const wallet = createModel<RootModel>()({
                 if (prizesToClaim) {
                     prizesToClaimSorted = prizesToClaim.prizes
                         .sort((a, b) => {
-                            const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0');
-                            const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0');
+                            const aAmount = NumbersUtils.convertUnitNumber(a.amount?.amount || '0', a.amount?.denom);
+                            const bAmount = NumbersUtils.convertUnitNumber(b.amount?.amount || '0', b.amount?.denom);
 
                             return bAmount - aAmount;
                         })
@@ -539,9 +539,9 @@ export const wallet = createModel<RootModel>()({
                     }
 
                     if (totalPrizesWon[prize.amount.denom]) {
-                        totalPrizesWon[prize.amount.denom] += NumbersUtils.convertUnitNumber(prize.amount.amount);
+                        totalPrizesWon[prize.amount.denom] += NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom);
                     } else {
-                        totalPrizesWon[prize.amount.denom] = NumbersUtils.convertUnitNumber(prize.amount.amount);
+                        totalPrizesWon[prize.amount.denom] = NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom);
                     }
                 }
 
@@ -1017,7 +1017,7 @@ export const wallet = createModel<RootModel>()({
                     content: I18n.t(batchCount === 1 ? 'success.deposit' : 'success.multiDeposit', {
                         count: batchCount,
                         denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
-                        amount: deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0),
+                        amount: deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount, pool.nativeDenom), 0),
                     }),
                 });
 

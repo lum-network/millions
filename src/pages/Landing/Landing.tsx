@@ -34,7 +34,7 @@ const Landing = () => {
     };
     const pools = useSelector((state: RootState) => state.pools.pools);
     const prices = useSelector((state: RootState) => state.stats.prices);
-    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
+    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
     const timeline = useRef<gsap.core.Timeline>();
     const { width } = useWindowSize();
@@ -374,7 +374,7 @@ const Landing = () => {
                     </div>
                     <div className='pools-cards-container cards-list'>
                         {pools.slice(0, 3).map((pool, index) => (
-                            <PoolCard key={index} denom={DenomsUtils.getNormalDenom(pool.nativeDenom)} tvl={Number(pool.tvlAmount)} prize={pool.estimatedPrizeToWin?.amount || 0} />
+                            <PoolCard key={index} denom={pool.nativeDenom} tvl={Number(pool.tvlAmount)} prize={pool.estimatedPrizeToWin?.amount || 0} />
                         ))}
                         {poolsPlaceholders.map((_, index) => (
                             <PoolCardPlaceholder key={index} name={placeholderNames[index] || 'New Pool'} />

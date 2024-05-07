@@ -45,11 +45,11 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                 <td className='py-3 px-4 align-bottom align-md-middle text-end'>
                     <div className='d-flex flex-column winner-amount'>
                         <div className='text-nowrap'>
-                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
+                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom)).format('0,0.000000')} />{' '}
                             <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                         </div>
                         <small className='usd-price'>
-                            {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
+                            {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
                         </small>
                     </div>
                 </td>
@@ -93,11 +93,11 @@ const LatestWinnersTable = ({ prizes, metadata, visibleItem, onPageChange, onIte
                     <div className='d-flex flex-row justify-content-between align-items-center tx-amount table-item'>
                         <div className='d-flex flex-column winner-amount'>
                             <div className='text-nowrap'>
-                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount)).format('0,0.000000')} />{' '}
+                                <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom)).format('0,0.000000')} />{' '}
                                 <span className='denom'>{DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}</span>
                             </div>
                             <small className='usd-price'>
-                                {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
+                                {numeral(NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] ?? 0)).format('$0,0.00')}
                             </small>
                         </div>
                     </div>

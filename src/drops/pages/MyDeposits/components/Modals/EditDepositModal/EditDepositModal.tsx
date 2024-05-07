@@ -113,7 +113,7 @@ const EditDepositModal = ({ deposit }: { deposit: DepositModel | null }) => {
                                         </div>
                                         <div className='input-container d-flex flex-column mt-5'>
                                             <label className='text-start mb-2'>{I18n.t('depositDrops.depositFlow.amount')}</label>
-                                            <input disabled className='edit-amount-input' value={NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0')} />
+                                            <input disabled className='edit-amount-input' value={NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0', deposit?.amount?.denom)} />
                                         </div>
                                     </Card>
                                 </div>
