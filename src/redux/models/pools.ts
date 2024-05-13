@@ -139,7 +139,7 @@ export const pools = createModel<RootModel>()({
 
                 for (const pool of pools) {
                     // Calculate Prize to win
-                    const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0', pool.availablePrizePool?.denom);
+                    const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0', await DenomsUtils.getDenomFromIbc(pool.availablePrizePool?.denom || ''));
 
                     if (pool.nativeDenom !== MICRO_LUM_DENOM && !pool.internalInfos) {
                         continue;
@@ -194,7 +194,7 @@ export const pools = createModel<RootModel>()({
                     const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount, pool.nativeDenom);
                     const tvlMinusSponsor = poolTvl - poolSponsorTvl;
 
-                    const variableApy = tvlMinusSponsor === 0 ? 0 : (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (tvlMinusSponsor < 0 ? 0 : tvlMinusSponsor);
+                    const variableApy = tvlMinusSponsor === 0 ? 0 : (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / tvlMinusSponsor;
 
                     pool.apy = variableApy * 100;
 

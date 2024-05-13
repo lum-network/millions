@@ -161,7 +161,7 @@ const PoolDetails = () => {
                         <div className='d-flex align-items-center'>
                             <h2 className='mb-0'>{I18n.t('poolDetails.prizePool')}</h2>
                             <span
-                                data-tooltip-id='winning-chance-tooltip'
+                                data-tooltip-id='prize-pool-tooltip'
                                 data-tooltip-html={I18n.t('poolDetails.prizePoolHint', {
                                     prizePool: Math.round(pool.currentPrizeToWin?.amount || 0),
                                     denom: denom.toUpperCase(),
@@ -170,7 +170,7 @@ const PoolDetails = () => {
                                 className='ms-2 mb-2'
                             >
                                 <img src={Assets.images.info} alt='info' className='purple-filter' />
-                                <Tooltip id='winning-chance-tooltip' />
+                                <Tooltip id='prize-pool-tooltip' />
                             </span>
                         </div>
                         {loadingFetchPools || loadingAdditionalInfo ? (

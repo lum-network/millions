@@ -63,7 +63,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
                 <td className='text-end'>
                     <div className='d-flex flex-column justify-content-center tx-amount'>
                         <div className='amount text-nowrap'>
-                            {prize.amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount), 3)} /> : '--'}
+                            {amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, 3)} /> : '--'}
                             <span className='denom ms-2'>{DenomsUtils.getNormalDenom(prize.amount.denom || '').toUpperCase()}</span>
                         </div>
                         {price && <small className='usd-price'>{numeral(amount * price).format('$0,0[.]00')}</small>}
@@ -117,7 +117,7 @@ const PrizesHistoryTable = ({ prizes, onPageChange, pagination }: IProps) => {
                         <div className='mt-3 d-flex flex-row justify-content-between align-items-center table-item'>
                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                 <div className='amount text-nowrap'>
-                                    {prize.amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount), 3)} /> : '--'}
+                                    {amount ? <SmallerDecimal nb={NumbersUtils.formatTo6digit(amount, 3)} /> : '--'}
                                     <span className='denom ms-2'>{DenomsUtils.getNormalDenom(prize.amount.denom || '').toUpperCase()}</span>
                                 </div>
                                 {price && <small className='usd-price'>{numeral(amount * price).format('$0,0[.]00')}</small>}

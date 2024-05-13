@@ -21,6 +21,7 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
     const { width: windowWidth } = useWindowSize();
 
     const normalDenom = DenomsUtils.getNormalDenom(poolDenom);
+    const drawRemainingPrizePool = NumbersUtils.convertUnitNumber(draw?.prizePool?.amount || 0, poolDenom) - NumbersUtils.convertUnitNumber(draw?.totalWinAmount || 0, poolDenom);
 
     return (
         <Modal id='drawDetailsModal' ref={modalRef} modalWidth={700}>
@@ -108,23 +109,14 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                         <div className='d-flex flex-column text-start mb-3 mb-sm-0'>
                                             <div className='display-6 prize-remaining-amount'>
                                                 <SmallerDecimal
-                                                    nb={numeral(
-                                                        NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0, draw.prizePool?.denom) -
-                                                            NumbersUtils.convertUnitNumber(draw.totalWinAmount, poolDenom),
-                                                    )
-                                                        .format(windowWidth < Breakpoints.SM ? '0[.]0a' : '0,0')
+                                                    nb={numeral(drawRemainingPrizePool)
+                                                        .format(windowWidth < Breakpoints.SM ? '0[.]0a' : drawRemainingPrizePool < 10 ? '0[.]00' : '0,0')
                                                         .toUpperCase()}
                                                 />{' '}
                                                 {normalDenom.toUpperCase()}
                                             </div>
                                             <div className='prize-remaining-amount'>
-                                                <SmallerDecimal
-                                                    nb={numeral(
-                                                        (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0, draw.prizePool?.denom) -
-                                                            NumbersUtils.convertUnitNumber(draw.totalWinAmount, poolDenom)) *
-                                                            (prices[normalDenom] ?? 0),
-                                                    ).format('$0,0[.]00')}
-                                                />
+                                                <SmallerDecimal nb={numeral(drawRemainingPrizePool * (prices[normalDenom] ?? 0)).format('$0,0[.]00')} />
                                             </div>
                                         </div>
                                         <Button
