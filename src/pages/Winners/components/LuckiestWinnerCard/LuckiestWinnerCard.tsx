@@ -29,7 +29,7 @@ const LuckiestWinnerCard = ({ prize, rank }: IProps) => {
     return (
         <Card
             onClick={() => {
-                window.open(`${NavigationConstants.MINTSCAN}/address/${prize.address}`, '_blank')?.focus();
+                window.open(`${NavigationConstants.MINTSCAN_LUM}/address/${prize.address}`, '_blank')?.focus();
             }}
             className='luckiest-winner-card p-3 p-xl-4'
             withoutPadding

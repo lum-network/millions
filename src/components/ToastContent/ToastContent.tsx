@@ -10,8 +10,8 @@ export interface ToastContentProps {
 export const ToastContent = (props: ToastContentProps) => {
     return (
         <div className='toast-content-container ms-sm-3 ms-2'>
-            <div className='toast-title'>{props.title}</div>
-            <div className='toast-content mt-2 text-wrap me-5'>{props.content}</div>
+            <div className='toast-title' dangerouslySetInnerHTML={{ __html: props.title || '' }} />
+            <div className='toast-content mt-2 text-wrap me-5' dangerouslySetInnerHTML={{ __html: props.content || '' }} />
         </div>
     );
 };

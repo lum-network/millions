@@ -1025,7 +1025,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                             },
                                         }}
                                         onClose={() => {
-                                            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+                                            dispatch.wallet.reloadOtherWalletInfo(null);
                                         }}
                                     />
                                 </Card>

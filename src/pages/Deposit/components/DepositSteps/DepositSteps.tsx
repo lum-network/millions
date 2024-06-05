@@ -69,11 +69,7 @@ const DepositStep = (
     const navigate = useNavigate();
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const [depositAmount, setDepositAmount] = useState<string>(
-        initialAmount
-            ? (NumbersUtils.convertUnitNumber(initialAmount, DenomsUtils.getNormalDenom(currentPool.nativeDenom), false) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6)
-            : amount,
-    );
+    const [depositAmount, setDepositAmount] = useState<string>(initialAmount ? (parseFloat(initialAmount) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6) : amount);
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === MICRO_LUM_DENOM);
     const [error, setError] = useState('');
@@ -92,9 +88,7 @@ const DepositStep = (
 
     useEffect(() => {
         if (initialAmount) {
-            setDepositAmount(
-                (NumbersUtils.convertUnitNumber(initialAmount, DenomsUtils.getNormalDenom(currentPool.nativeDenom), false) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6),
-            );
+            setDepositAmount((parseFloat(initialAmount) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6));
         }
     }, [initialAmount]);
 
@@ -248,7 +242,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/tx/${txInfos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN_LUM}/tx/${txInfos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -310,7 +304,7 @@ const DepositSteps = (props: Props) => {
     useEffect(() => {
         if (!amountFromLocationState) {
             const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? existsInLumBalances.amount : '0');
+            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? NumbersUtils.convertUnitNumber(existsInLumBalances.amount, currentPool.nativeDenom).toFixed(6) : '0');
         }
     }, [lumWallet]);
 

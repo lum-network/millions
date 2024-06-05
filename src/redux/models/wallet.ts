@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Coin, LUM_DENOM, MICRO_LUM_DENOM, LUM_EXPONENT, LumBech32Prefixes, convertUnit } from '@lum-network/sdk-javascript';
+import { Coin, LUM_DENOM, MICRO_LUM_DENOM, LUM_EXPONENT, LumBech32Prefixes } from '@lum-network/sdk-javascript';
 import { createModel } from '@rematch/core';
 
 import { LumApi } from 'api';
@@ -385,8 +385,8 @@ export const wallet = createModel<RootModel>()({
                 await dispatch.wallet.getDepositsAndWithdrawalsDrops(address);
             }
         },
-        async reloadOtherWalletInfo(payload: { address: string }, state) {
-            const { address } = payload;
+        async reloadOtherWalletInfo(_, state) {
+            const otherWallets = state.wallet.otherWallets;
 
             const poolsChainIds = state.pools.pools.reduce<string[]>((acc, pool) => {
                 if (!acc.includes(pool.chainId) && !pool.chainId.includes('lum')) {
@@ -397,7 +397,6 @@ export const wallet = createModel<RootModel>()({
 
             for (const chainId of poolsChainIds) {
                 const pool = state.pools.pools.find((pool) => pool.chainId === chainId);
-
                 if (!pool) {
                     continue;
                 }
@@ -406,20 +405,27 @@ export const wallet = createModel<RootModel>()({
                     continue;
                 }
 
+                const poolNativeDenom = DenomsUtils.getNormalDenom(pool.nativeDenom);
+                const wallet = otherWallets[poolNativeDenom];
+
+                if (!wallet) {
+                    continue;
+                }
+
                 const client = new WalletClient();
 
                 await client.connect(pool.internalInfos.rpc);
 
-                const res = await client.getWalletBalance(address);
+                const res = await client.getWalletBalance(wallet.address);
 
                 dispatch.wallet.setOtherWalletData({
-                    address,
+                    address: wallet.address,
                     balances: res
                         ? DenomsUtils.translateIbcBalances([...res.balances], pool.transferChannelId, pool.nativeDenom).filter(
                               (balance) => state.pools.pools.find((pool) => pool.nativeDenom === balance.denom) || balance.denom === MICRO_LUM_DENOM,
                           )
                         : [],
-                    denom: DenomsUtils.getNormalDenom(pool.nativeDenom),
+                    denom: poolNativeDenom,
                 });
 
                 client.disconnect();
@@ -571,13 +577,7 @@ export const wallet = createModel<RootModel>()({
         async ibcTransfer(payload: IbcTransferPayload, state): Promise<{ hash: string; error: string | null | undefined } | null> {
             const { toAddress, fromAddress, amount, normalDenom, type, ibcChannel, chainId } = payload;
 
-            const convertedAmount = convertUnit(
-                {
-                    amount: amount.amount,
-                    denom: LUM_DENOM,
-                },
-                MICRO_LUM_DENOM,
-            );
+            const convertedAmount = NumbersUtils.convertUnitNumber(amount.amount, normalDenom, false).toFixed();
 
             const coin = {
                 amount: convertedAmount,
@@ -631,15 +631,18 @@ export const wallet = createModel<RootModel>()({
                     throw new Error(result?.error || undefined);
                 }
 
-                while (true) {
+                let balanceUpdated = false;
+
+                for (let ticks = 0; ticks < 6; ticks++) {
                     await new Promise((resolve) => {
                         setTimeout(resolve, 10000);
                     });
 
                     const newBalances = await dispatch.wallet.getLumWalletBalances(null);
+                    const res = WalletUtils.updatedBalances([...(state.wallet.lumWallet?.balances ?? [])], newBalances);
 
-                    if (WalletUtils.updatedBalances(state.wallet.lumWallet?.balances, newBalances)) {
-                        break;
+                    if (res) {
+                        balanceUpdated = res;
                     }
                 }
 
@@ -654,12 +657,26 @@ export const wallet = createModel<RootModel>()({
                     }
                 }
 
-                ToastUtils.updateLoadingToast(toastId, 'success', {
-                    content: I18n.t('success.ibcTransfer', { amount: amount.amount, denom: normalDenom.toUpperCase(), chain: type === 'withdraw' ? 'native chain' : 'Lum Network' }),
-                });
+                if (!balanceUpdated) {
+                    ToastUtils.updateLoadingToast(
+                        toastId,
+                        'warning',
+                        {
+                            content: I18n.t('warning.ibcTransfer', { link: `${NavigationConstants.MINTSCAN}/${chainId.split('-')[0]}/tx/${result.hash}` }),
+                        },
+                        false,
+                        {
+                            closeButton: true,
+                        },
+                    );
+                } else {
+                    ToastUtils.updateLoadingToast(toastId, 'success', {
+                        content: I18n.t('success.ibcTransfer', { amount: amount.amount, denom: normalDenom.toUpperCase(), chain: type === 'withdraw' ? 'native chain' : 'Lum Network' }),
+                    });
+                }
 
                 dispatch.wallet.reloadWalletInfos({ address: type === 'withdraw' ? fromAddress : toAddress, force: true });
-                dispatch.wallet.reloadOtherWalletInfo({ address: type === 'withdraw' ? toAddress : fromAddress });
+                dispatch.wallet.reloadOtherWalletInfo(null);
 
                 return result;
             } catch (e) {

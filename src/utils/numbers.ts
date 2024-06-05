@@ -11,6 +11,7 @@ export const convertUnitNumber = (nb: number | string, fromDenom = MICRO_LUM_DEN
     }
 
     const specificExponent = DenomsConstants.SPECIFIC_DENOM_DECIMALS[fromDenom];
+    const fromMinimal = fromMinimalDenom === true || fromDenom.startsWith('u');
 
     if (specificExponent) {
         const nbToNumber = Number(nb);
@@ -25,17 +26,17 @@ export const convertUnitNumber = (nb: number | string, fromDenom = MICRO_LUM_DEN
     if (typeof nb === 'string') {
         const split = nb.split('.');
 
-        amount = split[0];
+        amount = fromMinimal ? split[0] : nb;
     } else {
-        amount = nb.toFixed(fromDenom.startsWith('u') ? 0 : 6);
+        amount = nb.toFixed(fromMinimal ? 0 : 6);
     }
 
     const coin = {
         amount,
-        denom: MICRO_LUM_DENOM,
+        denom: fromMinimal ? MICRO_LUM_DENOM : LUM_DENOM,
     };
 
-    return parseFloat(convertUnit(coin, LUM_DENOM));
+    return parseFloat(convertUnit(coin, fromMinimal ? LUM_DENOM : MICRO_LUM_DENOM));
 };
 
 export const formatUnit = (coin: Coin, moreDecimal?: boolean): string => {

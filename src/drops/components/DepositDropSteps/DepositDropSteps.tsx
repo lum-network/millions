@@ -415,7 +415,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/address/${txInfos.depositorAddress}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN_LUM}/address/${txInfos.depositorAddress}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
