@@ -39,7 +39,7 @@ export const showLoadingToast = (content: ToastContentProps, options?: ToastOpti
     });
 };
 
-export const updateLoadingToast = (toastId: Id, type: TypeOptions, content: ToastContentProps, autoClose?: boolean, options?: ToastOptions): void => {
+export const updateLoadingToast = (toastId: Id, type: TypeOptions, content: ToastContentProps, autoClose = true, options?: ToastOptions): void => {
     toast.update(toastId, {
         render: <ToastContent {...content} />,
         icon: () => <img alt={type === 'success' ? 'success' : 'warning'} src={type === 'success' ? successIcon : warningIcon} className='no-filter' />,
