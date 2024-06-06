@@ -16,7 +16,7 @@ import { Error404 } from 'pages';
 import { Dispatch, RootState } from 'redux/store';
 import { LeaderboardItemModel } from 'models';
 import { DenomsUtils, Firebase, I18n, WalletUtils, WalletProvidersUtils, NumbersUtils, PoolsUtils } from 'utils';
-import { Draw } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
+import { Draw, DrawState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/draw';
 import Skeleton from 'react-loading-skeleton';
 
 import DrawDetailsModal from './components/DrawDetailsModal/DrawDetailsModal';
@@ -38,6 +38,7 @@ const PoolDetails = () => {
         biggestPrizes: state.prizes.prizes,
         prizesStats: state.prizes.stats,
     }));
+
     const loadingFetchPools = useSelector((state: RootState) => state.loading.effects.pools.fetchPools);
     const loadingAdditionalInfo = useSelector((state: RootState) => state.loading.effects.pools.getPoolsAdditionalInfo);
 
@@ -47,6 +48,7 @@ const PoolDetails = () => {
     const [smallDrawsHistoryVisibleItem, setSmallDrawsHistoryVisibleItem] = useState(0);
     const [drawInProgress, setDrawInProgress] = useState(false);
     const [selectedDraw, setSelectedDraw] = useState<Draw | null>(null);
+    const [poolDraws, setPoolDraws] = useState<Draw[]>([]);
     const [userRankItems, setUserRankItems] = useState<LeaderboardItemModel[] | undefined>();
 
     const modalRef = useRef<React.ElementRef<typeof Modal>>(null);
@@ -54,6 +56,10 @@ const PoolDetails = () => {
     useEffect(() => {
         dispatch.prizes.fetchPrizes({ page: 0, poolId: poolId });
         dispatch.prizes.getStats(poolId || '');
+
+        if (pool && pool.draws && pool.draws.length > 0) {
+            setPoolDraws(pool.draws.filter((draw) => draw.errorState === DrawState.DRAW_STATE_UNSPECIFIED));
+        }
     }, [poolId, denom]);
 
     useEffect(() => {
@@ -475,7 +481,7 @@ const PoolDetails = () => {
                         </div>
                     </>
                 )}
-                {pool.draws && pool.draws.length > 0 && (
+                {poolDraws && poolDraws.length > 0 && (
                     <div className='row'>
                         <div className='col-12'>
                             <h2 className='mb-2 mb-lg-4 mt-4 mt-lg-5'>{I18n.t('poolDetails.drawsHistory.title')}</h2>
@@ -485,8 +491,8 @@ const PoolDetails = () => {
                                         <div
                                             className='d-flex flex-column'
                                             onClick={() => {
-                                                if (pool.draws) {
-                                                    setSelectedDraw(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]);
+                                                if (poolDraws) {
+                                                    setSelectedDraw(poolDraws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]);
                                                     modalRef.current?.show();
                                                 }
                                             }}
@@ -495,7 +501,7 @@ const PoolDetails = () => {
                                                 <label>{drawHistoryHeaders[0]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='d-flex align-items-center justify-content-center index-container'>
-                                                        #{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
+                                                        #{poolDraws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.drawId.toString()}
                                                     </div>
                                                 </div>
                                             </div>
@@ -503,13 +509,13 @@ const PoolDetails = () => {
                                                 <label>{drawHistoryHeaders[1]}</label>
                                                 <div className='stat-bg-white'>
                                                     <div className='draw-date'>
-                                                        {dayjs(pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
+                                                        {dayjs(poolDraws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.createdAt).format('DD MMM YYYY - hh:mmA')}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className='d-flex flex-column my-3'>
                                                 <label>{drawHistoryHeaders[2]}</label>
-                                                <div className='stat-bg-white'>{pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
+                                                <div className='stat-bg-white'>{poolDraws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinCount.toString()}</div>
                                             </div>
                                             <div className='d-flex flex-column'>
                                                 <label>{drawHistoryHeaders[3]}</label>
@@ -517,7 +523,7 @@ const PoolDetails = () => {
                                                     <SmallerDecimal
                                                         nb={numeral(
                                                             NumbersUtils.convertUnitNumber(
-                                                                pool.draws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinAmount || '0',
+                                                                poolDraws[(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem]?.totalWinAmount || '0',
                                                                 pool.nativeDenom,
                                                             ) * (prices[denom] || 1),
                                                         ).format('$0,0[.]00')}
@@ -544,7 +550,7 @@ const PoolDetails = () => {
                                             <button
                                                 type='button'
                                                 className='d-flex align-items-center justify-content-center py-1 w-100 selectable-btn ms-4'
-                                                disabled={(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem === pool.draws.length - 1}
+                                                disabled={(drawsHistoryPage - 1) * 5 + smallDrawsHistoryVisibleItem === poolDraws.length - 1}
                                                 onClick={() => {
                                                     if (smallDrawsHistoryVisibleItem === 4) {
                                                         setDrawsHistoryPage(drawsHistoryPage + 1);
@@ -562,8 +568,8 @@ const PoolDetails = () => {
                                             pagination={{
                                                 page: drawsHistoryPage,
                                                 hasPreviousPage: drawsHistoryPage > 1,
-                                                hasNextPage: drawsHistoryPage < Math.ceil(pool.draws.length / 5),
-                                                pagesTotal: Math.ceil(pool.draws.length / 5),
+                                                hasNextPage: drawsHistoryPage < Math.ceil(poolDraws.length / 5),
+                                                pagesTotal: Math.ceil(poolDraws.length / 5),
                                             }}
                                             onPageChange={(page) => {
                                                 setSmallDrawsHistoryVisibleItem(0);
@@ -577,11 +583,11 @@ const PoolDetails = () => {
                                         headers={drawHistoryHeaders}
                                         responsive={winSizes.width <= Breakpoints.SM}
                                         pagination={
-                                            pool.draws.length > 5
+                                            poolDraws.length > 5
                                                 ? {
                                                       page: drawsHistoryPage,
-                                                      pagesTotal: Math.ceil(pool.draws.length / 5),
-                                                      hasNextPage: drawsHistoryPage < Math.ceil(pool.draws.length / 5),
+                                                      pagesTotal: Math.ceil(poolDraws.length / 5),
+                                                      hasNextPage: drawsHistoryPage < Math.ceil(poolDraws.length / 5),
                                                       hasPreviousPage: drawsHistoryPage > 1,
                                                   }
                                                 : undefined
@@ -589,7 +595,7 @@ const PoolDetails = () => {
                                         customPagination='draws-history-pagination'
                                         onPageChange={(page) => setDrawsHistoryPage(page)}
                                     >
-                                        {pool.draws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {
+                                        {poolDraws.slice((drawsHistoryPage - 1) * 5, (drawsHistoryPage - 1) * 5 + 5).map((draw, index) => {
                                             return (
                                                 <tr
                                                     key={`draw-${index}`}
