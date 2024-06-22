@@ -5,7 +5,7 @@
 
 This is the front-end repository for **Cosmos Millions**.
 
-This service use **Lum Network - Chain** (code hosted [here](https://github.com/lum-network/chain))
+This service uses **Lum Network - Chain** (code hosted [here](https://github.com/lum-network/chain))
 
 ## Description
 
