@@ -1,28 +1,42 @@
 import numeral from 'numeral';
 import { Coin } from '@keplr-wallet/types';
 import { LUM_DENOM, MICRO_LUM_DENOM, convertUnit } from '@lum-network/sdk-javascript';
+import { DenomsConstants } from 'constant';
 
-export const convertUnitNumber = (nb: number | string, fromDenom = MICRO_LUM_DENOM, toDenom = LUM_DENOM): number => {
+export const convertUnitNumber = (nb: number | string, fromDenom = MICRO_LUM_DENOM, fromMinimalDenom = true): number => {
     let amount: string;
 
     if (!nb) {
         return 0;
     }
 
+    const specificExponent = DenomsConstants.SPECIFIC_DENOM_DECIMALS[fromDenom];
+    const fromMinimal = fromMinimalDenom === true || fromDenom.startsWith('u');
+
+    if (specificExponent) {
+        const nbToNumber = Number(nb);
+
+        if (Number.isNaN(nbToNumber)) {
+            return NaN;
+        }
+
+        return fromMinimalDenom ? nbToNumber / 10 ** specificExponent : nbToNumber * 10 ** specificExponent;
+    }
+
     if (typeof nb === 'string') {
         const split = nb.split('.');
 
-        amount = split[0];
+        amount = fromMinimal ? split[0] : nb;
     } else {
-        amount = nb.toFixed(fromDenom.startsWith('u') ? 0 : 6);
+        amount = nb.toFixed(fromMinimal ? 0 : 6);
     }
 
     const coin = {
         amount,
-        denom: fromDenom,
+        denom: fromMinimal ? MICRO_LUM_DENOM : LUM_DENOM,
     };
 
-    return parseFloat(convertUnit(coin, toDenom));
+    return parseFloat(convertUnit(coin, fromMinimal ? LUM_DENOM : MICRO_LUM_DENOM));
 };
 
 export const formatUnit = (coin: Coin, moreDecimal?: boolean): string => {

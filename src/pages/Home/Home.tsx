@@ -20,7 +20,7 @@ const Home = () => {
     const biggestAprPrizes = useSelector((state: RootState) => state.prizes.biggestAprPrizes);
 
     const navigate = useNavigate();
-    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
+    const tvl = pools.reduce((acc, pool) => acc + NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom) * (prices[DenomsUtils.getNormalDenom(pool.nativeDenom)] || 1), 0);
 
     return (
         <div className='home-container mt-3 mt-lg-5'>

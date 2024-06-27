@@ -4,6 +4,7 @@ import { SigningStargateClient, assertIsDeliverTxSuccess } from '@cosmjs/stargat
 import { Coin } from '@keplr-wallet/types';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { cosmos, fromAscii, getSigningIbcClient, ibc } from '@lum-network/sdk-javascript';
+import { InjectiveStargate } from '@injectivelabs/sdk-ts';
 
 import { ApiConstants, GAS_MULTIPLIER } from 'constant';
 import { I18n, NumbersUtils } from 'utils';
@@ -15,7 +16,7 @@ const { transfer } = ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
 class WalletClient {
     private chainId: string | null = null;
 
-    private walletClient: SigningStargateClient | null = null;
+    private walletClient: SigningStargateClient | InjectiveStargate.InjectiveSigningStargateClient | null = null;
     private queryClient: Awaited<ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>> | null = null;
 
     // Utils
@@ -29,15 +30,20 @@ class WalletClient {
             const { createRPCQueryClient } = cosmos.ClientFactory;
             const queryClient = await createRPCQueryClient({ rpcEndpoint: rpc });
 
-            if (offlineSigner) {
-                this.walletClient = await getSigningIbcClient({
-                    rpcEndpoint: rpc,
-                    signer: offlineSigner,
-                });
-            }
-
             this.queryClient = queryClient;
             this.chainId = (await queryClient.cosmos.base.tendermint.v1beta1.getNodeInfo()).nodeInfo?.network || 'lum-network-1';
+
+            if (offlineSigner) {
+                if (this.chainId.includes('injective')) {
+                    const client = await InjectiveStargate.InjectiveSigningStargateClient.connectWithSigner(rpc, offlineSigner);
+                    this.walletClient = client;
+                } else {
+                    this.walletClient = await getSigningIbcClient({
+                        rpcEndpoint: rpc,
+                        signer: offlineSigner,
+                    });
+                }
+            }
         } catch (e) {
             if (!silent) showErrorToast({ content: I18n.t('errors.client.rpc') });
             throw e;
@@ -87,14 +93,14 @@ class WalletClient {
         return this.queryClient.cosmos.distribution.v1beta1.delegationTotalRewards({ delegatorAddress: address });
     };
 
-    getBonding = async () => {
+    getBonding = async (denom: string) => {
         if (this.queryClient === null) {
             return null;
         }
 
         const bondedTokens = (await this.queryClient.cosmos.staking.v1beta1.pool()).pool?.bondedTokens;
 
-        return bondedTokens ? NumbersUtils.convertUnitNumber(bondedTokens) : null;
+        return bondedTokens ? NumbersUtils.convertUnitNumber(bondedTokens, denom) : null;
     };
 
     getSupply = async (denom: string) => {
@@ -104,7 +110,7 @@ class WalletClient {
 
         const supply = (await this.queryClient.cosmos.bank.v1beta1.supplyOf({ denom }))?.amount?.amount;
 
-        return supply ? NumbersUtils.convertUnitNumber(supply) : null;
+        return supply ? NumbersUtils.convertUnitNumber(supply, denom) : null;
     };
 
     getCommunityTaxRate = async () => {

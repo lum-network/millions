@@ -20,14 +20,17 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
     const navigate = useNavigate();
     const { width: windowWidth } = useWindowSize();
 
+    const normalDenom = DenomsUtils.getNormalDenom(poolDenom);
+    const drawRemainingPrizePool = NumbersUtils.convertUnitNumber(draw?.prizePool?.amount || 0, poolDenom) - NumbersUtils.convertUnitNumber(draw?.totalWinAmount || 0, poolDenom);
+
     return (
         <Modal id='drawDetailsModal' ref={modalRef} modalWidth={700}>
             {draw ? (
                 <div className='d-flex flex-column align-items-center'>
                     <div className='d-flex flex-row align-items-center'>
-                        <img src={DenomsUtils.getIconFromDenom(poolDenom)} alt={poolDenom} className='pool-icon no-filter' />
+                        <img src={DenomsUtils.getIconFromDenom(normalDenom)} alt={normalDenom} className='pool-icon no-filter' />
                         <h1 className='mb-0 ms-3 ms-md-4 text-nowrap'>
-                            {poolDenom.toUpperCase()} {I18n.t('common.pool')}
+                            {normalDenom.toUpperCase()} {I18n.t('common.pool')}
                         </h1>
                     </div>
                     <div className='my-4'>
@@ -88,10 +91,10 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                         <td className='text-md-end'>
                                             <div className='d-flex flex-column justify-content-center tx-amount'>
                                                 <div className='amount text-nowrap'>
-                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount)).format('0,0.000000')} /> {poolDenom.toUpperCase()}
+                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount, poolDenom)).format('0,0.000000')} /> {normalDenom.toUpperCase()}
                                                 </div>
                                                 <span className='usd-price'>
-                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount) * (prices[poolDenom] ?? 0)).format('$0,0[.]00')} />
+                                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(winner.amount, poolDenom) * (prices[normalDenom] ?? 0)).format('$0,0[.]00')} />
                                                 </span>
                                             </div>
                                         </td>
@@ -106,25 +109,21 @@ const DrawDetails = ({ draw, poolDenom, prices, modalRef }: { draw: DrawModel | 
                                         <div className='d-flex flex-column text-start mb-3 mb-sm-0'>
                                             <div className='display-6 prize-remaining-amount'>
                                                 <SmallerDecimal
-                                                    nb={numeral(NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount))
-                                                        .format(windowWidth < Breakpoints.SM ? '0[.]0a' : '0,0')
+                                                    nb={numeral(drawRemainingPrizePool)
+                                                        .format(windowWidth < Breakpoints.SM ? '0[.]0a' : drawRemainingPrizePool < 10 ? '0[.]00' : '0,0')
                                                         .toUpperCase()}
                                                 />{' '}
-                                                {poolDenom.toUpperCase()}
+                                                {normalDenom.toUpperCase()}
                                             </div>
                                             <div className='prize-remaining-amount'>
-                                                <SmallerDecimal
-                                                    nb={numeral(
-                                                        (NumbersUtils.convertUnitNumber(draw.prizePool?.amount || 0) - NumbersUtils.convertUnitNumber(draw.totalWinAmount)) * (prices[poolDenom] ?? 0),
-                                                    ).format('$0,0[.]00')}
-                                                />
+                                                <SmallerDecimal nb={numeral(drawRemainingPrizePool * (prices[normalDenom] ?? 0)).format('$0,0[.]00')} />
                                             </div>
                                         </div>
                                         <Button
                                             data-bs-dismiss='modal'
                                             data-bs-target='#drawDetailsModal'
                                             onClick={() => {
-                                                setTimeout(() => navigate(`${NavigationConstants.POOLS}/${poolDenom}/${draw.poolId.toString()}`));
+                                                setTimeout(() => navigate(`${NavigationConstants.POOLS}/${normalDenom}/${draw.poolId.toString()}`));
                                             }}
                                         >
                                             {I18n.t('poolDetails.drawDetails.tryBtn')}

@@ -62,7 +62,7 @@ const MyDeposits = () => {
     };
 
     const renderDepositDrop = (drop: AggregatedDepositModel, index: number) => {
-        const usdPrice = NumbersUtils.convertUnitNumber(drop.amount?.amount || '0') * prices[DenomsUtils.getNormalDenom(drop.amount?.denom || '')] || 0;
+        const usdPrice = NumbersUtils.convertUnitNumber(drop.amount?.amount || '0', drop.amount?.denom) * prices[DenomsUtils.getNormalDenom(drop.amount?.denom || '')] || 0;
 
         return (
             <div key={index} className='drops-card p-3 p-xl-4'>
@@ -80,7 +80,7 @@ const MyDeposits = () => {
                         <div className='d-flex flex-column'>
                             <div>
                                 <span className='deposit-drop-amount'>
-                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0)).format('0,0.000000')} />
+                                    <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(drop.amount?.amount || 0, drop.amount?.denom)).format('0,0.000000')} />
                                 </span>
                                 &nbsp;
                                 <span className='deposit-drop-amount-denom'>{DenomsUtils.getNormalDenom(drop.amount?.denom || '')}</span>

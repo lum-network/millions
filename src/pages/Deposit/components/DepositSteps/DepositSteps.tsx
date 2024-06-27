@@ -3,7 +3,7 @@ import { FormikProps } from 'formik';
 import numeral from 'numeral';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Coin, LUM_DENOM, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
+import { Coin, MICRO_LUM_DENOM } from '@lum-network/sdk-javascript';
 import { DepositState } from '@lum-network/sdk-javascript/build/codegen/lum/network/millions/deposit';
 
 import Assets from 'assets';
@@ -69,9 +69,7 @@ const DepositStep = (
     const navigate = useNavigate();
     const { denom } = useParams<NavigationConstants.PoolsParams>();
 
-    const [depositAmount, setDepositAmount] = useState<string>(
-        initialAmount ? (NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6) : amount,
-    );
+    const [depositAmount, setDepositAmount] = useState<string>(initialAmount ? (parseFloat(initialAmount) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6) : amount);
     const [poolToDeposit, setPoolToDeposit] = useState(currentPool);
     const [isModifying, setIsModifying] = useState(currentPool.nativeDenom === MICRO_LUM_DENOM);
     const [error, setError] = useState('');
@@ -90,7 +88,7 @@ const DepositStep = (
 
     useEffect(() => {
         if (initialAmount) {
-            setDepositAmount((NumbersUtils.convertUnitNumber(initialAmount, MICRO_LUM_DENOM, LUM_DENOM) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6));
+            setDepositAmount((parseFloat(initialAmount) - (currentPool.nativeDenom === MICRO_LUM_DENOM ? 0.005 : 0)).toFixed(6));
         }
     }, [initialAmount]);
 
@@ -131,7 +129,9 @@ const DepositStep = (
                     ) : (
                         <label className='sublabel'>
                             {I18n.t('withdraw.amountInput.sublabel', {
-                                amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === poolToDeposit.nativeDenom)?.amount || '0')),
+                                amount: NumbersUtils.formatTo6digit(
+                                    NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === poolToDeposit.nativeDenom)?.amount || '0', poolToDeposit.nativeDenom),
+                                ),
                                 denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                             })}
                         </label>
@@ -242,7 +242,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/tx/${txInfos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN_LUM}/tx/${txInfos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -304,7 +304,7 @@ const DepositSteps = (props: Props) => {
     useEffect(() => {
         if (!amountFromLocationState) {
             const existsInLumBalances = lumWallet?.balances?.find((balance) => balance.denom === currentPool.nativeDenom);
-            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? existsInLumBalances.amount : '0');
+            setInitialAmount(existsInLumBalances && currentPool.nativeDenom !== MICRO_LUM_DENOM ? NumbersUtils.convertUnitNumber(existsInLumBalances.amount, currentPool.nativeDenom).toFixed(6) : '0');
         }
     }, [lumWallet]);
 
@@ -342,7 +342,7 @@ const DepositSteps = (props: Props) => {
                                     hash: res.hash.toUpperCase(),
                                     amount: numeral(depositAmount).format('0,0[.]00'),
                                     denom: DenomsUtils.getNormalDenom(poolToDeposit.nativeDenom).toUpperCase(),
-                                    tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount) + Number(depositAmount)).format('0,0'),
+                                    tvl: numeral(NumbersUtils.convertUnitNumber(poolToDeposit.tvlAmount, poolToDeposit.nativeDenom) + Number(depositAmount)).format('0,0'),
                                     poolId: poolToDeposit.poolId.toString(),
                                 });
                             }

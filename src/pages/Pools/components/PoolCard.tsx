@@ -49,7 +49,7 @@ const PoolCard = ({ denom, tvl, poolId, estimatedPrize, drawEndAt, apy, ctaText,
                         <Skeleton height={12} width={winSizes.width < Breakpoints.SM ? 120 : 170} />
                     ) : (
                         <div className='prize-amount'>
-                            {estimatedPrize ? numeral(estimatedPrize).format('0,0') : ' --'} {denom}
+                            {estimatedPrize ? numeral(estimatedPrize).format(estimatedPrize < 10 ? '0[.]000' : '0,0') : ' --'} {denom}
                         </div>
                     )}
                 </div>

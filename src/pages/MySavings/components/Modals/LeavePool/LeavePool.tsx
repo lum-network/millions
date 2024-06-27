@@ -34,7 +34,7 @@ const LeavePool = ({ deposit }: Props) => {
         Firebase.logEvent(FirebaseConstants.ANALYTICS_EVENTS.LEAVE_POOL_CONFIRMED, {
             pool_id: deposit.poolId?.toString(),
             deposit_id: deposit.depositId?.toString(),
-            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0),
+            amount: NumbersUtils.convertUnitNumber(deposit.amount?.amount || 0, deposit.amount?.denom),
             denom: DenomsUtils.getNormalDenom(deposit.amount?.denom || ''),
         });
 
@@ -106,7 +106,7 @@ const LeavePool = ({ deposit }: Props) => {
                                             <span className='d-none d-sm-block'>{DenomsUtils.getNormalDenom(deposit?.amount?.denom || '').toUpperCase()}</span>
                                         </div>
                                         <div className='deposit-amount'>
-                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0'))} />
+                                            <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(deposit?.amount?.amount || '0', deposit?.amount?.denom))} />
                                         </div>
                                     </Card>
                                 </div>

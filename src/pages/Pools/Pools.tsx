@@ -29,7 +29,7 @@ const Pools = () => {
                             drawEndAt={pool.nextDrawAt || new Date()}
                             denom={DenomsUtils.getNormalDenom(pool.nativeDenom)}
                             poolId={pool.poolId.toString()}
-                            tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount)}
+                            tvl={NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom)}
                             estimatedPrize={pool.estimatedPrizeToWin?.amount}
                             apy={pool.apy}
                         />

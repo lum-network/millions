@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDropzone, ErrorCode } from 'react-dropzone';
 import Papa from 'papaparse';
-import { LUM_DENOM, MICRO_LUM_DENOM, convertUnit } from '@lum-network/sdk-javascript';
 
 import Assets from 'assets';
 import { Card } from 'components';
-import { WalletUtils } from 'utils';
+import { DenomsUtils, NumbersUtils, WalletUtils } from 'utils';
 
 import './CsvFileInput.scss';
 
@@ -17,6 +16,7 @@ const isValidRow = (info: unknown): info is [string, string] => {
 interface CsvFileInputProps {
     onValidCsv: (depositDrops: { amount: string; winnerAddress: string }[]) => void;
     onInvalidCsv: (error: string) => void;
+    poolNativeDenom: string;
     minDepositAmount?: number;
     className?: string;
     disabled: boolean;
@@ -24,7 +24,7 @@ interface CsvFileInputProps {
 }
 
 const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
-    const { className, minDepositAmount, disabled, limit, onValidCsv, onInvalidCsv } = props;
+    const { className, poolNativeDenom, minDepositAmount, disabled, limit, onValidCsv, onInvalidCsv } = props;
     const { t } = useTranslation();
 
     const [innerLabel, setInnerLabel] = useState(t('depositDrops.depositFlow.fileInputLabel.pending'));
@@ -81,7 +81,7 @@ const CsvFileInput = (props: CsvFileInputProps): JSX.Element => {
                         }
 
                         drops.push({
-                            amount: convertUnit({ amount: amount, denom: LUM_DENOM }, MICRO_LUM_DENOM),
+                            amount: NumbersUtils.convertUnitNumber(amount, DenomsUtils.getNormalDenom(poolNativeDenom), false).toString(),
                             winnerAddress,
                         });
                     }

@@ -63,7 +63,7 @@ const ShareClaim = ({ infos, prices, modalRef, onTwitterShare }: { infos: ShareI
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/tx/${infos.hash}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN_LUM}/tx/${infos.hash}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -165,7 +165,9 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
                 if (denomExistIndex === -1) {
                     amount.push({
                         amount: numeral(
-                            prizes.filter((p) => p.amount?.denom === prize.amount?.denom).reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount) : acc), 0),
+                            prizes
+                                .filter((p) => p.amount?.denom === prize.amount?.denom)
+                                .reduce((acc, prize) => (prize.amount ? acc + NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom) : acc), 0),
                         ).format('0,0.000000'),
                         denom: DenomsUtils.getNormalDenom(prize.amount?.denom || ''),
                     });
@@ -177,7 +179,7 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
             setShareInfos({
                 hash: res.hash.toUpperCase(),
                 amount,
-                tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '')).format('0,0'),
+                tvl: numeral(NumbersUtils.convertUnitNumber(pool?.tvlAmount || '', pool?.nativeDenom)).format('0,0'),
                 compounded: compound,
                 poolId: pool?.poolId.toString() || '',
             });
@@ -248,8 +250,8 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
 
         for (const pToDeposit of toDeposit) {
             const pool = pools.find((p) => p.poolId === pToDeposit.pool.poolId);
-            const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount);
-            const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0');
+            const depositAmount = NumbersUtils.convertUnitNumber(pToDeposit.amount, pToDeposit.pool.nativeDenom);
+            const minDeposit = NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0', pool?.nativeDenom);
 
             if (!pool || (pool && depositAmount < minDeposit)) {
                 blockCompound = true;
@@ -309,7 +311,10 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
                                                     prizes.reduce(
                                                         (acc, prize) =>
                                                             acc +
-                                                            (prize.amount ? NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 1) : 0),
+                                                            (prize.amount
+                                                                ? NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom) *
+                                                                  (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 1)
+                                                                : 0),
                                                         0,
                                                     ),
                                                 ).format('0,0')}
@@ -330,13 +335,17 @@ const Claim = ({ prizes, prices, pools, limit }: Props) => {
                                                                 <img src={DenomsUtils.getIconFromDenom(prize.amount.denom)} className='denom-icon me-3 no-filter' alt='Denom' />
                                                                 <div className='d-flex flex-column'>
                                                                     <span className='asset-amount'>
-                                                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount))} className='me-2' />
+                                                                        <SmallerDecimal
+                                                                            nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom))}
+                                                                            className='me-2'
+                                                                        />
                                                                         {DenomsUtils.getNormalDenom(prize.amount.denom).toUpperCase()}
                                                                     </span>
                                                                     <p>
                                                                         $
                                                                         {numeral(
-                                                                            NumbersUtils.convertUnitNumber(prize.amount.amount) * (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 1),
+                                                                            NumbersUtils.convertUnitNumber(prize.amount.amount, prize.amount.denom) *
+                                                                                (prices[DenomsUtils.getNormalDenom(prize.amount.denom)] || 1),
                                                                         ).format('0,0.00')}
                                                                     </p>
                                                                 </div>

@@ -140,8 +140,8 @@ const Leaderboard = (props: Props) => {
     };
 
     const renderRow = (item: LeaderboardItemModel, index: number) => {
-        const amount = NumbersUtils.convertUnitNumber(item.amount);
-        const totalUserDeposits = userRank ? NumbersUtils.convertUnitNumber(userRank.amount) : null;
+        const amount = NumbersUtils.convertUnitNumber(item.amount, item.nativeDenom);
+        const totalUserDeposits = userRank ? NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom) : null;
 
         return (
             <div
@@ -182,7 +182,7 @@ const Leaderboard = (props: Props) => {
                         totalDeposited &&
                         userRank &&
                         userRank.rank > item.rank &&
-                        NumbersUtils.convertUnitNumber(userRank.amount) !== totalDeposited ? (
+                        NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom) !== totalDeposited ? (
                             <Button className='deposit-more-btn' forcePurple>
                                 {I18n.t('leaderboard.newRanking')}
                             </Button>
@@ -215,11 +215,12 @@ const Leaderboard = (props: Props) => {
                         </div>
                         <div className='position-relative d-flex flex-row align-items-center justify-content-sm-end justify-content-between mt-2 mt-sm-0'>
                             <div className='crypto-amount me-3'>
-                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), 3)} /> {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
+                                <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom), 3)} />{' '}
+                                {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
                             </div>
                             {price && (
                                 <div className='usd-amount'>
-                                    $<SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
+                                    $<SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom) * price).format('0,0.00')} />
                                 </div>
                             )}
                         </div>
@@ -235,13 +236,16 @@ const Leaderboard = (props: Props) => {
                                 </div>
                                 <div className='position-relative d-flex flex-row align-items-center justify-content-sm-end justify-content-between mt-2 mt-sm-0'>
                                     <div className='crypto-amount me-3'>
-                                        <SmallerDecimal nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount), windowWidth < Breakpoints.MD ? 3 : 6)} />{' '}
+                                        {/* eslint-disable-next-line max-len */}
+                                        <SmallerDecimal
+                                            nb={NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom), windowWidth < Breakpoints.MD ? 3 : 6)}
+                                        />{' '}
                                         {DenomsUtils.getNormalDenom(userRank.nativeDenom).toUpperCase()}
                                     </div>
                                     {price ? (
                                         <div className='usd-amount'>
                                             $
-                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount) * price).format('0,0.00')} />
+                                            <SmallerDecimal nb={numeral(NumbersUtils.convertUnitNumber(userRank.amount, userRank.nativeDenom) * price).format('0,0.00')} />
                                         </div>
                                     ) : null}
                                 </div>

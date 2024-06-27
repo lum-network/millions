@@ -151,7 +151,7 @@ const MySavings = () => {
     const renderAsset = (asset: Coin) => {
         const icon = DenomsUtils.getIconFromDenom(asset.denom);
         const normalDenom = DenomsUtils.getNormalDenom(asset.denom);
-        const amount = NumbersUtils.convertUnitNumber(asset.amount);
+        const amount = NumbersUtils.convertUnitNumber(asset.amount, asset.denom);
         const bondedAmount = 0;
         const price = prices?.[normalDenom];
         const usdAmount = price ? amount * price : 0;

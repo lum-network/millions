@@ -85,6 +85,9 @@ export default {
         claimAndCompound: 'Failed to compound prizes',
         withdrawalRetry: 'Failed to retry withdrawal #{{ withdrawalId }} to pool #{{ poolId }}',
     },
+    warning: {
+        ibcTransfer: 'Your IBC Transfer is still in progress, you may encounter issues while depositing so please wait a few minutes. Check transaction on <u><a target="_blank" rel="noreferrer" href="{{ link }}">Mintscan</a></u>',
+    },
     success: {
         wallet: 'Successfully connected',
         ibcTransfer: 'Successfully transferred {{ amount }} {{ denom }} to {{ chain }}',

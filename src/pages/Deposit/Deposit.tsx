@@ -48,7 +48,8 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
     const [currentStep, setCurrentStep] = useState(
         existsInLumBalances &&
             denom !== LUM_DENOM &&
-            ((!isDrop && NumbersUtils.convertUnitNumber(existsInLumBalances.amount) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0')) || isDrop)
+            ((!isDrop && NumbersUtils.convertUnitNumber(existsInLumBalances.amount, existsInLumBalances.denom) > NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0', pool?.nativeDenom)) ||
+                isDrop)
             ? 1
             : 0,
     );
@@ -171,8 +172,8 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                 .required(I18n.t('errors.generic.required', { field: 'Amount' }))
                 .test(
                     'min-deposit',
-                    () => I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0'), denom: denom?.toUpperCase() }),
-                    (value) => (pool && pool.minDepositAmount && value ? Number(value) >= NumbersUtils.convertUnitNumber(pool.minDepositAmount) : false),
+                    () => I18n.t('errors.deposit.lessThanMinDeposit', { minDeposit: NumbersUtils.convertUnitNumber(pool?.minDepositAmount || '0', pool?.nativeDenom), denom: denom?.toUpperCase() }),
+                    (value) => (pool && pool.minDepositAmount && value ? Number(value) >= NumbersUtils.convertUnitNumber(pool.minDepositAmount, pool.nativeDenom) : false),
                 ),
         }),
         onSubmit: async (values) => {
@@ -691,7 +692,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
 
     const onDepositDrop = async (pool: PoolModel, deposits: { amount: string; winnerAddress: string }[], onDepositCallback: (batchNum: number) => void, startIndex: number) => {
         const maxAmount = Number(WalletUtils.getMaxAmount(pool.nativeDenom, lumWallet?.balances || []));
-        const depositAmountNumber = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
+        const depositAmountNumber = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount, pool.nativeDenom), 0);
 
         if (depositAmountNumber > maxAmount) {
             const prev = depositAmountNumber.toFixed(6);
@@ -1024,7 +1025,7 @@ const Deposit = ({ isDrop }: { isDrop: boolean }) => {
                                             },
                                         }}
                                         onClose={() => {
-                                            dispatch.wallet.reloadOtherWalletInfo({ address: otherWallet.address });
+                                            dispatch.wallet.reloadOtherWalletInfo(null);
                                         }}
                                     />
                                 </Card>

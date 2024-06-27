@@ -25,7 +25,7 @@ const CancelDropModal = ({ deposits, limit }: { deposits?: DepositModel[]; limit
         provider: WalletUtils.getAutoconnectProvider(),
     });
 
-    const depositsTotalAmount = deposits ? deposits.reduce((acc, deposit) => NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0') + acc, 0) : 0;
+    const depositsTotalAmount = deposits ? deposits.reduce((acc, deposit) => NumbersUtils.convertUnitNumber(deposit.amount?.amount || '0', deposit.amount?.denom) + acc, 0) : 0;
 
     useEffect(() => {
         const handler = () => {

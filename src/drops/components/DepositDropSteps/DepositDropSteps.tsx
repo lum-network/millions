@@ -96,7 +96,7 @@ const DepositDropStep = (
 
         for (const input of inputs) {
             const amountToNumber = Number(input.amount);
-            const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount);
+            const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount, currentPool.nativeDenom);
 
             if (Object.keys(input.errors).length > 0 || !WalletUtils.isAddressValid(input.winnerAddress) || Number.isNaN(amountToNumber) || amountToNumber < minDeposit) {
                 isValid = false;
@@ -112,7 +112,7 @@ const DepositDropStep = (
 
     const onValidCsv = useCallback((depositDrops: { amount: string; winnerAddress: string }[]) => {
         setDepositDrops([...depositDrops]);
-        setTotalDepositAmount(depositDrops.reduce((acc, drop) => NumbersUtils.convertUnitNumber(drop.amount) + acc, 0));
+        setTotalDepositAmount(depositDrops.reduce((acc, drop) => NumbersUtils.convertUnitNumber(drop.amount, currentPool.nativeDenom) + acc, 0));
         setCsvError('');
     }, []);
 
@@ -148,8 +148,8 @@ const DepositDropStep = (
         input.amount = text;
 
         const amountToNumber = Number(text);
-        const maxAmount = NumbersUtils.convertUnitNumber(balances.find((bal) => bal.denom === currentPool.nativeDenom)?.amount || '0');
-        const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount);
+        const maxAmount = NumbersUtils.convertUnitNumber(balances.find((bal) => bal.denom === currentPool.nativeDenom)?.amount || '0', currentPool.nativeDenom);
+        const minDeposit = NumbersUtils.convertUnitNumber(currentPool.minDepositAmount, currentPool.nativeDenom);
 
         if (Number.isNaN(amountToNumber)) {
             input.errors = {
@@ -215,7 +215,8 @@ const DepositDropStep = (
                         disabled={disabled}
                         onValidCsv={onValidCsv}
                         onInvalidCsv={onInvalidCsv}
-                        minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount)}
+                        minDepositAmount={NumbersUtils.convertUnitNumber(currentPool.minDepositAmount, currentPool.nativeDenom)}
+                        poolNativeDenom={currentPool.nativeDenom}
                         limit={limit}
                     />
                     <div className='download-btn-container'>
@@ -251,7 +252,11 @@ const DepositDropStep = (
                                         type='number'
                                         step='any'
                                         min='0'
-                                        max={balances.length > 0 ? NumbersUtils.convertUnitNumber(balances.find((bal) => bal.denom === currentPool.nativeDenom)?.amount || '0') : '0'}
+                                        max={
+                                            balances.length > 0
+                                                ? NumbersUtils.convertUnitNumber(balances.find((bal) => bal.denom === currentPool.nativeDenom)?.amount || '0', currentPool.nativeDenom)
+                                                : '0'
+                                        }
                                         value={manualInputs[index].amount || ''}
                                         onChange={(event) => onAmountInputChange(event.target.value, index)}
                                     />
@@ -315,7 +320,7 @@ const DepositDropStep = (
                     <label className='label text-start'>{I18n.t('depositDrops.depositFlow.depositLabel', { denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase() })}</label>
                     <label className='sublabel'>
                         {I18n.t('withdraw.amountInput.sublabel', {
-                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === currentPool.nativeDenom)?.amount || '0')),
+                            amount: NumbersUtils.formatTo6digit(NumbersUtils.convertUnitNumber(balances.find((b) => b.denom === currentPool.nativeDenom)?.amount || '0', currentPool.nativeDenom)),
                             denom: DenomsUtils.getNormalDenom(currentPool.nativeDenom).toUpperCase(),
                         })}
                     </label>
@@ -410,7 +415,7 @@ const ShareStep = ({ txInfos, price, title, subtitle, onTwitterShare }: { txInfo
                             withoutPadding
                             className='step-3-cta-container d-flex flex-row align-items-center text-start p-4 w-100'
                             onClick={() => {
-                                window.open(`${NavigationConstants.MINTSCAN}/address/${txInfos.depositorAddress}`, '_blank');
+                                window.open(`${NavigationConstants.MINTSCAN_LUM}/address/${txInfos.depositorAddress}`, '_blank');
                             }}
                         >
                             <img src={Assets.images.mintscanPurple} alt='Mintscan' className='me-4' />
@@ -489,7 +494,7 @@ const DepositDropSteps = (props: Props) => {
                         title={steps[currentStep].cardTitle ?? steps[currentStep]?.title ?? ''}
                         balances={lumWallet?.balances || []}
                         onDepositDrop={async (pool, deposits, callback, startIndex) => {
-                            const totalDepositAmount = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount), 0);
+                            const totalDepositAmount = deposits.reduce((acc, deposit) => acc + NumbersUtils.convertUnitNumber(deposit.amount, currentPool.nativeDenom), 0);
                             const res = await onDepositDrop(pool, deposits, callback, startIndex);
 
                             if (res) {
@@ -497,7 +502,7 @@ const DepositDropSteps = (props: Props) => {
                                 setTxInfos({
                                     amount: numeral(totalDepositAmount).format('0,0[.]00'),
                                     denom: DenomsUtils.getNormalDenom(pool.nativeDenom).toUpperCase(),
-                                    tvl: numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount) + totalDepositAmount).format('0,0'),
+                                    tvl: numeral(NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom) + totalDepositAmount).format('0,0'),
                                     poolId: pool.poolId.toString(),
                                     numOfWallets: deposits.length,
                                     depositorAddress: lumWallet?.address || '',

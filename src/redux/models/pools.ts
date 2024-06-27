@@ -139,7 +139,7 @@ export const pools = createModel<RootModel>()({
 
                 for (const pool of pools) {
                     // Calculate Prize to win
-                    const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0');
+                    const availablePrizePool = NumbersUtils.convertUnitNumber(pool.availablePrizePool?.amount || '0', await DenomsUtils.getDenomFromIbc(pool.availablePrizePool?.denom || ''));
 
                     if (pool.nativeDenom !== MICRO_LUM_DENOM && !pool.internalInfos) {
                         continue;
@@ -156,7 +156,7 @@ export const pools = createModel<RootModel>()({
 
                     const prizePool =
                         availablePrizePool +
-                        NumbersUtils.convertUnitNumber(bankBalance ? parseInt(bankBalance.amount, 10) : 0) +
+                        NumbersUtils.convertUnitNumber(bankBalance ? parseInt(bankBalance.amount, 10) : 0, pool.nativeDenom) +
                         NumbersUtils.convertUnitNumber(
                             stakingRewards
                                 ? stakingRewards.total
@@ -164,6 +164,7 @@ export const pools = createModel<RootModel>()({
                                       .reduce((a, b) => a + parseInt(b.amount, 10) / ApiConstants.CLIENT_PRECISION, 0)
                                       .toString()
                                 : '0',
+                            pool.nativeDenom,
                         );
 
                     pool.currentPrizeToWin = { amount: prizePool, denom: pool.nativeDenom };
@@ -179,21 +180,21 @@ export const pools = createModel<RootModel>()({
                         nativeApy = osmoApy / 100;
                     } else {
                         const [bonding, supply, communityTaxRate, inflation] = await Promise.all([
-                            client.getBonding(),
+                            client.getBonding(pool.nativeDenom),
                             client.getSupply(pool.nativeDenom),
                             client.getCommunityTaxRate(),
                             client.getInflation(),
                         ]);
-
-                        const stakingRatio = NumbersUtils.convertUnitNumber(bonding || '0') / NumbersUtils.convertUnitNumber(supply || '1');
+                        const stakingRatio = (bonding || 0) / (supply || 1);
 
                         nativeApy = ((inflation || 0) * (1 - (communityTaxRate || 0))) / stakingRatio;
                     }
 
-                    const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount);
-                    const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount);
+                    const poolTvl = NumbersUtils.convertUnitNumber(pool.tvlAmount, pool.nativeDenom);
+                    const poolSponsorTvl = NumbersUtils.convertUnitNumber(pool.sponsorshipAmount, pool.nativeDenom);
+                    const tvlMinusSponsor = poolTvl - poolSponsorTvl;
 
-                    const variableApy = (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / (poolTvl - poolSponsorTvl);
+                    const variableApy = tvlMinusSponsor === 0 ? 0 : (nativeApy * (1 - (feesStakers || 0)) * poolTvl) / tvlMinusSponsor;
 
                     pool.apy = variableApy * 100;
 
